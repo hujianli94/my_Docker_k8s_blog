@@ -1,0 +1,567 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Docker基础 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: ''
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="next" title="Kubernetes基础" href="04.Kubernetes基础.html" />
+    <link rel="prev" title="Kubespray部署k8s" href="02.Kubespray部署k8s.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01.Docker技术入门与实战-3版/index.html">01.Docker技术入门与实战-第3版</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">02.Kubernetes实战指南</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.通过Kubeadm部署kubernetes.html">通过Kubeadm部署kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Kubespray部署k8s.html">Kubespray部署k8s</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Docker基础</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Docker介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Docker基本命令</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">查看Docker版本。</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">查询镜像。</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">推送镜像</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id6">前台启动一个容器：</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">后台启动：</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">端口映射:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">查看当前正在运行的容器:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">查看所有容器，包括已经退出的:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id">查看正在运行的容器（即显示出容器的ID):</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id11">查看所有容器的ID，包括已经退出的：</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d">进入到一个后台运行的容器（即之前用-d命令参数来指定后台运行方式的容器）：</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">拷贝文件。</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id13">删除已经退出的容器：</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#repositorynone">删除本机镜像。比如删除REPOSITORY为none的镜像：</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tag">镜像打标签（tag）。用于区分不同版本的镜像：</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dockerfile">Dockerfile的编写</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id14">Dockerfile示例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="04.Kubernetes基础.html">Kubernetes基础</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">02.Kubernetes实战指南</a> &raquo;</li>
+        
+      <li>Docker基础</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/02.Kubernetes实战指南/03.Docker基础.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#docker" id="id15">Docker基础</a><ul>
+<li><a class="reference internal" href="#id1" id="id16">Docker介绍</a></li>
+<li><a class="reference internal" href="#id2" id="id17">Docker基本命令</a><ul>
+<li><a class="reference internal" href="#id3" id="id18">查看Docker版本。</a></li>
+<li><a class="reference internal" href="#id4" id="id19">查询镜像。</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id5" id="id20">推送镜像</a><ul>
+<li><a class="reference internal" href="#id6" id="id21">前台启动一个容器：</a></li>
+<li><a class="reference internal" href="#id7" id="id22">后台启动：</a></li>
+<li><a class="reference internal" href="#id8" id="id23">端口映射:</a></li>
+<li><a class="reference internal" href="#id9" id="id24">查看当前正在运行的容器:</a></li>
+<li><a class="reference internal" href="#id10" id="id25">查看所有容器，包括已经退出的:</a></li>
+<li><a class="reference internal" href="#id" id="id26">查看正在运行的容器（即显示出容器的ID):</a></li>
+<li><a class="reference internal" href="#id11" id="id27">查看所有容器的ID，包括已经退出的：</a></li>
+<li><a class="reference internal" href="#d" id="id28">进入到一个后台运行的容器（即之前用-d命令参数来指定后台运行方式的容器）：</a></li>
+<li><a class="reference internal" href="#id12" id="id29">拷贝文件。</a></li>
+<li><a class="reference internal" href="#id13" id="id30">删除已经退出的容器：</a></li>
+<li><a class="reference internal" href="#repositorynone" id="id31">删除本机镜像。比如删除REPOSITORY为none的镜像：</a></li>
+<li><a class="reference internal" href="#tag" id="id32">镜像打标签（tag）。用于区分不同版本的镜像：</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dockerfile" id="id33">Dockerfile的编写</a><ul>
+<li><a class="reference internal" href="#id14" id="id34">Dockerfile示例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="docker">
+<h1><a class="toc-backref" href="#id15">Docker基础</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="toc-backref" href="#id16">Docker介绍</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Docker是一个开源的软件项目，在Linux操作系统上，Docker提供了一个额外的软件抽象层及操作系统层虚拟化的自动管理机制。Docker运行名为“Container（容器）”的软件包，容器之间彼此隔离，并捆绑了自己的应用程序、工具、库和配置文件。所有容器都由单个操作系统内核运行，因此比虚拟机更轻量级。Docker利用Linux资源分离机制，例如cgroups及Linux
+Namespace来创建相互独立的容器（Container），可以在单个Linux实体下运行，避免了启动一个虚拟机造成的额外负担。Linux核心对Namespace（命名空间）的支持完全隔离了不同Namespace下的应用程序的“视野”（即作用范围），包括进程树、网络、用户ID与挂载的文件系统等，而核心cgroups则提供了资源隔离，包括CPU、存储器、Block
+I/O与网络。</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id17">Docker基本命令</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id18">查看Docker版本。</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>包括Docker版本号、API版本号、Git Commit、Go版本号等</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker version</span>
+<span class="n">Client</span><span class="p">:</span> <span class="n">Docker</span> <span class="n">Engine</span> <span class="o">-</span> <span class="n">Community</span>
+ <span class="n">Version</span><span class="p">:</span>           <span class="mf">19.03</span><span class="o">.</span><span class="mi">11</span>
+ <span class="n">API</span> <span class="n">version</span><span class="p">:</span>       <span class="mf">1.40</span>
+ <span class="n">Go</span> <span class="n">version</span><span class="p">:</span>        <span class="n">go1</span><span class="o">.</span><span class="mf">13.10</span>
+ <span class="n">Git</span> <span class="n">commit</span><span class="p">:</span>        <span class="mi">42</span><span class="n">e35e61f3</span>
+ <span class="n">Built</span><span class="p">:</span>             <span class="n">Mon</span> <span class="n">Jun</span>  <span class="mi">1</span> <span class="mi">09</span><span class="p">:</span><span class="mi">13</span><span class="p">:</span><span class="mi">48</span> <span class="mi">2020</span>
+ <span class="n">OS</span><span class="o">/</span><span class="n">Arch</span><span class="p">:</span>           <span class="n">linux</span><span class="o">/</span><span class="n">amd64</span>
+ <span class="n">Experimental</span><span class="p">:</span>      <span class="n">false</span>
+
+<span class="n">Server</span><span class="p">:</span> <span class="n">Docker</span> <span class="n">Engine</span> <span class="o">-</span> <span class="n">Community</span>
+ <span class="n">Engine</span><span class="p">:</span>
+  <span class="n">Version</span><span class="p">:</span>          <span class="mf">19.03</span><span class="o">.</span><span class="mi">11</span>
+  <span class="n">API</span> <span class="n">version</span><span class="p">:</span>      <span class="mf">1.40</span> <span class="p">(</span><span class="n">minimum</span> <span class="n">version</span> <span class="mf">1.12</span><span class="p">)</span>
+  <span class="n">Go</span> <span class="n">version</span><span class="p">:</span>       <span class="n">go1</span><span class="o">.</span><span class="mf">13.10</span>
+  <span class="n">Git</span> <span class="n">commit</span><span class="p">:</span>       <span class="mi">42</span><span class="n">e35e61f3</span>
+  <span class="n">Built</span><span class="p">:</span>            <span class="n">Mon</span> <span class="n">Jun</span>  <span class="mi">1</span> <span class="mi">09</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">26</span> <span class="mi">2020</span>
+  <span class="n">OS</span><span class="o">/</span><span class="n">Arch</span><span class="p">:</span>          <span class="n">linux</span><span class="o">/</span><span class="n">amd64</span>
+  <span class="n">Experimental</span><span class="p">:</span>     <span class="n">false</span>
+ <span class="n">containerd</span><span class="p">:</span>
+  <span class="n">Version</span><span class="p">:</span>          <span class="mf">1.2</span><span class="o">.</span><span class="mi">13</span>
+  <span class="n">GitCommit</span><span class="p">:</span>        <span class="mi">7</span><span class="n">ad184331fa3e55e52b890ea95e65ba581ae3429</span>
+ <span class="n">runc</span><span class="p">:</span>
+  <span class="n">Version</span><span class="p">:</span>          <span class="mf">1.0</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">rc10</span>
+  <span class="n">GitCommit</span><span class="p">:</span>        <span class="n">dc9208a3303feef5b3839f4323d9beb36df0a9dd</span>
+ <span class="n">docker</span><span class="o">-</span><span class="n">init</span><span class="p">:</span>
+  <span class="n">Version</span><span class="p">:</span>          <span class="mf">0.18</span><span class="o">.</span><span class="mi">0</span>
+  <span class="n">GitCommit</span><span class="p">:</span>        <span class="n">fec3683</span>
+<span class="n">You</span> <span class="n">have</span> <span class="n">new</span> <span class="n">mail</span> <span class="ow">in</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">spool</span><span class="o">/</span><span class="n">mail</span><span class="o">/</span><span class="n">root</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3><a class="toc-backref" href="#id19">查询镜像。</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>OFFICIAL为OK的是官方镜像，默认搜索的是hub.docker.com。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker search nginx</span>
+</pre></div>
+</div>
+<p>拉取／下载镜像。默认是hub.docker.com（docker.io）上面的镜像，如果拉取公司内部的镜像或者其他仓库上的镜像，需要在镜像前面加上仓库的URL，如：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="c1">#拉取公网上的Nginx镜像</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker pull nginx</span>
+
+<span class="c1">#拉取指定版本</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker pull nginx:1.15</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2><a class="toc-backref" href="#id20">推送镜像</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>把本地的镜像推送到公网仓库中，或者公司内部的仓库中。默认登录和推送的是公网的镜像，如果需要推送到公司仓库或者其他仓库，只需要在镜像前面使用tag并加上URL即可：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">tag</span> <span class="n">nginx</span><span class="p">:</span><span class="mf">1.15</span> <span class="n">futongcloud</span><span class="o">/</span><span class="n">nginx_hu</span><span class="p">:</span><span class="mf">1.15</span>
+<span class="n">docker</span> <span class="n">login</span>
+<span class="n">docker</span> <span class="n">push</span> <span class="n">futongcloud</span><span class="o">/</span><span class="n">nginx_hu</span><span class="p">:</span><span class="mf">1.15</span>
+</pre></div>
+</div>
+<div class="section" id="id6">
+<h3><a class="toc-backref" href="#id21">前台启动一个容器：</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker run -it nginx bash</span>
+<span class="n">root</span><span class="nd">@36d8bb21092a</span><span class="p">:</span><span class="o">/</span><span class="c1">#</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id7">
+<h3><a class="toc-backref" href="#id22">后台启动：</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker run -itd nginx bash</span>
+
+<span class="c1"># 关闭容器</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker ps -l|grep -v CON|awk &#39;{print $1}&#39;|xargs docker rm -f</span>
+<span class="mi">08846</span><span class="n">dd8b468</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h3><a class="toc-backref" href="#id23">端口映射:</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>可以将本机的端口映射到容器的端口，比如将本机的1111端口映射到容器的80端口：</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker run -itd -p 1111:80 nginx bash</span>
+<span class="mi">5</span><span class="n">c8cc90025a1deaa1a4a27d799154381f2b7eafaf7b68b18b0df1cc01c5a92c2</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker ps -l</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>                  <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>                  <span class="n">NAMES</span>
+<span class="mi">5</span><span class="n">c8cc90025a1</span>        <span class="n">nginx</span>               <span class="s2">&quot;/docker-entrypoint.…&quot;</span>   <span class="mi">3</span> <span class="n">seconds</span> <span class="n">ago</span>       <span class="n">Up</span> <span class="mi">2</span> <span class="n">seconds</span>        <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">1111</span><span class="o">-&gt;</span><span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>   <span class="n">elastic_hasle</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id9">
+<h3><a class="toc-backref" href="#id24">查看当前正在运行的容器:</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker ps</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id10">
+<h3><a class="toc-backref" href="#id25">查看所有容器，包括已经退出的:</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker ps -a</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id">
+<h3><a class="toc-backref" href="#id26">查看正在运行的容器（即显示出容器的ID):</a><a class="headerlink" href="#id" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker ps -l -q</span>
+<span class="mi">5</span><span class="n">c8cc90025a1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h3><a class="toc-backref" href="#id27">查看所有容器的ID，包括已经退出的：</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker ps -aq</span>
+<span class="mi">5</span><span class="n">c8cc90025a1</span>
+<span class="n">f19f82a174ea</span>
+<span class="mi">36</span><span class="n">d8bb21092a</span>
+<span class="n">d09ebce9438b</span>
+<span class="n">cced4a08e81a</span>
+<span class="n">b516ebe6cc13</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="d">
+<h3><a class="toc-backref" href="#id28">进入到一个后台运行的容器（即之前用-d命令参数来指定后台运行方式的容器）：</a><a class="headerlink" href="#d" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker ps -l</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>                  <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>                  <span class="n">NAMES</span>
+<span class="mi">5</span><span class="n">c8cc90025a1</span>        <span class="n">nginx</span>               <span class="s2">&quot;/docker-entrypoint.…&quot;</span>   <span class="mi">8</span> <span class="n">minutes</span> <span class="n">ago</span>       <span class="n">Up</span> <span class="mi">8</span> <span class="n">minutes</span>        <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">1111</span><span class="o">-&gt;</span><span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>   <span class="n">elastic_haslett</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker exec -it 5c8cc bash</span>
+<span class="n">root</span><span class="nd">@5c8cc90025a1</span><span class="p">:</span><span class="o">/</span><span class="c1">#</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id12">
+<h3><a class="toc-backref" href="#id29">拷贝文件。</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<p>双向拷贝，可以将本机的文件拷贝到容器，反之亦然：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">cp</span> <span class="n">image_pull</span><span class="o">-</span><span class="n">k8s</span><span class="o">.</span><span class="n">sh</span> <span class="mi">5</span><span class="n">c8cc</span><span class="p">:</span><span class="o">/</span><span class="n">tmp</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker exec 5c8cc ls /tmp/</span>
+<span class="n">image_pull</span><span class="o">-</span><span class="n">k8s</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id13">
+<h3><a class="toc-backref" href="#id30">删除已经退出的容器：</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker ps -a | grep Exited|tail -3</span>
+<span class="n">f19f82a174ea</span>        <span class="n">nginx</span>                    <span class="s2">&quot;/docker-entrypoint.…&quot;</span>   <span class="mi">12</span> <span class="n">minutes</span> <span class="n">ago</span>      <span class="n">Exited</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="mi">12</span> <span class="n">minutes</span> <span class="n">ago</span>
+<span class="n">modest_taussig36d8bb21092a</span>        <span class="n">nginx</span>                    <span class="s2">&quot;/docker-entrypoint.…&quot;</span>   <span class="mi">15</span> <span class="n">minutes</span> <span class="n">ago</span>      <span class="n">Exited</span> <span class="p">(</span><span class="mi">130</span><span class="p">)</span> <span class="mi">14</span> <span class="n">minutes</span> <span class="n">ago</span>
+<span class="n">relaxed_maxwellcced4a08e81a</span>        <span class="n">quay</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">coreos</span><span class="o">/</span><span class="n">flannel</span>   <span class="s2">&quot;cp -f /etc/kube-fla…&quot;</span>   <span class="mi">2</span> <span class="n">hours</span> <span class="n">ago</span>         <span class="n">Exited</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="mi">2</span> <span class="n">hours</span> <span class="n">ago</span>
+<span class="n">k8s_install</span><span class="o">-</span><span class="n">cni_kube</span><span class="o">-</span><span class="n">flannel</span><span class="o">-</span><span class="n">ds</span><span class="o">-</span><span class="n">amd64</span><span class="o">-</span><span class="n">f4g2x_kube</span><span class="o">-</span><span class="n">system_b0806149</span><span class="o">-</span><span class="n">dba6</span><span class="o">-</span><span class="mi">4</span><span class="n">e95</span><span class="o">-</span><span class="n">b46b</span><span class="o">-</span><span class="n">fb1adb77fafe_0</span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker rm f19f 36d8 cced4</span>
+<span class="n">f19f</span>
+<span class="mi">36</span><span class="n">d8</span>
+<span class="n">cced4</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="repositorynone">
+<h3><a class="toc-backref" href="#id31">删除本机镜像。比如删除REPOSITORY为none的镜像：</a><a class="headerlink" href="#repositorynone" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker rmi 2622</span>
+<span class="n">Untagged</span><span class="p">:</span> <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>
+<span class="n">Untagged</span><span class="p">:</span> <span class="n">nginx</span><span class="nd">@sha256</span><span class="p">:</span><span class="mi">21</span><span class="n">f32f6c08406306d822a0e6e8b7dc81f53f336570e852e25fbe1e3e3d0d0133</span>
+<span class="n">Deleted</span><span class="p">:</span> <span class="n">sha256</span><span class="p">:</span><span class="mi">2622</span><span class="n">e6cca7ebbb6e310743abce3fc47335393e79171b9d76ba9d4f446ce7b163</span>
+<span class="n">Deleted</span><span class="p">:</span> <span class="n">sha256</span><span class="p">:</span><span class="n">e86d1b8b130bec203609b4b1d7b851bd763fa16e513e5a3fa6102ebea23260e0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="tag">
+<h3><a class="toc-backref" href="#id32">镜像打标签（tag）。用于区分不同版本的镜像：</a><a class="headerlink" href="#tag" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">home</span><span class="p">]</span><span class="c1"># docker tag nginx:1.15 nginx_hu:1.15</span>
+</pre></div>
+</div>
+<p>使用dockerbuild通过Dockerfile制作镜像。注意最后的一个点（.），表示使用当前目录的Dockerfile：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">build</span> <span class="o">-</span><span class="n">t</span> <span class="n">image_name</span><span class="p">:</span><span class="n">image_tag</span> <span class="o">.</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="dockerfile">
+<h2><a class="toc-backref" href="#id33">Dockerfile的编写</a><a class="headerlink" href="#dockerfile" title="Permalink to this headline">¶</a></h2>
+<p>Dockerfile是用来快速创建自定义镜像的一种文本格式的配置文件，在持续集成和持续部署时，需要使用Dockerfile生成相关应用程序的镜像，然后推送到公司内部仓库中，再通过部署策略把镜像部署到Kubernetes中。通过Dockerfile提供的命令可以构建Dockerfile文件，Dockerfile的常用命令如下：</p>
+<p><img alt="image0" src="../_images/dockerfile001.png" /></p>
+<p>以下简单演示每个命令的使用方法。使用RUN创建一个用户：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">dockefile</span><span class="p">]</span><span class="c1"># cat Dockerfile</span>
+<span class="c1"># base image</span>
+<span class="n">FROM</span> <span class="n">centos</span><span class="p">:</span><span class="mi">6</span>
+<span class="n">MAINTAINER</span> <span class="n">dot</span>
+<span class="n">RUN</span> <span class="n">useradd</span> <span class="n">dot</span>
+<span class="c1">#执行构建</span>
+<span class="n">docker</span> <span class="n">build</span> <span class="o">-</span><span class="n">t</span> <span class="n">centos</span><span class="p">:</span><span class="n">user</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>使用ENV定义环境变量并用CMD执行命令：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">dockefile</span><span class="p">]</span><span class="c1"># cat Dockerfile</span>
+<span class="c1"># base image</span>
+<span class="n">FROM</span> <span class="n">centos</span><span class="p">:</span><span class="mi">6</span>
+<span class="n">MAINTAINER</span> <span class="n">dot</span>
+<span class="n">RUN</span> <span class="n">useradd</span> <span class="n">dot</span> <span class="o">&amp;&amp;</span> <span class="n">mkdir</span> <span class="n">dot</span>
+<span class="n">ENV</span> <span class="n">envir</span><span class="o">=</span><span class="n">yesy</span> <span class="n">version</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="n">CMD</span> <span class="n">echo</span> <span class="s2">&quot;envir:$envir version:$version&quot;</span>
+</pre></div>
+</div>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="c1"># 执行构建</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">dockefile</span><span class="p">]</span><span class="c1"># docker build -t centos:env-cmd .</span>
+<span class="c1"># 启动镜像验证ENV和CMD</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">dockefile</span><span class="p">]</span><span class="c1"># docker run centos:env-cmd</span>
+<span class="n">envir</span><span class="p">:</span><span class="n">yesy</span> <span class="n">version</span><span class="p">:</span><span class="mf">1.0</span>
+</pre></div>
+</div>
+<p>使用ADD添加一个压缩包，使用WORKDIR改变工作目录：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">dockerfile2</span><span class="p">]</span><span class="c1"># cat Dockerfile</span>
+<span class="c1"># base image</span>
+<span class="n">FROM</span> <span class="n">nginx</span>
+<span class="n">MAINTAINER</span> <span class="n">dot</span>
+<span class="n">ADD</span> <span class="o">./</span><span class="n">index</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>  <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">html</span><span class="o">/</span>
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">html</span>
+</pre></div>
+</div>
+<p>使用COPY拷贝指定目录下的所有文件到容器，不包括本级目录。此时只会拷贝webroot下的所有文件，不会将webroot拷贝过去：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="n">Dockerfile</span>
+<span class="c1"># base image</span>
+<span class="n">FROM</span> <span class="n">nginx</span>
+<span class="n">MAINTAINER</span> <span class="n">dot</span>
+<span class="n">ADD</span> <span class="o">./</span><span class="n">index</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>  <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">html</span><span class="o">/</span>
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">html</span>
+<span class="n">COPY</span> <span class="n">webroot</span><span class="o">/</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>设置启动容器的用户，在生产环境中一般不建议使用root启动容器，所以可以根据公司业务场景自定义启动容器的用户：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">dockerfile2</span><span class="p">]</span><span class="c1"># cat Dockerfile</span>
+<span class="c1"># base image</span>
+<span class="n">FROM</span> <span class="n">nginx</span>
+<span class="n">MAINTAINER</span> <span class="n">dot</span>
+<span class="n">ADD</span> <span class="o">./</span><span class="n">index</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>  <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">html</span><span class="o">/</span>
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">html</span>
+<span class="n">COPY</span> <span class="n">webroot</span><span class="o">/</span> <span class="o">.</span>
+<span class="n">RUN</span> <span class="n">useradd</span> <span class="o">-</span><span class="n">m</span> <span class="n">tomcat</span> <span class="o">-</span><span class="n">u</span> <span class="mi">1001</span>
+<span class="n">USER</span> <span class="mi">1001</span>
+</pre></div>
+</div>
+<p>使用Volume创建容器可挂载点：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">dockerfile3</span><span class="p">]</span><span class="c1"># cat Dockerfile</span>
+<span class="c1">#base image</span>
+<span class="n">FROM</span> <span class="n">centos</span><span class="p">:</span><span class="mi">6</span>
+<span class="n">MAINTAINER</span> <span class="n">dot</span>
+
+<span class="n">VOLUME</span> <span class="o">/</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>挂载Web目录到/data，注意，对于宿主机路径，要写绝对路径：</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">dockerfile3</span><span class="p">]</span><span class="c1"># docker run -it --rm -v `pwd`/web:/data centos:volume bash</span>
+</pre></div>
+</div>
+<div class="section" id="id14">
+<h3><a class="toc-backref" href="#id34">Dockerfile示例</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span>
+
+<span class="n">RUN</span> <span class="n">mkdir</span> <span class="o">/</span><span class="n">kubespray</span>
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">kubespray</span>
+<span class="n">RUN</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">-</span><span class="n">y</span> <span class="o">&amp;&amp;</span> \
+    <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> \
+    <span class="n">libssl</span><span class="o">-</span><span class="n">dev</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span> <span class="n">sshpass</span> <span class="n">apt</span><span class="o">-</span><span class="n">transport</span><span class="o">-</span><span class="n">https</span> <span class="n">jq</span> <span class="n">moreutils</span> \
+    <span class="n">ca</span><span class="o">-</span><span class="n">certificates</span> <span class="n">curl</span> <span class="n">gnupg2</span> <span class="n">software</span><span class="o">-</span><span class="n">properties</span><span class="o">-</span><span class="n">common</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">rsync</span>
+<span class="n">RUN</span>  <span class="n">curl</span> <span class="o">-</span><span class="n">fsSL</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">docker</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">linux</span><span class="o">/</span><span class="n">ubuntu</span><span class="o">/</span><span class="n">gpg</span> <span class="o">|</span> <span class="n">apt</span><span class="o">-</span><span class="n">key</span> <span class="n">add</span> <span class="o">-</span> <span class="o">&amp;&amp;</span> \
+     <span class="n">add</span><span class="o">-</span><span class="n">apt</span><span class="o">-</span><span class="n">repository</span> \
+     <span class="s2">&quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu </span><span class="se">\</span>
+<span class="s2">     $(lsb_release -cs) </span><span class="se">\</span>
+<span class="s2">     stable&quot;</span> \
+     <span class="o">&amp;&amp;</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">-</span><span class="n">y</span> <span class="o">&amp;&amp;</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">docker</span><span class="o">-</span><span class="n">ce</span> <span class="o">-</span><span class="n">y</span>
+<span class="n">COPY</span> <span class="o">.</span> <span class="o">.</span>
+<span class="n">RUN</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">pip</span> <span class="o">-</span><span class="n">U</span> <span class="o">&amp;&amp;</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">tests</span><span class="o">/</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span> <span class="o">&amp;&amp;</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span> <span class="o">&amp;&amp;</span> <span class="n">update</span><span class="o">-</span><span class="n">alternatives</span> <span class="o">--</span><span class="n">install</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span> <span class="n">python</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python3</span> <span class="mi">1</span>
+<span class="n">RUN</span> <span class="n">curl</span> <span class="o">-</span><span class="n">LO</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">storage</span><span class="o">.</span><span class="n">googleapis</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">-</span><span class="n">release</span><span class="o">/</span><span class="n">release</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mf">17.5</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">linux</span><span class="o">/</span><span class="n">amd64</span><span class="o">/</span><span class="n">kubectl</span> \
+    <span class="o">&amp;&amp;</span> <span class="n">chmod</span> <span class="n">a</span><span class="o">+</span><span class="n">x</span> <span class="n">kubectl</span> <span class="o">&amp;&amp;</span> <span class="n">cp</span> <span class="n">kubectl</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">kubectl</span>
+
+<span class="c1"># Some tools like yamllint need this</span>
+<span class="n">ENV</span> <span class="n">LANG</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="04.Kubernetes基础.html" class="btn btn-neutral float-right" title="Kubernetes基础" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="02.Kubespray部署k8s.html" class="btn btn-neutral float-left" title="Kubespray部署k8s" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

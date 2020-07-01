@@ -1,0 +1,737 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>操作Docker容器 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: ''
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="next" title="访问Docker仓库" href="04.访问Docker仓库.html" />
+    <link rel="prev" title="Docker镜像的使用" href="02.Docker镜像的使用.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">01.Docker技术入门与实战-第3版</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.初识Docker与容器.html">初识Docker与容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Docker镜像的使用.html">Docker镜像的使用</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">操作Docker容器</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">容器的常见操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">查看容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">查看容器日志</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">启动容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">新建并启动容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">查看容器进程</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">查看容器信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">终止容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">进入容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">容器内执行命令</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pause-unpause">pause/unpause(暂停/恢复)容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">删除容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">导入和导出容器</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id13">1.导出容器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14">2.导入容器</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cpublock-io">限制容器对内存、CPU、Block IO的使用</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="04.访问Docker仓库.html">访问Docker仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.搭建本地私有仓库.html">搭建本地私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06.Docker数据管理.html">Docker数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.Docker使用网络.html">Docker使用网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.使用Dockerfile创建镜像.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">操作系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#ssh">为镜像添加SSH服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#web">Web服务与应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id25">数据库应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id55">分布式处理与大数据平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id73">编程开发</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id96">容器与云服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id113">容器实战思考</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Docker核心实现技术.html">Docker核心实现技术</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.配置私有仓库.html">配置私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.安全防护与配置.html">安全防护与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.高级网络功能.html">高级网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.libnetwork插件化网络功能.html">libnetwork插件化网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.Etcd——高可用的键值数据库.html">Etcd——高可用的键值数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16.Docker三剑客之Docker-Compose.html">Docker三剑客之Docker-Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17.Docker三剑客之Docker-Swarm.html">Docker三剑客之Docker-Swarm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18.Docker三剑客之Docker-Machine.html">Docker三剑客之Docker-Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19.SwarmKit集群解决方案.html">SwarmKit集群解决方案</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.搭建一个Web应用栈.html">搭建一个Web应用栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="21.Docker高级网络实战.html">Docker高级网络实战</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22.服务发现.html">服务发现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="23.Mesos——优秀的集群资源调度平台.html">Mesos——优秀的集群资源调度平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24.Kubernetes——生产级容器集群平台.html">Kubernetes——生产级容器集群平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25.其他相关项目.html">其他相关项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26.附录.html">附录</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../02.再也不采坑的Kubernetes实战指南/index.html">02.再也不采坑的Kubernetes实战指南</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">01.Docker技术入门与实战-第3版</a> &raquo;</li>
+        
+      <li>操作Docker容器</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/01.Docker技术入门与实战-3版/03.操作Docker容器.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#docker" id="id15">操作Docker容器</a><ul>
+<li><a class="reference internal" href="#id1" id="id16">容器的常见操作</a></li>
+<li><a class="reference internal" href="#id2" id="id17">查看容器</a></li>
+<li><a class="reference internal" href="#id3" id="id18">查看容器日志</a></li>
+<li><a class="reference internal" href="#id4" id="id19">启动容器</a></li>
+<li><a class="reference internal" href="#id5" id="id20">新建并启动容器</a></li>
+<li><a class="reference internal" href="#id6" id="id21">查看容器进程</a></li>
+<li><a class="reference internal" href="#id7" id="id22">查看容器信息</a></li>
+<li><a class="reference internal" href="#id8" id="id23">终止容器</a></li>
+<li><a class="reference internal" href="#id9" id="id24">进入容器</a></li>
+<li><a class="reference internal" href="#id10" id="id25">容器内执行命令</a></li>
+<li><a class="reference internal" href="#pause-unpause" id="id26">pause/unpause(暂停/恢复)容器</a></li>
+<li><a class="reference internal" href="#id11" id="id27">删除容器</a></li>
+<li><a class="reference internal" href="#id12" id="id28">导入和导出容器</a><ul>
+<li><a class="reference internal" href="#id13" id="id29">1.导出容器</a></li>
+<li><a class="reference internal" href="#id14" id="id30">2.导入容器</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cpublock-io" id="id31">限制容器对内存、CPU、Block IO的使用</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="docker">
+<h1><a class="toc-backref" href="#id15">操作Docker容器</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h1>
+<p>容器
+是Docker的另一个核心概念。简单来说，容器是镜像的一个运行实例。所不同的是，镜像是静态的只读文件，而容器带有运行时需要的可写文件层，同时，容器中的应用进程处于运行状态。</p>
+<p>如果认为虚拟机是模拟运行的一整套操作系统（包括内核、应用运行态环境和其他系统环境）和跑在上面的应用。那么Docker容器就是独立运行的一个（或一组）应用，以及它们必需的运行环境。</p>
+<div class="section" id="id1">
+<h2><a class="toc-backref" href="#id16">容器的常见操作</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>下面是容器的常用操作命令：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>create      创建容器
+run         运行容器
+pause       暂停容器
+unpause     取消暂停继续运行容器
+stop        发送 SIGTERM 停止容器
+kill        发送 SIGKILL 快速停止容器
+start       启动容器
+restart     重启容器
+attach      attach 到容器启动进程的终端
+exec        在容器中启动新进程，通常使用 &quot;-it&quot; 参数
+logs        显示容器启动进程的控制台输出，用 &quot;-f&quot; 持续打印
+rm          从磁盘中删除容器
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">​</div>
+<div class="line">## 创建容器</div>
+</div>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>1.新建一个停止状态的容器
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker create -it ubuntu:latest
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker ps  -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                    PORTS               NAMES
+f13492a1cba7        ubuntu:latest       &quot;/bin/bash&quot;         26 seconds ago      Created                                       infallible_lamarr
+
+2.创建一个交互型容器
+docker run -it --name=hu_ubuntu ubuntu /bin/bash
+
+
+3.创建一个后台型容器，使用-d参数。
+sudo docker run --name hu_demo_ubuntu -d ubuntu /bin/bash -c &quot;while true; do echo hello world; sleep 1; done&quot;
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id17">查看容器</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>1.docker ps 命令，可以查看当前运行的容器
+[root@hujianli-docker01 centos]# docker ps
+CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS               NAMES
+7fd009ee1f86        ubuntu                &quot;/bin/bash -c &#39;while…&quot;   11 minutes ago      Up 11 minutes                           hu_demo_ubuntu
+e1e8c619585a        quay.io/coreos/etcd   &quot;/usr/local/bin/etcd…&quot;   20 hours ago        Up 20 hours                             etcd
+
+
+2.Docker列出所有容器，包括运行的和停止的容器
+docker ps -a
+
+
+3.Docker只列出最后创建的容器
+docker ps -l
+
+4.使用 -n=x 选项，此时会列出最后创建的x个容器
+docker ps -n=2
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id18">查看容器日志</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@hujianli</span><span class="o">-</span><span class="n">docker01</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker logs -f hu_demo_ubuntu</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="n">hello</span> <span class="n">world</span>
+
+
+<span class="c1"># --tail 标志可以精确控制 logs 输出的日志行数。例如，查看最后5行日志</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@hujianli</span><span class="o">-</span><span class="n">docker01</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker logs -f --tail=5 hu_demo_ubuntu</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="n">hello</span> <span class="n">world</span>
+
+
+<span class="c1">#可以通过 -t 标志查看日志产生的时刻</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@hujianli</span><span class="o">-</span><span class="n">docker01</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker logs -f --tail=5 -t hu_demo_ubuntu</span>
+<span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">05</span><span class="n">T02</span><span class="p">:</span><span class="mi">48</span><span class="p">:</span><span class="mf">53.092986363</span><span class="n">Z</span> <span class="n">hello</span> <span class="n">world</span>
+<span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">05</span><span class="n">T02</span><span class="p">:</span><span class="mi">48</span><span class="p">:</span><span class="mf">54.095842349</span><span class="n">Z</span> <span class="n">hello</span> <span class="n">world</span>
+<span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">05</span><span class="n">T02</span><span class="p">:</span><span class="mi">48</span><span class="p">:</span><span class="mf">55.098757187</span><span class="n">Z</span> <span class="n">hello</span> <span class="n">world</span>
+<span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">05</span><span class="n">T02</span><span class="p">:</span><span class="mi">48</span><span class="p">:</span><span class="mf">56.100865840</span><span class="n">Z</span> <span class="n">hello</span> <span class="n">world</span>
+<span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">05</span><span class="n">T02</span><span class="p">:</span><span class="mi">48</span><span class="p">:</span><span class="mf">57.104798046</span><span class="n">Z</span> <span class="n">hello</span> <span class="n">world</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id19">启动容器</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="mf">1.</span><span class="n">通过容器id启动</span>
+<span class="n">docker</span> <span class="n">start</span> <span class="mi">3</span><span class="n">d5e4ad6455f</span>
+
+
+<span class="mf">2.</span><span class="n">通过容器名称启动</span>
+<span class="n">sudo</span> <span class="n">docker</span> <span class="n">start</span> <span class="n">inspect_shell</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker ps</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>             <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>               <span class="n">NAMES</span>
+<span class="mi">3</span><span class="n">d5e4ad6455f</span>        <span class="n">ubuntu</span><span class="p">:</span><span class="mf">14.04</span>        <span class="s2">&quot;/bin/bash&quot;</span>         <span class="mi">18</span> <span class="n">hours</span> <span class="n">ago</span>        <span class="n">Up</span> <span class="mi">3</span> <span class="n">seconds</span>                            <span class="n">wonderful_wozniak</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2><a class="toc-backref" href="#id20">新建并启动容器</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker run ubuntu /bin/echo &quot;hello world&quot;</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="c1"># 当利用docker run来创建并启动容器时，Docker在后台运行的标准操作包括： ·检查本地是否存在指定的镜像，不存在就从公有仓库下载；</span>
+
+
+<span class="c1"># 启动一个bash终端，允许用户进行交互：</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker run -it ubuntu:14.04 /bin/bash</span>
+<span class="n">root</span><span class="nd">@22c6b5a012b0</span><span class="p">:</span><span class="o">/</span><span class="c1">#</span>
+
+<span class="c1">#，-t选项让Docker分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上，-i则让容器的标准输入保持打开。</span>
+
+
+<span class="n">守护态运行</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker run -d ubuntu:14.04 /bin/sh -c &quot;while true;do echo hello world;sleep 1;done&quot;</span>
+<span class="n">ca08bd323aecdc48e76918dd66d5e37362add12e81d43e185debc65ca4083f7b</span>
+
+<span class="c1">#获取容器的输出信息，可以使用docker logs命令</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker logs ca08</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="n">hello</span> <span class="n">world</span>
+<span class="n">hello</span> <span class="n">world</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h2><a class="toc-backref" href="#id21">查看容器进程</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>[root@hujianli-docker01 centos]# docker top hu_demo_ubuntu
+UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
+root                23951               23935               0                   02:31               ?                   00:00:00            /bin
+/bash -c while true; do echo hello world; sleep 1; doneroot                25679               23951               0                   02:49               ?                   00:00:00            slee
+p 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="id7">
+<h2><a class="toc-backref" href="#id22">查看容器信息</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="c1"># 查看容器的配置信息，（容器名称、环境变量、运行命令、主机配置、数据卷......配置）</span>
+<span class="n">docker</span> <span class="n">inspect</span> <span class="n">hu_demo_ubuntu</span>
+
+
+<span class="c1"># --format 格式化标志，可以查看指定部分的信息</span>
+<span class="c1">#查看容器的运行状态</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@hujianli</span><span class="o">-</span><span class="n">docker01</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker inspect --format=&#39;{{ .State.Running }}&#39; hu_demo_ubuntu</span>
+<span class="n">true</span>
+
+<span class="c1">#查看状态值</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@hujianli</span><span class="o">-</span><span class="n">docker01</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker inspect --format=&#39;{{ .State.Status }}&#39; hu_demo_ubuntu</span>
+<span class="n">running</span>
+
+<span class="c1"># 查看容器的IP地址</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@hujianli</span><span class="o">-</span><span class="n">docker01</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker inspect --format=&#39;{{ .NetworkSettings.IPAddress }}&#39; hu_demo_ubuntu</span>
+<span class="mf">172.17</span><span class="o">.</span><span class="mf">0.2</span>
+
+<span class="c1">#查看容器的镜像类型</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@hujianli</span><span class="o">-</span><span class="n">docker01</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker inspect --format=&#39;{{ .Config.Image }}&#39; hu_demo_ubuntu</span>
+<span class="n">ubuntu</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h2><a class="toc-backref" href="#id23">终止容器</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="c1">#首先向容器发送SIGTERM信号，等待一段超时时间（默认为10秒）后，再发送SIGKILL信号来终止容器：</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker ps</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>                  <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>               <span class="n">NAMES</span>
+<span class="n">ca08bd323aec</span>        <span class="n">ubuntu</span><span class="p">:</span><span class="mf">14.04</span>        <span class="s2">&quot;/bin/sh -c &#39;while...&quot;</span>   <span class="mi">2</span> <span class="n">minutes</span> <span class="n">ago</span>       <span class="n">Up</span> <span class="mi">2</span> <span class="n">minutes</span>                            <span class="n">festive_nobel</span>
+<span class="mi">3</span><span class="n">d5e4ad6455f</span>        <span class="n">ubuntu</span><span class="p">:</span><span class="mf">14.04</span>        <span class="s2">&quot;/bin/bash&quot;</span>              <span class="mi">18</span> <span class="n">hours</span> <span class="n">ago</span>        <span class="n">Up</span> <span class="mi">7</span> <span class="n">minutes</span>                            <span class="n">wonderful_wozniak</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker stop ca08</span>
+<span class="n">ca08</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker ps</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>             <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>               <span class="n">NAMES</span>
+<span class="mi">3</span><span class="n">d5e4ad6455f</span>        <span class="n">ubuntu</span><span class="p">:</span><span class="mf">14.04</span>        <span class="s2">&quot;/bin/bash&quot;</span>         <span class="mi">18</span> <span class="n">hours</span> <span class="n">ago</span>        <span class="n">Up</span> <span class="mi">7</span> <span class="n">minutes</span>                            <span class="n">wonderful_wozniak</span>
+
+
+<span class="c1"># docker kill命令会直接发送SIGKILL信号来强行终止容器。</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker kill 3d5e</span>
+<span class="mi">3</span><span class="n">d5e</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker ps</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>             <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>               <span class="n">NAMES</span>
+
+
+
+<span class="c1">#可以用docker ps-qa命令看到所有容器的ID</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker ps -qa</span>
+<span class="mi">22</span><span class="n">c6b5a012b0</span>
+<span class="n">bdbdb0d56db9</span>
+<span class="mi">9339393</span><span class="n">ce470</span>
+<span class="n">f13492a1cba7</span>
+<span class="mi">3</span><span class="n">d5e4ad6455f</span>
+
+
+<span class="c1">#可以使用docker start命令来重新启动</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker start 2c53</span>
+
+
+<span class="c1"># docker restart命令会将一个运行态的容器先终止，然后再重新启动它：</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker restart 22c6b5a012b0</span>
+<span class="mi">22</span><span class="n">c6b5a012b0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id9">
+<h2><a class="toc-backref" href="#id24">进入容器</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>1.
+# 用attach命令有时候并不方便。当多个窗口同时用attach命令连到同一个容器的时候，所有窗口都会同步显示。当某个窗口因命令阻塞时，其他窗口也无法执行操作了
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+22c6b5a012b0        ubuntu:14.04        &quot;/bin/bash&quot;         10 minutes ago      Up 57 seconds                           dazzling_dijkstra
+
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker attach 22c6
+root@22c6b5a012b0:/#
+
+
+
+
+
+2.
+# Docker从1.3.0版本起提供了一个更加方便的exec命令，可以在容器内直接执行任意命令。
+
+#进入到刚创建的容器中，并启动一个bash：
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker exec -it 22c6b5a012b0 /bin/bash
+root@22c6b5a012b0:/#
+
+# 执行以下命令，启动一个busybox镜像容器
+docker run -itd busybox /bin/bash   #下载镜像
+docker exec -it b47 /bin/bash       # 进入镜像容器
+
+busybox：是一个mini版本的linux，有linux的所有命令行工具
+
+3.nsenter工具(不常用)
+cd /tmp; curl https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz | tar -zxf -; cd util-linux-2.24;
+./configure --without-ncurses
+make nsenter &amp;&amp; cp nsenter /usr/local/bin
+
+# 使用nsenter连接到容器，先找到容器进程的PID，通过下面的命令获取
+[root@iZ2ze38chylj63vuj6fqiaZ util-linux-2.24]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+22c6b5a012b0        ubuntu:14.04        &quot;/bin/bash&quot;         31 minutes ago      Up 18 minutes                           dazzling_dijkstra
+
+[root@iZ2ze38chylj63vuj6fqiaZ util-linux-2.24]# docker inspect -f {{.State.Pid}} 22c6b5a012b0
+6450
+
+
+# PID=$(docker inspect --format &quot;{{ .State.Pid }}&quot; &lt;container&gt;)
+
+[root@iZ2ze38chylj63vuj6fqiaZ util-linux-2.24]# nsenter --target 6450 --mount --uts --ipc --net --pid
+root@22c6b5a012b0:/#
+
+
+#如果只是为了查看启动命令的输出，可以使用 docker logs 命令：
+
+
+
+attach VS exec
+
+attach 与 exec 主要区别如下:
+attach 直接进入容器 启动命令 的终端，不会启动新的进程。
+exec 则是在容器中打开新的终端，并且可以启动新的进程。
+如果想直接在终端中查看启动命令的输出，用 attach；其他情况使用 exec。
+</pre></div>
+</div>
+<p>退出容器，保持容器继续运行：</p>
+<p>ctrl-p和ctrl-q。 如果使用exit。退出容器时，容器会自动关闭。</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="c1">#运行远程机器上的容器</span>
+<span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">-</span><span class="n">h</span> <span class="n">test</span><span class="o">.</span><span class="n">up</span><span class="o">.</span><span class="n">com</span> <span class="n">daocloud</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">centos</span><span class="p">:</span><span class="mi">7</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id10">
+<h2><a class="toc-backref" href="#id25">容器内执行命令</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span># 交互型任务的例子
+[root@hujianli-docker01 centos]# docker exec -it 7fd009ee1f86 ps aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.0  18364  1584 ?        Ss   02:31   0:01 /bin/bash -c wh
+root      1617  0.0  0.0   4520   384 ?        S    02:58   0:00 sleep 1
+root      1618  0.0  0.0  34388  1472 pts/0    Rs+  02:58   0:00 ps aux
+
+# 后台型任务的例子：
+$ sudo docker exec -d daemon_dave touch /etc/new_config_file
+</pre></div>
+</div>
+</div>
+<div class="section" id="pause-unpause">
+<h2><a class="toc-backref" href="#id26">pause/unpause(暂停/恢复)容器</a><a class="headerlink" href="#pause-unpause" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker ps</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>                  <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>                  <span class="n">NAMES</span>
+<span class="mi">350</span><span class="n">a409c2eb2</span>        <span class="n">nginx</span>               <span class="s2">&quot;nginx -g &#39;daemon ...&quot;</span>   <span class="mi">4</span> <span class="n">seconds</span> <span class="n">ago</span>       <span class="n">Up</span> <span class="mi">3</span> <span class="n">seconds</span>        <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8080</span><span class="o">-&gt;</span><span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>   <span class="n">epic_meninsk</span>
+
+<span class="c1">#暂停工作，比如对文件系统打快照</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker pause 350a4</span>
+<span class="mi">350</span><span class="n">a4</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker ps</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>                  <span class="n">CREATED</span>             <span class="n">STATUS</span>                   <span class="n">PORTS</span>                  <span class="n">NAMES</span>
+<span class="mi">350</span><span class="n">a409c2eb2</span>        <span class="n">nginx</span>               <span class="s2">&quot;nginx -g &#39;daemon ...&quot;</span>   <span class="mi">26</span> <span class="n">seconds</span> <span class="n">ago</span>      <span class="n">Up</span> <span class="mi">25</span> <span class="n">seconds</span><span class="p">(</span><span class="n">Paused</span><span class="p">)</span>    <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8080</span><span class="o">-&gt;</span><span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>   <span class="n">epic_menins</span>
+
+
+<span class="c1"># 恢复容器运行</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker unpause 350a4</span>
+<span class="mi">350</span><span class="n">a4</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker ps</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>                  <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>                  <span class="n">NAMES</span>
+<span class="mi">350</span><span class="n">a409c2eb2</span>        <span class="n">nginx</span>               <span class="s2">&quot;nginx -g &#39;daemon ...&quot;</span>   <span class="mi">2</span> <span class="n">minutes</span> <span class="n">ago</span>       <span class="n">Up</span> <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span>   <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8080</span><span class="o">-&gt;</span><span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>   <span class="n">epic_menins</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h2><a class="toc-backref" href="#id27">删除容器</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>#默认情况下，docker rm命令只能删除处于终止或退出状态的容器，并不能删除还处于运行状态的容器
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                        PORTS               NAMES
+22c6b5a012b0        ubuntu:14.04        &quot;/bin/bash&quot;              35 minutes ago      Up 22 minutes                                     dazzling_dijkstra
+bdbdb0d56db9        ubuntu              &quot;/bin/echo &#39;hello ...&quot;   36 minutes ago      Exited (0) 36 minutes ago                         eloquent_swartz
+9339393ce470        ubuntu              &quot;/bin/bash echo &#39;h...&quot;   36 minutes ago      Exited (126) 36 minutes ago                       objective_blackwell
+f13492a1cba7        ubuntu:latest       &quot;/bin/bash&quot;              40 minutes ago      Created                                           infallible_lamarr
+3d5e4ad6455f        ubuntu:14.04        &quot;/bin/bash&quot;              19 hours ago        Exited (137) 29 minutes ago                       wonderful_wozniak
+
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker rm 3d5e4ad6455f
+3d5e4ad6455f
+
+# 如果要直接删除一个运行中的容器，可以添加-f参数
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker run -d ubuntu:14.04 /bin/sh -c &quot;while true;do echo hello world;sleep 1;done&quot;
+d8f004f4573f9703d3734d3f0096ff5ba209f0b16e9c7b5d6b528b166acd9b66
+
+
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker rm d8f00
+Error response from daemon: You cannot remove a running container d8f004f4573f9703d3734d3f0096ff5ba209f0b16e9c7b5d6b528b166acd9b66. Stop the container before attempting removal
+
+or use -f[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker rm -f  d8f00
+d8f00
+
+
+# 同时删除后台多个容器
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker rm $(docker ps -qa)
+bdbdb0d56db9
+9339393ce470
+
+或者：
+#docker rm 一次可以指定多个容器，如果希望批量删除所有已经退出的容器，可以执行如下命令：
+
+## 根据格式删除所有容器，容器的状态为停止的
+docker rm -v $(docker ps -aq -f status=exited)
+# 使用awk实现
+docker rm $(docker ps -a|awk &#39;/Exited/{print $1}&#39;)
+
+#或者批量清理临时镜像文件
+docker rmi $(docker images -q -f dangling=true)
+
+#批量删除运行中的容器
+docker rm -f $(docker ps|grep -v &quot;CONTAINER&quot;|awk &#39;{print $1}&#39;)
+</pre></div>
+</div>
+</div>
+<div class="section" id="id12">
+<h2><a class="toc-backref" href="#id28">导入和导出容器</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id13">
+<h3><a class="toc-backref" href="#id29">1.导出容器</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                        PORTS               NAMES
+22c6b5a012b0        ubuntu:14.04        &quot;/bin/bash&quot;              40 minutes ago      Up 26 minutes                                     dazzling_dijkstra
+bdbdb0d56db9        ubuntu              &quot;/bin/echo &#39;hello ...&quot;   41 minutes ago      Exited (0) 41 minutes ago                         eloquent_swartz
+9339393ce470        ubuntu              &quot;/bin/bash echo &#39;h...&quot;   41 minutes ago      Exited (126) 41 minutes ago                       objective_blackwell
+f13492a1cba7        ubuntu:latest       &quot;/bin/bash&quot;              45 minutes ago      Created                                           infallible_lamarr
+
+#分别导出容器f13492a1cba7和容器22c6b5a012b0 到文件test_for_ubuntu:latest和文件test_for_run_ubuntu.tar
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker export -o test_for_ubuntu:latest f13492
+[root@iZ2ze38chylj63vuj6fqiaZ ~]# docker export 22c6b &gt; test_for_run_ubuntu.tar
+之后，可将导出的tar文件传输到其他机器上，然后再通过导入命令导入到系统中，从而实现容器的迁移。
+</pre></div>
+</div>
+</div>
+<div class="section" id="id14">
+<h3><a class="toc-backref" href="#id30">2.导入容器</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker ps -a</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>                  <span class="n">CREATED</span>             <span class="n">STATUS</span>                        <span class="n">PORTS</span>               <span class="n">NAMES</span>
+<span class="n">bdbdb0d56db9</span>        <span class="n">ubuntu</span>              <span class="s2">&quot;/bin/echo &#39;hello ...&quot;</span>   <span class="mi">48</span> <span class="n">minutes</span> <span class="n">ago</span>      <span class="n">Exited</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="mi">48</span> <span class="n">minutes</span> <span class="n">ago</span>                         <span class="n">eloquent_swartz</span>
+<span class="mi">9339393</span><span class="n">ce470</span>        <span class="n">ubuntu</span>              <span class="s2">&quot;/bin/bash echo &#39;h...&quot;</span>   <span class="mi">49</span> <span class="n">minutes</span> <span class="n">ago</span>      <span class="n">Exited</span> <span class="p">(</span><span class="mi">126</span><span class="p">)</span> <span class="mi">49</span> <span class="n">minutes</span> <span class="n">ago</span>                       <span class="n">objective_blackwell</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker import test_for_ubuntu\:latest  test_hu/ubuntu:14.04</span>
+<span class="n">sha256</span><span class="p">:</span><span class="n">d8a336bc07fd1b05266710a5d93f05d6a08dae99d0ae5afa1498ad9a78325191</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker import test_for_run_ubuntu.tar run_hu/ubuntu:14.04</span>
+<span class="n">sha256</span><span class="p">:</span><span class="n">a7c21f91b4afe37b48a1abc1b15ce2cd7b5c759367579b0837a4c6f64332a65f</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker images</span>
+<span class="n">REPOSITORY</span>                         <span class="n">TAG</span>                 <span class="n">IMAGE</span> <span class="n">ID</span>            <span class="n">CREATED</span>             <span class="n">SIZE</span>
+<span class="n">run_hu</span><span class="o">/</span><span class="n">ubuntu</span>                      <span class="mf">14.04</span>               <span class="n">a7c21f91b4af</span>        <span class="mi">4</span> <span class="n">seconds</span> <span class="n">ago</span>       <span class="mi">175</span> <span class="n">MB</span>
+<span class="n">test_hu</span><span class="o">/</span><span class="n">ubuntu</span>                     <span class="mf">14.04</span>               <span class="n">d8a336bc07fd</span>        <span class="mi">11</span> <span class="n">seconds</span> <span class="n">ago</span>      <span class="mf">69.9</span> <span class="n">MB</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="cpublock-io">
+<h2><a class="toc-backref" href="#id31">限制容器对内存、CPU、Block IO的使用</a><a class="headerlink" href="#cpublock-io" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>#内存
+
+docker run -m 200M --memory-swap=300M ubuntu
+其含义是允许该容器最多使用 200M 的内存和 100M 的 swap。默认情况下，上面两组参数为 -1，即对容器内存和 swap 的使用没有限制
+
+
+docker run -it -m 200M --memory-swap=300M progrium/stress --vm 1 --vm-bytes 280M
+--vm 1：启动 1 个内存工作线程。
+--vm-bytes 280M：每个线程分配 280M 内存。
+
+#####如果在启动容器时只指定 -m 而不指定 --memory-swap，那么 --memory-swap 默认为 -m 的两倍，比如：
+docker run -it -m 200M ubuntu
+容器最多使用 200M 物理内存和 200M swap。
+
+
+#CPU
+
+比如在 host 中启动了两个容器：
+docker run --name &quot;container_A&quot; -c 1024 ubuntu
+docker run --name &quot;container_B&quot; -c 512 ubuntu
+container_A 的 cpu share 1024，是 container_B 的两倍。当两个容器都需要 CPU 资源时，container_A 可以得到的 CPU 是 container_B 的两倍
+
+
+# Block IO
+docker run -it --name container_A --blkio-weight 600 ubuntu
+docker run -it --name container_B --blkio-weight 300 ubuntu
+限制 bps 和 iops
+bps 是 byte per second，每秒读写的数据量。
+iops 是 io per second，每秒 IO 的次数。
+
+可通过以下参数控制容器的 bps 和 iops：
+--device-read-bps，限制读某个设备的 bps。
+--device-write-bps，限制写某个设备的 bps。
+--device-read-iops，限制读某个设备的 iops。
+--device-write-iops，限制写某个设备的 iops。
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="04.访问Docker仓库.html" class="btn btn-neutral float-right" title="访问Docker仓库" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="02.Docker镜像的使用.html" class="btn btn-neutral float-left" title="Docker镜像的使用" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

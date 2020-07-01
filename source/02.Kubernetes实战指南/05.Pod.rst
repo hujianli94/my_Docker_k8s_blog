@@ -1,0 +1,358 @@
+.. contents::
+   :depth: 3
+..
+
+Pod
+===
+
+Pod是Kubernetes的基本操作单元，也是应用运行的载体。整个Kubernetes系统都是围绕着Pod展开的，比如如何部署运行Pod、如何保证Pod的可靠性、如何访问Pod等。另外，Pod是一个或多个相关容器的集合，这可以说是一大创新点，提供了一种容器组合的模型，当然也使得在Pod的操作和生命周期管理上稍有不同。
+
+国际惯例的Hello World
+---------------------
+
+hello-world-pod.yaml
+
+.. code:: yaml
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: hello-world
+   spec:
+     restartPolicy: OnFailure
+     containers:
+     - name: hello
+       image: "ubuntu:14.04"
+       command: ["/bin/echo","Hello","World"]
+
+.. code:: shell
+
+   $ kubectl create -f hello-world-pod.yaml
+
+
+   $ kubectl get pod hello-world
+   NAME          READY   STATUS      RESTARTS   AGE
+   hello-world   0/1     Completed   0          6m51s
+
+   $ kubectl logs hello-world 
+   Hello World 
+
+
+   #最后删除Hello World Pod：
+   $ kubectl delete pod hello-world 
+   pod "hello-world" deleted 
+
+Pod的基本操作
+-------------
+
+创建Pod
+~~~~~~~
+
+如果Pod的定义存在错误，kubectl
+create会打印错误信息，现有一个Pod的错误定义文件error-pod.yaml：
+
+.. code:: yaml
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: hello-world
+   spec:
+     restartPolicy: Mybe
+     containers:
+     - name: hello
+       image: "ubuntu:14.04"
+       command: ["/bin/echo","Hello","World"]
+
+创建失败时，查看提示的信息
+
+.. code:: shell
+
+   $ kubectl create -f error-pod.yaml 
+   The Pod "hello-world" is invalid: spec.restartPolicy: Unsupported value: "Mybe": supported values: "Always", "OnFailure", "Never"
+
+查询Pod
+~~~~~~~
+
+最常用的查询命令就是kubectl
+get，可以查询一个或者多个Pod的信息，现在查询指定Pod：
+
+.. code:: shell
+
+   $ kubectl get pod my-pod 
+   NAME      READY     STATUS    RESTARTS   AGE 
+   my-pod    1/1       Running   0            10s 
+   查询显示的字段含义如下所示。
+
+   • NAME：Pod的名称。
+   • READY：Pod的准备状况，右边的数字表示Pod包含的容器总数目，左边的数字表示准备就绪的容器数目。
+   • STATUS：Pod的状态。
+   • RESTARTS：Pod的重启次数。
+   • AGE：Pod的运行时间。
+
+默认情况下，kubectl
+get只是显示Pod的简要信息，以下方式可用于获取Pod的完整信息：
+
+.. code:: shell
+
+   $ kubectl get pod my-pod --output json  #用JSON格式显示Pod的完整信息 
+   $ kubectl get pod my-pod --output yaml  #用YAML方式显示Pod的完整信息 
+
+另外，kubectl get支持以Go
+Template方式过滤出指定的信息，比如查询Pod的运行状态：
+
+.. code:: shell
+
+   $ kubectl get pods my-pod --output=go-template --template={{.status.phase}} 
+   Succeeded
+
+查看pod的状态和生命周期事件
+
+::
+
+   kubectl descrobe pod hello-world
+
+删除Pod
+~~~~~~~
+
+.. code:: shell
+
+   # 通过kubernetes delete命令删除Pod
+   $ kubectl delete pod hello-world
+
+
+   # kubernetes delete命令批量删除全部Pod
+   $ kubectl delete pod --all
+
+更新Pod
+~~~~~~~
+
+.. code:: yaml
+
+   # Pod在创建之后，进行更新，修改Pod的定义文件后执行
+   $ kubectl replace -f hello-world-pod.yaml --force
+
+Pod与容器
+---------
+
+镜像
+~~~~
+
+运行容器必须先指定镜像，镜像的名称则遵循Docker的命名规范。运行容器前需要本地存在对应的镜像，如果镜像不存在，会从Docker镜像仓库下载。Kubernetes中可以选择镜像的下载策略，支持的策略如下。
+
+::
+
+   • Always：每次都下载最新的镜像。
+
+   • Never：只使用本地镜像，从不下载。
+
+   • IfNotPresent：只有当本地没有的时候才下载镜像。
+
+示例：
+
+.. code:: yaml
+
+      name: hello 
+      image: "ubuntu:14.04" 
+      imagePullPolicy: Always
+
+​ kubernetes用来进行Docker私有镜像仓库的认证：
+
+1. 一种方法是在所有的Node上手工操作docker login [registry]进行登录认证；
+2. 另一种方法是在Pod中添加Image Pull Secret用于认证
+
+启动命令
+~~~~~~~~
+
+启动命令用来说明容器是如何运行的，在Pod的定义中可以设置容器启动命令和参数。
+
+.. code:: yaml
+
+   apiVersion: v1 
+   kind: Pod 
+   metadata: 
+     name: hello-world 
+   spec:   
+     restartPolicy: Never 
+     containers: 
+     - name: hello 
+       image: "ubuntu:14.04" 
+       command: ["/bin/echo","Hello","World"] 
+
+另外，容器的启动命令也可以配置为:
+
+.. code:: yaml
+
+       command: ["/bin/echo"] 
+       args: ["Hello","World"]
+
+环境变量
+~~~~~~~~
+
+在一些场景下，Pod中的容器希望获取本身的信息，比如Pod的名称、Pod所在的Namespace等。在Kubernetes中提供了Downward
+API获取这些信息，并且可以通过环境变量告诉容器目前支持的信息。
+
+现在创建一个Pod并通过环境变量来获取Downward
+API，Pod的定义文件downwardapi- env.yaml：
+
+.. code:: yaml
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: downwardapi-env
+   spec:
+     containers:
+     - name: test-containers
+       image: "ubuntu:14.04"
+       imagePullPolicy: Always
+       command: ["/bin/bash","-c","while true;do sleep 5;done"]
+       env:
+         - name: MY_POD_NAME
+           valueFrom:
+             fieldRef:
+               fieldPath: metadata.name
+         - name: MY_POD_NAMESPACE
+           valueFrom:
+             fieldRef:
+               fieldPath: metadata.namespace
+         - name: MY_POD_IP
+           valueFrom:
+             fieldRef:
+               fieldPath: status.podIP
+
+.. code:: shell
+
+   $ kubectl create -f downwardapi-env.yaml 
+   pod/downwardapi-env created
+
+Pod创建运行后，查询Pod的输出，过滤出配置的3个环境变量：
+
+.. code:: shell
+
+   $ kubectl exec downwardapi-env env|grep MY_POD 
+   kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl kubectl exec [POD] -- [COMMAND] instead.
+   MY_POD_NAME=downwardapi-env
+   MY_POD_NAMESPACE=default
+   MY_POD_IP=10.244.2.10
+
+端口
+~~~~
+
+在使用docker
+run运行容器的时候往往通过–publish/-p参数设置端口映射规则，同样的，可以在Pod的定义中设置容器的端口映射规则，比如下面这个Pod的设置容器nginx的端口映射规则为0.0.0.0:80->80/TCP：
+
+nginx.yaml
+
+.. code:: yaml
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: my-nginx
+
+   spec:
+     restartPolicy: OnFailure
+     containers:
+     - name: nginx
+       image: nginx
+       ports:
+       - name: web
+         containerPort: 80
+         protocol: TCP
+         hostIP: 0.0.0.0
+         hostPort: 80
+
+使用宿主机端口需要考虑端口冲突问题，幸运的是，Kubernetes在调度Pod的时候，会检查宿主机端口是否冲突。比如两个Pod都需要使用宿主机端口80，那么调度的时候就会将这两个Pod调度到不同Node上。不过，如果所有Node的端口都被占用了，那么Pod调度会失败。
+
+数据持久化和共享
+~~~~~~~~~~~~~~~~
+
+容器是临时存在的，如果容器被销毁，容器中的数据将会丢失。为了能够持久化数据以及共享容器间的数据，Docker提出了数据卷（Volume）的概念。简单来说，数据卷就是目录或者文件，它可以绕过默认的联合文件系统，而以正常的文件或者目录的形式存在于宿主机上。
+
+在使用docker
+run运行容器的时候，我们经常使用参数–volume/-v创建数据卷，即将宿主机上的目录或者文件挂载到容器中。即使容器被销毁，数据卷中的数据仍然保存在宿主机上。
+
+一方面，在Kubernetes中对Docker数据卷进行了扩展，支持对接第三方存储系统。另一方面，Kubernetes中的数据卷是Pod级别的，Pod中的容器可以访问共同的数据卷，实现容器间的数据共享。
+
+在Pod中声明创建数据卷，Pod中的两个容器将共享数据卷，容器write写入数据，容器hello读出数据，Hello
+World Pod的定义文件hello-world-pod.yaml：
+
+.. code:: yaml
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: hello-world-wr
+
+   spec:
+     restartPolicy: Never
+     containers:
+     - name: write
+       image: "ubuntu:14.04"
+       command: ["bash","-c","echo \"Hello World\" >> /data/hello"]
+       volumeMounts:
+         - name: data
+           mountPath: /data
+     - name: hello
+       image: "ubuntu:14.04"
+       command: ["bash","-c","sleep 2; cat /data/hello"]
+       volumeMounts:
+         - name: data
+           mountPath: /data
+     volumes:
+       - name: data
+         hostPath:
+           path: /tmp
+
+.. code:: shell
+
+   $ kubectl create -f Hello-world-pod.yaml 
+   pod/hello-world-wr created
+
+   $ kubectl logs hello-world-wr hello
+   Hello World
+
+Pod的网络
+~~~~~~~~~
+
+.. code:: shell
+
+   # 在Pod运行后，查询Pod的PodIP
+   $ kubectl get pod redis-master-trlnk --template={{.status.podIP}}
+   192.168.1.92
+
+   $ kubectl get pod redis-slave-m2jfs --template={{.status.podIP}}
+   192.168.2.78
+
+可以设置Pod为Host网络模式，即直接使用宿主机的网络，不进行网络虚拟化隔离。这样一来，Pod中的所有容器就直接暴露在宿主机的网络环境中，这时候，Pod的PodIP就是其所在Node的IP。
+
+下面定义的Pod设置为Host网络模式（.spec.hostNetwork=true）：
+
+.. code:: yaml
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: my-app
+   spec:
+     containers:
+     - name: app
+       image: nginx
+       ports:
+       - name: web
+         containerPort: 80
+         protocol: TCP
+     hostNetwork: true
+
+使用Host网络模式需要特别注意，一方面，因为不存在网络隔离，容易发生端口冲突；另一方面，Pod可以直接访问宿主机上的所有网络设备和服务，从安全性上来说这是不可控的。
+
+.. code:: shell
+
+   $ kubectl create -f my-pod.yaml 
+   pod/my-app created
+
+.. code:: shell
+
+   $ kubectl get pod my-app --template={{.status.podIP}}
+   172.16.60.226

@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>搭建本地私有仓库 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: ''
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="next" title="Docker数据管理" href="06.Docker数据管理.html" />
+    <link rel="prev" title="访问Docker仓库" href="04.访问Docker仓库.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">01.Docker技术入门与实战-第3版</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.初识Docker与容器.html">初识Docker与容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Docker镜像的使用.html">Docker镜像的使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.操作Docker容器.html">操作Docker容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.访问Docker仓库.html">访问Docker仓库</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">搭建本地私有仓库</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#registry">使用registry镜像创建私有仓库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">管理私有仓库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">建立私有镜像仓库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#harbor">企业私有仓库harbor部署</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="06.Docker数据管理.html">Docker数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.Docker使用网络.html">Docker使用网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.使用Dockerfile创建镜像.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">操作系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#ssh">为镜像添加SSH服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#web">Web服务与应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id25">数据库应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id55">分布式处理与大数据平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id73">编程开发</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id96">容器与云服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id113">容器实战思考</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Docker核心实现技术.html">Docker核心实现技术</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.配置私有仓库.html">配置私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.安全防护与配置.html">安全防护与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.高级网络功能.html">高级网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.libnetwork插件化网络功能.html">libnetwork插件化网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.Etcd——高可用的键值数据库.html">Etcd——高可用的键值数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16.Docker三剑客之Docker-Compose.html">Docker三剑客之Docker-Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17.Docker三剑客之Docker-Swarm.html">Docker三剑客之Docker-Swarm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18.Docker三剑客之Docker-Machine.html">Docker三剑客之Docker-Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19.搭建一个Web应用栈.html">搭建一个Web应用栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.Docker高级网络实战.html">Docker高级网络实战</a></li>
+<li class="toctree-l2"><a class="reference internal" href="21.服务发现.html">服务发现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22.Mesos——优秀的集群资源调度平台.html">Mesos——优秀的集群资源调度平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="23.Kubernetes——生产级容器集群平台.html">Kubernetes——生产级容器集群平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24.其他相关项目.html">其他相关项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25.附录.html">附录</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes实战指南/index.html">02.Kubernetes实战指南</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">01.Docker技术入门与实战-第3版</a> &raquo;</li>
+        
+      <li>搭建本地私有仓库</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/01.Docker技术入门与实战-3版/05.搭建本地私有仓库.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#id1" id="id4">搭建本地私有仓库</a><ul>
+<li><a class="reference internal" href="#registry" id="id5">使用registry镜像创建私有仓库</a></li>
+<li><a class="reference internal" href="#id2" id="id6">管理私有仓库</a></li>
+<li><a class="reference internal" href="#id3" id="id7">建立私有镜像仓库</a></li>
+<li><a class="reference internal" href="#harbor" id="id8">企业私有仓库harbor部署</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h1><a class="toc-backref" href="#id4">搭建本地私有仓库</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="registry">
+<h2><a class="toc-backref" href="#id5">使用registry镜像创建私有仓库</a><a class="headerlink" href="#registry" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="c1"># 安装Docker后，可以通过官方提供的registry镜像来简单搭建一套本地私有仓库环境</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker run -d -p 5000:5000 registry</span>
+<span class="c1">#这将自动下载并启动一个registry容器，创建本地的私有仓库服务</span>
+
+<span class="c1">#默认情况下，会将仓库创建在容器的/tmp/registry目录下。可以通过-v参数来将镜像文件存放在本地的指定路径。</span>
+
+
+<span class="c1">#将上传的镜像放到/opt/data/registry目录，在本地将启动一个私有仓库服务，监听端口为5000</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@iZ2ze38chylj63vuj6fqiaZ</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker run -d -p 5000:5000 -v /opt/data/registry/:/tmp/registry registry</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id6">管理私有仓库</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span># 先将镜像打上标签
+docker tag ubuntu:14.04 10.0.2.2:5000/test
+
+# 使用docker push上传标记的镜像
+docker push 10.0.2.2:5000/test
+
+# 使用curl查看仓库10.0.2.2:5000中的镜像
+curl http://10.0.2.2:5000/v1/search
+{{&quot;num_results&quot;: 1, &quot;query&quot;: &quot;&quot;, &quot;results&quot;: [{&quot;description&quot;: &quot;&quot;, &quot;name&quot;: &quot;library/     test&quot;}]}}
+
+
+#比较新的Docker版本对安全性要求较高，会要求仓库支持SSL/TLS证书。对于内部使用的私有仓库，可以自行配置证书或关闭对仓库的安全性检查。
+
+#首先，修改Docker daemon的启动参数，添加如下参数，表示信任这个私有仓库，不进行安全证书检查：
+DOCKER_OPTS=&quot;--insecure-registry 10.0.2.2:5000&quot;
+
+
+# 重启Docker服务，并从私有仓库中下载镜像到本地
+sudo service docker restart
+docker pull 10.0.2.2:5000/test
+docker images
+
+
+#下载后，还可以添加一个更通用的标签ubuntu：14.04，方便后续使用
+
+：
+docker tag 10.0.2.2:5000/test ubuntu:14.04
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id7">建立私有镜像仓库</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>Docker公司官方提供的Docker
+Hub镜像仓库由于服务器在国外，网速会非常慢且存在不安全因素，而国内第三方公共仓库不受自己控制，因此具有一定规模的企业都会建立自己的私有镜像仓库，上传镜像到私有镜像参考，在构建容器化应用时，可以快速地下载镜像文件使用。</p>
+<p>我们在Docker
+1.12以后的版本环境中搭建无认证的Registry。Dockerd的配置文件在/etc/docker/daemon.json中，如果没有该文件，可以手动创建。</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>第一步：从Docker官方镜像仓库下载Registry。
+docker pull registry &lt;版本号&gt; ——不指定版本,表示latest版本
+
+第二步：配置daemon.json,去掉Docker默认的https的访问。
+vim /etc/docker/daemon.json
+{
+&quot;insecure-registries&quot;:[&quot;10.47.43.100:5000&quot;]
+}      ——增加insecure-registries的项目
+
+第三步：重启Docker,执行以下命令。
+systemctl daemon-reload docker
+systemctl restart docker
+
+第四步：无认证方式启动Registry容器。
+docker run -d --name registry -p 5000:5000 --restart=always -v /opt/registry/:/var/lib/registry/ registry
+
+第五步：测试是否启动容器。在浏览器中访问http://10.47.43.100:5000/v2/_catalog,如果返回{&quot;repositories&quot;:[]},就代表启动成功了。
+
+第六步：上传镜像到镜像仓库测试push功能。
+docker tag MySQL 10.47.43.100:5000/MySQL——必须带有&quot;10.47.43.100:5000/&quot;这个前缀,然后开始上传镜像到我们建立的私有Registry
+docker push 10.47.43.100:5000/MySQL
+再在浏览器中访问http://10.47.43.100:5000/v2/_catalog，可以看到返回{&quot;repositories&quot;:
+[&quot;MySQL&quot;]},说明已经上传成功。
+
+第七步：从镜像仓库下载镜像测试pull功能。
+首先删除本机存在的镜像10.47.43.100:5000/MySQL (刚才通过tag重命名的):
+docker rmi 10.47.43.100:5000/MySQL
+然后执行docker images,可以看到已经没有了10.47.43.100:5000/MySQL这个镜像。下面开始下载这个镜像:
+docker pull 10.47.43.100:5000/MySQL
+然后再执行docker images,可以看到10.47.43.100:5000/MySQL,说明下载成功了。
+</pre></div>
+</div>
+</div>
+<div class="section" id="harbor">
+<h2><a class="toc-backref" href="#id8">企业私有仓库harbor部署</a><a class="headerlink" href="#harbor" title="Permalink to this headline">¶</a></h2>
+<p>Harbor是由VMware公司开源的企业级的Docker Registry管理项目</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>[root@support yum.repos.d]# wget -b https://storage.googleapis.com/harbor-releases/release-1.9.0/harbor-offline-installer-v1.9.0.tgz
+Continuing in background, pid 9771.
+Output will be written to ‘wget-log’.
+[root@support ~]# tar zxf harbor-offline-installer-v1.9.0.tgz
+[root@support ~]# cd harbor
+[root@i1-CICD harbor]# cat harbor.yml |grep -v &quot;^$&quot;|grep -v &quot;#&quot;
+hostname: 172.16.0.37
+http:
+  port: 9090
+</pre></div>
+</div>
+<p>部署</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@i1</span><span class="o">-</span><span class="n">CICD</span> <span class="n">harbor</span><span class="p">]</span><span class="c1"># ./prepare</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@i1</span><span class="o">-</span><span class="n">CICD</span> <span class="n">harbor</span><span class="p">]</span><span class="c1"># ./install.sh</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@i1</span><span class="o">-</span><span class="n">CICD</span> <span class="n">harbor</span><span class="p">]</span><span class="c1"># docker-compose ps</span>
+      <span class="n">Name</span>                     <span class="n">Command</span>               <span class="n">State</span>             <span class="n">Ports</span>
+<span class="o">--------------------------------------------------------------------------------------</span>
+<span class="n">harbor</span><span class="o">-</span><span class="n">core</span>         <span class="o">/</span><span class="n">harbor</span><span class="o">/</span><span class="n">harbor_core</span>              <span class="n">Up</span>
+<span class="n">harbor</span><span class="o">-</span><span class="n">db</span>           <span class="o">/</span><span class="n">docker</span><span class="o">-</span><span class="n">entrypoint</span><span class="o">.</span><span class="n">sh</span>            <span class="n">Up</span>      <span class="mi">5432</span><span class="o">/</span><span class="n">tcp</span>
+<span class="n">harbor</span><span class="o">-</span><span class="n">jobservice</span>   <span class="o">/</span><span class="n">harbor</span><span class="o">/</span><span class="n">harbor_jobservice</span>  <span class="o">...</span>   <span class="n">Up</span>
+<span class="n">harbor</span><span class="o">-</span><span class="n">log</span>          <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sh</span> <span class="o">-</span><span class="n">c</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span> <span class="o">...</span>   <span class="n">Up</span>      <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">1514</span><span class="o">-&gt;</span><span class="mi">10514</span><span class="o">/</span><span class="n">tcp</span>
+<span class="n">harbor</span><span class="o">-</span><span class="n">portal</span>       <span class="n">nginx</span> <span class="o">-</span><span class="n">g</span> <span class="n">daemon</span> <span class="n">off</span><span class="p">;</span>             <span class="n">Up</span>      <span class="mi">8080</span><span class="o">/</span><span class="n">tcp</span>
+<span class="n">nginx</span>               <span class="n">nginx</span> <span class="o">-</span><span class="n">g</span> <span class="n">daemon</span> <span class="n">off</span><span class="p">;</span>             <span class="n">Up</span>      <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">9090</span><span class="o">-&gt;</span><span class="mi">8080</span><span class="o">/</span><span class="n">tcp</span>
+<span class="n">redis</span>               <span class="n">redis</span><span class="o">-</span><span class="n">server</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">redis</span><span class="o">.</span><span class="n">conf</span>     <span class="n">Up</span>      <span class="mi">6379</span><span class="o">/</span><span class="n">tcp</span>
+<span class="n">registry</span>            <span class="o">/</span><span class="n">entrypoint</span><span class="o">.</span><span class="n">sh</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">regist</span> <span class="o">...</span>   <span class="n">Up</span>      <span class="mi">5000</span><span class="o">/</span><span class="n">tcp</span>
+<span class="n">registryctl</span>         <span class="o">/</span><span class="n">harbor</span><span class="o">/</span><span class="n">start</span><span class="o">.</span><span class="n">sh</span>                 <span class="n">Up</span>
+<span class="n">harbor修改配置文件后重启</span>
+<span class="c1"># docker-compose down</span>
+<span class="c1"># ./prepare</span>
+<span class="c1"># docker-compose up -d</span>
+</pre></div>
+</div>
+<p>Harbor 默认管理员用户为 admin ， 密码在 harbor.cfg
+中设置过，默认的是Harbor12345 Harbor创建一个登陆用户。此用户用于推送镜像
+<img alt="image0" src="../_images/docker_harbor001.png" /></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="06.Docker数据管理.html" class="btn btn-neutral float-right" title="Docker数据管理" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="04.访问Docker仓库.html" class="btn btn-neutral float-left" title="访问Docker仓库" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

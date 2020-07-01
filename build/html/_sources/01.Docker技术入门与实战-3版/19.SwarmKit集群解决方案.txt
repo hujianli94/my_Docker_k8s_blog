@@ -1,0 +1,767 @@
+.. contents::
+   :depth: 3
+..
+
+SwarmKit集群解决方案
+====================
+
+SwarmKit是伴随着Docker1.12的诞生而成名的一个容器集群项目，现在已经被集成在Docker中，
+彻底地改变了Docker早期设计对集群不友好的形象。
+
+Docker将SwarmKit的核心模块内嵌在了Docker后台服务中，Swarm
+Mode并非一种特别的运行“模式”，而是Docker中的一组与集群相关功能的统称，
+因此不存在像“模式切换”这样的概念，Docker通过不同的命令允许使用者同时以\ ``“当前节点”``\ 和\ ``“整个集群“``\ 两种视角来操作容器。
+
+在Docker
+Daemon服务默认启动时，使用者只能用与过去的Docker命令相同的操作在当前节点上启动和管理容器，与集群相关的命令处于禁用的状态，
+直到使用者通过docker
+swarm命令从当前节点创建出新的集群，或是将当前节点加入到一个已经存在的集群里，
+就解封了Swarm
+Mode带来的一系列全新的命令集，包括\ ``docker service、 docker stack、docker node、docker config和docker secret等``\ 。
+
+Swarm、SwarmKit和Swarm Mode以及其他相关项目之间的关系如图：
+
+图中重叠的部分表示相应的项目之间存在代码层面的相互引用或组件形式的依赖。
+|image0|
+
+Swarm
+Mode所创建的集群，本质上就是SwarmKit的集群，二者在代码实现层面上其实是统一的事物，但相比于Swarm
+Mode这个名称，
+SwarmKit更具有识别性，因此社区里有时会用“SwarmKit集群”来指代Swarm
+Mode所创建的集群，以便与过去的经典Swarm集群划清界限。
+
+使用SwarmKit
+------------
+
+SwarmKit是Docker现代集群的基础，它的代码开源在GitHub的独立仓库中，主要提供了基于Docker容器构建集群并进行节点管理和服务管理的能力。
+
+在节点管理方面，SwarmKit能够将普通的虚拟机赋予集群角色，并承担节点增加、退出以及故障失联时自动处理的职责，
+确保在高可用的SwarmKit集群里任意一个节点故障都不会影响集群的整体功能。这个能力得益于在SwarmKit中使用了Etcd项目的
+Raft模块。
+
+Raft是一种分布式一致性协议，目的在于解决在不可信任的网络集群中进行状态确认的问题。Raft协议把集群中的节点分为三种角色：
+``Leader``\ 、\ ``Follower``\ 、\ ``Candidate``\ 。
+
+::
+
+     在任何时刻，集群中只存在一个Leader角色的节点，它保存整个集群的完整状态，其余节点都作为Follower角色，
+   从Leader节点同步状态信息。在集群刚刚创建时，第一个进入集群的节点通常会将自己标记为Leader,
+   此后进入的节点都是Follower。这样的角色划分并没有什么奇特之处，不过Raft协议的高明之处在于，集群中的角色并非一成不变的。
+   Leader节点依靠定时向所有Follower发送心跳数据包来保持其地位，当Follower节点在一定的时间周期内没有收到来自Leader节点的心跳数据包时
+   (通常是发生了网络分区或是节点故障)，就会发起新一轮""Leader选举"，此时，当前在Raft集群中所有正常节点都将进入Candidate角色，
+   并在一段随机的延时后向其他节点发出”给我投票“的请求，每个处于Candidate角色的节点都会把票投给第一个向自己发誓”投票“请求的节点，若有
+   Candidate节点在此轮投票中获得总节点数量一半以上的投票，则它会将字节标记位新的Leader。否则重新进入下一轮投票，直到所有节点获得半数以上的票数，每
+   成功选举一次 新Leader的Term（任届）值都会比之前Leader的增加1.当集群中由于网络或其他原因的故障出现分裂又重新合并时，
+   集群中可能会出现多于一个的Leader节点，此时，Term值更高的一个节点将成为真正的Leader。
+
+Raft集群中的角色转换如图： |image1|
+
+在服务管理方面，SwarmKit能够将用户创建的服务以Task为单元，依据当前整个集群各节点的负荷情况，自动地分配到适当的节点上运行，
+并对这些服务的运行状态进行持续跟踪，所有的这些信息都将存储到Raft集群中，确保了服务状态不受节点故障的影响。
+
+除了服务的调度，SwarmKit还提供了\ ``服务路由``\ 、\ ``负载均衡``\ 、\ ``故障处理``\ 和\ ``在线升级``\ 等能力。
+
+通常来说，在集群里创建的服务单元，其后端可以由多个运行在各个节点上的同种容器组成分担负载压力的逻辑单元。
+
+·
+当有外部请求时，SwarmKit负责将这些请求均匀地分担到每个执行业务的容器里。
+·
+当因部分容器意外崩溃而无法提供正常服务时，SwarmKit会检测到这些问题，并自动的创建新的容器以确保每个服务后端的容器数量与预期保持一致。
+
+SwarmKit集群中的服务 |image2|
+
+SwarmKit依赖Raft吸引保持集群状态的高可用，在Raft协议中，为了确保集群的状态和信息一致性，
+Leader节点每次对存储的数据进行修改时，都需要告知所有Follower节点，并在获得半数以上Followe确认后，才能够将数据的修改持久化。
+随着节点数量的增加，确认消息的成本将成倍增长。因此，SwarmKit又将所有节点划分成了\ ``Manager``\ 和\ ``Worker``\ 两种角色类型，
+这两类节点都会参与服务器的调度，但只有Manager节点真正保存集群信息,并且参与Raft的选举过程。
+
+这里的两种“角色”十分容易被混淆，它们在各自的术语中都被称为“Role”，因此需要通过上下文来识别。
+
+::
+
+   · SwarmKit(以及Swarm Mode)集群的角色： 用来区分Manager或Worker，它们的关键差异在于是否存储Raft数据以及是否接收用户的操作请求。
+   · Raft集群的角色： 指的是Leader、Follower或Candidate，它们只存在于SwarmKit的Manager角色节点，各角色的关键差异在于是否主导Raft协议中的数据一致性协商。
+
+SwarmKit节点作为Manager还是Worker，是在节点进入集群时人为指定的，它同样可以在节点创建之后再进行转换，只不过这种转换不会自动发生，
+需要人工指派。
+
+创建SwarmKit集群
+----------------
+
+::
+
+   SwarmKit没有发布编译过的二进制版本，因为通常用户都会用Docker的Swarm Mode来间接地使用它。如果想直接使用SwarmKit工具，最直接的方式
+   就是获取源代码进行编译。首先通过Git下载它的代码仓库，如下：
+
+   git clone https://github.com/docker/swarmkit.git
+
+   编译SwarmKit需要一个Goloang的SDK和响应的开发工具链，若手头上没有这样的环境，一种比较简便的办法是使用提供了这种环境的Docker镜像，
+   例如官方的golang:1.8进行，执行以下命令将SwarmKit代码目录挂载到Docker容器里进行构建。
+
+   docker run --rm -it \
+          -v `pwd`/swarmkit:/go/src/github.com/docker/swarmkit \
+          -w /go/src/github.com/docker/swarmkit/golang:1.8 \ 
+          make binaries
+    
+   构建完成的文件存放在SwarmKit代码目录的“bin”文件夹内，将其中的swarmctl和swarmd两个文件拷贝到系统PATH变量指定的目录中。
+   例如：“/usr/local/bin”，如下所示：
+   sudo mv swarmkit/bin/swarmctl swarmkit/bin/swarmd /usr/loacal/bin
+
+在SwarmKit项目中
+
+::
+
+   ·swarmd是负责管理和维护集群的后台进程。
+   ·swarmctl是用户进行集群交互式操作的工具。
+   不带任何参数的swarmd命令将用默认配置创建一个集群，并将当前节点作为集群的第一个Manager节点。
+   默认配置会使用用户当前的目录存放SwarmKit运行过程中产生的各种数据文件，这并不是一种推荐的做法。
+
+下面这个命令会在系统后台启动swarmd进程，并制定集群的状态数据存放目录，监听的Socket文件位置、节点名字以及日志文件位置。
+
+::
+
+   swarmd --state-dir /tmp/node-mgmt-01 --listen-control-api\
+                      /tmp/mgmt-01.sock --hostname mgmt-01 > /tmp/mgmt-01.log 2>&1 &
+
+这样就得到了只有一个Manager节点的最小化SwarmKit集群，从严格意义来说，它还算不算一个真正的集群，但在这个单节点集群中已经可以执行SwarmKit的
+各种管理操作，并且它也是创建更大规模集群的基础。
+
+此时，使用swarmctl命令可以查看集群的信息，为了让swarmctl能够连接到SwarmKit集群，需要使用–socket参数或SWARM_SOCKET环境变量指定通信的Socket文件位置。
+
+``swarmctl node ls``\ 命令将列出节点的信息。
+
+::
+
+   export SWARM_SOCKET=/tmp/mgmt-01.sock
+   swarmctl node ls
+
+为了想集群中添加更多的节点，还需要查询出当前Manager节点的IP地址和集群的\ ``Join Token``
+
+集群的\ ``Join Token``\ 相当于新节点加入集群的密码，只是提供了正确Token的请求才会被接收
+此外，\ ``Join Token``\ 还可被用来区分新节点角色是\ ``Manager``\ 还是\ ``Worker``\ 。
+
+::
+
+   ip addr show eth0
+   swarmctl cluster inspect default
+
+接下来向集群添加新的节点，首先将编译出来的swarmctl和swarmd文件拷贝到其他需要加入SwarmKit集群的节点上，
+同样放到PATH环境变量的目录里，在启动swarmd进程时，除了指定状态数据目录等信息，还需要提供
+–join-addr和
+–join-token参数表示加入已有集群(而不是新建集群)。这里使用集群的Worker
+Join Token将该节点作为Worker角色。
+
+::
+
+   MANAGER_IP=<Manager 节点IP>
+   JOIN_TOKENS=<woker Join Token>
+
+   swarmd --state-dir /tmp/node-work-01 --hostname work-01\
+          --join-addr ${MANAGER_IP}:4242 \ 
+          --join-token ${JOIN_TOKENS} > /tmp/work-01.log 2>&1 &
+
+重复该过程，添加更多节点到集群中，然后回到任意一个Manager节点上使用swarmctl
+node ls命令查看集群的节点信息。 如下所示
+
+::
+
+   swarmctl node ls
+
+需要注意的是，所有swarmctl命令必须连接到Manager节点的Socket文件才能使用，
+通常来说这也意味着只能在Manager节点上使用swarmctl命令，因为只有Manager节点才真正存储了集群的状态信息，
+而Worker节点仅仅用于执行服务器容器。
+
+使用\ ``swarmctl node promote``\ 和\ ``swarmctl node demote``\ 命令可以对节点的角色进行转换，它们的参数都是节点的ID，
+前者将一个Worker节点提升为Manager节点，后者反之。
+
+SwarmKit停机维护
+----------------
+
+SwarmKit还为节点提供了“停机维护”的功能，命令是\ ``swarmctl node drain``
+
+::
+
+   swarmctl node drain <节点ID>
+
+   # 被指定的节点可用状态会被标记位“DRAIN”，此时如果该节点上运行有SwarmKit托管的容器服务，将被自动迁移到其他节点上运行。
+   swarmctl node ls
+
+使用\ ``swarmctl node activate``\ 可将节点恢复为正常运行状态，如下所示：
+
+::
+
+   swarmctl node activate <Node-ID>
+
+在SwarmKit上运行服务
+--------------------
+
+创建Task服务
+~~~~~~~~~~~~
+
+· 创建docker容器
+
+``swarmctl service create``
+
+::
+
+   swarmctl service create --name nginx --image nginx:1.11.1-alpine
+
+使用swarmctl service ls命令查看当前集群运行的所有服务。
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   swarmctl service ls
+
+查看单个服务的详细信息可以使用\ ``swarmctl service inspect``
+
+::
+
+   swarmctl service inspect nginx
+
+可以通过\ ``swarmctl service update``\ 命令来更新它的一些属性,比如容器副本个数。
+
+::
+
+   swarmctl service update nginx --replicas 6
+
+查看更新后的服务状况，可以发现名称是nginx的这个服务副本数变成了“6/6”。
+表示目标副本数量是6，实际运行的副本数也是6.
+
+::
+
+   swarmctl service ls
+
+使用swarmctl service inpsect nginx
+命令将列出其中每个容器副本所对应的Task信息。
+
+::
+
+   swarmctl service inspect nginx
+
+查看节点上运行的容器
+~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   docker container ps
+
+动态更新容器内容
+~~~~~~~~~~~~~~~~
+
+下面这个命令可以将nginx服务器的版本升级到1.11.3-alpine
+
+::
+
+   swarmctl service update nginx --image nginx:1.11.3-alpine
+
+SwarmKit其他功能
+----------------
+
+``swarmctl --help``
+
+Docker Swarm Mode
+-----------------
+
+Swarm Mode综述
+--------------
+
+Swarm Mode指的是Docker整合了SwarmKit项目后增加的那部分功能，包括如下：
+
+::
+
+   ·集群的管理
+   ·节点的管理
+   ·服务的管理和编排
+   ·以及其他一些辅助功能
+
+Docker代码有许多地方直接import了\ ``github.com/docker/swarmkit``\ 姓名中的内容。
+实际上Docker集群相关的功能直接代理给了SwarmKit来实现。
+
+从使用的角度上，Swarm Mode在许多方面也都有着明细的SwarmKit影子，
+例如将集群节点分成 Manager和Worker，使用Token方式为集群添加节点：
+
+其中的许多概念，如Service、Task、Ssecret等，都直接沿用了SwarmKit中的相应称呼。
+
+同时，二者依然存在着一些差异，比如：Swarm
+Mode弱化了Task的概念而增强了对服务编排的支持。
+
+集群的创建与销毁
+----------------
+
+Manager
+
+::
+
+   [root@172-16-74-33 centos]# docker swarm init --advertise-addr 172.16.74.33
+   Swarm initialized: current node (p6a4suetdm9uvmlb531al1sp8) is now a manager.
+
+   To add a worker to this swarm, run the following command:
+
+       docker swarm join --token SWMTKN-1-04rqs15nl0af1kev66lxyoy255l1a3uda0e2ew68zwaq6i6ew8-7owtzn62ap6c189ivx3jx787j 172.16.74.33:2377
+
+   To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+Worker1
+
+::
+
+   [root@172-16-74-38 centos]# docker swarm join --token SWMTKN-1-04rqs15nl0af1kev66lxyoy255l1a3uda0e2ew68zwaq6i6ew8-7owtzn62ap6c189ivx3jx787
+   j 172.16.74.33:2377This node joined a swarm as a worker.
+
+Worker2
+
+::
+
+   [root@172-16-74-19 centos]# docker swarm join --token SWMTKN-1-04rqs15nl0af1kev66lxyoy255l1a3uda0e2ew68zwaq6i6ew8-7owtzn62ap6c189ivx3jx787
+   j 172.16.74.33:2377This node joined a swarm as a worker.
+
+退出集群
+
+::
+
+   [root@172-16-74-19 centos]# docker swarm leave
+   Node left the swarm.
+
+::
+
+   · 如果这个节点是Work节点，那么它将直接退出集群。Docker集群会自动将该节点上的所有服务前移到其他节点上继续运行。
+
+   · 如果这个节点是Manager节点，并且恰好是当前Manager中Raft集群的Leader，则退出集群失败。
+   如果确实要这么做，可以使用--force参数使其强制退出。
+
+   · 如果这个节点是Manager，且当前集群中有且只有两个Manger节点，那么即使此节点是Follower角色，由于它若退出会使得Raft集群无法保持
+   "半数以上成员"可用，因此退出集群失败。如果确实需要退出，同样可以使用--force参数强制执行。
+
+当集群中的所有节点都退出后，集群就被销毁了。
+
+节点管理
+--------
+
+查看各个节点的基本状态信息
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   [root@172-16-74-33 centos]# docker node ls
+   ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+   awhw84a6cnvfew2eyeb2cnt1r     172-16-74-19        Ready               Active                                  19.03.5
+   p6a4suetdm9uvmlb531al1sp8 *   172-16-74-33        Ready               Active              Leader              19.03.5
+   9nek7i79d0onbsidnfeat7rm8     172-16-74-38        Ready               Active                                  19.03.5
+
+转换Worker为Manager
+
+::
+
+   [root@172-16-74-33 centos]# docker node promote awhw84a6cnvfew2eyeb2cnt1r
+   Node awhw84a6cnvfew2eyeb2cnt1r promoted to a manager in the swarm.
+
+转换Manager为Worker
+
+::
+
+   [root@172-16-74-33 centos]# docker node demote p6a4suetdm9uvmlb531al1sp8
+   Manager p6a4suetdm9uvmlb531al1sp8 demoted in the swarm.
+
+服务管理
+--------
+
+Swarm Mode的服务管理模型 |image3|
+
+Task是对底层运行单元的抽象，在当前的Swarm
+Mode中，一个Task实际上就是一个容器，它是Swarm Mode的最小
+调度单元，用于运行一个Service的容器副本。
+
+在Swarm Mode中没有专门管理Task的命令，不过可以通常直接使用docker
+container命令组来操作容器。
+
+Service是管理部署的单元，每个Service中可以包含一个或多个相同的容器副本，分布在集群的不同节点上，根据负载需要进行扩展。
+
+此外，Service还封装了负载均衡的功能，用于为属于同一个Service的分散容器提供统一的访问入口。
+
+示例
+
+::
+
+   [root@172-16-74-19 centos]# docker service create --detach \
+   > --name web \
+   > --publish 8080:80 \
+   > --replicas=3 \
+   > nginx:1.11.1-alpine
+
+::
+
+   [root@172-16-74-19 centos]# docker service ls
+   ID                  NAME                MODE                REPLICAS            IMAGE                 PORTS
+   qlbr8zqmp357        web                 replicated          3/3                 nginx:1.11.1-alpine   *:8080->80/tcp
+
+   [root@172-16-74-19 centos]# docker service ps qlbr8zqmp357
+   ID                  NAME                IMAGE                 NODE                DESIRED STATE       CURRENT STATE            ERROR      
+            PORTSdxbk97os5vsw        web.1               nginx:1.11.1-alpine   172-16-74-19        Running             Running 59 seconds ago              
+            nzgsltvo7k2n        web.2               nginx:1.11.1-alpine   172-16-74-33        Running             Running 55 seconds ago              
+            u9xvu1kjei5c        web.3               nginx:1.11.1-alpine   172-16-74-38        Running             Running 58 seconds ago 
+
+或者使用1条命令查看所有Task的状态信息，如下所示：
+
+::
+
+   [root@172-16-74-19 centos]# docker service ls -q|xargs -n1 docker service ps
+   ID                  NAME                IMAGE                 NODE                DESIRED STATE       CURRENT STATE          ERROR        
+          PORTSdxbk97os5vsw        web.1               nginx:1.11.1-alpine   172-16-74-19        Running             Running 16 hours ago                
+          nzgsltvo7k2n        web.2               nginx:1.11.1-alpine   172-16-74-33        Running             Running 16 hours ago                
+          u9xvu1kjei5c        web.3               nginx:1.11.1-alpine   172-16-74-38        Running             Running 16 hours ago  
+
+修改服务容器副本数量
+--------------------
+
+::
+
+   docker service scale
+
+以下两个命令是等效的
+
+::
+
+   [root@172-16-74-19 centos]# docker service scale web=2
+   web scaled to 2
+
+   [root@172-16-74-19 centos]# docker service update web --replicas 3
+   web
+   overall progress: 3 out of 3 tasks 
+
+::
+
+   [root@172-16-74-19 centos]# docker service ls -q|xargs -n1 docker service ps
+   ID                  NAME                IMAGE                 NODE                DESIRED STATE       CURRENT STATE                ERROR  
+                PORTSdxbk97os5vsw        web.1               nginx:1.11.1-alpine   172-16-74-19        Running             Running 16 hours ago                
+                nzgsltvo7k2n        web.2               nginx:1.11.1-alpine   172-16-74-33        Running             Running 16 hours ago                
+                byz1i84j6wc2        web.3               nginx:1.11.1-alpine   172-16-74-38        Running             Running about a minute ago 
+
+服务滚动升级
+------------
+
+服务的“滚动升级”指的是将集群中处于同一个负载均衡器背后的副本实例逐个替换成新的版本，并
+动态的更新负载的流量，以确保在整个升级过程中对外的服务功能不停止。
+
+::
+
+   docker service update web --image nginx:1.11.5-alpine --update-parallelism 1 --update-delay 3s
+
+Task容器变化过程，每隔3s替换一个容器。
+
+查看服务的日志
+--------------
+
+::
+
+   [root@172-16-74-19 centos]# docker service ls
+   ID                  NAME                MODE                REPLICAS            IMAGE                 PORTS
+   qlbr8zqmp357        web                 replicated          3/3                 nginx:1.11.5-alpine   *:8080->80/tcp
+
+   [root@172-16-74-19 centos]# docker service logs qlbr
+
+::
+
+   [root@172-16-74-19 centos]# docker service ls -q
+   qlbr8zqmp357
+
+   # 如果只有一个服务的ID是q开头的，那么可以直接这样引用它，如下所示：
+   [root@172-16-74-19 centos]# docker service logs q
+
+服务编排
+--------
+
+Compose一直以来是Docker服务的编排工具，它通过一个yaml文件描述各个容器之间的关联，然后提供一组命令来
+整体视角的操作所有容器。
+
+单主机进行服务编排
+~~~~~~~~~~~~~~~~~~
+
+使用compose运行和停止服务
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+创建一个目录，新建名称为\ ``docker-compose.yml``\ 文件，内容如下:
+
+::
+
+   version: "3"
+   services:
+     redis:
+       image: redis:3.2.5-alpine
+       networks:
+         - demo-net
+     
+     app:
+       image: flin/page-hit-counter:v1
+       ports:
+         - 5000:5000
+       depends_on:
+         - redis
+       networks:
+         - demo-net
+   networks:
+     demo-net:
+       external: false
+
+上述yaml文件由两个服务和一个网络组成的系统，redis提供数据的外部缓存功能，APP服务是一个访问计数器，
+每次收到用户的请求时，就会从外部缓存中获取当前的访问总计数，将计数值加1.然后写回外部缓存。
+
+``APP服务实现了无状态化，因此可以使用多个负载均衡的副本来分带用户的访问请求。``
+
+使用Compose将这个文件描述的服务快速创建出来：
+
+::
+
+   docker-compose up -d
+
+访问当前节点的5000端口，会看到不断递增的访问计数。如下所示：
+
+::
+
+   [root@172-16-74-19 docker-compose]# curl 127.0.0.1:5000
+   You have hit this page 1 times. - Edition v1
+   [root@172-16-74-19 docker-compose]# curl 127.0.0.1:5000
+   You have hit this page 2 times. - Edition v1
+   [root@172-16-74-19 docker-compose]# curl 127.0.0.1:5000
+   You have hit this page 3 times. - Edition v1
+
+· 使用docker-compose批量停止所有容器。
+
+::
+
+   [root@172-16-74-19 docker-compose]# docker-compose stop
+   Stopping docker-compose_app_1   ... done
+   Stopping docker-compose_redis_1 ... done
+   [root@172-16-74-19 docker-compose]# 
+
+· 快速删除整个服务，包括服务涉及的所有容器、网络和存储等资源。如下所示：
+
+::
+
+   [root@172-16-74-19 docker-compose]# docker-compose down
+   Removing docker-compose_app_1   ... done
+   Removing docker-compose_redis_1 ... done
+   Removing network docker-compose_demo-net
+
+docker-compose子命令及其说明
+----------------------------
+
+|image4| docker-compose up
+命令启动服务后，所启动的所有容器会保持在前台，并实时打印运行日志到控制台，
+如果用户希望docker-compose命令在启动完服务之后就把索引容器放到后台运行，此时需要加上-d参数。
+
+举例如下：
+
+::
+
+   version: "3"
+   services:
+     db:
+       image: postgres
+       volumes:
+         - data: /var/lib/postgresql/data
+     webapp:
+       image: webapp
+       volumes:                        #挂载webapp_volumn存储卷
+         - webapp_volumn: /opt/app/static
+       ports:              #指定端口映射
+         - "3000/udp"
+         - "8000:8000"
+       networks:         #加入webapp_network网络
+         - webapp_network
+       configs:          #挂载webapp_config外置配置
+         - webapp_config
+       secrets:            # 挂载webapp_secret密文
+         - webapp_secret
+       deploy:
+         replicase: 4      #启动4个副本
+         update_config:
+           parallelism: 2
+           delay: 10s
+         restart_policy:   #出错退出时自动重启，最多3次，间隔3s
+           condition: on-failure
+           delay: 5s
+           max_attempts: 3
+         resources:        #最大和最小的资源使用量
+           limits:
+             cpus: '0.1'
+             memory: 300M
+         reservations:
+           cpus: '0.01'
+           memory: 100M
+   volumes:              # 名称是data的存储卷描述
+     data:
+       driver: local
+       external: false
+       
+   configs:
+     webapp_config:    #名称是webapp_config的外置配置描述
+     file: ./webapp_config
+     external: false     #external属性，表示外置配置的声明周期由Compose统一管理
+     
+   networks:
+     webapp_network:     #名称是webapp_network的网络描述
+       driver: bridge    #网络类型可以是bridge或overlat，但overlay类型的网络智能用于集群模式
+   #    external: false  #false表示逐个网络是由Compose管理的，会自动创建和删除，若要使用预先创建的网络，并自行管理网络声明周期，可以将该属性设置为true。
+
+使用方式如下：
+
+::
+
+   docker-compose -f path/to/my-compose-file.yml up 
+
+对于更复杂的场景，还可以将编排文件进行组合。
+
+::
+
+   docker-compose -f docker-compose.yml -f docker-compose-dev.yml up 
+
+如果compose-file.yml文件的内容发生了变化，例如替换了服务的镜像，修改了服务参数或是增加了新的服务。
+只需要在“compose-file.yml”文件所在的目录中再次执行docker-compose
+up-d命令。
+
+docker-compose会自动调整和重启相关的容器，使得运行的服务与描述保存一致，而无须手动重启或重建整个服务组。
+
+应用栈的管理
+------------
+
+在Swarm集群中，将通过编排方式部署到集群中的一组服务称为“应用栈（Stack）”。
+通过Docker命令行工具的\ ``docker stack``\ 下的子命令可以对集群中的应用栈进行管理。
+对上面的例子稍加修改，使它更适用于在集群部署，如下所示：
+
+::
+
+   version: "3.3"
+   services:
+     redis:
+       image: redis:3.2.5-alpine
+       networks:
+         - demo-net
+
+     app:
+       image: flin/page-hit-counter:v1
+       ports:
+         - 5000:5000
+       depends_on:
+         - redis
+       networks:
+         - demo-net
+   #    增加多个副本
+       deploy:
+         replicas: 2
+   networks:
+     demo-net:
+   #    更改网络驱动为overlay
+       driver: overlay
+       external: false
+
+使用docker
+swarm命令创建集群并添加几个节点，然后使用\ ``docker stack deploy``\ 命令创建部署到集群的应用栈，
+如下所示。
+
+· 注意\ ``docker stack``\ 命令只能用于已经开启Swarm Mode的节点。
+
+::
+
+   [root@172-16-74-19 docker-swarm]# docker stack deploy -c docker-compose.yml app
+   Creating network app_demo-net
+   Creating service app_app
+
+执行\ ``docker stack ls``\ 命令可以列出当前集群中的索引应用栈列表以及每个应用栈中包含的服务种类。
+
+::
+
+   [root@172-16-74-19 docker-swarm]# docker stack ls
+   NAME                SERVICES            ORCHESTRATOR
+   app                 2                   Swarm
+
+指定一个应用栈，用\ ``docker stack services app``\ 命令列出该应用栈中的所有服务，如下所示：
+
+::
+
+   [root@172-16-74-19 docker-swarm]# docker stack services app
+   ID                  NAME                MODE                REPLICAS            IMAGE                      PORTS
+   l4sxh4hs70ef        app_redis           replicated          1/1                 redis:3.2.5-alpine         
+   n16tefk4fpfs        app_app             replicated          1/2                 flin/page-hit-counter:v1   *:5000->5000/tcp
+
+使用\ ``docker stack ps app``\ 命令查看应用栈里的所有容器,如下所示:
+
+::
+
+   [root@172-16-74-19 docker-swarm]# docker stack ps app
+   ID                  NAME                IMAGE                      NODE                DESIRED STATE       CURRENT STATE             ERROR               P
+   ORTSjp6j0yppddpl        app_redis.1         redis:3.2.5-alpine         172-16-74-33        Running             Running 2 minutes ago                         
+   h5gnvnip10lo        app_app.1           flin/page-hit-counter:v1   172-16-74-38        Running             Preparing 2 minutes ago                       
+   nvynyvvu72ei        app_app.2           flin/page-hit-counter:v1   172-16-74-19        Running             Running 2 minutes ago 
+
+基于Docker
+Service的特性，一旦集群模式的容器指定了监听端口，它会占用整个集群中所有节点的指定端口，
+虽然只运行了两个容器的副本，但在集群的任意一个节点上访问5000端口，都能访问到这个服务。
+
+::
+
+   [root@172-16-74-19 docker-swarm]# curl 127.0.0.1:5000
+   You have hit this page 1 times. - Edition v1
+
+   [root@172-16-74-33 centos]# curl 127.0.0.1:5000
+   You have hit this page 2 times. - Edition v1
+
+   [root@172-16-74-38 centos]# curl 127.0.0.1:5000
+   You have hit this page 3 times. - Edition v1
+
+服务升级，若docker-compose.yml发生修改
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+只要修改了docker-compose.yml文件，需要直接执行\ ``docker stack deploy``\ 命令，如下所示：
+
+::
+
+   docker stack deploy -c docker-compose.yml app
+
+删除指定的应用栈以及所有相关的资源
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   [root@172-16-74-19 docker-swarm]# docker stack rm app
+   Removing service app_app
+   Removing service app_redis
+   Removing network app_demo-net
+
+Swarm Mode的图形界面
+--------------------
+
+docker-compose-ui.yml
+
+::
+
+   version: "3"
+   services:
+     visualizer:
+       image: dockersamples/visualizer:latest
+       ports:
+         - "8888:8080"
+       volumes:
+         - "/var/run/docker.sock:/var/run/docker.sock"
+       deploy:
+         replicas: 1
+         placement:
+           constraints: [node.role == manager]
+
+
+     portainer:
+       image: portainer/portainer:latest
+       ports:
+         - "9000:9000"
+       volumes:
+         - "/var/run/docker.sock:/var/run/docker.sock"
+       deploy:
+         replicas: 1
+         placement:
+           constraints: [node.role == manager]
+
+.. |image0| image:: ../../_static/docker-swarmkit.png
+.. |image1| image:: ../../_static/docker_leader00001.png
+.. |image2| image:: ../../_static/SwarmKit.png
+.. |image3| image:: ../../_static/docker-swarm-server1.png
+.. |image4| image:: ../../_static/docker-compose00001.png

@@ -1,0 +1,948 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>SwarmKit集群解决方案 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: ''
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="next" title="搭建一个Web应用栈" href="20.搭建一个Web应用栈.html" />
+    <link rel="prev" title="Docker三剑客之Docker-Machine" href="18.Docker三剑客之Docker-Machine.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">01.Docker技术入门与实战-第3版</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.初识Docker与容器.html">初识Docker与容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Docker镜像的使用.html">Docker镜像的使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.操作Docker容器.html">操作Docker容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.访问Docker仓库.html">访问Docker仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.搭建本地私有仓库.html">搭建本地私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06.Docker数据管理.html">Docker数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.Docker使用网络.html">Docker使用网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.使用Dockerfile创建镜像.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">操作系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#ssh">为镜像添加SSH服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#web">Web服务与应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id25">数据库应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id55">分布式处理与大数据平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id73">编程开发</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id96">容器与云服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id113">容器实战思考</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Docker核心实现技术.html">Docker核心实现技术</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.配置私有仓库.html">配置私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.安全防护与配置.html">安全防护与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.高级网络功能.html">高级网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.libnetwork插件化网络功能.html">libnetwork插件化网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.Etcd——高可用的键值数据库.html">Etcd——高可用的键值数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16.Docker三剑客之Docker-Compose.html">Docker三剑客之Docker-Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17.Docker三剑客之Docker-Swarm.html">Docker三剑客之Docker-Swarm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18.Docker三剑客之Docker-Machine.html">Docker三剑客之Docker-Machine</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SwarmKit集群解决方案</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">使用SwarmKit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">创建SwarmKit集群</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">SwarmKit停机维护</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">在SwarmKit上运行服务</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#task">创建Task服务</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#swarmctl-service-ls">使用swarmctl service ls命令查看当前集群运行的所有服务。</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">查看节点上运行的容器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">动态更新容器内容</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">SwarmKit其他功能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-swarm-mode">Docker Swarm Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#swarm-mode">Swarm Mode综述</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">集群的创建与销毁</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">节点管理</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id10">查看各个节点的基本状态信息</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">服务管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">修改服务容器副本数量</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">服务滚动升级</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">查看服务的日志</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">服务编排</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id16">单主机进行服务编排</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-compose">docker-compose子命令及其说明</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">应用栈的管理</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#docker-compose-yml">服务升级，若docker-compose.yml发生修改</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id18">删除指定的应用栈以及所有相关的资源</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">Swarm Mode的图形界面</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="20.搭建一个Web应用栈.html">搭建一个Web应用栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="21.Docker高级网络实战.html">Docker高级网络实战</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22.服务发现.html">服务发现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="23.Mesos——优秀的集群资源调度平台.html">Mesos——优秀的集群资源调度平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24.Kubernetes——生产级容器集群平台.html">Kubernetes——生产级容器集群平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25.其他相关项目.html">其他相关项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26.附录.html">附录</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes实战指南/index.html">02.Kubernetes实战指南</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">01.Docker技术入门与实战-第3版</a> &raquo;</li>
+        
+      <li>SwarmKit集群解决方案</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/01.Docker技术入门与实战-3版/19.SwarmKit集群解决方案.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#swarmkit" id="id20">SwarmKit集群解决方案</a><ul>
+<li><a class="reference internal" href="#id1" id="id21">使用SwarmKit</a></li>
+<li><a class="reference internal" href="#id2" id="id22">创建SwarmKit集群</a></li>
+<li><a class="reference internal" href="#id3" id="id23">SwarmKit停机维护</a></li>
+<li><a class="reference internal" href="#id4" id="id24">在SwarmKit上运行服务</a><ul>
+<li><a class="reference internal" href="#task" id="id25">创建Task服务</a></li>
+<li><a class="reference internal" href="#swarmctl-service-ls" id="id26">使用swarmctl service ls命令查看当前集群运行的所有服务。</a></li>
+<li><a class="reference internal" href="#id5" id="id27">查看节点上运行的容器</a></li>
+<li><a class="reference internal" href="#id6" id="id28">动态更新容器内容</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7" id="id29">SwarmKit其他功能</a></li>
+<li><a class="reference internal" href="#docker-swarm-mode" id="id30">Docker Swarm Mode</a></li>
+<li><a class="reference internal" href="#swarm-mode" id="id31">Swarm Mode综述</a></li>
+<li><a class="reference internal" href="#id8" id="id32">集群的创建与销毁</a></li>
+<li><a class="reference internal" href="#id9" id="id33">节点管理</a><ul>
+<li><a class="reference internal" href="#id10" id="id34">查看各个节点的基本状态信息</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id11" id="id35">服务管理</a></li>
+<li><a class="reference internal" href="#id12" id="id36">修改服务容器副本数量</a></li>
+<li><a class="reference internal" href="#id13" id="id37">服务滚动升级</a></li>
+<li><a class="reference internal" href="#id14" id="id38">查看服务的日志</a></li>
+<li><a class="reference internal" href="#id15" id="id39">服务编排</a><ul>
+<li><a class="reference internal" href="#id16" id="id40">单主机进行服务编排</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#docker-compose" id="id41">docker-compose子命令及其说明</a></li>
+<li><a class="reference internal" href="#id17" id="id42">应用栈的管理</a><ul>
+<li><a class="reference internal" href="#docker-compose-yml" id="id43">服务升级，若docker-compose.yml发生修改</a></li>
+<li><a class="reference internal" href="#id18" id="id44">删除指定的应用栈以及所有相关的资源</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id19" id="id45">Swarm Mode的图形界面</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="swarmkit">
+<h1><a class="toc-backref" href="#id20">SwarmKit集群解决方案</a><a class="headerlink" href="#swarmkit" title="Permalink to this headline">¶</a></h1>
+<p>SwarmKit是伴随着Docker1.12的诞生而成名的一个容器集群项目，现在已经被集成在Docker中，
+彻底地改变了Docker早期设计对集群不友好的形象。</p>
+<p>Docker将SwarmKit的核心模块内嵌在了Docker后台服务中，Swarm
+Mode并非一种特别的运行“模式”，而是Docker中的一组与集群相关功能的统称，
+因此不存在像“模式切换”这样的概念，Docker通过不同的命令允许使用者同时以<code class="docutils literal"><span class="pre">“当前节点”</span></code>和<code class="docutils literal"><span class="pre">“整个集群“</span></code>两种视角来操作容器。</p>
+<p>在Docker
+Daemon服务默认启动时，使用者只能用与过去的Docker命令相同的操作在当前节点上启动和管理容器，与集群相关的命令处于禁用的状态，
+直到使用者通过docker
+swarm命令从当前节点创建出新的集群，或是将当前节点加入到一个已经存在的集群里，
+就解封了Swarm
+Mode带来的一系列全新的命令集，包括<code class="docutils literal"><span class="pre">docker</span> <span class="pre">service、</span> <span class="pre">docker</span> <span class="pre">stack、docker</span> <span class="pre">node、docker</span> <span class="pre">config和docker</span> <span class="pre">secret等</span></code>。</p>
+<p>Swarm、SwarmKit和Swarm Mode以及其他相关项目之间的关系如图：</p>
+<p>图中重叠的部分表示相应的项目之间存在代码层面的相互引用或组件形式的依赖。
+<img alt="image0" src="01.Docker技术入门与实战-3版\../../_static/docker-swarmkit.png" /></p>
+<p>Swarm
+Mode所创建的集群，本质上就是SwarmKit的集群，二者在代码实现层面上其实是统一的事物，但相比于Swarm
+Mode这个名称，
+SwarmKit更具有识别性，因此社区里有时会用“SwarmKit集群”来指代Swarm
+Mode所创建的集群，以便与过去的经典Swarm集群划清界限。</p>
+<div class="section" id="id1">
+<h2><a class="toc-backref" href="#id21">使用SwarmKit</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>SwarmKit是Docker现代集群的基础，它的代码开源在GitHub的独立仓库中，主要提供了基于Docker容器构建集群并进行节点管理和服务管理的能力。</p>
+<p>在节点管理方面，SwarmKit能够将普通的虚拟机赋予集群角色，并承担节点增加、退出以及故障失联时自动处理的职责，
+确保在高可用的SwarmKit集群里任意一个节点故障都不会影响集群的整体功能。这个能力得益于在SwarmKit中使用了Etcd项目的
+Raft模块。</p>
+<p>Raft是一种分布式一致性协议，目的在于解决在不可信任的网络集群中进行状态确认的问题。Raft协议把集群中的节点分为三种角色：
+<code class="docutils literal"><span class="pre">Leader</span></code>、<code class="docutils literal"><span class="pre">Follower</span></code>、<code class="docutils literal"><span class="pre">Candidate</span></code>。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>  在任何时刻，集群中只存在一个Leader角色的节点，它保存整个集群的完整状态，其余节点都作为Follower角色，
+从Leader节点同步状态信息。在集群刚刚创建时，第一个进入集群的节点通常会将自己标记为Leader,
+此后进入的节点都是Follower。这样的角色划分并没有什么奇特之处，不过Raft协议的高明之处在于，集群中的角色并非一成不变的。
+Leader节点依靠定时向所有Follower发送心跳数据包来保持其地位，当Follower节点在一定的时间周期内没有收到来自Leader节点的心跳数据包时
+(通常是发生了网络分区或是节点故障)，就会发起新一轮&quot;&quot;Leader选举&quot;，此时，当前在Raft集群中所有正常节点都将进入Candidate角色，
+并在一段随机的延时后向其他节点发出”给我投票“的请求，每个处于Candidate角色的节点都会把票投给第一个向自己发誓”投票“请求的节点，若有
+Candidate节点在此轮投票中获得总节点数量一半以上的投票，则它会将字节标记位新的Leader。否则重新进入下一轮投票，直到所有节点获得半数以上的票数，每
+成功选举一次 新Leader的Term（任届）值都会比之前Leader的增加1.当集群中由于网络或其他原因的故障出现分裂又重新合并时，
+集群中可能会出现多于一个的Leader节点，此时，Term值更高的一个节点将成为真正的Leader。
+</pre></div>
+</div>
+<p>Raft集群中的角色转换如图： <img alt="image1" src="01.Docker技术入门与实战-3版\../../_static/docker_leader00001.png" /></p>
+<p>在服务管理方面，SwarmKit能够将用户创建的服务以Task为单元，依据当前整个集群各节点的负荷情况，自动地分配到适当的节点上运行，
+并对这些服务的运行状态进行持续跟踪，所有的这些信息都将存储到Raft集群中，确保了服务状态不受节点故障的影响。</p>
+<p>除了服务的调度，SwarmKit还提供了<code class="docutils literal"><span class="pre">服务路由</span></code>、<code class="docutils literal"><span class="pre">负载均衡</span></code>、<code class="docutils literal"><span class="pre">故障处理</span></code>和<code class="docutils literal"><span class="pre">在线升级</span></code>等能力。</p>
+<p>通常来说，在集群里创建的服务单元，其后端可以由多个运行在各个节点上的同种容器组成分担负载压力的逻辑单元。</p>
+<p>·
+当有外部请求时，SwarmKit负责将这些请求均匀地分担到每个执行业务的容器里。
+·
+当因部分容器意外崩溃而无法提供正常服务时，SwarmKit会检测到这些问题，并自动的创建新的容器以确保每个服务后端的容器数量与预期保持一致。</p>
+<p>SwarmKit集群中的服务 <img alt="image2" src="01.Docker技术入门与实战-3版\../../_static/SwarmKit.png" /></p>
+<p>SwarmKit依赖Raft吸引保持集群状态的高可用，在Raft协议中，为了确保集群的状态和信息一致性，
+Leader节点每次对存储的数据进行修改时，都需要告知所有Follower节点，并在获得半数以上Followe确认后，才能够将数据的修改持久化。
+随着节点数量的增加，确认消息的成本将成倍增长。因此，SwarmKit又将所有节点划分成了<code class="docutils literal"><span class="pre">Manager</span></code>和<code class="docutils literal"><span class="pre">Worker</span></code>两种角色类型，
+这两类节点都会参与服务器的调度，但只有Manager节点真正保存集群信息,并且参与Raft的选举过程。</p>
+<p>这里的两种“角色”十分容易被混淆，它们在各自的术语中都被称为“Role”，因此需要通过上下文来识别。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>· SwarmKit(以及Swarm Mode)集群的角色： 用来区分Manager或Worker，它们的关键差异在于是否存储Raft数据以及是否接收用户的操作请求。
+· Raft集群的角色： 指的是Leader、Follower或Candidate，它们只存在于SwarmKit的Manager角色节点，各角色的关键差异在于是否主导Raft协议中的数据一致性协商。
+</pre></div>
+</div>
+<p>SwarmKit节点作为Manager还是Worker，是在节点进入集群时人为指定的，它同样可以在节点创建之后再进行转换，只不过这种转换不会自动发生，
+需要人工指派。</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id22">创建SwarmKit集群</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span>SwarmKit没有发布编译过的二进制版本，因为通常用户都会用Docker的Swarm Mode来间接地使用它。如果想直接使用SwarmKit工具，最直接的方式
+就是获取源代码进行编译。首先通过Git下载它的代码仓库，如下：
+
+git clone https://github.com/docker/swarmkit.git
+
+编译SwarmKit需要一个Goloang的SDK和响应的开发工具链，若手头上没有这样的环境，一种比较简便的办法是使用提供了这种环境的Docker镜像，
+例如官方的golang:1.8进行，执行以下命令将SwarmKit代码目录挂载到Docker容器里进行构建。
+
+docker run --rm -it \
+       -v `pwd`/swarmkit:/go/src/github.com/docker/swarmkit \
+       -w /go/src/github.com/docker/swarmkit/golang:1.8 \
+       make binaries
+
+构建完成的文件存放在SwarmKit代码目录的“bin”文件夹内，将其中的swarmctl和swarmd两个文件拷贝到系统PATH变量指定的目录中。
+例如：“/usr/local/bin”，如下所示：
+sudo mv swarmkit/bin/swarmctl swarmkit/bin/swarmd /usr/loacal/bin
+</pre></div>
+</div>
+<p>在SwarmKit项目中</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>·swarmd是负责管理和维护集群的后台进程。
+·swarmctl是用户进行集群交互式操作的工具。
+不带任何参数的swarmd命令将用默认配置创建一个集群，并将当前节点作为集群的第一个Manager节点。
+默认配置会使用用户当前的目录存放SwarmKit运行过程中产生的各种数据文件，这并不是一种推荐的做法。
+</pre></div>
+</div>
+<p>下面这个命令会在系统后台启动swarmd进程，并制定集群的状态数据存放目录，监听的Socket文件位置、节点名字以及日志文件位置。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmd</span> <span class="o">--</span><span class="n">state</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">node</span><span class="o">-</span><span class="n">mgmt</span><span class="o">-</span><span class="mi">01</span> <span class="o">--</span><span class="n">listen</span><span class="o">-</span><span class="n">control</span><span class="o">-</span><span class="n">api</span>\
+                   <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">mgmt</span><span class="o">-</span><span class="mf">01.</span><span class="n">sock</span> <span class="o">--</span><span class="n">hostname</span> <span class="n">mgmt</span><span class="o">-</span><span class="mi">01</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">mgmt</span><span class="o">-</span><span class="mf">01.</span><span class="n">log</span> <span class="mi">2</span><span class="o">&gt;&amp;</span><span class="mi">1</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+<p>这样就得到了只有一个Manager节点的最小化SwarmKit集群，从严格意义来说，它还算不算一个真正的集群，但在这个单节点集群中已经可以执行SwarmKit的
+各种管理操作，并且它也是创建更大规模集群的基础。</p>
+<p>此时，使用swarmctl命令可以查看集群的信息，为了让swarmctl能够连接到SwarmKit集群，需要使用–socket参数或SWARM_SOCKET环境变量指定通信的Socket文件位置。</p>
+<p><code class="docutils literal"><span class="pre">swarmctl</span> <span class="pre">node</span> <span class="pre">ls</span></code>命令将列出节点的信息。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">SWARM_SOCKET</span><span class="o">=/</span><span class="n">tmp</span><span class="o">/</span><span class="n">mgmt</span><span class="o">-</span><span class="mf">01.</span><span class="n">sock</span>
+<span class="n">swarmctl</span> <span class="n">node</span> <span class="n">ls</span>
+</pre></div>
+</div>
+<p>为了想集群中添加更多的节点，还需要查询出当前Manager节点的IP地址和集群的<code class="docutils literal"><span class="pre">Join</span> <span class="pre">Token</span></code></p>
+<p>集群的<code class="docutils literal"><span class="pre">Join</span> <span class="pre">Token</span></code>相当于新节点加入集群的密码，只是提供了正确Token的请求才会被接收
+此外，<code class="docutils literal"><span class="pre">Join</span> <span class="pre">Token</span></code>还可被用来区分新节点角色是<code class="docutils literal"><span class="pre">Manager</span></code>还是<code class="docutils literal"><span class="pre">Worker</span></code>。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ip</span> <span class="n">addr</span> <span class="n">show</span> <span class="n">eth0</span>
+<span class="n">swarmctl</span> <span class="n">cluster</span> <span class="n">inspect</span> <span class="n">default</span>
+</pre></div>
+</div>
+<p>接下来向集群添加新的节点，首先将编译出来的swarmctl和swarmd文件拷贝到其他需要加入SwarmKit集群的节点上，
+同样放到PATH环境变量的目录里，在启动swarmd进程时，除了指定状态数据目录等信息，还需要提供
+–join-addr和
+–join-token参数表示加入已有集群(而不是新建集群)。这里使用集群的Worker
+Join Token将该节点作为Worker角色。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>MANAGER_IP=&lt;Manager 节点IP&gt;
+JOIN_TOKENS=&lt;woker Join Token&gt;
+
+swarmd --state-dir /tmp/node-work-01 --hostname work-01\
+       --join-addr ${MANAGER_IP}:4242 \
+       --join-token ${JOIN_TOKENS} &gt; /tmp/work-01.log 2&gt;&amp;1 &amp;
+</pre></div>
+</div>
+<p>重复该过程，添加更多节点到集群中，然后回到任意一个Manager节点上使用swarmctl
+node ls命令查看集群的节点信息。 如下所示</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmctl</span> <span class="n">node</span> <span class="n">ls</span>
+</pre></div>
+</div>
+<p>需要注意的是，所有swarmctl命令必须连接到Manager节点的Socket文件才能使用，
+通常来说这也意味着只能在Manager节点上使用swarmctl命令，因为只有Manager节点才真正存储了集群的状态信息，
+而Worker节点仅仅用于执行服务器容器。</p>
+<p>使用<code class="docutils literal"><span class="pre">swarmctl</span> <span class="pre">node</span> <span class="pre">promote</span></code>和<code class="docutils literal"><span class="pre">swarmctl</span> <span class="pre">node</span> <span class="pre">demote</span></code>命令可以对节点的角色进行转换，它们的参数都是节点的ID，
+前者将一个Worker节点提升为Manager节点，后者反之。</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id23">SwarmKit停机维护</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>SwarmKit还为节点提供了“停机维护”的功能，命令是<code class="docutils literal"><span class="pre">swarmctl</span> <span class="pre">node</span> <span class="pre">drain</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmctl</span> <span class="n">node</span> <span class="n">drain</span> <span class="o">&lt;</span><span class="n">节点ID</span><span class="o">&gt;</span>
+
+<span class="c1"># 被指定的节点可用状态会被标记位“DRAIN”，此时如果该节点上运行有SwarmKit托管的容器服务，将被自动迁移到其他节点上运行。</span>
+<span class="n">swarmctl</span> <span class="n">node</span> <span class="n">ls</span>
+</pre></div>
+</div>
+<p>使用<code class="docutils literal"><span class="pre">swarmctl</span> <span class="pre">node</span> <span class="pre">activate</span></code>可将节点恢复为正常运行状态，如下所示：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmctl</span> <span class="n">node</span> <span class="n">activate</span> <span class="o">&lt;</span><span class="n">Node</span><span class="o">-</span><span class="n">ID</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id24">在SwarmKit上运行服务</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="task">
+<h3><a class="toc-backref" href="#id25">创建Task服务</a><a class="headerlink" href="#task" title="Permalink to this headline">¶</a></h3>
+<p>· 创建docker容器</p>
+<p><code class="docutils literal"><span class="pre">swarmctl</span> <span class="pre">service</span> <span class="pre">create</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmctl</span> <span class="n">service</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="n">nginx</span> <span class="o">--</span><span class="n">image</span> <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="swarmctl-service-ls">
+<h3><a class="toc-backref" href="#id26">使用swarmctl service ls命令查看当前集群运行的所有服务。</a><a class="headerlink" href="#swarmctl-service-ls" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmctl</span> <span class="n">service</span> <span class="n">ls</span>
+</pre></div>
+</div>
+<p>查看单个服务的详细信息可以使用<code class="docutils literal"><span class="pre">swarmctl</span> <span class="pre">service</span> <span class="pre">inspect</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmctl</span> <span class="n">service</span> <span class="n">inspect</span> <span class="n">nginx</span>
+</pre></div>
+</div>
+<p>可以通过<code class="docutils literal"><span class="pre">swarmctl</span> <span class="pre">service</span> <span class="pre">update</span></code>命令来更新它的一些属性,比如容器副本个数。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmctl</span> <span class="n">service</span> <span class="n">update</span> <span class="n">nginx</span> <span class="o">--</span><span class="n">replicas</span> <span class="mi">6</span>
+</pre></div>
+</div>
+<p>查看更新后的服务状况，可以发现名称是nginx的这个服务副本数变成了“6/6”。
+表示目标副本数量是6，实际运行的副本数也是6.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmctl</span> <span class="n">service</span> <span class="n">ls</span>
+</pre></div>
+</div>
+<p>使用swarmctl service inpsect nginx
+命令将列出其中每个容器副本所对应的Task信息。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmctl</span> <span class="n">service</span> <span class="n">inspect</span> <span class="n">nginx</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3><a class="toc-backref" href="#id27">查看节点上运行的容器</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">ps</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h3><a class="toc-backref" href="#id28">动态更新容器内容</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>下面这个命令可以将nginx服务器的版本升级到1.11.3-alpine</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">swarmctl</span> <span class="n">service</span> <span class="n">update</span> <span class="n">nginx</span> <span class="o">--</span><span class="n">image</span> <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">3</span><span class="o">-</span><span class="n">alpine</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id7">
+<h2><a class="toc-backref" href="#id29">SwarmKit其他功能</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">swarmctl</span> <span class="pre">--help</span></code></p>
+</div>
+<div class="section" id="docker-swarm-mode">
+<h2><a class="toc-backref" href="#id30">Docker Swarm Mode</a><a class="headerlink" href="#docker-swarm-mode" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="swarm-mode">
+<h2><a class="toc-backref" href="#id31">Swarm Mode综述</a><a class="headerlink" href="#swarm-mode" title="Permalink to this headline">¶</a></h2>
+<p>Swarm Mode指的是Docker整合了SwarmKit项目后增加的那部分功能，包括如下：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>·集群的管理
+·节点的管理
+·服务的管理和编排
+·以及其他一些辅助功能
+</pre></div>
+</div>
+<p>Docker代码有许多地方直接import了<code class="docutils literal"><span class="pre">github.com/docker/swarmkit</span></code>姓名中的内容。
+实际上Docker集群相关的功能直接代理给了SwarmKit来实现。</p>
+<p>从使用的角度上，Swarm Mode在许多方面也都有着明细的SwarmKit影子，
+例如将集群节点分成 Manager和Worker，使用Token方式为集群添加节点：</p>
+<p>其中的许多概念，如Service、Task、Ssecret等，都直接沿用了SwarmKit中的相应称呼。</p>
+<p>同时，二者依然存在着一些差异，比如：Swarm
+Mode弱化了Task的概念而增强了对服务编排的支持。</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="toc-backref" href="#id32">集群的创建与销毁</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>Manager</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">33</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker swarm init --advertise-addr 172.16.74.33</span>
+<span class="n">Swarm</span> <span class="n">initialized</span><span class="p">:</span> <span class="n">current</span> <span class="n">node</span> <span class="p">(</span><span class="n">p6a4suetdm9uvmlb531al1sp8</span><span class="p">)</span> <span class="ow">is</span> <span class="n">now</span> <span class="n">a</span> <span class="n">manager</span><span class="o">.</span>
+
+<span class="n">To</span> <span class="n">add</span> <span class="n">a</span> <span class="n">worker</span> <span class="n">to</span> <span class="n">this</span> <span class="n">swarm</span><span class="p">,</span> <span class="n">run</span> <span class="n">the</span> <span class="n">following</span> <span class="n">command</span><span class="p">:</span>
+
+    <span class="n">docker</span> <span class="n">swarm</span> <span class="n">join</span> <span class="o">--</span><span class="n">token</span> <span class="n">SWMTKN</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="mi">04</span><span class="n">rqs15nl0af1kev66lxyoy255l1a3uda0e2ew68zwaq6i6ew8</span><span class="o">-</span><span class="mi">7</span><span class="n">owtzn62ap6c189ivx3jx787j</span> <span class="mf">172.16</span><span class="o">.</span><span class="mf">74.33</span><span class="p">:</span><span class="mi">2377</span>
+
+<span class="n">To</span> <span class="n">add</span> <span class="n">a</span> <span class="n">manager</span> <span class="n">to</span> <span class="n">this</span> <span class="n">swarm</span><span class="p">,</span> <span class="n">run</span> <span class="s1">&#39;docker swarm join-token manager&#39;</span> <span class="ow">and</span> <span class="n">follow</span> <span class="n">the</span> <span class="n">instructions</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Worker1</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">38</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker swarm join --token SWMTKN-1-04rqs15nl0af1kev66lxyoy255l1a3uda0e2ew68zwaq6i6ew8-7owtzn62ap6c189ivx3jx787</span>
+<span class="n">j</span> <span class="mf">172.16</span><span class="o">.</span><span class="mf">74.33</span><span class="p">:</span><span class="mi">2377</span><span class="n">This</span> <span class="n">node</span> <span class="n">joined</span> <span class="n">a</span> <span class="n">swarm</span> <span class="k">as</span> <span class="n">a</span> <span class="n">worker</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Worker2</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker swarm join --token SWMTKN-1-04rqs15nl0af1kev66lxyoy255l1a3uda0e2ew68zwaq6i6ew8-7owtzn62ap6c189ivx3jx787</span>
+<span class="n">j</span> <span class="mf">172.16</span><span class="o">.</span><span class="mf">74.33</span><span class="p">:</span><span class="mi">2377</span><span class="n">This</span> <span class="n">node</span> <span class="n">joined</span> <span class="n">a</span> <span class="n">swarm</span> <span class="k">as</span> <span class="n">a</span> <span class="n">worker</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>退出集群</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker swarm leave</span>
+<span class="n">Node</span> <span class="n">left</span> <span class="n">the</span> <span class="n">swarm</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span>· 如果这个节点是Work节点，那么它将直接退出集群。Docker集群会自动将该节点上的所有服务前移到其他节点上继续运行。
+
+· 如果这个节点是Manager节点，并且恰好是当前Manager中Raft集群的Leader，则退出集群失败。
+如果确实要这么做，可以使用--force参数使其强制退出。
+
+· 如果这个节点是Manager，且当前集群中有且只有两个Manger节点，那么即使此节点是Follower角色，由于它若退出会使得Raft集群无法保持
+&quot;半数以上成员&quot;可用，因此退出集群失败。如果确实需要退出，同样可以使用--force参数强制执行。
+</pre></div>
+</div>
+<p>当集群中的所有节点都退出后，集群就被销毁了。</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="toc-backref" href="#id33">节点管理</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h3><a class="toc-backref" href="#id34">查看各个节点的基本状态信息</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">33</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker node ls</span>
+<span class="n">ID</span>                            <span class="n">HOSTNAME</span>            <span class="n">STATUS</span>              <span class="n">AVAILABILITY</span>        <span class="n">MANAGER</span> <span class="n">STATUS</span>      <span class="n">ENGINE</span> <span class="n">VERSION</span>
+<span class="n">awhw84a6cnvfew2eyeb2cnt1r</span>     <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span>        <span class="n">Ready</span>               <span class="n">Active</span>                                  <span class="mf">19.03</span><span class="o">.</span><span class="mi">5</span>
+<span class="n">p6a4suetdm9uvmlb531al1sp8</span> <span class="o">*</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">33</span>        <span class="n">Ready</span>               <span class="n">Active</span>              <span class="n">Leader</span>              <span class="mf">19.03</span><span class="o">.</span><span class="mi">5</span>
+<span class="mi">9</span><span class="n">nek7i79d0onbsidnfeat7rm8</span>     <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">38</span>        <span class="n">Ready</span>               <span class="n">Active</span>                                  <span class="mf">19.03</span><span class="o">.</span><span class="mi">5</span>
+</pre></div>
+</div>
+<p>转换Worker为Manager</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">33</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker node promote awhw84a6cnvfew2eyeb2cnt1r</span>
+<span class="n">Node</span> <span class="n">awhw84a6cnvfew2eyeb2cnt1r</span> <span class="n">promoted</span> <span class="n">to</span> <span class="n">a</span> <span class="n">manager</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">swarm</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>转换Manager为Worker</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">33</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker node demote p6a4suetdm9uvmlb531al1sp8</span>
+<span class="n">Manager</span> <span class="n">p6a4suetdm9uvmlb531al1sp8</span> <span class="n">demoted</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">swarm</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id11">
+<h2><a class="toc-backref" href="#id35">服务管理</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>Swarm Mode的服务管理模型 <img alt="image3" src="01.Docker技术入门与实战-3版\../../_static/docker-swarm-server1.png" /></p>
+<p>Task是对底层运行单元的抽象，在当前的Swarm
+Mode中，一个Task实际上就是一个容器，它是Swarm Mode的最小
+调度单元，用于运行一个Service的容器副本。</p>
+<p>在Swarm Mode中没有专门管理Task的命令，不过可以通常直接使用docker
+container命令组来操作容器。</p>
+<p>Service是管理部署的单元，每个Service中可以包含一个或多个相同的容器副本，分布在集群的不同节点上，根据负载需要进行扩展。</p>
+<p>此外，Service还封装了负载均衡的功能，用于为属于同一个Service的分散容器提供统一的访问入口。</p>
+<p>示例</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service create --detach \</span>
+<span class="o">&gt;</span> <span class="o">--</span><span class="n">name</span> <span class="n">web</span> \
+<span class="o">&gt;</span> <span class="o">--</span><span class="n">publish</span> <span class="mi">8080</span><span class="p">:</span><span class="mi">80</span> \
+<span class="o">&gt;</span> <span class="o">--</span><span class="n">replicas</span><span class="o">=</span><span class="mi">3</span> \
+<span class="o">&gt;</span> <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service ls</span>
+<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">MODE</span>                <span class="n">REPLICAS</span>            <span class="n">IMAGE</span>                 <span class="n">PORTS</span>
+<span class="n">qlbr8zqmp357</span>        <span class="n">web</span>                 <span class="n">replicated</span>          <span class="mi">3</span><span class="o">/</span><span class="mi">3</span>                 <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>   <span class="o">*</span><span class="p">:</span><span class="mi">8080</span><span class="o">-&gt;</span><span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service ps qlbr8zqmp357</span>
+<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">IMAGE</span>                 <span class="n">NODE</span>                <span class="n">DESIRED</span> <span class="n">STATE</span>       <span class="n">CURRENT</span> <span class="n">STATE</span>            <span class="n">ERROR</span>
+         <span class="n">PORTSdxbk97os5vsw</span>        <span class="n">web</span><span class="o">.</span><span class="mi">1</span>               <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">59</span> <span class="n">seconds</span> <span class="n">ago</span>
+         <span class="n">nzgsltvo7k2n</span>        <span class="n">web</span><span class="o">.</span><span class="mi">2</span>               <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">33</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">55</span> <span class="n">seconds</span> <span class="n">ago</span>
+         <span class="n">u9xvu1kjei5c</span>        <span class="n">web</span><span class="o">.</span><span class="mi">3</span>               <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">38</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">58</span> <span class="n">seconds</span> <span class="n">ago</span>
+</pre></div>
+</div>
+<p>或者使用1条命令查看所有Task的状态信息，如下所示：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service ls -q|xargs -n1 docker service ps</span>
+<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">IMAGE</span>                 <span class="n">NODE</span>                <span class="n">DESIRED</span> <span class="n">STATE</span>       <span class="n">CURRENT</span> <span class="n">STATE</span>          <span class="n">ERROR</span>
+       <span class="n">PORTSdxbk97os5vsw</span>        <span class="n">web</span><span class="o">.</span><span class="mi">1</span>               <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">16</span> <span class="n">hours</span> <span class="n">ago</span>
+       <span class="n">nzgsltvo7k2n</span>        <span class="n">web</span><span class="o">.</span><span class="mi">2</span>               <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">33</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">16</span> <span class="n">hours</span> <span class="n">ago</span>
+       <span class="n">u9xvu1kjei5c</span>        <span class="n">web</span><span class="o">.</span><span class="mi">3</span>               <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">38</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">16</span> <span class="n">hours</span> <span class="n">ago</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id12">
+<h2><a class="toc-backref" href="#id36">修改服务容器副本数量</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">service</span> <span class="n">scale</span>
+</pre></div>
+</div>
+<p>以下两个命令是等效的</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service scale web=2</span>
+<span class="n">web</span> <span class="n">scaled</span> <span class="n">to</span> <span class="mi">2</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service update web --replicas 3</span>
+<span class="n">web</span>
+<span class="n">overall</span> <span class="n">progress</span><span class="p">:</span> <span class="mi">3</span> <span class="n">out</span> <span class="n">of</span> <span class="mi">3</span> <span class="n">tasks</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service ls -q|xargs -n1 docker service ps</span>
+<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">IMAGE</span>                 <span class="n">NODE</span>                <span class="n">DESIRED</span> <span class="n">STATE</span>       <span class="n">CURRENT</span> <span class="n">STATE</span>                <span class="n">ERROR</span>
+             <span class="n">PORTSdxbk97os5vsw</span>        <span class="n">web</span><span class="o">.</span><span class="mi">1</span>               <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">16</span> <span class="n">hours</span> <span class="n">ago</span>
+             <span class="n">nzgsltvo7k2n</span>        <span class="n">web</span><span class="o">.</span><span class="mi">2</span>               <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">33</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">16</span> <span class="n">hours</span> <span class="n">ago</span>
+             <span class="n">byz1i84j6wc2</span>        <span class="n">web</span><span class="o">.</span><span class="mi">3</span>               <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">alpine</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">38</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="n">about</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">ago</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id13">
+<h2><a class="toc-backref" href="#id37">服务滚动升级</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<p>服务的“滚动升级”指的是将集群中处于同一个负载均衡器背后的副本实例逐个替换成新的版本，并
+动态的更新负载的流量，以确保在整个升级过程中对外的服务功能不停止。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">service</span> <span class="n">update</span> <span class="n">web</span> <span class="o">--</span><span class="n">image</span> <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">5</span><span class="o">-</span><span class="n">alpine</span> <span class="o">--</span><span class="n">update</span><span class="o">-</span><span class="n">parallelism</span> <span class="mi">1</span> <span class="o">--</span><span class="n">update</span><span class="o">-</span><span class="n">delay</span> <span class="mi">3</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>Task容器变化过程，每隔3s替换一个容器。</p>
+</div>
+<div class="section" id="id14">
+<h2><a class="toc-backref" href="#id38">查看服务的日志</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service ls</span>
+<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">MODE</span>                <span class="n">REPLICAS</span>            <span class="n">IMAGE</span>                 <span class="n">PORTS</span>
+<span class="n">qlbr8zqmp357</span>        <span class="n">web</span>                 <span class="n">replicated</span>          <span class="mi">3</span><span class="o">/</span><span class="mi">3</span>                 <span class="n">nginx</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">5</span><span class="o">-</span><span class="n">alpine</span>   <span class="o">*</span><span class="p">:</span><span class="mi">8080</span><span class="o">-&gt;</span><span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service logs qlbr</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service ls -q</span>
+<span class="n">qlbr8zqmp357</span>
+
+<span class="c1"># 如果只有一个服务的ID是q开头的，那么可以直接这样引用它，如下所示：</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker service logs q</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id15">
+<h2><a class="toc-backref" href="#id39">服务编排</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h2>
+<p>Compose一直以来是Docker服务的编排工具，它通过一个yaml文件描述各个容器之间的关联，然后提供一组命令来
+整体视角的操作所有容器。</p>
+<div class="section" id="id16">
+<h3><a class="toc-backref" href="#id40">单主机进行服务编排</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="compose">
+<h4>使用compose运行和停止服务<a class="headerlink" href="#compose" title="Permalink to this headline">¶</a></h4>
+<p>创建一个目录，新建名称为<code class="docutils literal"><span class="pre">docker-compose.yml</span></code>文件，内容如下:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span>
+<span class="n">services</span><span class="p">:</span>
+  <span class="n">redis</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">redis</span><span class="p">:</span><span class="mf">3.2</span><span class="o">.</span><span class="mi">5</span><span class="o">-</span><span class="n">alpine</span>
+    <span class="n">networks</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">demo</span><span class="o">-</span><span class="n">net</span>
+
+  <span class="n">app</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">flin</span><span class="o">/</span><span class="n">page</span><span class="o">-</span><span class="n">hit</span><span class="o">-</span><span class="n">counter</span><span class="p">:</span><span class="n">v1</span>
+    <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="mi">5000</span><span class="p">:</span><span class="mi">5000</span>
+    <span class="n">depends_on</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">redis</span>
+    <span class="n">networks</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">demo</span><span class="o">-</span><span class="n">net</span>
+<span class="n">networks</span><span class="p">:</span>
+  <span class="n">demo</span><span class="o">-</span><span class="n">net</span><span class="p">:</span>
+    <span class="n">external</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>上述yaml文件由两个服务和一个网络组成的系统，redis提供数据的外部缓存功能，APP服务是一个访问计数器，
+每次收到用户的请求时，就会从外部缓存中获取当前的访问总计数，将计数值加1.然后写回外部缓存。</p>
+<p><code class="docutils literal"><span class="pre">APP服务实现了无状态化，因此可以使用多个负载均衡的副本来分带用户的访问请求。</span></code></p>
+<p>使用Compose将这个文件描述的服务快速创建出来：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span> <span class="o">-</span><span class="n">d</span>
+</pre></div>
+</div>
+<p>访问当前节点的5000端口，会看到不断递增的访问计数。如下所示：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="p">]</span><span class="c1"># curl 127.0.0.1:5000</span>
+<span class="n">You</span> <span class="n">have</span> <span class="n">hit</span> <span class="n">this</span> <span class="n">page</span> <span class="mi">1</span> <span class="n">times</span><span class="o">.</span> <span class="o">-</span> <span class="n">Edition</span> <span class="n">v1</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="p">]</span><span class="c1"># curl 127.0.0.1:5000</span>
+<span class="n">You</span> <span class="n">have</span> <span class="n">hit</span> <span class="n">this</span> <span class="n">page</span> <span class="mi">2</span> <span class="n">times</span><span class="o">.</span> <span class="o">-</span> <span class="n">Edition</span> <span class="n">v1</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="p">]</span><span class="c1"># curl 127.0.0.1:5000</span>
+<span class="n">You</span> <span class="n">have</span> <span class="n">hit</span> <span class="n">this</span> <span class="n">page</span> <span class="mi">3</span> <span class="n">times</span><span class="o">.</span> <span class="o">-</span> <span class="n">Edition</span> <span class="n">v1</span>
+</pre></div>
+</div>
+<p>· 使用docker-compose批量停止所有容器。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="p">]</span><span class="c1"># docker-compose stop</span>
+<span class="n">Stopping</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose_app_1</span>   <span class="o">...</span> <span class="n">done</span>
+<span class="n">Stopping</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose_redis_1</span> <span class="o">...</span> <span class="n">done</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="p">]</span><span class="c1">#</span>
+</pre></div>
+</div>
+<p>· 快速删除整个服务，包括服务涉及的所有容器、网络和存储等资源。如下所示：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="p">]</span><span class="c1"># docker-compose down</span>
+<span class="n">Removing</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose_app_1</span>   <span class="o">...</span> <span class="n">done</span>
+<span class="n">Removing</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose_redis_1</span> <span class="o">...</span> <span class="n">done</span>
+<span class="n">Removing</span> <span class="n">network</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose_demo</span><span class="o">-</span><span class="n">net</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="docker-compose">
+<h2><a class="toc-backref" href="#id41">docker-compose子命令及其说明</a><a class="headerlink" href="#docker-compose" title="Permalink to this headline">¶</a></h2>
+<p><img alt="image4" src="01.Docker技术入门与实战-3版\../../_static/docker-compose00001.png" /> docker-compose up
+命令启动服务后，所启动的所有容器会保持在前台，并实时打印运行日志到控制台，
+如果用户希望docker-compose命令在启动完服务之后就把索引容器放到后台运行，此时需要加上-d参数。</p>
+<p>举例如下：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span>
+<span class="n">services</span><span class="p">:</span>
+  <span class="n">db</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">postgres</span>
+    <span class="n">volumes</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">data</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">postgresql</span><span class="o">/</span><span class="n">data</span>
+  <span class="n">webapp</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">webapp</span>
+    <span class="n">volumes</span><span class="p">:</span>                        <span class="c1">#挂载webapp_volumn存储卷</span>
+      <span class="o">-</span> <span class="n">webapp_volumn</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">static</span>
+    <span class="n">ports</span><span class="p">:</span>              <span class="c1">#指定端口映射</span>
+      <span class="o">-</span> <span class="s2">&quot;3000/udp&quot;</span>
+      <span class="o">-</span> <span class="s2">&quot;8000:8000&quot;</span>
+    <span class="n">networks</span><span class="p">:</span>         <span class="c1">#加入webapp_network网络</span>
+      <span class="o">-</span> <span class="n">webapp_network</span>
+    <span class="n">configs</span><span class="p">:</span>          <span class="c1">#挂载webapp_config外置配置</span>
+      <span class="o">-</span> <span class="n">webapp_config</span>
+    <span class="n">secrets</span><span class="p">:</span>            <span class="c1"># 挂载webapp_secret密文</span>
+      <span class="o">-</span> <span class="n">webapp_secret</span>
+    <span class="n">deploy</span><span class="p">:</span>
+      <span class="n">replicase</span><span class="p">:</span> <span class="mi">4</span>      <span class="c1">#启动4个副本</span>
+      <span class="n">update_config</span><span class="p">:</span>
+        <span class="n">parallelism</span><span class="p">:</span> <span class="mi">2</span>
+        <span class="n">delay</span><span class="p">:</span> <span class="mi">10</span><span class="n">s</span>
+      <span class="n">restart_policy</span><span class="p">:</span>   <span class="c1">#出错退出时自动重启，最多3次，间隔3s</span>
+        <span class="n">condition</span><span class="p">:</span> <span class="n">on</span><span class="o">-</span><span class="n">failure</span>
+        <span class="n">delay</span><span class="p">:</span> <span class="mi">5</span><span class="n">s</span>
+        <span class="n">max_attempts</span><span class="p">:</span> <span class="mi">3</span>
+      <span class="n">resources</span><span class="p">:</span>        <span class="c1">#最大和最小的资源使用量</span>
+        <span class="n">limits</span><span class="p">:</span>
+          <span class="n">cpus</span><span class="p">:</span> <span class="s1">&#39;0.1&#39;</span>
+          <span class="n">memory</span><span class="p">:</span> <span class="mi">300</span><span class="n">M</span>
+      <span class="n">reservations</span><span class="p">:</span>
+        <span class="n">cpus</span><span class="p">:</span> <span class="s1">&#39;0.01&#39;</span>
+        <span class="n">memory</span><span class="p">:</span> <span class="mi">100</span><span class="n">M</span>
+<span class="n">volumes</span><span class="p">:</span>              <span class="c1"># 名称是data的存储卷描述</span>
+  <span class="n">data</span><span class="p">:</span>
+    <span class="n">driver</span><span class="p">:</span> <span class="n">local</span>
+    <span class="n">external</span><span class="p">:</span> <span class="n">false</span>
+
+<span class="n">configs</span><span class="p">:</span>
+  <span class="n">webapp_config</span><span class="p">:</span>    <span class="c1">#名称是webapp_config的外置配置描述</span>
+  <span class="n">file</span><span class="p">:</span> <span class="o">./</span><span class="n">webapp_config</span>
+  <span class="n">external</span><span class="p">:</span> <span class="n">false</span>     <span class="c1">#external属性，表示外置配置的声明周期由Compose统一管理</span>
+
+<span class="n">networks</span><span class="p">:</span>
+  <span class="n">webapp_network</span><span class="p">:</span>     <span class="c1">#名称是webapp_network的网络描述</span>
+    <span class="n">driver</span><span class="p">:</span> <span class="n">bridge</span>    <span class="c1">#网络类型可以是bridge或overlat，但overlay类型的网络智能用于集群模式</span>
+<span class="c1">#    external: false  #false表示逐个网络是由Compose管理的，会自动创建和删除，若要使用预先创建的网络，并自行管理网络声明周期，可以将该属性设置为true。</span>
+</pre></div>
+</div>
+<p>使用方式如下：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="o">-</span><span class="n">f</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">my</span><span class="o">-</span><span class="n">compose</span><span class="o">-</span><span class="n">file</span><span class="o">.</span><span class="n">yml</span> <span class="n">up</span>
+</pre></div>
+</div>
+<p>对于更复杂的场景，还可以将编排文件进行组合。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="o">-</span><span class="n">f</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="o">.</span><span class="n">yml</span> <span class="o">-</span><span class="n">f</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">yml</span> <span class="n">up</span>
+</pre></div>
+</div>
+<p>如果compose-file.yml文件的内容发生了变化，例如替换了服务的镜像，修改了服务参数或是增加了新的服务。
+只需要在“compose-file.yml”文件所在的目录中再次执行docker-compose
+up-d命令。</p>
+<p>docker-compose会自动调整和重启相关的容器，使得运行的服务与描述保存一致，而无须手动重启或重建整个服务组。</p>
+</div>
+<div class="section" id="id17">
+<h2><a class="toc-backref" href="#id42">应用栈的管理</a><a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h2>
+<p>在Swarm集群中，将通过编排方式部署到集群中的一组服务称为“应用栈（Stack）”。
+通过Docker命令行工具的<code class="docutils literal"><span class="pre">docker</span> <span class="pre">stack</span></code>下的子命令可以对集群中的应用栈进行管理。
+对上面的例子稍加修改，使它更适用于在集群部署，如下所示：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s2">&quot;3.3&quot;</span>
+<span class="n">services</span><span class="p">:</span>
+  <span class="n">redis</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">redis</span><span class="p">:</span><span class="mf">3.2</span><span class="o">.</span><span class="mi">5</span><span class="o">-</span><span class="n">alpine</span>
+    <span class="n">networks</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">demo</span><span class="o">-</span><span class="n">net</span>
+
+  <span class="n">app</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">flin</span><span class="o">/</span><span class="n">page</span><span class="o">-</span><span class="n">hit</span><span class="o">-</span><span class="n">counter</span><span class="p">:</span><span class="n">v1</span>
+    <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="mi">5000</span><span class="p">:</span><span class="mi">5000</span>
+    <span class="n">depends_on</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">redis</span>
+    <span class="n">networks</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">demo</span><span class="o">-</span><span class="n">net</span>
+<span class="c1">#    增加多个副本</span>
+    <span class="n">deploy</span><span class="p">:</span>
+      <span class="n">replicas</span><span class="p">:</span> <span class="mi">2</span>
+<span class="n">networks</span><span class="p">:</span>
+  <span class="n">demo</span><span class="o">-</span><span class="n">net</span><span class="p">:</span>
+<span class="c1">#    更改网络驱动为overlay</span>
+    <span class="n">driver</span><span class="p">:</span> <span class="n">overlay</span>
+    <span class="n">external</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>使用docker
+swarm命令创建集群并添加几个节点，然后使用<code class="docutils literal"><span class="pre">docker</span> <span class="pre">stack</span> <span class="pre">deploy</span></code>命令创建部署到集群的应用栈，
+如下所示。</p>
+<p>· 注意<code class="docutils literal"><span class="pre">docker</span> <span class="pre">stack</span></code>命令只能用于已经开启Swarm Mode的节点。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">swarm</span><span class="p">]</span><span class="c1"># docker stack deploy -c docker-compose.yml app</span>
+<span class="n">Creating</span> <span class="n">network</span> <span class="n">app_demo</span><span class="o">-</span><span class="n">net</span>
+<span class="n">Creating</span> <span class="n">service</span> <span class="n">app_app</span>
+</pre></div>
+</div>
+<p>执行<code class="docutils literal"><span class="pre">docker</span> <span class="pre">stack</span> <span class="pre">ls</span></code>命令可以列出当前集群中的索引应用栈列表以及每个应用栈中包含的服务种类。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">swarm</span><span class="p">]</span><span class="c1"># docker stack ls</span>
+<span class="n">NAME</span>                <span class="n">SERVICES</span>            <span class="n">ORCHESTRATOR</span>
+<span class="n">app</span>                 <span class="mi">2</span>                   <span class="n">Swarm</span>
+</pre></div>
+</div>
+<p>指定一个应用栈，用<code class="docutils literal"><span class="pre">docker</span> <span class="pre">stack</span> <span class="pre">services</span> <span class="pre">app</span></code>命令列出该应用栈中的所有服务，如下所示：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">swarm</span><span class="p">]</span><span class="c1"># docker stack services app</span>
+<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">MODE</span>                <span class="n">REPLICAS</span>            <span class="n">IMAGE</span>                      <span class="n">PORTS</span>
+<span class="n">l4sxh4hs70ef</span>        <span class="n">app_redis</span>           <span class="n">replicated</span>          <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>                 <span class="n">redis</span><span class="p">:</span><span class="mf">3.2</span><span class="o">.</span><span class="mi">5</span><span class="o">-</span><span class="n">alpine</span>
+<span class="n">n16tefk4fpfs</span>        <span class="n">app_app</span>             <span class="n">replicated</span>          <span class="mi">1</span><span class="o">/</span><span class="mi">2</span>                 <span class="n">flin</span><span class="o">/</span><span class="n">page</span><span class="o">-</span><span class="n">hit</span><span class="o">-</span><span class="n">counter</span><span class="p">:</span><span class="n">v1</span>   <span class="o">*</span><span class="p">:</span><span class="mi">5000</span><span class="o">-&gt;</span><span class="mi">5000</span><span class="o">/</span><span class="n">tcp</span>
+</pre></div>
+</div>
+<p>使用<code class="docutils literal"><span class="pre">docker</span> <span class="pre">stack</span> <span class="pre">ps</span> <span class="pre">app</span></code>命令查看应用栈里的所有容器,如下所示:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">swarm</span><span class="p">]</span><span class="c1"># docker stack ps app</span>
+<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">IMAGE</span>                      <span class="n">NODE</span>                <span class="n">DESIRED</span> <span class="n">STATE</span>       <span class="n">CURRENT</span> <span class="n">STATE</span>             <span class="n">ERROR</span>               <span class="n">P</span>
+<span class="n">ORTSjp6j0yppddpl</span>        <span class="n">app_redis</span><span class="o">.</span><span class="mi">1</span>         <span class="n">redis</span><span class="p">:</span><span class="mf">3.2</span><span class="o">.</span><span class="mi">5</span><span class="o">-</span><span class="n">alpine</span>         <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">33</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">2</span> <span class="n">minutes</span> <span class="n">ago</span>
+<span class="n">h5gnvnip10lo</span>        <span class="n">app_app</span><span class="o">.</span><span class="mi">1</span>           <span class="n">flin</span><span class="o">/</span><span class="n">page</span><span class="o">-</span><span class="n">hit</span><span class="o">-</span><span class="n">counter</span><span class="p">:</span><span class="n">v1</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">38</span>        <span class="n">Running</span>             <span class="n">Preparing</span> <span class="mi">2</span> <span class="n">minutes</span> <span class="n">ago</span>
+<span class="n">nvynyvvu72ei</span>        <span class="n">app_app</span><span class="o">.</span><span class="mi">2</span>           <span class="n">flin</span><span class="o">/</span><span class="n">page</span><span class="o">-</span><span class="n">hit</span><span class="o">-</span><span class="n">counter</span><span class="p">:</span><span class="n">v1</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span>        <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">2</span> <span class="n">minutes</span> <span class="n">ago</span>
+</pre></div>
+</div>
+<p>基于Docker
+Service的特性，一旦集群模式的容器指定了监听端口，它会占用整个集群中所有节点的指定端口，
+虽然只运行了两个容器的副本，但在集群的任意一个节点上访问5000端口，都能访问到这个服务。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">swarm</span><span class="p">]</span><span class="c1"># curl 127.0.0.1:5000</span>
+<span class="n">You</span> <span class="n">have</span> <span class="n">hit</span> <span class="n">this</span> <span class="n">page</span> <span class="mi">1</span> <span class="n">times</span><span class="o">.</span> <span class="o">-</span> <span class="n">Edition</span> <span class="n">v1</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">33</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># curl 127.0.0.1:5000</span>
+<span class="n">You</span> <span class="n">have</span> <span class="n">hit</span> <span class="n">this</span> <span class="n">page</span> <span class="mi">2</span> <span class="n">times</span><span class="o">.</span> <span class="o">-</span> <span class="n">Edition</span> <span class="n">v1</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">38</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># curl 127.0.0.1:5000</span>
+<span class="n">You</span> <span class="n">have</span> <span class="n">hit</span> <span class="n">this</span> <span class="n">page</span> <span class="mi">3</span> <span class="n">times</span><span class="o">.</span> <span class="o">-</span> <span class="n">Edition</span> <span class="n">v1</span>
+</pre></div>
+</div>
+<div class="section" id="docker-compose-yml">
+<h3><a class="toc-backref" href="#id43">服务升级，若docker-compose.yml发生修改</a><a class="headerlink" href="#docker-compose-yml" title="Permalink to this headline">¶</a></h3>
+<p>只要修改了docker-compose.yml文件，需要直接执行<code class="docutils literal"><span class="pre">docker</span> <span class="pre">stack</span> <span class="pre">deploy</span></code>命令，如下所示：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">stack</span> <span class="n">deploy</span> <span class="o">-</span><span class="n">c</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="o">.</span><span class="n">yml</span> <span class="n">app</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id18">
+<h3><a class="toc-backref" href="#id44">删除指定的应用栈以及所有相关的资源</a><a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">74</span><span class="o">-</span><span class="mi">19</span> <span class="n">docker</span><span class="o">-</span><span class="n">swarm</span><span class="p">]</span><span class="c1"># docker stack rm app</span>
+<span class="n">Removing</span> <span class="n">service</span> <span class="n">app_app</span>
+<span class="n">Removing</span> <span class="n">service</span> <span class="n">app_redis</span>
+<span class="n">Removing</span> <span class="n">network</span> <span class="n">app_demo</span><span class="o">-</span><span class="n">net</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id19">
+<h2><a class="toc-backref" href="#id45">Swarm Mode的图形界面</a><a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h2>
+<p>docker-compose-ui.yml</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span>
+<span class="n">services</span><span class="p">:</span>
+  <span class="n">visualizer</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">dockersamples</span><span class="o">/</span><span class="n">visualizer</span><span class="p">:</span><span class="n">latest</span>
+    <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s2">&quot;8888:8080&quot;</span>
+    <span class="n">volumes</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s2">&quot;/var/run/docker.sock:/var/run/docker.sock&quot;</span>
+    <span class="n">deploy</span><span class="p">:</span>
+      <span class="n">replicas</span><span class="p">:</span> <span class="mi">1</span>
+      <span class="n">placement</span><span class="p">:</span>
+        <span class="n">constraints</span><span class="p">:</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">manager</span><span class="p">]</span>
+
+
+  <span class="n">portainer</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">portainer</span><span class="o">/</span><span class="n">portainer</span><span class="p">:</span><span class="n">latest</span>
+    <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s2">&quot;9000:9000&quot;</span>
+    <span class="n">volumes</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s2">&quot;/var/run/docker.sock:/var/run/docker.sock&quot;</span>
+    <span class="n">deploy</span><span class="p">:</span>
+      <span class="n">replicas</span><span class="p">:</span> <span class="mi">1</span>
+      <span class="n">placement</span><span class="p">:</span>
+        <span class="n">constraints</span><span class="p">:</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">manager</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="20.搭建一个Web应用栈.html" class="btn btn-neutral float-right" title="搭建一个Web应用栈" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="18.Docker三剑客之Docker-Machine.html" class="btn btn-neutral float-left" title="Docker三剑客之Docker-Machine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

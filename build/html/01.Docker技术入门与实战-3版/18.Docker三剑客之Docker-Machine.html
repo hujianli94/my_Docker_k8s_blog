@@ -1,0 +1,567 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Docker三剑客之Docker-Machine &mdash; 运维开发修炼之路</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: ''
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">01.Docker技术入门与实战-第3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes实战指南/index.html">02.Kubernetes实战指南</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Docker三剑客之Docker-Machine</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/01.Docker技术入门与实战-3版/18.Docker三剑客之Docker-Machine.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#dockerdocker-machine" id="id11">Docker三剑客之Docker-Machine</a><ul>
+<li><a class="reference internal" href="#machine" id="id12">安装Machine</a><ul>
+<li><a class="reference internal" href="#linux" id="id13">1.Linux平台上的安装</a></li>
+<li><a class="reference internal" href="#mac-os" id="id14">2.Mac OS系统上的安装</a></li>
+<li><a class="reference internal" href="#windows" id="id15">3.Windows系统上的安装</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1" id="id16">使用Machine</a><ul>
+<li><a class="reference internal" href="#id2" id="id17">1.虚拟机</a></li>
+<li><a class="reference internal" href="#id3" id="id18">2.本地主机</a></li>
+<li><a class="reference internal" href="#id4" id="id19">3.云平台驱动</a></li>
+<li><a class="reference internal" href="#id5" id="id20">4.客户端配置</a></li>
+<li><a class="reference internal" href="#id6" id="id21">Machine命令</a></li>
+<li><a class="reference internal" href="#id7" id="id22">本章小结</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id8" id="id23">参考文献</a></li>
+<li><a class="reference internal" href="#id9" id="id24">本章小结</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="dockerdocker-machine">
+<h1><a class="toc-backref" href="#id11">Docker三剑客之Docker-Machine</a><a class="headerlink" href="#dockerdocker-machine" title="Permalink to this headline">¶</a></h1>
+<p>Docker
+Machine是Docker官方三剑客项目之一，负责使用Docker容器的第一步：在多种平台上快速安装和维护Docker运行环境。它支持多种平台，让用户可以在很短时间内在本地或云环境中搭建一套Docker主机集群。</p>
+<p>本章将介绍Docker Machine项目的具体情况，以及安装和使用的相关命令。</p>
+<p>Machine项目是Docker官方的开源项目，负责实现对Docker运行环境进行安装和管理，特别在管理多个Docker环境时，使用Machine要比手动管理高效得多。</p>
+<p><img alt="image0" src="../_images/docker_machine001.png" /></p>
+<p>Machine的定位是“在本地或者云环境中创建Docker主机”。其代码在<a class="reference external" href="https://github.com/docker/machine">https://github.com/docker/machine</a>
+上开源，遵循Apache-2.0许可，目前最新版本为0.13.0。</p>
+<p>Machine项目主要由Go语言编写，用户可以在本地任意指定由Machine管理的Docker主机，并对其进行操作。</p>
+<p>其基本功能包括：</p>
+<p>·在指定节点或平台上安装Docker引擎，配置其为可使用的Docker环境；</p>
+<p>·集中管理（包括启动、查看等）所安装的Docker环境。</p>
+<p>Machine连接不同类型的操作平台是通过对应驱动来实现的，目前已经集成了包括AWS、IBM、Google，以及OpenStack、VirtualBox、vSphere等多种云平台的支持。</p>
+<p>Docker Machine可以在多种操作系统平台上安装，包括Linux、Mac
+OS以及Windows，下面分别介绍。</p>
+<div class="section" id="machine">
+<h2><a class="toc-backref" href="#id12">安装Machine</a><a class="headerlink" href="#machine" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="linux">
+<h3><a class="toc-backref" href="#id13">1.Linux平台上的安装</a><a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h3>
+<p>在Linux平台上的安装十分简单，推荐从官方Release库（<a class="reference external" href="https://github.com/docker/ma-chine/releases">https://github.com/docker/ma-chine/releases</a>
+）直接下载编译好的二进制文件即可。</p>
+<p>例如，在Linux 64位系统上直接下载对应的二进制包，以最新的0.13.0为例：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ sudo curl -L https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-&#39;uname -s&#39;-&#39;uname -m&#39; &gt; docker-machine
+$ sudo mv docker-machine /usr/local/bin/docker-machine
+$ sudo chmod +x /usr/local/bin/docker-machine
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>安装完成后，查看版本信息，验证运行正常：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine -v
+docker-machine version 0.13.0, build 9ba6da9
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>为了支持命令自动补全，还可以安装补全脚本：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ scripts=( docker-machine-prompt.bash docker-machine-wrapper.bash docker-machine.bash ); for i in &quot;${scripts[@]}&quot;; do sudo wget https://raw.githubuser-content.com/docker/machine/v0.13.0/contrib/completion/bash/${i} -P /etc/bash_completion.d; done
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="mac-os">
+<h3><a class="toc-backref" href="#id14">2.Mac OS系统上的安装</a><a class="headerlink" href="#mac-os" title="Permalink to this headline">¶</a></h3>
+<p>Mac
+OS平台上的安装跟Linux平台十分类似，唯一不同的是下载二进制文件的路径不同。例如，同样是0.13.0版本，Mac
+OS平台上的安装命令为：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ curl -L https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-&#39;uname -s&#39;-&#39;uname -m&#39; &gt;/usr/local/bin/docker-machine
+$ chmod +x /usr/local/bin/docker-machine
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="windows">
+<h3><a class="toc-backref" href="#id15">3.Windows系统上的安装</a><a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
+<p>Windows平台的安装要复杂一些，首先需要安装git-bash（<a class="reference external" href="https://git-for-windows.github.io/">https://git-for-windows.github.io</a>
+）。git-bash是Windows下的git客户端软件包，会提供类似Linux下的一些基本的工具，例如bash、curl、ssh命令等，最新版本为2.16。</p>
+<p>安装之后，启动一个git-bash的命令行界面，仍然通过下载二进制包方式安装Docker
+Machine：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ if [[ ! -d &quot;$HOME/bin&quot; ]]; then mkdir -p &quot;$HOME/bin&quot;; fi
+$ curl -L https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-Windows-x86_64.exe &gt; &quot;$HOME/bin/docker-machine.exe&quot; &amp;&amp; \
+chmod +x &quot;$HOME/bin/docker-machine.exe&quot;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2><a class="toc-backref" href="#id16">使用Machine</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Docker
+Machine通过多种后端驱动来管理不同的资源，包括虚拟机、本地主机和云平台等。通过-d选项可以选择支持的驱动类型。</p>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id17">1.虚拟机</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>可以通过virtualbox驱动支持本地（需要已安装virtualbox）启动一个虚拟机环境，并配置为Docker主机：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine create --driver=virtualbox test
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>将启动一个全新的虚拟机，并安装Docker引擎。</p>
+<p>安装成功后，可以通过docker-machine
+env命令查看访问所创建Docker环境所需要的配置信息：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine env test
+    export DOCKER_TLS_VERIFY=&quot;1&quot;
+    export DOCKER_HOST=&quot;tcp://192.168.56.101:2376&quot;
+    export DOCKER_CERT_PATH=&quot;/Users/&lt;yourusername&gt;/.docker/machine/machines/default&quot;
+    export DOCKER_MACHINE_NAME=&quot;test&quot;
+    # Run this command to configure your shell:
+    # eval &quot;$(docker-machine env test)&quot;
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>使用完毕后，可以通过如下命令来停止Docker主机：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine stop test
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>此外，Machine还支持Microsoft Hyper-V虚拟化平台。</p>
+</div>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id18">2.本地主机</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>这种驱动适合主机操作系统和SSH服务都已经安装好，需要对其安装Docker引擎。</p>
+<p>首先确保本地主机可以通过user账号的key直接ssh到目标主机。使用generic类型的驱动，注册一台Docker主机，命名为test：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine create -d generic --generic-ip-address=10.0.100.102 --generic-ssh-user=user test
+Running pre-create checks...
+Creating machine...
+(test) OUT | Importing SSH key...
+Waiting for machine to be running, this may take a few minutes...
+Machine is running, waiting for SSH to be available...
+Detecting operating system of created instance...
+Detecting the provisioner...
+Provisioning created instance...
+...
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>从命令输出上可以看到，Machine通过SSH连接到指定节点，并在上面安装Docker引擎。</p>
+<p>创建主机成功后，可以通过docker-machine
+ls命令来查看注册到本地管理列表中的Docker主机：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine ls
+NAME   ACTIVE  DRIVER   STATE   URL                      SWARM  DOCKER   ERRORS
+test   -       generic  Running tcp://10.0.100.102:2376           v18.3
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>还可以通过inspect命令查看指定Docker主机的具体信息。</p>
+</div>
+<div class="section" id="id4">
+<h3><a class="toc-backref" href="#id19">3.云平台驱动</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>以Amazon Web Services云平台为例，配置其上的虚拟机为Docker主机。</p>
+<p>需要指定Access Key ID、Secret Access Key、VPC ID等信息。例如：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine create --driver amazonec2 --amazonec2-access-key AKI******* --amazonec2-secret-key 8T93C********* --amazonec2-vpc-id vpc-****** aws_instance
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>其他支持的云平台还包括Microsoft Azure、Digital Ocean、Exoscale、Google
+Compute Engine、Rackspace、IBM Softlayer等，用户可根据自身情况选择使用。</p>
+</div>
+<div class="section" id="id5">
+<h3><a class="toc-backref" href="#id20">4.客户端配置</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>默认情况下，所有的客户端配置数据都会自动存放在~/.docker/machine/machines/路径下。用户可以定期备份这一目录以避免出现客户端连接配置丢失。</p>
+<p>当然，该路径下内容仅为客户端侧的配置和数据，删除其下内容并不会影响到已经创建的Docker环境。</p>
+</div>
+<div class="section" id="id6">
+<h3><a class="toc-backref" href="#id21">Machine命令</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>Machine提供了一系列的子命令，每个命令都带有一系列参数，可以通过如下命令查看具体用法：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine &lt;COMMAND&gt; -h
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>命令参见表23-1。</p>
+<p>表23-1　Machine命令列表</p>
+<p><img alt="image1" src="../_images/docker_machine002.png" /></p>
+<p>下面具体介绍部分命令的用法。</p>
+<div class="section" id="active">
+<h4>1.active<a class="headerlink" href="#active" title="Permalink to this headline">¶</a></h4>
+<p>格式为<code class="docutils literal"><span class="pre">docker-machine</span> <span class="pre">active[arg...]</span></code>。</p>
+<p>支持-timeout，-t“10”选项，代表超时时间，默认为10s。查看当前激活状态的Docker主机。激活状态意味着当前的DOCKER_HOST环境变量指向该主机。例如，下面命令列出当前激活主机为dev主机：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine ls
+NAME      ACTIVE   DRIVER         STATE     URL
+dev                virtualbox     Running   tcp://192.168.56.102:2376
+staging   *        digitalocean   Running   tcp://104.236.60.101:2376
+$ echo $DOCKER_HOST
+tcp://104.236.60.101:2376
+$ docker-machine active
+staging
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="config">
+<h4>2.config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h4>
+<p>格式为<code class="docutils literal"><span class="pre">docker-machine</span> <span class="pre">config[OPTIONS]</span> <span class="pre">[arg...]</span></code>。</p>
+<p>支持-swarm参数，表示打印Swarm集群信息，而不是Docker信息。查看到Docker主机的连接配置信息。例如，下面显示dev主机的连接信息：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine config dev
+--tlsverify --tlscacert=&quot;/home/docker_user/.docker/machines/dev/ca.pem&quot; --tl-scert=&quot;/home/docker_user/.docker/machines/dev/cert.pem&quot; --tlskey=&quot;/home/docker_user/.docker/machines/dev/key.pem&quot; -H tcp://192.168.56.102:2376
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="create">
+<h4>3.create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h4>
+<p>格式为<code class="docutils literal"><span class="pre">docker-machine</span> <span class="pre">create[OPTIONS</span></code>][arg…]。创建一个Docker主机环境。支持的选项包括：</p>
+<p>·-driver，-d“virtualbox”：指定驱动类型；</p>
+<p>·-engine-install-url“<a class="reference external" href="https://get.docker.com/">https://get.docker.com</a>”：配置Docker主机时的安装URL；</p>
+<p>·-engine-opt option：以键值对格式指定所创建Docker引擎的参数；</p>
+<p>·-engine-insecure-registry
+option：以键值对格式指定所创建Docker引擎允许访问的不支持认证的注册仓库服务；</p>
+<p>·-engine-registry-mirror option：指定使用注册仓库镜像；</p>
+<p>·-engine-label option：为所创建的Docker引擎添加标签；</p>
+<p>·-engine-storage-driver：存储后端驱动类型；</p>
+<p>·-engine-env option：指定环境变量；</p>
+<p>·-swarm：配置Docker主机加入到Swarm集群中；</p>
+<p>·-swarm-image“swarm：latest”：使用Swarm时候采用的镜像；</p>
+<p>·-swarm-master：配置机器作为Swarm集群的master节点；</p>
+<p>·-swarm-discovery：Swarm集群的服务发现机制参数；</p>
+<p>·-swarm-strategy“spread”：Swarm默认调度策略；</p>
+<p>·-swarm-opt option：任意传递给Swarm的参数；</p>
+<p>·-swarm-host“tcp：//0.0.0.0：3376”：指定地址将监听Swarm master节点请求；</p>
+<p>·-swarm-addr：从指定地址发送广播加入Swarm集群服务。</p>
+<p>例如，通过如下命令可以创建一个Docker主机的虚拟机镜像：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine create -d virtualbox \
+    --engine-storage-driver overlay \
+    --engine-label name=testmachine \
+    --engine-label year=2018 \
+    --engine-opt dns=8.8.8.8 \
+    --engine-env HTTP_PROXY=http://proxy.com:3128 \
+    --engine-insecure-registry registry.private.com \
+    mydockermachine
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>所创建Docker主机虚拟机中的Docker引擎将：</p>
+<p>·使用overlay类型的存储驱动；</p>
+<p>·带有name=testmachine和year=2015两个标签；</p>
+<p>·引擎采用8.8.8.8作为默认DNS；</p>
+<p>·环境变量中指定HTTP代理服务<code class="docutils literal"><span class="pre">http://proxy.com:3128/</span></code>。</p>
+<p>·允许使用不带验证的注册仓库服务registry.private.com。</p>
+</div>
+<div class="section" id="env">
+<h4>4.env<a class="headerlink" href="#env" title="Permalink to this headline">¶</a></h4>
+<p>格式为<code class="docutils literal"><span class="pre">docker-machine</span> <span class="pre">env[OPTIONS]</span> <span class="pre">[arg...]</span></code>。</p>
+<p>显示连接到某个主机需要的环境变量。支持的选项包括：</p>
+<p>·-swarm：显示Swarm集群配置；</p>
+<p>·-shell：指定所面向的Shell环境，默认为当前自动探测；</p>
+<p>·-unset，-u：取消对应的环境变量；</p>
+<p>·-no-proxy：添加对象主机地址到NO_PROXY环境变量。</p>
+<p>例如，显示连接到default主机所需要的环境变量：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine env default
+export DOCKER_TLS_VERIFY=&quot;1&quot;
+export DOCKER_HOST=&quot;tcp://192.168.56.102:2376&quot;
+export DOCKER_CERT_PATH=&quot;/home/docker_user/.docker/machine/certs&quot;
+export DOCKER_MACHINE_NAME=&quot;default&quot;
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="inspect">
+<h4>5.inspect<a class="headerlink" href="#inspect" title="Permalink to this headline">¶</a></h4>
+<p>格式为<code class="docutils literal"><span class="pre">docker-machine</span> <span class="pre">inspect[OPTIONS]</span> <span class="pre">[arg...]</span></code>。</p>
+<p>以json格式输出指定Docker主机的详细信息。支持-format，-f选项使用指定的Go模板格式化输出。例如：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine inspect default
+{
+    &quot;DriverName&quot;: &quot;virtualbox&quot;,
+    &quot;Driver&quot;: {
+        &quot;MachineName&quot;: &quot;docker-host-128be8d287b2028316c0ad5714b90bcfc11f998056f2f790f7c1f43f3d1e6eda&quot;,
+        &quot;SSHPort&quot;: 22,
+        &quot;Memory&quot;: 1024,
+        &quot;DiskSize&quot;: 20000,
+        &quot;Boot2DockerURL&quot;: &quot;&quot;,
+        &quot;IPAddress&quot;: &quot;192.168.56.102&quot;
+    },
+    ...
+}
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="ip">
+<h4>6.ip<a class="headerlink" href="#ip" title="Permalink to this headline">¶</a></h4>
+<p>获取指定Docker主机地址。例如，获取default主机的地址，可以用如下命令：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine ip default
+192.168.56.102
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="kill">
+<h4>7.kill<a class="headerlink" href="#kill" title="Permalink to this headline">¶</a></h4>
+<p>直接杀死指定的Docker主机。</p>
+<p>指定Docker主机会强行停止。</p>
+</div>
+<div class="section" id="ls">
+<h4>8.ls<a class="headerlink" href="#ls" title="Permalink to this headline">¶</a></h4>
+<p>列出所有管理的主机。格式为<code class="docutils literal"><span class="pre">docker-machine</span> <span class="pre">ls[OPTIONS]</span> <span class="pre">[arg...]</span></code>。例如：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine ls
+NAME       ACTIVE   DRIVER       STATE      URL
+default    -        virtualbox   Stopped
+test0      -        virtualbox   Running    tcp://192.168.56.105:2376
+test1      -        virtualbox   Running    tcp://192.168.56.106:2376
+test2      *        virtualbox   Running    tcp://192.168.56.107:2376
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>可以通过–filter只输出某些Docker主机，支持过滤器包括名称正则表达式、驱动类型、Swarm管理节点名称、状态等。例如：</p>
+<hr class="docutils" />
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine ls --filter state=Stopped
+NAME   ACTIVE   DRIVER       STATE     URL   SWARM
+default    -        virtualbox   Stopped
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>支持选项包括：</p>
+<p>·–quiet，-q：减少无关输出信息；</p>
+<p>·–filter[–filter option–filter option]：只输出符合过滤条件主机；</p>
+<p>·-timeout，-t“10”：命令执行超时时间，默认为10s；</p>
+<p>·-format，-f：使用所指定的Go模板格式化输出。</p>
+</div>
+</div>
+<div class="section" id="id7">
+<h3><a class="toc-backref" href="#id22">本章小结</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>本章介绍了Docker三剑客之一：Docker
+Machine项目。通过介绍可以看出，当要对多个Docker主机环境进行安装、配置和管理时，采用Docker
+Machine的方式将远比手动方式快捷。不仅提高了操作速度，更通过批量统一的管理减少了出错的可能。尤其在大规模集群和云平台环境中推荐使用。</p>
+<p>当然，读者也可以考虑使用Ansible等DevOps工具来实现对Docker环境的自动化管理工作。</p>
+<p>安装完成Docker环境后，配合Compose和Swarm，可以实现完整的Docker容器生命周期管理。</p>
+</div>
+</div>
+<div class="section" id="id8">
+<h2><a class="toc-backref" href="#id23">参考文献</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.cnblogs.com/zhujingzhi/p/9760198.html">https://www.cnblogs.com/zhujingzhi/p/9760198.html</a></p>
+<p><a class="reference external" href="https://www.runoob.com/docker/docker-machine.html">https://www.runoob.com/docker/docker-machine.html</a></p>
+</div>
+<div class="section" id="id9">
+<span id="id10"></span><h2><a class="toc-backref" href="#id24">本章小结</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>本章介绍了Docker三剑客之一：Docker
+Machine项目。通过介绍可以看出，当要对多个Docker主机环境进行安装、配置和管理时，采用Docker
+Machine的方式将远比手动方式快捷。不仅提高了操作速度，更通过批量统一的管理减少了出错的可能。尤其在大规模集群和云平台环境中推荐使用。</p>
+<p>当然，读者也可以考虑使用Ansible等DevOps工具来实现对Docker环境的自动化管理工作。</p>
+<p>安装完成Docker环境后，配合Compose和Swarm，可以实现完整的Docker容器生命周期管理。</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

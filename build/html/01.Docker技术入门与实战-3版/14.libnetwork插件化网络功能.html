@@ -1,0 +1,539 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>libnetwork插件化网络功能 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: ''
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="next" title="Etcd——高可用的键值数据库" href="15.Etcd——高可用的键值数据库.html" />
+    <link rel="prev" title="高级网络功能" href="13.高级网络功能.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">01.Docker技术入门与实战-第3版</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.初识Docker与容器.html">初识Docker与容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Docker镜像的使用.html">Docker镜像的使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.操作Docker容器.html">操作Docker容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.访问Docker仓库.html">访问Docker仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.搭建本地私有仓库.html">搭建本地私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06.Docker数据管理.html">Docker数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.Docker使用网络.html">Docker使用网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.使用Dockerfile创建镜像.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">操作系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#ssh">为镜像添加SSH服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#web">Web服务与应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id25">数据库应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id55">分布式处理与大数据平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id73">编程开发</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id96">容器与云服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id113">容器实战思考</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Docker核心实现技术.html">Docker核心实现技术</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.配置私有仓库.html">配置私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.安全防护与配置.html">安全防护与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.高级网络功能.html">高级网络功能</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">libnetwork插件化网络功能</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">容器网络模型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker">Docker网络命令</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">构建跨主机容器网络</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">本章小结</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="15.Etcd——高可用的键值数据库.html">Etcd——高可用的键值数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16.Docker三剑客之Docker-Compose.html">Docker三剑客之Docker-Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17.Docker三剑客之Docker-Swarm.html">Docker三剑客之Docker-Swarm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18.Docker三剑客之Docker-Machine.html">Docker三剑客之Docker-Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19.SwarmKit集群解决方案.html">SwarmKit集群解决方案</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.搭建一个Web应用栈.html">搭建一个Web应用栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="21.Docker高级网络实战.html">Docker高级网络实战</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22.服务发现.html">服务发现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="23.Mesos——优秀的集群资源调度平台.html">Mesos——优秀的集群资源调度平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24.Kubernetes——生产级容器集群平台.html">Kubernetes——生产级容器集群平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25.其他相关项目.html">其他相关项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26.附录.html">附录</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../02.再也不采坑的Kubernetes实战指南/index.html">02.再也不采坑的Kubernetes实战指南</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">01.Docker技术入门与实战-第3版</a> &raquo;</li>
+        
+      <li>libnetwork插件化网络功能</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/01.Docker技术入门与实战-3版/14.libnetwork插件化网络功能.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#libnetwork" id="id4">libnetwork插件化网络功能</a><ul>
+<li><a class="reference internal" href="#id1" id="id5">容器网络模型</a></li>
+<li><a class="reference internal" href="#docker" id="id6">Docker网络命令</a></li>
+<li><a class="reference internal" href="#id2" id="id7">构建跨主机容器网络</a></li>
+<li><a class="reference internal" href="#id3" id="id8">本章小结</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="libnetwork">
+<h1><a class="toc-backref" href="#id4">libnetwork插件化网络功能</a><a class="headerlink" href="#libnetwork" title="Permalink to this headline">¶</a></h1>
+<p>从1.7.0版本开始，Docker正式把网络与存储这两部分的功能实现都以插件化形式剥离出来，允许用户通过指令来选择不同的后端实现。剥离出来的独立容器网络项目即为libnetwork项目。Docker希望将来能为不同类型的容器定义统一规范的网络层标准，支持多种操作系统平台，这也是Docker希望构建强大容器生态系统的一些积极的尝试。</p>
+<p>本章将介绍libnetwork的概念和使用，包括容器网络模型、相关操作命令，以及具体如何利用libnetwork来构建跨主机的容器网络。</p>
+<div class="section" id="id1">
+<h2><a class="toc-backref" href="#id5">容器网络模型</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>libnetwork中容器网络模型（Container Networking
+Model，CNM）十分简洁和抽象，可以让其上层使用网络功能的容器最大程度地忽略底层具体实现。</p>
+<p>容器网络模型的结构如图21-1所示。</p>
+<p><img alt="image0" src="../_images/docker_libnetwork00001.png" /></p>
+<p>图21-1　容器网络模型</p>
+<p>容器网络模型包括三种基本元素：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>·沙盒（Sandbox）：代表一个容器（准确地说，是其网络命名空间）；
+
+·接入点（Endpoint）：代表网络上可以挂载容器的接口，会分配IP地址；
+
+·网络（Network）：可以连通多个接入点的一个子网。
+</pre></div>
+</div>
+<p>可见，对于使用CNM的容器管理系统来说，具体底下网络如何实现，不同子网彼此怎么隔离，有没有QoS，都不关心。只要插件能提供网络和接入点，只需把容器给接上或者拔下，剩下的都是插件驱动自己去实现，这样就解耦了容器和网络功能，十分灵活。</p>
+<p>CNM的典型生命周期如图21-2所示：首先，驱动注册自己到网络控制器，网络控制器使用驱动类型，来创建网络；然后在创建的网络上创建接口；最后把容器连接到接口上即可。销毁过程则正好相反，先把容器从接入口上卸载，然后删除接入口和网络即可。</p>
+<p><img alt="image1" src="../_images/docker_libnetwork00002.png" /></p>
+<p>图21-2　CNM的典型生命周期</p>
+<p>目前CNM支持的驱动类型有四种：Null、Bridge、Overlay、Remote，简单介绍如下：</p>
+<p>·Null：不提供网络服务，容器启动后无网络连接；</p>
+<p>·Bridge：就是Docker传统上默认用Linux网桥和Iptables实现的单机网络；</p>
+<p>·Overlay：是用vxlan隧道实现的跨主机容器网络；</p>
+<p>·Remote：扩展类型，预留给其他外部实现的方案，比如有一套第三方的SDN方案（如OpenStack
+Neutron）就可以接进来。</p>
+<p>从位置上看，libnetwork往上提供容器支持，往下隐藏实现差异，自身处于十分关键的中间层。读者如果熟悉计算机网络协议模型的话，libnetwork可以类比为最核心的TCP/IP层。</p>
+<p>目前，已有大量的网络方案开始支持libnetwork。包括OpenStack
+Kuryr项目，使用libnetwork，让Docker可以直接使用Neutron提供的网络功能。Calico等团队也编写了插件支持libnetwork，可以无缝地支持Docker高级网络功能。</p>
+</div>
+<div class="section" id="docker">
+<h2><a class="toc-backref" href="#id6">Docker网络命令</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
+<p>在libnetwork支持下，Docker网络相关操作都作为network的子命令出现。</p>
+<p>围绕着CNM生命周期的管理，主要包括以下命令：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>·create：创建一个网络；
+
+·connect：将容器接入到网络；
+
+·disconnect：把容器从网络上断开；
+
+·inspect：查看网络的详细信息。
+
+·ls：列出所有的网络；
+
+·prune：清理无用的网络资源；
+
+·rm：删除一个网络。
+</pre></div>
+</div>
+<p>1.创建网络</p>
+<p>creat命令用于创建一个新的容器网络。Docker内置了bridge（默认使用）和overlay两种驱动，分别支持单主机和多主机场景。Docker服务在启动后，会默认创建一个bridge类型的网桥bridge。不同网络之间默认相互隔离。</p>
+<p>创建网络命令格式为docker network create[OPTIONS]NETWORK。</p>
+<p>支持参数包括：</p>
+<p>·-attachable[=false]：支持手动容器挂载；</p>
+<p>·-aux-address=map[]：辅助的IP地址；</p>
+<p>·-config-from=&#8221;&#8220;：从某个网络复制配置数据；</p>
+<p>·-config-only[=false]：启用仅可配置模式；</p>
+<p>·-d，-driver=“bridge”：网络驱动类型，如bridge或overlay；</p>
+<p>·-gateway=[]：网关地址；</p>
+<p>·-ingress[=false]：创建一个Swarm可路由的网状网络用于负载均衡，可将对某个服务的请求自动转发给一个合适的副本；</p>
+<p>·-internal[=false]：内部模式，禁止外部对所创建网络的访问；</p>
+<p>·-ip-range=[]：指定分配IP地址范围；</p>
+<p>·-ipam-driver=“default”：IP地址管理的插件类型；</p>
+<p>·-ipam-opt=map[]：IP地址管理插件的选项；</p>
+<p>·-ipv6[=false]：支持IPv6地址；</p>
+<p>·-label value：为网络添加元标签信息；</p>
+<p>·-o，-opt=map[]：网络驱动所支持的选项；</p>
+<p>·-scope=&#8221;&#8220;：指定网络范围；</p>
+<p>·-subnet=[]：网络地址段，CIDR格式，如172.17.0.0/16。</p>
+<p>2.接入网络</p>
+<p>connect命令将一个容器连接到一个已存在的网络上。连接到网络上的容器可以跟同一网络中其他容器互通，同一个容器可以同时接入多个网络。也可以在执行docker
+run命令时候通过-net参数指定容器启动后自动接入的网络。</p>
+<p>接入网络命令格式为docker network connect[OPTIONS]NETWORK CONTAINER。</p>
+<p>支持参数包括：</p>
+<p>·-alias=[]：为容器添加一个别名，此别名仅在所添加网络上可见；</p>
+<p>·-ip=&#8221;&#8220;：指定IP地址，需要注意不能跟已接入的容器地址冲突；</p>
+<p>·-ip6=&#8221;&#8220;：指定IPv6地址；</p>
+<p>·-link value：添加链接到另外一个容器；</p>
+<p>·-link-local-ip=[]：为容器添加一个链接地址。</p>
+<p>3.断开网络</p>
+<p>disconnect命令将一个连接到网络上的容器从网络上断开连接。</p>
+<p>命令格式为docker network disconnect[OPTIONS]NETWORK CONTAINER。</p>
+<p>支持参数包括-f，-force：强制把容器从网络上移除。</p>
+<p>4.查看网络信息</p>
+<p>inspect命令用于查看一个网络的具体信息（JSON格式），包括接入的容器、网络配置信息等。</p>
+<p>命令格式为docker network inspect[OPTIONS]NETWORK[NETWORK…]。</p>
+<p>支持参数包括：</p>
+<p>·-f，-format=&#8221;&#8220;：给定一个Golang模板字符串，对输出结果进行格式化，如只查看地址配置可以用-f’{{.IPAM.Config}}’；</p>
+<p>·-v，-verbose[=false]：输出调试信息。</p>
+<p>5.列出网络</p>
+<p>ls命令用于列出网络。命令格式为docker network
+ls[OPTIONS]，其中支持的选项主要有：</p>
+<p>·-f，-filter=&#8221;&#8220;：指定输出过滤器，如driver=bridge；</p>
+<p>·-format=&#8221;&#8220;：给定一个golang模板字符串，对输出结果进行格式化；</p>
+<p>·-no-trunc[=false]：不截断地输出内容；</p>
+<p>·-q，-quiet[=false]：安静模式，只打印网络的ID。</p>
+<p>实际上，在不执行额外网络命令的情况下，用户执行docker network
+ls命令，一般情况下可以看到已创建的三个网络：</p>
+<hr class="docutils" />
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ docker network ls
+NETWORK ID          NAME                DRIVER
+461e02c94370        bridge              bridge
+e4d5886b2d2f        none                null
+adbc1879bac5        host                host
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>分别为三种驱动的网络：null、host和bridge。</p>
+<p>6.清理无用网络</p>
+<p>prune命令用于清理已经没有容器使用的网络。</p>
+<p>命令格式为docker network prune[OPTIONS][flags]，支持参数包括：</p>
+<p>·-filter=&#8221;&#8220;：指定选择过滤器；</p>
+<p>·-f，-force：强制清理资源。</p>
+<p>7.删除网络</p>
+<p>rm命令用于删除指定的网络。当网络上没有容器连接上时，才会成功删除。</p>
+<p>命令格式为docker network rm NETWORK[NETWORK…]。</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id7">构建跨主机容器网络</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>在这里，笔者将演示使用libnetwork自带的Overlay类型驱动来轻松实现跨主机的网络通信。Overlay驱动默认采用VXLAN协议，在IP地址可以互相访问的多个主机之间搭建隧道，让容器可以互相访问。</p>
+<p>1.配置网络信息管理数据库</p>
+<p>我们知道，在现实世界中，要连通不同的主机，需要交换机或路由器（跨子网时需要）这样的互联设备。这些设备一方面是在物理上起到连接作用，但更重要的是起到了网络管理的功能。例如，主机位置在什么地方，地址是多少等信息，都需要网络管理平面来维护。</p>
+<p>在libnetwork的网络方案中，要实现跨主机容器网络，也需要类似的一个网络信息管理机制，只不过这个机制简单得多，只是一个键值数据库而已，如Consul、Etcd、ZooKeeper等工具都可以满足需求。</p>
+<p>以Consul为例，启动一个progrium/consul容器，并映射服务到本地的8500端口，代码如下：</p>
+<hr class="docutils" />
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ docker run -d \
+    -p &quot;8500:8500&quot; \
+    -h &quot;consul&quot; \
+    progrium/consul -server -bootstrap
+1ad6b71cfdf83e1925d960b7c13f40294b7d84618828792a84069aea2e52770d
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>所在主机作为数据库节点。</p>
+<p>2.配置Docker主机</p>
+<p>启动两台Docker主机n1和n2，分别安装好最新的Docker-engine（1.7.0+）。确保这两台主机之间可以通过IP地址互相访问，另外，都能访问到数据库节点的8500端口。</p>
+<p>配置主机的Docker服务启动选项如下：</p>
+<hr class="docutils" />
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">DOCKER_OPTS</span><span class="o">=</span><span class="s2">&quot;$DOCKER_OPTS --cluster-store=consul://&lt;CONSUL_NODE&gt;:8500 --cluster-advertise=eth0:2376&quot;</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>重新启动Docker服务：</p>
+<hr class="docutils" />
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ sudo service docker restart
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>3.创建网络</p>
+<p>分别在n1和n2上查看现有的Docker网络，包括三个默认网络：分别为bridge、host和none类型：</p>
+<hr class="docutils" />
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>n1:$ docker network ls
+NETWORK ID NAME DRIVER
+dc581a3eab4c bridge bridge
+ee21a768c6f6 host host
+8d1ee747b894 none null
+n2:$ docker network ls
+NETWORK ID NAME DRIVER
+e7f24593bada bridge bridge
+5bfae3a62214 host host
+4adc19ad9bc7 none null
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>在任意节点上创建网络multi，例如在n1上执行如下命令即可完成对跨主机网络的创建：</p>
+<hr class="docutils" />
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>n1:$ docker network create -d overlay multi
+eadd374a18434a14c6171b778600507f300d330f4622067d3078009a58506c2d
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>创建成功后，可以同时在n1和n2上查看到新的网络multi的信息：</p>
+<hr class="docutils" />
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>n1:$ docker network ls
+NETWORK ID NAME DRIVER
+dc581a3eab4c bridge bridge
+ee21a768c6f6 host host
+eadd374a1843 multi overlay
+8d1ee747b894 none null
+n2:$ docker network ls
+NETWORK ID NAME DRIVER
+e7f24593bada bridge bridge
+5bfae3a62214 host host
+eadd374a1843 multi overlay
+4adc19ad9bc7 none null
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>此时，还可以通过docker network inspect命令查看网络的具体信息：</p>
+<hr class="docutils" />
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ docker network inspect multi
+[
+    {
+        &quot;Name&quot;: &quot;multi&quot;,
+        &quot;Id&quot;:
+        &quot;eadd374a18434a14c6171b778600507f300d330f4622067d3078009a58506c2d&quot;,
+        &quot;Scope&quot;: &quot;global&quot;,
+        &quot;Driver&quot;: &quot;overlay&quot;,
+        &quot;EnableIPv6&quot;: false,
+        &quot;IPAM&quot;: {
+            &quot;Driver&quot;: &quot;default&quot;,
+            &quot;Options&quot;: {},
+            &quot;Config&quot;: [
+                {
+                    &quot;Subnet&quot;: &quot;10.0.0.0/24&quot;,
+                    &quot;Gateway&quot;: &quot;10.0.0.1/24&quot;
+                }
+            ]
+        },
+        &quot;Internal&quot;: false,
+        &quot;Containers&quot;: {},
+        &quot;Options&quot;: {},
+        &quot;Labels&quot;: {}
+    }
+]
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>4.测试网络</p>
+<p>在n1上启动一个容器c1，通过–net选项指定连接到multi网络上。</p>
+<p>查看网络信息，其中一个接口eth0已经连接到了multi网络上：</p>
+<hr class="docutils" />
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>n1:$ docker run -it --name=c1 --net=multi busybox
+/ # ip a
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+        valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+        valid_lft forever preferred_lft forever
+72: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1450 qdisc noqueue
+    link/ether 02:42:0a:00:00:02 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.2/24 scope global eth0
+        valid_lft forever preferred_lft forever
+    inet6 fe80::42:aff:fe00:2/64 scope link
+        valid_lft forever preferred_lft forever
+74: eth1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue
+    link/ether 02:42:ac:12:00:02 brd ff:ff:ff:ff:ff:ff
+    inet 172.18.0.2/16 scope global eth1
+        valid_lft forever preferred_lft forever
+    inet6 fe80::42:acff:fe12:2/64 scope link
+        valid_lft forever preferred_lft forever
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>在n2上启动一个容器c2，同样连接到multi网络上。</p>
+<p>通过ping c1进行测试，可以访问到另外一台主机n1上的容器c1：</p>
+<hr class="docutils" />
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span>n2:$ docker run -it --name=c2 --net=multi busybox
+/ # ping c1
+PING c1 (10.0.0.2): 56 data bytes
+64 bytes from 10.0.0.2: seq=0 ttl=64 time=0.705 ms
+64 bytes from 10.0.0.2: seq=1 ttl=64 time=0.712 ms
+64 bytes from 10.0.0.2: seq=2 ttl=64 time=0.629 ms
+^C
+--- c1 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet lossround-trip min/avg/max = 0.629/0.682/0.712 ms
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id8">本章小结</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>本章介绍了Docker最新的网络功能和插件化网络工具：libnetwork。Docker在1.7.0之前主要支持本地主机网络，之后重点加强了跨主机通信网络能力。目前，Docker的功能已经从单主机上小规模服务场景，拓展到了大规模的集群场景甚至数据中心场景，为容器云场景提供了便利支持。从位置上看，libnetwork位于整个容器网络栈最核心的中间层。通过容器网络模型，libnetwork抽象了下层的网络实现，让其上容器可以无缝使用不同的底层网络支持技术。无论是物理网络还是虚拟网络，只要支持容器网络模型标准，即可被Docker容器所使用。</p>
+<p>相比传统场景，容器自身的动态性、高密度都对网络技术带来了更多新的挑战。Docker从1.12.0开始将Swarm模式也内嵌到了引擎中，以提供对集群网络更好的支持。笔者相信，能否更好地利用好软件定义网络技术，将是容器在大规模集群场景下得到有效使用的关键。</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="15.Etcd——高可用的键值数据库.html" class="btn btn-neutral float-right" title="Etcd——高可用的键值数据库" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="13.高级网络功能.html" class="btn btn-neutral float-left" title="高级网络功能" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

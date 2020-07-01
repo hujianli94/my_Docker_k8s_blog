@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>服务发现 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: ''
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="next" title="Mesos——优秀的集群资源调度平台" href="22.Mesos——优秀的集群资源调度平台.html" />
+    <link rel="prev" title="Docker高级网络实战" href="20.Docker高级网络实战.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">01.Docker技术入门与实战-第3版</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.初识Docker与容器.html">初识Docker与容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Docker镜像的使用.html">Docker镜像的使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.操作Docker容器.html">操作Docker容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.访问Docker仓库.html">访问Docker仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.搭建本地私有仓库.html">搭建本地私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06.Docker数据管理.html">Docker数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.Docker使用网络.html">Docker使用网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.使用Dockerfile创建镜像.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">操作系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#ssh">为镜像添加SSH服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#web">Web服务与应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id25">数据库应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id55">分布式处理与大数据平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id73">编程开发</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id96">容器与云服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id113">容器实战思考</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Docker核心实现技术.html">Docker核心实现技术</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.配置私有仓库.html">配置私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.安全防护与配置.html">安全防护与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.高级网络功能.html">高级网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.libnetwork插件化网络功能.html">libnetwork插件化网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.Etcd——高可用的键值数据库.html">Etcd——高可用的键值数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16.Docker三剑客之Docker-Compose.html">Docker三剑客之Docker-Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17.Docker三剑客之Docker-Swarm.html">Docker三剑客之Docker-Swarm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.Docker高级网络实战.html">Docker高级网络实战</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">服务发现</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#consul">consul</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">基于consul的服务发现</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#registrator">registrator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="22.Mesos——优秀的集群资源调度平台.html">Mesos——优秀的集群资源调度平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="23.Kubernetes——生产级容器集群平台.html">Kubernetes——生产级容器集群平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24.其他相关项目.html">其他相关项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25.附录.html">附录</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes实战指南/index.html">02.Kubernetes实战指南</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">01.Docker技术入门与实战-第3版</a> &raquo;</li>
+        
+      <li>服务发现</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/01.Docker技术入门与实战-3版/21.服务发现.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#id1" id="id3">服务发现</a><ul>
+<li><a class="reference internal" href="#consul" id="id4">consul</a><ul>
+<li><a class="reference internal" href="#id2" id="id5">基于consul的服务发现</a></li>
+<li><a class="reference internal" href="#registrator" id="id6">registrator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h1><a class="toc-backref" href="#id3">服务发现</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>服务发现是一种容许计算机网络上的任意服务均可以找到它所需要通信的其他服务的机制。</p>
+<p>它是大多数分布式系统的核心组件。
+如果用户的基础设施是运行或者遵循的面向服务的架构（Service Oriented
+Architecture，SOA），那么毫无疑问， 用户需要部署某种服务发现方案。
+同时，服务发现也是软件应用设计方面的一个新兴概念，
+这和传统的SOA有许多的相似之处，而如今它有一个更广为人知的名字叫做微服务。</p>
+<p>一个客户端如何才能找到它想要与之通信的IP地址和服务端口？ 如图所示</p>
+<p><img alt="image0" src="../_images/docker_consul00001.png" /></p>
+<p>服务注册的过程其实比我们上述所提到的情况要复杂许多。一般来说，有以下两种实现方式。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>·把服务注册的模块直接嵌入到应用服务的源代码里。
+
+·使用一个伙伴进程（或者说是协同进程）来帮忙处理注册的任务。
+</pre></div>
+</div>
+<div class="section" id="consul">
+<h2><a class="toc-backref" href="#id4">consul</a><a class="headerlink" href="#consul" title="Permalink to this headline">¶</a></h2>
+<p>consul是一款由HashiCorp公司编写的多功能分布式系统工具。同之前介绍过的etcd一样，consul也是使用Go语言实现。consul很好地将它所有的特性集成为一个可定制化软件，并易于使用和运维。在这里，我们不会花太多篇幅去介绍什么是consul，关于这一点读者可以在它的官方网站上找到一个非常全面的文档，里面包含了大量的实际案例。取而代之的是，我们将会去总结它的主要特性并且探讨在Docker基础设施里如何借助它来实现服务发现。最后，在本章的末尾我们将会介绍一个实际案例，它利consul提供的功能特性，将consul作为一个插件式的后端服务，为运行在Docker容器里的应用提供了即插即用的服务发现功能。</p>
+<p>我们选择用多功能一词来描述consul的目的正是在于consul的确可以无需花费其他任何额外的精力，
+作为一款单独运行的工具提供下述任意一项功能：
+<code class="docutils literal"><span class="pre">分布式键值存储；</span>&#160; <span class="pre">分布式监控工具；</span> <span class="pre">DNS服务器。</span></code>
+consul，同etcd类似，也是基于Raft一致性算法实现的，
+这也就是说，它所在的集群里的节点部署数量同样应该满足2n+1（n表示一个正整数）以保证其正常工作。
+和etcd一样，consul也提供了一个远程的JSON
+API，这使得各种不同的编程语言实现的客户端访问该服务更加简单。
+通过提供远程API的支持，consul允许用户自行在其之上构建新服务或直接使用它原生提供的开箱即用的功能。</p>
+<p>就部署而言，consul定义了一个代理（agent）的概念。该代理能够在以下两种模式运行：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>服务端——提供分布式键值存储和DNS服务器；
+客户端——提供服务的注册、运行健康监测以及转发请求给服务器。
+</pre></div>
+</div>
+<p>服务端和客户端代理共同组成一个完整的集群。consul通过利用HashiCorp编写的另外一款名为serf的工具来实现集群成员身份和节点发现。serf是基于SWIM一致性协议实现的，并且在一些性能方面做了优化。您可以通过consul官网来了解consul中的gossip详细的内部实现原理。利用gossip协议并通过将它和本地服务的健康检测结合到一起，这使得consul可以实现一个简单但是异常强大的分布式故障检测机制。这对于开发
+者和运维人员而言实在是一个巨大的福音。</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>开发人员可以在他们的应用程序里公开健康检测的端点然后轻松地将应用服务添加到consul的分布式服务集合里。
+
+运维人员也可以编写简单的工具，使用consul的API来监控服务的健康性，或者他们只是使用consul原生提供的Web UI去操作。
+</pre></div>
+</div>
+<p>这里讨论到的只是consul一些基本的内容，实际上它所提供的还远不止这些，因此强烈建议读者去细读一下consul强大的官方文档。如果想知道consul和市面上其他工具的差异，不要犹豫，赶紧去看一下专门讨论这一话题的官方文档吧。接下来，让我们一起来看看我们该如何将consul用于基础设施里的服务发现。</p>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id5">基于consul的服务发现</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>迄今为止，在我们介绍过的工具中，作为一款可定制的服务发现解决方案，consul无疑是最容易上手的一个。
+用户可以通过以下几种方式将自己的服务注册到consul的服务目录里：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>·利用consul的远程API将服务注册嵌入到用户的应用代码里；
+·使用一个简单的伙伴脚本/客户端工具，在应用服务启动时通过远程API来完成注册；
+·创建一个简单的声明服务的配置文件，consul代理可以在服务启动或重新加载服务后读取该配置。
+</pre></div>
+</div>
+<p>已注册的服务可以通过consul的远程API直接去查找，当然用户也可以使用consul提供的开箱即用的DNS服务来检索它们的信息。
+这一点尤其方便，因为用户不必再受限于一个特定的服务查找方案，而且甚至可以不费任何力气地同时使用这两套方案。
+此外，consul还允许用户为自己的应用服务设计一些自定义的健康检测机制。
+如此一来，用户不必再像之前的Zookeeper那样和TCP会话周期绑定到一起，也不必像etcd那样和TTL值挂钩。</p>
+<p>consul代理程序会持续不断地在本地监控已注册服务的健康性并且一旦健康检测失败它会立马自动将其从服务目录中抹除。</p>
+<p>Consul提供了一个非常完备的服务发现解决方案，并且令人意外的是它的成本其实非常低。
+在consul中，应用服务可以通过远程API或DNS来定位和检索。
+为了完成服务的注册，需要避免使用远程API而可以采用更简单的基于JSON的配置文件来实现这一点。
+这使得consul能够很方便地和传统配置管理工具集成在一起。
+使用consul会给用户的基础设施引入一些额外的复杂度，但是作为回报，用户也从中获得了大量的收益。</p>
+<p>与etcd相比，consul集群无疑是更易于维护和管理的。
+Consul在多数据中心方面也具备很好的扩展能力，事实上，consul提供了一些额外的工具专门负责多数据中心的扩容工作。
+Consul可以作为一个单独的工具使用，也可以作为构建一个复杂的分布式系统的基本组件。</p>
+<p>如今，业界围绕它已然形成了一个新的完整的工具生态圈。
+在下一节里，我们将会介绍一款名为registrator的工具，它使用consul作为它的一个可插拔的后端服务，它为运行在Docker容器里的应用提供了一个非常易于上手的、自动服务注册的解决方案。</p>
+</div>
+<div class="section" id="registrator">
+<h3><a class="toc-backref" href="#id6">registrator</a><a class="headerlink" href="#registrator" title="Permalink to this headline">¶</a></h3>
+<p>从整体上来说，registrator会去监听Docker的Unix套接字来获取Docker容器启动和消亡时的事件，并且它会通过在事先配置好的一个可插拔的后端服务中创建新记录的形式自动完成容器的服务注册。这就意味着它必须以一个Docker容器的身份来运行。读者可以在Docker
+Hub上找到registrator的Docker镜像。registrator提供了相当多的配置参数选择，因此，尽情去GitHub项目页面的文档库里去查找关于它们的详细解释吧。</p>
+<p>我们一起来看一个简短的实际案例。
+我们将会使用registrator把redis内存数据库打包到Docker容器里运行，用户可以很方便地通过consul发现它在网络上所提供的服务。
+当然，用户也可以使用类似的方法在Docker基础设施里运行任意的应用服务。</p>
+<p>首先我们需要启动一个consul容器。这里，需要用到registrator之父Jeff
+Lindsay创建的镜像来实例化具体的容器：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker run -d -p 8400:8400 -p 8500:8500 -p 8600:53/udp -h node1 progrium/consul -server -bootstrap</span>
+<span class="n">Unable</span> <span class="n">to</span> <span class="n">find</span> <span class="n">image</span> <span class="s1">&#39;progrium/consul:latest&#39;</span> <span class="n">locally</span>
+<span class="n">latest</span><span class="p">:</span> <span class="n">Pulling</span> <span class="kn">from</span> <span class="nn">progrium</span><span class="o">/</span><span class="n">consul</span>
+<span class="o">.....</span>
+</pre></div>
+</div>
+<p>现在，后端的发现服务已经开始运行，接下来我们将会启动一个registrator容器，并且同时传给它一个consul的连接URL作为参数：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker run -d -v /var/run/docker.sock:/tmp/docker.sock -h $HOSTNAME gliderlabs/registrator consul://$CONSUL_IP:8500</span>
+<span class="n">Unable</span> <span class="n">to</span> <span class="n">find</span> <span class="n">image</span> <span class="s1">&#39;gliderlabs/registrator:latest&#39;</span> <span class="n">locally</span>
+<span class="n">latest</span><span class="p">:</span> <span class="n">Pulling</span> <span class="kn">from</span> <span class="nn">gliderlabs</span><span class="o">/</span><span class="n">registrator</span>
+<span class="o">....</span>
+</pre></div>
+</div>
+<p>如下所示，我们可以看到容器均已成功启动，并且我们假定所有容器都是注册的redis服务：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker ps</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>                    <span class="n">COMMAND</span>                  <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>                                                                                                        <span class="n">NAMES</span>
+<span class="mi">4</span><span class="n">b08729db33f</span>        <span class="n">gliderlabs</span><span class="o">/</span><span class="n">registrator</span>   <span class="s2">&quot;/bin/registrator co…&quot;</span>   <span class="mi">3</span> <span class="n">seconds</span> <span class="n">ago</span>       <span class="n">Up</span> <span class="mi">2</span> <span class="n">seconds</span>                                                                                                                     <span class="n">nervous_euclid</span>
+<span class="mi">819</span><span class="n">fb32dc846</span>        <span class="n">progrium</span><span class="o">/</span><span class="n">consul</span>          <span class="s2">&quot;/bin/start -server …&quot;</span>   <span class="mi">5</span> <span class="n">minutes</span> <span class="n">ago</span>       <span class="n">Up</span> <span class="mi">5</span> <span class="n">minutes</span>        <span class="mi">53</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8400</span><span class="o">-&gt;</span><span class="mi">8400</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="mi">8300</span><span class="o">-</span><span class="mi">8302</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="mi">8301</span><span class="o">-</span><span class="mi">8302</span><span class="o">/</span><span class="n">udp</span><span class="p">,</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8500</span><span class="o">-&gt;</span><span class="mi">8500</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8600</span><span class="o">-&gt;</span><span class="mi">53</span><span class="o">/</span><span class="n">udp</span>   <span class="n">jovial_wozniak</span>
+</pre></div>
+</div>
+<p>考虑到整个例子的完整性，我们不妨介绍一下最初的情况，
+下列命令展示了我们正在运行的只有一个节点的consul集群并且在该时刻没有任何已注册的服务运行：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># curl 172.16.74.22:8500/v1/catalog/nodes</span>
+<span class="p">[{</span><span class="s2">&quot;Node&quot;</span><span class="p">:</span><span class="s2">&quot;node1&quot;</span><span class="p">,</span><span class="s2">&quot;Address&quot;</span><span class="p">:</span><span class="s2">&quot;172.17.0.4&quot;</span><span class="p">}]</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># curl 172.16.74.22:8500/v1/catalog/services</span>
+<span class="p">{</span><span class="s2">&quot;consul&quot;</span><span class="p">:[],</span><span class="s2">&quot;consul-53&quot;</span><span class="p">:[</span><span class="s2">&quot;udp&quot;</span><span class="p">],</span><span class="s2">&quot;consul-8400&quot;</span><span class="p">:[],</span><span class="s2">&quot;consul-8500&quot;</span><span class="p">:[]}</span>
+</pre></div>
+</div>
+<p>现在，让我们先启动一个redis容器，然后公开它所有需要对外提供服务的端口：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker run -d -P redis</span>
+<span class="n">Unable</span> <span class="n">to</span> <span class="n">find</span> <span class="n">image</span> <span class="s1">&#39;redis:latest&#39;</span> <span class="n">locally</span>
+<span class="n">latest</span><span class="p">:</span> <span class="n">Pulling</span> <span class="kn">from</span> <span class="nn">library</span><span class="o">/</span><span class="n">redis</span>
+<span class="o">.....</span>
+</pre></div>
+</div>
+<p>如果一切顺利，我们应该可以在consul的服务目录里找到该redis服务的信息：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># curl -s localhost:8500/v1/catalog/service/redis |python -m json.tool</span>
+<span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Address&quot;</span><span class="p">:</span> <span class="s2">&quot;172.17.0.4&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Node&quot;</span><span class="p">:</span> <span class="s2">&quot;node1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ServiceAddress&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ServiceID&quot;</span><span class="p">:</span> <span class="s2">&quot;swarm3:heuristic_chaum:6379&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ServiceName&quot;</span><span class="p">:</span> <span class="s2">&quot;redis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ServicePort&quot;</span><span class="p">:</span> <span class="mi">5001</span><span class="p">,</span>
+        <span class="s2">&quot;ServiceTags&quot;</span><span class="p">:</span> <span class="n">null</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>，consul提供了一个原生的开箱即用的DNS服务的支持，因此所有已注册的服务可以很轻松地通过DNS来查找和定位。
+要验证这一点也非常简单。</p>
+<p>首先，我们需要找出consul提供的DNS服务器将哪些端口映射到了宿主机上：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker port 819fb32</span>
+<span class="mi">8400</span><span class="o">/</span><span class="n">tcp</span> <span class="o">-&gt;</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8400</span>
+<span class="mi">8500</span><span class="o">/</span><span class="n">tcp</span> <span class="o">-&gt;</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8500</span>
+<span class="mi">53</span><span class="o">/</span><span class="n">udp</span> <span class="o">-&gt;</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8600</span>
+</pre></div>
+</div>
+<p>太棒了，我们可以看到容器的DNS服务被映射到了宿主机的所有网络接口上，并且监听了8600端口。</p>
+<p>现在，我们可以使用Linux上著名的dig工具来完成一些DNS的查询操作。</p>
+<p>从consul的官方文档中我们可以了解到，consul里已注册服务对应的默认的DNS记录会以NAME.service.consul的格式命名。
+因此，在这个例子中，当注册一个新服务时registrator使用的Docker镜像名便会是redis.service.consul（当然，必要的话也可以修改这个设置）。</p>
+<p>那么，现在让我们来试着运行一下DNS的查询吧：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># dig @172.16.74.22 -p 8600 redis.service.consul +short</span>
+<span class="mf">172.17</span><span class="o">.</span><span class="mf">0.4</span>
+</pre></div>
+</div>
+<p>如今我们已经获得了redis服务器的IP地址，但是同该服务通信所需的信息还远不止这些。
+我们还需要找出该服务器监听的TCP端口。幸运的是，这一点很容易办到。
+我们需要做的只是通过查询查询consul的DNS来寻找对应的使用相同的DNS名称的SRV记录。
+如果一切顺利，我们应该可以看到返回的端口号是32769，当然我们也可以通过它提供的远程API以检索consul服务目录的方式来获取这个信息：</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># dig @172.16.74.22 -p 8600 -t SRV redis.service.consul +short</span>
+<span class="mi">1</span> <span class="mi">1</span> <span class="mi">5001</span> <span class="n">node1</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">dc1</span><span class="o">.</span><span class="n">consul</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>真的是太棒了！借助consul，我们成功地为我们的Docker容器实施了一整套完备的服务发现方案，
+而且所有我们需要做的配置只是运行两个简单的命令而已！我们甚至无需编写任何代码。
+真的是太棒了！借助consul，我们成功地为我们的Docker容器实施了一整套完备的服务发现方案，
+而且所有我们需要做的配置只是运行两个简单的命令而已！我们甚至无需编写任何代码。</p>
+<p>如果我们现在停止redis容器，consul会将它标记为已停止的状态，
+如此一来，它将不会再响应我们的任何请求。这一点同样也非常容易验证：</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker stop 271a3d</span>
+<span class="mi">271</span><span class="n">a3d</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># dig @172.16.74.22 -p 8600 redis.service.consul</span>
+
+<span class="p">;</span> <span class="o">&lt;&lt;&gt;&gt;</span> <span class="n">DiG</span> <span class="mf">9.11</span><span class="o">.</span><span class="mi">4</span><span class="o">-</span><span class="n">P2</span><span class="o">-</span><span class="n">RedHat</span><span class="o">-</span><span class="mf">9.11</span><span class="o">.</span><span class="mi">4</span><span class="o">-</span><span class="mf">9.</span><span class="n">P2</span><span class="o">.</span><span class="n">el7</span> <span class="o">&lt;&lt;&gt;&gt;</span> <span class="nd">@172</span><span class="o">.</span><span class="mf">16.74</span><span class="o">.</span><span class="mi">22</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8600</span> <span class="n">redis</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">consul</span>
+<span class="p">;</span> <span class="p">(</span><span class="mi">1</span> <span class="n">server</span> <span class="n">found</span><span class="p">)</span>
+<span class="p">;;</span> <span class="k">global</span> <span class="n">options</span><span class="p">:</span> <span class="o">+</span><span class="n">cmd</span>
+<span class="p">;;</span> <span class="n">Got</span> <span class="n">answer</span><span class="p">:</span>
+<span class="p">;;</span> <span class="o">-&gt;&gt;</span><span class="n">HEADER</span><span class="o">&lt;&lt;-</span> <span class="n">opcode</span><span class="p">:</span> <span class="n">QUERY</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">NXDOMAIN</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="mi">62207</span>
+<span class="p">;;</span> <span class="n">flags</span><span class="p">:</span> <span class="n">qr</span> <span class="n">aa</span> <span class="n">rd</span> <span class="n">ra</span><span class="p">;</span> <span class="n">QUERY</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ANSWER</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">AUTHORITY</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ADDITIONAL</span><span class="p">:</span> <span class="mi">0</span>
+
+<span class="p">;;</span> <span class="n">QUESTION</span> <span class="n">SECTION</span><span class="p">:</span>
+<span class="p">;</span><span class="n">redis</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">consul</span><span class="o">.</span>      <span class="n">IN</span>  <span class="n">A</span>
+
+<span class="p">;;</span> <span class="n">Query</span> <span class="n">time</span><span class="p">:</span> <span class="mi">1</span> <span class="n">msec</span>
+<span class="p">;;</span> <span class="n">SERVER</span><span class="p">:</span> <span class="mf">172.16</span><span class="o">.</span><span class="mf">74.22</span><span class="c1">#8600(172.16.74.22)</span>
+<span class="p">;;</span> <span class="n">WHEN</span><span class="p">:</span> <span class="n">Tue</span> <span class="n">Feb</span> <span class="mi">25</span> <span class="mi">05</span><span class="p">:</span><span class="mi">07</span><span class="p">:</span><span class="mi">01</span> <span class="n">UTC</span> <span class="mi">2020</span>
+<span class="p">;;</span> <span class="n">MSG</span> <span class="n">SIZE</span>  <span class="n">rcvd</span><span class="p">:</span> <span class="mi">38</span>
+
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># dig @172.16.74.22 -p 8600 -t SRV redis.service.consul +short</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># dig @172.16.74.22 -p 8600 redis.service.consul +short</span>
+</pre></div>
+</div>
+<p>如果正在寻找一个简单而容易上手的服务发现的解决方案，registrator无疑是一个非常省力的选择，
+尽管它仍然需要用户运行一些像consul或者etcd这样的存储后端。</p>
+<p>然而，由于其本身具备简单部署的优势以及它提供的对Docker的原生集成支持，选用它无疑是利大于弊的。</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="22.Mesos——优秀的集群资源调度平台.html" class="btn btn-neutral float-right" title="Mesos——优秀的集群资源调度平台" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="20.Docker高级网络实战.html" class="btn btn-neutral float-left" title="Docker高级网络实战" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

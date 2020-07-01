@@ -1,0 +1,284 @@
+.. contents::
+   :depth: 3
+..
+
+Kubespray部署k8s
+================
+
+一、环境需求
+------------
+
++------------+-----------------------------+
+| 环境       | 版本                        |
++============+=============================+
+| Centos     | centos 7.6                  |
++------------+-----------------------------+
+| Kernel     | 4.4.224-1.el7.elrepo.x86_64 |
++------------+-----------------------------+
+| kubernetes | v1.16.9                     |
++------------+-----------------------------+
+| kubespray  | v2.12.6                     |
++------------+-----------------------------+
+| Docker     | v19.03.9                    |
++------------+-----------------------------+
+
+硬件需求：CPU>=2c ,内存>=2G
+
+二、环境角色
+------------
+
++-------+--------+--------+--------------------------------------------+
+| 主机名 | IP    | 角色   | 安装软件                                   |
++=======+========+========+============================================+
+| i1-ma | 172.16 | k8s-Ma | ansible kubespray etcd ingress-nginx       |
+| ster- | .60.23 | ster01 | calico kube-apiserver                      |
+| 1     | 6      |        | kube-controller-manager kube-proxy         |
+|       |        |        | kube-scheduler nodelocaldns node-exporte   |
+|       |        |        | kubelet                                    |
++-------+--------+--------+--------------------------------------------+
+| i1-wo | 172.16 | k8s-no | calico kube-proxy nginx-proxy nodelocaldns |
+| rker- | .60.17 | de01   | node-exporte kubelet                       |
+| 1     | 8      |        |                                            |
++-------+--------+--------+--------------------------------------------+
+| i1-wo | 172.16 | k8s-no | calico kube-proxy nginx-proxy nodelocaldns |
+| rker- | .60.22 | de02   | node-exporte kubelet                       |
+| 2     | 6      |        |                                            |
++-------+--------+--------+--------------------------------------------+
+| i1-wo | 172.16 | k8s-no | calico kube-proxy nginx-proxy nodelocaldns |
+| rker- | .60.9  | de03   | node-exporte kubelet                       |
+| 3     |        |        |                                            |
++-------+--------+--------+--------------------------------------------+
+
+三、系统环境初始化
+------------------
+
+1.设置主机名和hosts
+
+.. code:: shell
+
+   hostnamectl set-hostname i1-master-1
+   hostnamectl set-hostname i1-worker-1
+   hostnamectl set-hostname i1-worker-2
+   hostnamectl set-hostname i1-worker-3
+
+2.配置hosts
+
+.. code:: shell
+
+   vim /etc/hosts
+
+   172.16.60.236 i1-master-1
+   172.16.60.178 i1-worker-1
+   172.16.60.226 i1-worker-2
+   172.16.60.9 i1-worker-3
+
+3.关闭防火墙
+
+.. code:: shell
+
+   systemctl disable firewalld && systemctl stop firewalld && systemctl status firewalld
+
+4.关闭swap分区
+
+.. code:: shell
+
+   #临时
+   swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
+
+   #永久
+   sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab 
+
+5.关闭selinux:
+
+.. code:: shell
+
+   setenforce  0 
+
+   sed -i "s/^SELINUX=enforcing/SELINUX=disabled/g" /etc/sysconfig/selinux 
+
+   sed -i "s/^SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config 
+
+   sed -i "s/^SELINUX=permissive/SELINUX=disabled/g" /etc/sysconfig/selinux 
+
+   sed -i "s/^SELINUX=permissive/SELINUX=disabled/g" /etc/selinux/config 
+
+6.设置内核—将桥接的IPv4流量传递到iptables的链
+
+.. code:: shell
+
+   modprobe br_netfilter 
+
+   cat <<EOF >> /etc/sysctl.conf 
+   net.bridge.bridge-nf-call-ip6tables = 1
+   net.bridge.bridge-nf-call-iptables = 1
+   EOF
+
+   sysctl -p /etc/sysctl.conf
+
+7.设置系统同步时间服务器
+
+.. code:: shell
+
+   yum install -y ntp 
+
+   echo "0 6 * * *  /usr/sbin/ntpdate pool.ntp.org  >/dev/null 2>&1" >> /var/spool/cron/root
+
+8.配置ssh key 免密认证
+
+.. code:: shell
+
+   ssh-keygen -t rsa -N ""
+   cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+   #配置其他节点免密登录
+   root ssh-copy-id root@i1-worker-1
+   root ssh-copy-id root@i1-worker-2
+   root ssh-copy-id root@i1-worker-3
+
+9.更新系统内核为 4.4.x , CentOS 默认为3.10.x
+
+.. code:: shell
+
+   #安装：
+   rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+
+   rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+
+   yum --enablerepo=elrepo-kernel install -y kernel-lt kernel-lt-devel
+
+   grub2-set-default 0
+
+   #重启操作系统：
+   reboot
+
+四、部署Kubespray基础环境
+-------------------------
+
+1.安装python
+
+.. code:: shell
+
+   #master任意一台机器上操作
+   yum install -y epel-release
+   yum install -y vim wget python-pip ansible python36 python36-pip 
+
+   2.安装ansible
+   #master任意一台机器上操作
+   #----ansible 必须 >= 2.7
+   yum install ansible
+
+2.取消key检查：
+
+.. code:: shell
+
+   vim /etc/ansible/ansible.cfg
+
+   host_key_checking = False
+
+3.安装jinja2
+
+.. code:: shell
+
+   #master任意一台机器上操作
+   pip install --upgrade pip \
+    && pip install netaddr \
+    && pip install --upgrade jinja2
+
+五、kubespray安装部署k8s
+------------------------
+
+1.下载kubespray
+
+.. code:: shell
+
+   git https://github.com/kubernetes-sigs/kubespray.git
+
+2.安装 kubespray 依赖
+
+.. code:: shell
+
+   cd kubespray
+   pip install -r requirements.txt
+
+3.配置inventory
+
+::
+
+   cp -rfp inventory/sample inventory/mycluster
+
+   vim inventory/mycluster/hosts.ini
+
+
+   [all]
+
+   i1-master-1 ansible_host=172.16.60.236 ip=172.16.60.236
+
+   i1-worker-1 ansible_host=172.16.60.178 ip=172.16.60.178
+
+   i1-worker-2 ansible_host=172.16.60.226 ip=172.16.60.226
+
+   i1-worker-3 ansible_host=172.16.60.9 ip=172.16.60.9
+
+    
+
+   [all:vars]
+
+   kube_service_addresses=10.232.0.0/18
+
+   kube_pods_subnet=10.233.64.0/18
+
+   \#kube_apiserver_node_port_range=30000-32767
+
+   kube_apiserver_node_port_range="30000-32767"
+
+   kube_users={"kube":{"pass":"47d56874","role":"admin","groups":["system:masters"]}}
+
+   nginx_url=10.0.112.195
+
+    
+
+   [kube-prometheus]
+
+   i1-master-1
+
+    
+
+   [kube-master]
+
+   i1-master-1
+
+
+    
+
+   [kube-node]
+
+   i1-worker-1
+
+   i1-worker-2
+
+   i1-worker-3
+
+    
+
+   [etcd]
+
+   i1-master-1
+
+
+   [k8s-cluster:children]
+
+   kube-master
+
+   kube-node
+
+    
+
+   [calico-rr]
+
+   [vault]
+
+4.执行部署
+
+::
+
+   ansible-playbook -i inventory/sample/cce-hosts.ini cluster.yml -b -v

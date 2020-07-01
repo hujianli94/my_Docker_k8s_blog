@@ -1,0 +1,244 @@
+.. contents::
+   :depth: 3
+..
+
+安全防护与配置
+==============
+
+Docker是基于Linux操作系统实现的应用虚拟化。运行在容器内的进程，与运行在本地系统中的进程在本质上并无区别，因此，配置的安全策略不合适将可能给本地系统带来安全风险。
+
+可见，Docker的安全性在生产环境中是十分关键的衡量因素。Docker容器的安全性，在很大程度上依赖于Linux系统自身。目前，在评估Docker的安全性时，主要考虑下面几个方面：
+
+·Linux内核的命名空间机制提供的容器隔离安全；
+
+·Linux控制组机制对容器资源的控制能力安全；
+
+·Linux内核的能力机制所带来的操作权限安全；
+
+·Docker程序（特别是服务端）本身的抗攻击性；
+
+·其他安全增强机制（包括AppArmor、SELinux等）对容器安全性的影响；
+
+·通过第三方工具（如Docker Bench工具）对Docker环境的安全性进行评估。
+
+命名空间隔离的安全
+------------------
+
+Docker容器和LXC容器在实现上很相似，所提供的安全特性也基本一致。当用docker[container]run命令启动一个容器时，Docker将在后台为容器创建一个独立的命名空间。命名空间提供了最基础也是最直接的隔离，在容器中运行的进程不会被运行在本地主机上的进程和其他容器通过正常渠道发现和影响。
+
+例如，通过命名空间机制，每个容器都有自己独有的网络栈，意味着它们不能访问其他容器的套接字（socket）或接口。当然，容器默认可以与本地主机网络连通，如果主机系统上做了相应的交换设置，容器可以像跟主机交互一样的和其他容器交互。启动容器时，指定公共端口或使用连接系统，容器可以相互通信了（用户可以根据配置来限制通信的策略）。
+
+从网络架构的角度来看，所有的容器实际上是通过本地主机的网桥接口（docker0）进行相互通信，就像物理机器通过物理交换机通信一样。
+
+那么，Linux内核中实现命名空间（特别是网络命名空间）的机制是否足够成熟呢？Linux内核从2.6.15版本（2008年7月发布）开始引入命名空间，至今经历了数年的演化和改进，并应用于诸多大型生产系统中。实际上，命名空间的想法和设计提出的时间要更早，最初是OpenVZ项目的重要特性。OpenVZ项目早在2005年就已经正式发布，其设计和实现更加成熟。
+
+当然，与虚拟机方式相比，通过命名空间来实现的隔离并不是那么绝对。运行在容器中的应用可以直接访问系统内核和部分系统文件。因此，用户必须保证容器中应用是安全可信的（这跟保证运行在系统中的软件是可信的一个道理），否则本地系统将可能受到威胁，即必须保证镜像的来源和自身可靠。
+
+Docker自1.3.0版本起对镜像管理引入了签名系统，加强了对镜像安全性的防护，用户可以通过签名来验证镜像的完整性和正确性。
+
+控制组资源控制的安全
+--------------------
+
+控制组是Linux容器机制中的另外一个关键组件，它负责实现资源的审计和限制。
+
+控制组机制的相关技术出现于2006年，Linux内核从2.6.24版本开始正式引入该技术。当用户执行docker[container]run命令启动一个Docker容器时，Docker将通过Linux相关的调用，在后台为容器创建一个独立的控制组策略集合，该集合将限制容器内应用对资源的消耗。
+
+控制组提供了很多有用的特性。它可以确保各个容器公平地分享主机的内存、CPU、磁盘IO等资源；当然，更重要的是，通过控制组可以限制容器对资源的占用，确保了当某个容器对资源消耗过大时，不会影响到本地主机系统和其他容器。
+
+尽管控制组不负责隔离容器之间相互访问、处理数据和进程，但是它在防止恶意攻击特别是拒绝服务攻击（DDoS）方面是十分有效的。
+
+对于支持多用户的服务平台（比如公有的各种PaaS、容器云）上，控制组尤其重要。例如，当个别应用容器出现异常的时候，可以保证本地系统和其他容器正常运行而不受影响，从而避免引发“雪崩”灾难。
+
+内核能力机制
+------------
+
+能力机制（capability）是Linux内核一个强大的特性，可以提供细粒度的权限访问控制。传统的Unix系统对进程权限只有根权限（用户id为0，即为root用户）和非根权限（用户非root用户）两种粗粒度的区别。
+
+Linux内核自2.2版本起支持能力机制，将权限划分为更加细粒度的操作能力，既可以作用在进程上，也可以作用在文件上。例如，一个Web服务进程只需要绑定一个低于1024端口的权限，并不需要完整的root权限，那么给它授权net_bind_service能力即可。此外，还可以赋予很多其他类似能力来避免进程获取root权限。
+
+默认情况下，Docker启动的容器有严格限制，只允许使用内核的一部分能力，包括chown、dac_override、fowner、kill、setgid、setuid、setpcap、net_bind_service、net_raw、sys_chroot、mknod、setfcap、audit_write，等等。
+
+使用能力机制对加强Docker容器的安全性有很多好处。通常，在服务器上会运行一堆特权进程，包括ssh、cron、syslogd、硬件管理工具模块（例如负载模块）、网络配置工具等。容器与这些进程是不同的，因为几乎所有的特权进程都由容器以外的支持系统来进行管理。例如：
+
+·ssh访问由宿主主机上的ssh服务来管理；
+
+·cron通常应该作为用户进程执行，权限交给使用它服务的应用来处理；
+
+·日志系统可由Docker或第三方服务管理；
+
+·硬件管理无关紧要，容器中也就无须执行udevd以及类似服务；
+
+·络管理也都在主机上设置，除非特殊需求，容器不需要对网络进行配置。
+
+从上面的例子可以看出，大部分情况下，容器并不需要“真正的”root权限，容器只需要少数的能力即可。为了加强安全，容器可以禁用一些没必要的权限，包括：
+
+·完全禁止任何文件挂载操作；
+
+·禁止直接访问本地主机的套接字；
+
+·禁止访问一些文件系统的操作，比如创建新的设备、修改文件属性等；
+
+·禁止模块加载。
+
+这样，就算攻击者在容器中取得了root权限，也不能获得本地主机的较高权限，能进行的破坏也有限。
+
+不恰当地给容器分配了内核能力，会导致容器内应用获取破坏本地系统的权限。例如，早期的Docker版本曾经不恰当地继承CAP_DAC_READ_SEARCH能力，导致容器内进程可以通过系统调用访问到本地系统的任意文件目录。
+
+默认情况下，Docker采用白名单机制，禁用了必需的一些能力之外的其他权限，目前支持CAP_CHOWN、CAP_DAC_OVERRIDE、CAP_FSETID、CAP_FOWNER、CAP_MKNOD、CAP_NET_RAW、CAP_SETGID、CAP_SETUID、CAP_SETFCAP、CAP_SETPCAP、CAP_NET_BIND_SERVICE、CAP_SYS_CHROOT、CAP_KILL、CAP_AUDIT_WRITE等。
+
+当然，用户也可以根据自身需求为Docker容器启用额外的权限。
+
+Docker服务端的防护
+------------------
+
+使用Docker容器的核心是Docker服务端。Docker服务的运行目前还需要root权限的支持，因此服务端的安全性十分关键。
+
+首先，必须确保只有可信的用户才能访问到Docker服务。Docker允许用户在主机和容器间共享文件夹，同时不需要限制容器的访问权限，这就容易让容器突破资源限制。例如，恶意用户启动容器的时候将主机的根目录/映射到容器的/host目录中，那么容器理论上就可以对主机的文件系统进行任意修改了。事实上，几乎所有虚拟化系统都允许类似的资源共享，而没法阻止恶意用户共享主机根文件系统到虚拟机系统。
+
+这将会造成很严重的安全后果。因此，当提供容器创建服务时（例如通过一个Web服务器），要更加注意进行参数的安全检查，防止恶意用户用特定参数来创建一些破坏性的容器。
+
+为了加强对服务端的保护，Docker的REST
+API（客户端用来与服务端通信的接口）在0.5.2之后使用本地的Unix套接字机制替代了原先绑定在127.0.0.1上的TCP套接字，因为后者容易遭受跨站脚本攻击。现在用户使用Unix权限检查来加强套接字的访问安全。
+
+用户仍可以利用HTTP提供REST
+API访问。建议使用安全机制，确保只有可信的网络或VPN网络，或证书保护机制（例如受保护的stunnel和ssl认证）下的访问可以进行。此外，还可以使用TLS证书来加强保护，可以进一步参考dockerd的tls相关参数。
+
+最近改进的Linux命名空间机制将可以实现使用非root用户来运行全功能的容器。这将从根本上解决了容器和主机之间共享文件系统而引起的安全问题。
+
+目前，Docker自身改进安全防护的目标是实现以下两个重要安全特性：
+
+·将容器的root用户映射到本地主机上的非root用户，减轻容器和主机之间因权限提升而引起的安全问题；
+
+·允许Docker服务端在非root权限下运行，利用安全可靠的子进程来代理执行需要特权权限的操作。这些子进程将只允许在限定范围内进行操作，例如仅仅负责虚拟网络设定或文件系统管理、配置操作等。
+
+更多安全特性的使用
+------------------
+
+除了默认启用的能力机制之外，还可以利用一些现有的安全软件或机制来增强Docker的安全性，例如GRSEC、AppArmor、SELinux等：
+
+·在内核中启用GRSEC和PAX，这将增加更多的编译和运行时的安全检查；并且通过地址随机化机制来避免恶意探测等。启用该特性不需要Docker进行任何配置；
+
+·使用一些增强安全特性的容器模板，比如带AppArmor的模板和RedHat带SELinux策略的模板。这些模板提供了额外的安全特性；
+
+·用户可以自定义更加严格的访问控制机制来定制安全策略。
+
+此外，在将文件系统挂载到容器内部时候，可以通过配置只读（read-only）模式来避免容器内的应用通过文件系统破坏外部环境，特别是一些系统运行状态相关的目录，包括但不限于/proc/sys、/proc/irq、/proc/bus等。这样，容器内应用进程可以获取所需要的系统信息，但无法对它们进行修改。
+
+同时，对于应用容器场景下，Docker内启动应用的用户都应为非特权用户（可以进一步禁用用户权限，如访问Shell），避免出现故障时对容器内其他资源造成损害。
+
+使用第三方检测工具
+------------------
+
+前面笔者介绍了大量增强Docker安全性的手段。要逐一去检查会比较繁琐，好在已经有了一些进行自动化检查的开源工具，比较出名的有Docker
+Bench和clair。
+
+Docker Bench
+~~~~~~~~~~~~
+
+Docker
+Bench是一个开源项目，代码托管在\ https://github.com/docker/docker-bench-secu-rity
+。该项目按照互联网安全中心（Center for Internet
+Security，CIS）对于Docker
+1.13.0+的安全规范进行一系列环境检查，可发现当前Docker部署在配置、安全等方面的潜在问题。CIS
+Docker规范在主机配置、Docker引擎、配置文件权限、镜像管理、容器运行时环境、安全项等六大方面都进行了相关的约束和规定，推荐大家在生产环境中使用Docker时，采用该规范作为部署的安全标准。
+
+Docker
+Bench自身也提供了Docker镜像，采用如下命令，可以快速对本地环境进行安全检查：
+
+--------------
+
+.. code:: shell
+
+   $ docker run -it --net host --pid host --userns host --cap-add audit_control \
+       -e DOCKER_CONTENT_TRUST=$DOCKER_CONTENT_TRUST \
+       -v /var/lib:/var/lib \
+       -v /var/run/docker.sock:/var/run/docker.sock \
+       -v /usr/lib/systemd:/usr/lib/systemd \
+       -v /etc:/etc --label docker_bench_security \
+       docker/docker-bench-security
+   # ------------------------------------------------------------------------------
+   # Docker Bench for Security v1.3.4
+   #
+   # Docker, Inc. (c) 2015-
+   #
+   # Checks for dozens of common best-practices around deploying Docker containers in production.
+   # Inspired by the CIS Docker Community Edition Benchmark v1.1.0.
+   # ------------------------------------------------------------------------------
+   Initializing
+   [INFO] 1 - Host Configuration
+   [WARN] 1.1  - Ensure a separate partition for containers has been created
+   [NOTE] 1.2  - Ensure the container host has been Hardened
+   [INFO] 1.3  - Ensure Docker is up to date
+   [INFO]      * Using 17.11.0, verify is it up to date as deemed necessary
+   [INFO]      * Your operating system vendor may provide support and security main-
+                 tenance for Docker
+   [INFO] 1.4  - Ensure only trusted users are allowed to control Docker daemon
+   [INFO]      * docker:x:999:baohua
+   [WARN] 1.5  - Ensure auditing is configured for the Docker daemon
+   [WARN] 1.6  - Ensure auditing is configured for Docker files and directories -
+                 /var/lib/docker
+   [WARN] 1.7  - Ensure auditing is configured for Docker files and directories -
+                 /etc/docker
+   [WARN] 1.8  - Ensure auditing is configured for Docker files and directories -
+                 docker.service
+   [INFO] 1.9  - Ensure auditing is configured for Docker files and directories -
+                 docker.socket
+   ...
+
+--------------
+
+输出结果中，带有不同的级别，说明问题的严重程度，最后会给出整体检查结果和评分。一般要尽量避免出现WARN或以上的问题。
+
+用户也可以通过获取最新开源代码方式启动检测：
+
+--------------
+
+.. code:: shell
+
+   $ git clone https://github.com/docker/docker-bench-security.git
+   $ cd docker-bench-security
+   $ docker-compose run --rm docker-bench-security
+
+clair
+~~~~~
+
+除了Docker
+Bench外，还有CoreOS团队推出的clair，它基于Go语言实现，支持对容器（支持appc和Docker）的文件层进行静态扫描发现潜在漏洞。项目地址为\ https://github.com/coreos/clair
+。读者可以使用Docker或Docker-compose方式快速进行体验。
+
+使用Docker方式启动clair，如下所示：
+
+--------------
+
+.. code:: shell
+
+   $ mkdir $PWD/clair_config
+   $ curl -L
+       https://raw.githubusercontent.com/coreos/clair/master/config.yaml.sample -o $PWD/clair_config/config.yaml
+   $ docker run -d -e POSTGRES_PASSWORD="" -p 5432:5432 postgres:9.6
+   $ docker run --net=host -d -p 6060-6061:6060-6061 -v $PWD/clair_config:/config quay.io/coreos/clair-git:latest -config=/config/config.yaml
+   使用Docker-Compose方式启动clair。
+   $ curl -L
+       https://raw.githubusercontent.com/coreos/clair/master/contrib/compose/docker-compose.yml -o $HOME/docker-compose.yml
+   $ mkdir $HOME/clair_config
+   $ curl -L
+       https://raw.githubusercontent.com/coreos/clair/master/config.yaml.sample -o $HOME/clair_config/config.yaml
+   $ $EDITOR $HOME/clair_config/config.yaml # Edit database source to be post-gresql://postgres:password@postgres:5432?sslmode=disable
+   $ docker-compose -f $HOME/docker-compose.yml up -d
+
+本章小结
+--------
+
+总体来看，基于Docker自身支持的安全机制并结合Apparmor、SELinux、GRSEC等第三方安全机制，可以很好地保证容器的运行安全。
+
+但是技术层面实现的安全只是理论上的，需要配合一系列安全的执行流程与合规的使用手段。特别是对于生产系统来说，影响安全的维度比较复杂，发生风险的位置很多。除了通过安全监测来减少服务正常运行的安全风险外，还要配合完善的安全监控系统，在出现问题时能及时进行响应。
+
+在使用Docker的过程中，尤其需要注意如下几方面：
+
+·首先要牢记容器自身所提供的隔离性只是相对的，并没有虚拟机那样完善。因此，必须对容器内应用进行严格的安全审查。同时从容器层面来看，容器即应用，原先保障应用安全的各种手段，都可以合理地借鉴利用；
+
+·采用专用的服务器来运行Docker服务端和相关的管理服务（比如ssh监控和进程监控、管理工具nrpe、collectd等），并对该服务器启用最高级别的安全机制。而把其他业务服务都放到容器中去运行，确保即便个别容器出现问题，也不会影响到其他容器资源；
+
+·将运行Docker容器的机器划分为不同的组，互相信任的机器放到同一个组内；组之间进行资源隔离；同时进行定期的安全检查；
+
+·大规模运营场景下，需要考虑在容器网络上进行必备的安全防护，避免诸如DDoS、ARP攻击、规则表攻击等网络安全威胁，这也是生产环境需要关注的重要问题。
