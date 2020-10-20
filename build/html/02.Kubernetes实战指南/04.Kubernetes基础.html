@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -28,21 +33,20 @@
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
               HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: ''
+              SOURCELINK_SUFFIX: '.txt'
           };
       </script>
         <script type="text/javascript" src="../_static/jquery.js"></script>
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Pod" href="05.Pod.html" />
     <link rel="prev" title="Docker基础" href="03.Docker基础.html" /> 
 </head>
 
@@ -57,7 +61,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> 小健_Docker_K8s_Blog
           
 
           
@@ -87,6 +91,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -129,13 +134,16 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="05.Pod.html">Pod</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker经典实例/index.html">03.Docker经典实例</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -174,7 +182,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">02.Kubernetes实战指南</a> &raquo;</li>
         
@@ -184,7 +192,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/02.Kubernetes实战指南/04.Kubernetes基础.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/02.Kubernetes实战指南/04.Kubernetes基础.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -240,7 +248,7 @@ Master是集群的主要控制单元，用于管理其工作负载并指导整�
 <p>Master节点是Kubernetes集群的控制节点，在生产环境中不建议部署集群核心组件外的任何Pod，<strong>公司业务的Pod更是不建议部署到Master节点上，以免升级或者维护时对业务造成影响</strong>。Master节点的组件包括：</p>
 <div class="section" id="apiserver">
 <h3><a class="toc-backref" href="#id6">APIServer</a><a class="headerlink" href="#apiserver" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span>APIServer是整个集群的控制中枢，提供集群中各个模块之间的数据交换，并将集群状态和信息存储到分布式键－值（key-value）存储系统Etcd集群中。同时它也是集群管理、资源配额、提供完备的集群安全机制的入口，为集群各类资源对象提供增删改查以及watch的REST API接口。
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>APIServer是整个集群的控制中枢，提供集群中各个模块之间的数据交换，并将集群状态和信息存储到分布式键－值（key-value）存储系统Etcd集群中。同时它也是集群管理、资源配额、提供完备的集群安全机制的入口，为集群各类资源对象提供增删改查以及watch的REST API接口。
 
 APIServer作为Kubernetes的关键组件，使用Kubernetes API和JSON overHTTP提供Kubernetes的内部和外部接口。
 </pre></div>
@@ -248,13 +256,13 @@ APIServer作为Kubernetes的关键组件，使用Kubernetes API和JSON overHTTP�
 </div>
 <div class="section" id="scheduler">
 <h3><a class="toc-backref" href="#id7">Scheduler</a><a class="headerlink" href="#scheduler" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span>Scheduler是集群Pod的调度中心，主要是通过调度算法将Pod分配到最佳的节点（Node），它通过APIServer监听所有Pod的状态，一旦发现新的未被调度到任何Node节点的Pod（PodSpec.NodeName为空），就会根据一系列策略选择最佳节点进行调度，对每一个Pod创建一个绑定（binding），然后被调度的节点上的Kubelet负责启动该Pod。Scheduler是集群可插拔式组件，它跟踪每个节点上的资源利用率以确保工作负载不会超过可用资源。因此Scheduler必须知道资源需求、资源可用性以及其他约束和策略，例如服务质量、亲和力／反关联性要求、数据位置等。Scheduler将资源供应与工作负载需求相匹配以维持系统的稳定和可靠，因此Scheduler在调度的过程中需要考虑公平、资源高效利用、效率等方面的问题。
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Scheduler是集群Pod的调度中心，主要是通过调度算法将Pod分配到最佳的节点（Node），它通过APIServer监听所有Pod的状态，一旦发现新的未被调度到任何Node节点的Pod（PodSpec.NodeName为空），就会根据一系列策略选择最佳节点进行调度，对每一个Pod创建一个绑定（binding），然后被调度的节点上的Kubelet负责启动该Pod。Scheduler是集群可插拔式组件，它跟踪每个节点上的资源利用率以确保工作负载不会超过可用资源。因此Scheduler必须知道资源需求、资源可用性以及其他约束和策略，例如服务质量、亲和力／反关联性要求、数据位置等。Scheduler将资源供应与工作负载需求相匹配以维持系统的稳定和可靠，因此Scheduler在调度的过程中需要考虑公平、资源高效利用、效率等方面的问题。
 </pre></div>
 </div>
 </div>
 <div class="section" id="controller-manager">
 <h3><a class="toc-backref" href="#id8">Controller Manager</a><a class="headerlink" href="#controller-manager" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span>Controller Manager是集群状态管理器（它的英文直译名为控制器管理器），以保证Pod或其他资源达到期望值。
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Controller Manager是集群状态管理器（它的英文直译名为控制器管理器），以保证Pod或其他资源达到期望值。
 
 当集群中某个Pod的副本数或其他资源因故障和错误导致无法正常运行，没有达到设定的值时，Controller Manager会尝试自动修复并使其达到期望状态。
 
@@ -264,7 +272,7 @@ Controller Manager包含NodeController、ReplicationController、EndpointControl
 </div>
 <div class="section" id="etcd">
 <h3><a class="toc-backref" href="#id9">Etcd</a><a class="headerlink" href="#etcd" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span>Etcd由CoreOS开发，用于可靠地存储集群的配置数据，是一种持久性、轻量型、分布式的键－值（key-value）数据存储组件。
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Etcd由CoreOS开发，用于可靠地存储集群的配置数据，是一种持久性、轻量型、分布式的键－值（key-value）数据存储组件。
 
 Etcd作为Kubernetes集群的持久化存储系统，集群的灾难恢复和状态信息存储都与其密不可分，所以在Kubernetes高可用集群中，Etcd的高可用是至关重要的一部分，在生产环境中建议部署为大于3的奇数个数的Etcd，以保证数据的安全性和可恢复性。Etcd可与Master组件部署在同一个节点上，大规模集群环境下建议部署在集群外，并且使用高性能服务器来提高Etcd的性能和降低Etcd同步数据的延迟。
 </pre></div>
@@ -277,26 +285,26 @@ Etcd作为Kubernetes集群的持久化存储系统，集群的灾难恢复和状
 <p>Node节点包括：</p>
 <div class="section" id="kubelet">
 <h3><a class="toc-backref" href="#id11">Kubelet</a><a class="headerlink" href="#kubelet" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span>负责与Master通信协作，管理该节点上的Pod。
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>负责与Master通信协作，管理该节点上的Pod。
 </pre></div>
 </div>
 </div>
 <div class="section" id="kube-proxy">
 <h3><a class="toc-backref" href="#id12">Kube-Proxy</a><a class="headerlink" href="#kube-proxy" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span>负责各Pod之间的通信和负载均衡。
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>负责各Pod之间的通信和负载均衡。
 </pre></div>
 </div>
 </div>
 <div class="section" id="docker-engine">
 <h3><a class="toc-backref" href="#id13">Docker Engine</a><a class="headerlink" href="#docker-engine" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span>Docker引擎，负载对容器的管理。
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Docker引擎，负载对容器的管理。
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="id1">
 <h2><a class="toc-backref" href="#id14">查询Kubernetes的健康状态</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="c1"># kubectl cluster-info</span>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># kubectl cluster-info</span>
 <span class="n">Kubernetes</span> <span class="n">master</span> <span class="ow">is</span> <span class="n">running</span> <span class="n">at</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="mf">172.16</span><span class="o">.</span><span class="mf">60.236</span><span class="p">:</span><span class="mi">6443</span>
 <span class="n">KubeDNS</span> <span class="ow">is</span> <span class="n">running</span> <span class="n">at</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="mf">172.16</span><span class="o">.</span><span class="mf">60.236</span><span class="p">:</span><span class="mi">6443</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="o">/</span><span class="n">services</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="p">:</span><span class="n">dns</span><span class="o">/</span><span class="n">proxy</span>
 
@@ -324,11 +332,11 @@ Etcd作为Kubernetes集群的持久化存储系统，集群的灾难恢复和状
 <h3><a class="toc-backref" href="#id16">部署Dashboard</a><a class="headerlink" href="#dashboard" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="dashboard-2-x">
 <h4>部署dashboard 2.x版本<a class="headerlink" href="#dashboard-2-x" title="Permalink to this headline">¶</a></h4>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
 </pre></div>
 </div>
 <p>默认Dashboard只能集群内部访问，修改Service为NodePort类型，暴露到外部：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">vi</span> <span class="n">recommended</span><span class="o">.</span><span class="n">yaml</span>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vi</span> <span class="n">recommended</span><span class="o">.</span><span class="n">yaml</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">metadata</span><span class="p">:</span>
@@ -346,7 +354,7 @@ Etcd作为Kubernetes集群的持久化存储系统，集群的灾难恢复和状
     <span class="n">k8s</span><span class="o">-</span><span class="n">app</span><span class="p">:</span> <span class="n">kubernetes</span><span class="o">-</span><span class="n">dashboard</span>
 </pre></div>
 </div>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ kubectl apply -f recommended.yaml
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f recommended.yaml
 
 $ kubectl get pods,svc -n kubernetes-dashboard
 NAME                                             READY   STATUS    RESTARTS   AGE
@@ -360,7 +368,7 @@ service/kubernetes-dashboard        NodePort    10.103.134.98    &lt;none&gt;   
 </div>
 <p>访问地址：<a class="reference external" href="https://NodeIP:30001">https://NodeIP:30001</a></p>
 <p>创建service account并绑定默认cluster-admin管理员集群角色：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ kubectl create serviceaccount dashboard-admin -n kube-system
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create serviceaccount dashboard-admin -n kube-system
 $ kubectl create clusterrolebinding dashboard-admin --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin
 $ kubectl describe secrets -n kube-system $(kubectl -n kube-system get secret | awk &#39;/dashboard-admin/{print $1}&#39;)
 
@@ -396,7 +404,7 @@ Slave，Redis Slave会从Redis Master同步数据。</p>
 <p>Guestbook提供一个非常简单的功能：在Frontend页面提交数据，Frontend则将数据保存到Redis
 Master，然后从Redis Slave读取数据显示到页面上。</p>
 <p>Guestbook定义文件在Kubernetes发布包的examples/guestbook目录下：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ wget https://github.com/kubernetes/kubernetes/releases/download/v1.1.1/kubernetes.tar.gz
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/kubernetes/kubernetes/releases/download/v1.1.1/kubernetes.tar.gz
 $ tar zxvf kubernetes.tar.gz
 $ cd kubernetes/examples/guestbook
 </pre></div>
@@ -408,7 +416,7 @@ $ cd kubernetes/examples/guestbook
 <h4>创建Redis Master Pod<a class="headerlink" href="#redis-master-pod" title="Permalink to this headline">¶</a></h4>
 <p>Redis Master Replication
 Controller的定义文件redis-master-controller.yaml：</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">ReplicationController</span>
 <span class="n">metadata</span><span class="p">:</span>
   <span class="n">name</span><span class="p">:</span> <span class="n">redis</span><span class="o">-</span><span class="n">master</span>
@@ -431,19 +439,19 @@ Controller的定义文件redis-master-controller.yaml：</p>
 </pre></div>
 </div>
 <p>通过定义文件创建Redis Master Replication Controller：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ kubectl create -f redis-master-controller.yaml
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f redis-master-controller.yaml
 replicationcontroller &quot;redis-master&quot; created
 </pre></div>
 </div>
 <p>创建成功后，可查询Redis Master Replication Controller：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ kubectl get replicationcontroller redis-master
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get replicationcontroller redis-master
 CONTROLLER     CONTAINER(S)  IMAGE(S)  SELECTOR              REPLICAS AGE
 redis-master   master         redis      name=redis-master   1            15s
 </pre></div>
 </div>
 <p>Redis Master Replication Controller将会创建1个Redis Master
 Pod，创建出来的Pod就会带上Label name=redis-master：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ kubectl get pod --selector name=redis-master
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod --selector name=redis-master
 NAME                     READY     STATUS    RESTARTS   AGE
 redis-master-vdkfp   1/1        Running   0           31s
 </pre></div>
@@ -463,7 +471,7 @@ Pod的访问地址呢？为此Kubernetes提供了Service来实现服务发现。
 <p>上一步中已经运行起Redis Master Pod，现在创建Redis Master
 Service来代理Redis Master Pod，Redis Master
 Service的定义文件redis-master-service.yaml：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
 <span class="n">metadata</span><span class="p">:</span>
   <span class="n">name</span><span class="p">:</span> <span class="n">redis</span><span class="o">-</span><span class="n">master</span>
@@ -481,12 +489,12 @@ Service的定义文件redis-master-service.yaml：</p>
 <p>Service是通过Label来关联Pod的，在Service的定义中，设置.spec.selector为name=
 redis-master，将关联上Redis Master Pod。</p>
 <p>通过定义文件创建Redis Master Service：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ kubectl create -f redis-master-service.yaml
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f redis-master-service.yaml
 service &quot;redis-master&quot; created
 </pre></div>
 </div>
 <p>创建成功后查看Redis Master Service：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ kubectl get service redis-master
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get service redis-master
 NAME           TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
 redis-master   ClusterIP   10.99.22.49   &lt;none&gt;        6379/TCP   11m
 </pre></div>
@@ -506,7 +514,7 @@ Pod中，这样还不是真正的服务发现，Kubernetes提供了两种发现S
 </ul>
 <p>当Pod运行的时候，Kubernetes会将之前存在的Service的信息通过环境变量写到Pod中，以Redis
 Master Service为例，它的信息会被写到Pod中：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">REDIS_MASTER_SERVICE_HOST</span><span class="o">=</span><span class="mf">10.99</span><span class="o">.</span><span class="mf">22.49</span>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">REDIS_MASTER_SERVICE_HOST</span><span class="o">=</span><span class="mf">10.99</span><span class="o">.</span><span class="mf">22.49</span>
 <span class="n">REDIS_MASTER_PORT_6379_TCP_PROTO</span><span class="o">=</span><span class="n">tcp</span>
 <span class="n">REDIS_MASTER_SERVICE_PORT</span><span class="o">=</span><span class="mi">6379</span>
 <span class="n">REDIS_MASTER_PORT</span><span class="o">=</span><span class="n">tcp</span><span class="p">:</span><span class="o">//</span><span class="mf">10.99</span><span class="o">.</span><span class="mf">22.49</span>
@@ -520,20 +528,20 @@ Master Service为例，它的信息会被写到Pod中：</p>
 <li>DNS 当有新的Service创建时，就会自动生成一条DNS记录，以Redis Master</li>
 </ul>
 <p>Service为例，有一条DNS记录：</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">redis</span><span class="o">-</span><span class="n">master</span> <span class="o">=&gt;</span> <span class="mf">10.99</span><span class="o">.</span><span class="mf">22.49</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">redis</span><span class="o">-</span><span class="n">master</span> <span class="o">=&gt;</span> <span class="mf">10.99</span><span class="o">.</span><span class="mf">22.49</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="redis-slave-pod">
 <h4>创建Redis Slave Pod<a class="headerlink" href="#redis-slave-pod" title="Permalink to this headline">¶</a></h4>
 <p>redisslave镜像Dockerfile下载链接地址</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">tree</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">guestbook</span><span class="o">/</span><span class="n">redis</span><span class="o">-</span><span class="n">slave</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">tree</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">guestbook</span><span class="o">/</span><span class="n">redis</span><span class="o">-</span><span class="n">slave</span>
 </pre></div>
 </div>
 <p>通过Replication Controller可创建Redis Slave Pod，将创建两个Redis Slave
 Pod。Redis Slave Replication
 Controller的定义文件redis-slave-controller.yaml：</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">ReplicationController</span>
 <span class="n">metadata</span><span class="p">:</span>
   <span class="n">name</span><span class="p">:</span> <span class="n">redis</span><span class="o">-</span><span class="n">slave</span>
@@ -560,7 +568,7 @@ Controller的定义文件redis-slave-controller.yaml：</p>
 </pre></div>
 </div>
 <p>查看Pod信息</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>#通过自定义文件创建  Redis Slave Replication Controller
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>#通过自定义文件创建  Redis Slave Replication Controller
 $ kubectl create -f redis-slave-controller.yaml
 replicationcontroller/redis-slave created
 
@@ -581,7 +589,7 @@ redis-slave-qpzn4   1/1     Running   0          100s
 <h4>创建Redis Slave Service<a class="headerlink" href="#redis-slave-service" title="Permalink to this headline">¶</a></h4>
 <p>创建Redis Salve Service来代理Redis Salve Pod，Redis Salve
 Service的定义文件redis-slave-service.yaml：</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
 <span class="n">metadata</span><span class="p">:</span>
   <span class="n">name</span><span class="p">:</span> <span class="n">redis</span><span class="o">-</span><span class="n">slave</span>
@@ -596,7 +604,7 @@ Service的定义文件redis-slave-service.yaml：</p>
 </pre></div>
 </div>
 <p>查看service信息</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span># 通过定义文件创建Redis Salve Service
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span># 通过定义文件创建Redis Salve Service
 $ kubectl create -f redis-slave-service.yaml
 service/redis-slave created
 
@@ -615,11 +623,11 @@ redis-slave   ClusterIP   10.109.114.132   &lt;none&gt;        6379/TCP   16s
 <p>通过Frontend Replication Controller来创建Frontend Pod，将创建3个Frontend
 Pod。</p>
 <p>gb-frontend:v3的Dockerfile下载链接</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">guestbook</span><span class="o">/</span><span class="n">php</span><span class="o">-</span><span class="n">redis</span><span class="o">/</span><span class="n">Dockerfile</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">guestbook</span><span class="o">/</span><span class="n">php</span><span class="o">-</span><span class="n">redis</span><span class="o">/</span><span class="n">Dockerfile</span>
 </pre></div>
 </div>
 <p>Frontend Replication Controller的定义文件frontend-controller.yaml：</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">ReplicationController</span>
 <span class="n">metadata</span><span class="p">:</span>
   <span class="n">name</span><span class="p">:</span> <span class="n">frontend</span>
@@ -646,7 +654,7 @@ Pod。</p>
 </pre></div>
 </div>
 <p>查看Pod信息</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>#通过自定义文件创建Frontend Replication Controller
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>#通过自定义文件创建Frontend Replication Controller
 $ kubectl create -f frontend-controller.yaml
 replicationcontroller/frontend created
 
@@ -668,7 +676,7 @@ frontend-mflxl   1/1     Running   0          2m51s
 <h4>创建Frontend Service<a class="headerlink" href="#frontend-service" title="Permalink to this headline">¶</a></h4>
 <p>创建Frontend Service代理Frontend Pod，Frontend
 Service的定义文件frontend-service.yaml：</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
 <span class="n">metadata</span><span class="p">:</span>
   <span class="n">name</span><span class="p">:</span> <span class="n">frontend</span>
@@ -683,7 +691,7 @@ Service的定义文件frontend-service.yaml：</p>
 </pre></div>
 </div>
 <p>查看service信息</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span># 通过定义文件创建Frontend Service
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span># 通过定义文件创建Frontend Service
 $ kubectl create -f frontend-service.yaml
 service/frontend created
 
@@ -699,7 +707,7 @@ frontend   ClusterIP   10.98.214.195   &lt;none&gt;        80/TCP    10s
 <p>Service的虚拟IP是由Kubernetes虚拟出来的内部网络，而外部网络是无法寻址到的，这时候就需要增加一层网络转发，即外网到内网的转发。实现方式有很多种，我们这里采用一种叫作NodePort的方式来实现。即Kubernetes将会在每个Node上设置端口，称为NodePort，通过NodePort端口可以访问到Pod。</p>
 <p>修改Frontend
 Service的定义文件frontend-service.yaml，设置spec.type为NodePort：</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
 <span class="n">metadata</span><span class="p">:</span>
   <span class="n">name</span><span class="p">:</span> <span class="n">frontend</span>
@@ -714,7 +722,7 @@ Service的定义文件frontend-service.yaml，设置spec.type为NodePort：</p>
 </pre></div>
 </div>
 <p>查看service信息</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span># 重新创建Frontend Service
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span># 重新创建Frontend Service
 $ kubectl replace -f frontend-service.yaml --force
 service/frontend replaced
 
@@ -734,7 +742,7 @@ frontend   NodePort   10.96.36.2   &lt;none&gt;        80:30610/TCP
 <div class="section" id="id3">
 <h3><a class="toc-backref" href="#id22">清理Guestbook</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>清理Guestbook，只需要分别删除创建出的Replication Controller和Service：</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ kubectl delete replicationcontroller redis-master redis-slave frontend
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl delete replicationcontroller redis-master redis-slave frontend
 replicationcontroller &quot;redis-master&quot; deleted
 replicationcontroller &quot;redis-slave&quot; deleted
 replicationcontroller &quot;frontend&quot; deleted
@@ -757,6 +765,8 @@ service &quot;frontend&quot; deleted
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="05.Pod.html" class="btn btn-neutral float-right" title="Pod" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
       
         <a href="03.Docker基础.html" class="btn btn-neutral float-left" title="Docker基础" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
@@ -767,11 +777,19 @@ service &quot;frontend&quot; deleted
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, huxiaojian
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -782,7 +800,6 @@ service &quot;frontend&quot; deleted
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
