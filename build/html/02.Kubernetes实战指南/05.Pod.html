@@ -128,8 +128,21 @@
 <li class="toctree-l3"><a class="reference internal" href="#id14">Pod的状态和生命周期</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id15">容器状态</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id16">Pod的生命周期阶段</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id17">生命周期回调函数</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">自定义检查Pod</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id19">Pod的健康检查</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id20">Pod的准备状况检查</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">调度Pod</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id22">问题定位指南</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id23">日志查询</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id24">Pod的临终遗言</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id25">远程连接容器</a></li>
 </ul>
 </li>
 </ul>
@@ -205,39 +218,52 @@
   <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#pod" id="id17">Pod</a><ul>
-<li><a class="reference internal" href="#hello-world" id="id18">国际惯例的Hello World</a></li>
-<li><a class="reference internal" href="#id1" id="id19">Pod的基本操作</a><ul>
-<li><a class="reference internal" href="#id2" id="id20">创建Pod</a></li>
-<li><a class="reference internal" href="#id3" id="id21">查询Pod</a></li>
-<li><a class="reference internal" href="#id4" id="id22">删除Pod</a></li>
-<li><a class="reference internal" href="#id5" id="id23">更新Pod</a></li>
+<li><a class="reference internal" href="#pod" id="id26">Pod</a><ul>
+<li><a class="reference internal" href="#hello-world" id="id27">国际惯例的Hello World</a></li>
+<li><a class="reference internal" href="#id1" id="id28">Pod的基本操作</a><ul>
+<li><a class="reference internal" href="#id2" id="id29">创建Pod</a></li>
+<li><a class="reference internal" href="#id3" id="id30">查询Pod</a></li>
+<li><a class="reference internal" href="#id4" id="id31">删除Pod</a></li>
+<li><a class="reference internal" href="#id5" id="id32">更新Pod</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6" id="id24">Pod与容器</a><ul>
-<li><a class="reference internal" href="#id7" id="id25">镜像</a></li>
-<li><a class="reference internal" href="#id8" id="id26">启动命令</a></li>
-<li><a class="reference internal" href="#id9" id="id27">环境变量</a></li>
-<li><a class="reference internal" href="#id10" id="id28">端口</a></li>
-<li><a class="reference internal" href="#id11" id="id29">数据持久化和共享</a></li>
+<li><a class="reference internal" href="#id6" id="id33">Pod与容器</a><ul>
+<li><a class="reference internal" href="#id7" id="id34">镜像</a></li>
+<li><a class="reference internal" href="#id8" id="id35">启动命令</a></li>
+<li><a class="reference internal" href="#id9" id="id36">环境变量</a></li>
+<li><a class="reference internal" href="#id10" id="id37">端口</a></li>
+<li><a class="reference internal" href="#id11" id="id38">数据持久化和共享</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id12" id="id30">Pod的网络</a></li>
-<li><a class="reference internal" href="#id13" id="id31">Pod的重启策略</a></li>
-<li><a class="reference internal" href="#id14" id="id32">Pod的状态和生命周期</a><ul>
-<li><a class="reference internal" href="#id15" id="id33">容器状态</a></li>
-<li><a class="reference internal" href="#id16" id="id34">Pod的生命周期阶段</a></li>
+<li><a class="reference internal" href="#id12" id="id39">Pod的网络</a></li>
+<li><a class="reference internal" href="#id13" id="id40">Pod的重启策略</a></li>
+<li><a class="reference internal" href="#id14" id="id41">Pod的状态和生命周期</a><ul>
+<li><a class="reference internal" href="#id15" id="id42">容器状态</a></li>
+<li><a class="reference internal" href="#id16" id="id43">Pod的生命周期阶段</a></li>
+<li><a class="reference internal" href="#id17" id="id44">生命周期回调函数</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id18" id="id45">自定义检查Pod</a><ul>
+<li><a class="reference internal" href="#id19" id="id46">Pod的健康检查</a></li>
+<li><a class="reference internal" href="#id20" id="id47">Pod的准备状况检查</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id21" id="id48">调度Pod</a></li>
+<li><a class="reference internal" href="#id22" id="id49">问题定位指南</a><ul>
+<li><a class="reference internal" href="#id23" id="id50">日志查询</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id24" id="id51">Pod的临终遗言</a></li>
+<li><a class="reference internal" href="#id25" id="id52">远程连接容器</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="pod">
-<h1><a class="toc-backref" href="#id17">Pod</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id26">Pod</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h1>
 <p>Pod是Kubernetes的基本操作单元，也是应用运行的载体。整个Kubernetes系统都是围绕着Pod展开的，比如如何部署运行Pod、如何保证Pod的可靠性、如何访问Pod等。另外，Pod是一个或多个相关容器的集合，这可以说是一大创新点，提供了一种容器组合的模型，当然也使得在Pod的操作和生命周期管理上稍有不同。</p>
 <div class="section" id="hello-world">
-<h2><a class="toc-backref" href="#id18">国际惯例的Hello World</a><a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id27">国际惯例的Hello World</a><a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">hello-world-pod.yaml</span></code></p>
 <div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Pod</span>
@@ -271,9 +297,9 @@
 </div>
 </div>
 <div class="section" id="id1">
-<h2><a class="toc-backref" href="#id19">Pod的基本操作</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id28">Pod的基本操作</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id2">
-<h3><a class="toc-backref" href="#id20">创建Pod</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id29">创建Pod</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>如果Pod的定义存在错误，kubectl
 create会打印错误信息，现有一个Pod的错误定义文件error-pod.yaml：</p>
 <div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
@@ -295,7 +321,7 @@ The Pod &quot;hello-world&quot; is invalid: spec.restartPolicy: Unsupported valu
 </div>
 </div>
 <div class="section" id="id3">
-<h3><a class="toc-backref" href="#id21">查询Pod</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">查询Pod</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>最常用的查询命令就是kubectl
 get，可以查询一个或者多个Pod的信息，现在查询指定Pod：</p>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod my-pod
@@ -329,7 +355,7 @@ Succeeded
 </div>
 </div>
 <div class="section" id="id4">
-<h3><a class="toc-backref" href="#id22">删除Pod</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id31">删除Pod</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span># 通过kubernetes delete命令删除Pod
 $ kubectl delete pod hello-world
 
@@ -339,7 +365,7 @@ $ kubectl delete pod --all
 </div>
 </div>
 <div class="section" id="id5">
-<h3><a class="toc-backref" href="#id23">更新Pod</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id32">更新Pod</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span># Pod在创建之后，进行更新，修改Pod的定义文件后执行
 $ kubectl replace -f hello-world-pod.yaml --force
 </pre></div>
@@ -349,9 +375,9 @@ replace命令设置–force参数，等效于重建Pod。</p>
 </div>
 </div>
 <div class="section" id="id6">
-<h2><a class="toc-backref" href="#id24">Pod与容器</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id33">Pod与容器</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id7">
-<h3><a class="toc-backref" href="#id25">镜像</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id34">镜像</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>运行容器必须先指定镜像，镜像的名称则遵循Docker的命名规范。运行容器前需要本地存在对应的镜像，如果镜像不存在，会从Docker镜像仓库下载。Kubernetes中可以选择镜像的下载策略，支持的策略如下。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Always：每次都下载最新的镜像。
 
@@ -378,7 +404,7 @@ Node是容器运行的宿主机，Pod被分配到Node之后，会根据镜像下
 </div></blockquote>
 </div>
 <div class="section" id="id8">
-<h3><a class="toc-backref" href="#id26">启动命令</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id35">启动命令</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <p>启动命令用来说明容器是如何运行的，在Pod的定义中可以设置容器启动命令和参数。</p>
 <div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Pod</span>
@@ -399,7 +425,7 @@ Node是容器运行的宿主机，Pod被分配到Node之后，会根据镜像下
 </div>
 </div>
 <div class="section" id="id9">
-<h3><a class="toc-backref" href="#id27">环境变量</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id36">环境变量</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <p>在一些场景下，Pod中的容器希望获取本身的信息，比如Pod的名称、Pod所在的Namespace等。在Kubernetes中提供了Downward
 API获取这些信息，并且可以通过环境变量告诉容器目前支持的信息。</p>
 <p>现在创建一个Pod并通过环境变量来获取Downward
@@ -443,7 +469,7 @@ pod/downwardapi-env created
 </div>
 </div>
 <div class="section" id="id10">
-<h3><a class="toc-backref" href="#id28">端口</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id37">端口</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>在使用docker
 run运行容器的时候往往通过–publish/-p参数设置端口映射规则，同样的，可以在Pod的定义中设置容器的端口映射规则，比如下面这个Pod的设置容器nginx的端口映射规则为0.0.0.0:80-&gt;80/TCP：</p>
 <p><code class="docutils literal notranslate"><span class="pre">nginx.yaml</span></code></p>
@@ -468,7 +494,7 @@ run运行容器的时候往往通过–publish/-p参数设置端口映射规则�
 <p>使用宿主机端口需要考虑端口冲突问题，幸运的是，Kubernetes在调度Pod的时候，会检查宿主机端口是否冲突。比如两个Pod都需要使用宿主机端口80，那么调度的时候就会将这两个Pod调度到不同Node上。不过，如果所有Node的端口都被占用了，那么Pod调度会失败。</p>
 </div>
 <div class="section" id="id11">
-<h3><a class="toc-backref" href="#id29">数据持久化和共享</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id38">数据持久化和共享</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p>容器是临时存在的，如果容器被销毁，容器中的数据将会丢失。为了能够持久化数据以及共享容器间的数据，Docker提出了数据卷（Volume）的概念。简单来说，数据卷就是目录或者文件，它可以绕过默认的联合文件系统，而以正常的文件或者目录的形式存在于宿主机上。</p>
 <p>在使用docker
 run运行容器的时候，我们经常使用参数–volume/-v创建数据卷，即将宿主机上的目录或者文件挂载到容器中。即使容器被销毁，数据卷中的数据仍然保存在宿主机上。</p>
@@ -515,7 +541,7 @@ World”。这样一来就实现了两个容器的数据共享。</p>
 </div>
 </div>
 <div class="section" id="id12">
-<h2><a class="toc-backref" href="#id30">Pod的网络</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id39">Pod的网络</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span># 在Pod运行后，查询Pod的PodIP
 $ kubectl get pod redis-master-trlnk --template={{.status.podIP}}
 192.168.1.92
@@ -552,7 +578,7 @@ pod/my-app created
 </div>
 </div>
 <div class="section" id="id13">
-<h2><a class="toc-backref" href="#id31">Pod的重启策略</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id40">Pod的重启策略</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
 <p>Pod的重启策略指的是当Pod中的容器终止退出后，重启容器的策略。需要注意的是，因为Docker容器的轻量级，重启容器的做法实际上是直接重建容器，所以容器中的数据将会丢失，如有需要持久化的数据，那么需要使用数据卷进行持久化设置。</p>
 <p>重启策略是通过Pod定义中的.spec.restartPolicy进行设置的，目前支持以下3种策略。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Always：当容器终止退出后，总是重启容器，默认策略。
@@ -595,9 +621,9 @@ pod/my-app created
 </div>
 </div>
 <div class="section" id="id14">
-<h2><a class="toc-backref" href="#id32">Pod的状态和生命周期</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id41">Pod的状态和生命周期</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id15">
-<h3><a class="toc-backref" href="#id33">容器状态</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id42">容器状态</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes中对于Pod中的容器进行了状态的记录，其中每种状态下包含的信息如下所示。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Waiting：容器正在等待创建，比如正在下载镜像。
 
@@ -660,7 +686,7 @@ pod/my-app created
 </div>
 </div>
 <div class="section" id="id16">
-<h3><a class="toc-backref" href="#id34">Pod的生命周期阶段</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id43">Pod的生命周期阶段</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <p>Pod的生命周期可以简单描述为：首先Pod被创建，紧接着Pod被调度到Node进行部署运行。Pod是非常忠诚的，一旦被分配到Node后，就不会离开这个Node，直到它被删除，生命周期完结。</p>
 <p>Pod的生命周期被定义为以下几个阶段。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Pending：Pod已经被创建，但是一个或者多个容器还未创建，这包括Pod调度阶段，以及容器镜像的下载过程。
@@ -715,6 +741,331 @@ pod/my-app created
 Controller删除，也有可能是当Pod进入Succeeded或者Failed阶段过期，被Kubernetes清理掉。总之Pod被删除后，Pod的生命周期就算结束，即使被Replication
 Controller进行重建，那也是新的Pod，因为Pod的ID已经发生了变化，所以实际上Pod迁移，准确的说法是在新的Node上重建Pod。</p>
 </div>
+<div class="section" id="id17">
+<h3><a class="toc-backref" href="#id44">生命周期回调函数</a><a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<p>Kubernetes提供了回调函数，在容器的生命周期的特定阶段执行调用，比如容器在停止前希望执行某项操作，就可以注册相应的钩子函数。目前提供的生命周期回调函数如下所示。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• PostStart：在容器创建成功后调用该回调函数。
+• PreStop：在容器被终止前调用该回调函数。
+</pre></div>
+</div>
+<p>钩子函数的实现方式有以下两种。</p>
+<p><strong>• Exec</strong></p>
+<p>说明 在容器中执行指定的命令。</p>
+<p>配置参数 command：需要执行的命令，字符串数组。</p>
+<p>示例</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exec</span><span class="p">:</span>
+  <span class="n">command</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">cat</span>
+  <span class="o">-</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">health</span>
+</pre></div>
+</div>
+<p><strong>• HTTPGet</strong></p>
+<p>说明 发起一个HTTP调用请求。</p>
+<p>配置参数 path：请求的URL路径，可选项。 port：请求的端口，必选项。
+host：请求的IP，可选项，默认是Pod的PodIP。
+scheme：请求的协议，可选项，默认是HTTP。</p>
+<p>示例</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">httpGet</span><span class="p">:</span>
+  <span class="n">host</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.1</span>
+  <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">notify</span>
+  <span class="n">port</span><span class="p">:</span> <span class="mi">8080</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id18">
+<h2><a class="toc-backref" href="#id45">自定义检查Pod</a><a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h2>
+<p>我们需要更加精确的检查机制来判断Pod和容器是否准备就绪，从而让Kubernetes判断是否分发请求给Pod。</p>
+<p>针对这些需求，Kubernetes中提供了Probe机制，有以下两种类型的Probe。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Liveness Probe：用于容器的自定义健康检查，如果Liveness Probe检查失败，Kubernetes将杀死容器，然后根据Pod的重启策略来决定是否重启容器。
+
+• Readiness Probe：用于容器的自定义准备状况检查，如果Readiness Probe检查失败，Kubernetes将会把Pod从服务代理的分发后端移除，即不会分发请求给该Pod。
+</pre></div>
+</div>
+<p>Probe支持以下三种检查方法。</p>
+<p><strong>• ExecAction</strong></p>
+<p>说明
+在容器中执行指定的命令进行检查，当命令执行成功（返回码为0），检查成功。</p>
+<p>配置参数 command：检查的命令，字符串数组。</p>
+<p>示例</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exec</span><span class="p">:</span>
+  <span class="n">command</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">cat</span>
+  <span class="o">-</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">health</span>
+</pre></div>
+</div>
+<p><strong>• TCPSocketAction</strong></p>
+<p>说明 对于容器中的指定TCP端口进行检查，当TCP端口被占用，检查成功。</p>
+<p>配置参数 port：检查的TCP端口</p>
+<p>示例</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tcpSocket</span><span class="p">:</span>
+  <span class="n">port</span><span class="p">:</span> <span class="mi">8080</span>
+</pre></div>
+</div>
+<p><strong>• HTTPGetAction</strong></p>
+<p>说明 发生一个HTTP请求，当返回码介于200~400之间时，检查成功。</p>
+<p>配置参数 path：请求的URI路径，可选项。 port：请求的端口，必选项。
+host：请求的IP，可选项，默认是Pod的PodIP。
+scheme：请求的协议，可选项，默认是HTTP。 示例</p>
+<p>示例</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">httpGet</span><span class="p">:</span>
+  <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">healthz</span>
+  <span class="n">port</span><span class="p">:</span> <span class="mi">8080</span>
+</pre></div>
+</div>
+<div class="section" id="id19">
+<h3><a class="toc-backref" href="#id46">Pod的健康检查</a><a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<p>定义一个Pod，使用Liveness
+Probe通过ExecAction方式检查容器的健康状态，Pod的定义文件<code class="docutils literal notranslate"><span class="pre">liveness-exec-pod.yaml</span></code>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Pod</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">liveness</span><span class="o">-</span><span class="n">exec</span><span class="o">-</span><span class="n">pod</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">test</span><span class="p">:</span> <span class="n">liveness</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">containers</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">liveness</span>
+    <span class="n">image</span><span class="p">:</span> <span class="s2">&quot;ubuntu:14.04&quot;</span>
+    <span class="n">command</span><span class="p">:</span>
+    <span class="o">-</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sh</span>
+    <span class="o">-</span> <span class="o">-</span><span class="n">c</span>
+    <span class="o">-</span> <span class="n">echo</span> <span class="n">ok</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">health</span><span class="p">;</span> <span class="n">sleep</span> <span class="mi">60</span><span class="p">;</span> <span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">health</span><span class="p">;</span> <span class="n">sleep</span> <span class="mi">600</span>
+    <span class="n">livenessProbe</span><span class="p">:</span>
+      <span class="n">exec</span><span class="p">:</span>
+        <span class="n">command</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">cat</span>
+        <span class="o">-</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">health</span>
+      <span class="n">initialDelaySeconds</span><span class="p">:</span> <span class="mi">15</span>
+      <span class="n">timeoutSeconds</span><span class="p">:</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>通过定义文件创建Pod：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f liveness-exec-pod.yaml
+pod &quot;liveness-exec-pod&quot; created
+</pre></div>
+</div>
+<p>Pod创建之初运行正常：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">chapter01</span><span class="p">]</span><span class="c1"># kubectl get pod liveness-exec-pod</span>
+<span class="n">NAME</span>                <span class="n">READY</span>   <span class="n">STATUS</span>             <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">liveness</span><span class="o">-</span><span class="n">exec</span><span class="o">-</span><span class="n">pod</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">CrashLoopBackOff</span>   <span class="mi">29</span>         <span class="mi">119</span><span class="n">m</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">chapter01</span><span class="p">]</span><span class="c1"># kubectl describe pod liveness-exec-pod|grep Unhealthy</span>
+  <span class="ne">Warning</span>  <span class="n">Unhealthy</span>  <span class="mi">4</span><span class="n">m21s</span> <span class="p">(</span><span class="n">x85</span> <span class="n">over</span> <span class="mi">118</span><span class="n">m</span><span class="p">)</span>  <span class="n">kubelet</span>  <span class="n">Liveness</span> <span class="n">probe</span> <span class="n">failed</span><span class="p">:</span> <span class="n">cat</span><span class="p">:</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">health</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">directory</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id20">
+<h3><a class="toc-backref" href="#id47">Pod的准备状况检查</a><a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<p>定义一个Pod，使用Readiness
+Probe通过ExecAction方式检查容器的准备状况，Pod的定义文件readiness-exec-pod.yaml：</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Pod</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">test</span><span class="p">:</span> <span class="n">readiness</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">readiness</span><span class="o">-</span><span class="n">exec</span><span class="o">-</span><span class="n">pod</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">containers</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">readiness</span>
+    <span class="n">image</span><span class="p">:</span> <span class="s2">&quot;ubuntu:14.04&quot;</span>
+    <span class="n">command</span><span class="p">:</span>
+    <span class="o">-</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sh</span>
+    <span class="o">-</span> <span class="o">-</span><span class="n">c</span>
+    <span class="o">-</span> <span class="n">echo</span> <span class="n">ok</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ready</span><span class="p">;</span> <span class="n">sleep</span> <span class="mi">60</span><span class="p">;</span> <span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ready</span><span class="p">;</span> <span class="n">sleep</span> <span class="mi">600</span>
+    <span class="n">readinessProbe</span><span class="p">:</span>
+      <span class="n">exec</span><span class="p">:</span>
+        <span class="n">command</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">cat</span>
+        <span class="o">-</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ready</span>
+      <span class="n">initialDelaySeconds</span><span class="p">:</span> <span class="mi">15</span>
+      <span class="n">timeoutSeconds</span><span class="p">:</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>通过定义文件创建Pod：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f readiness-exec-pod.yaml
+pod &quot;readiness-exec-pod&quot; created
+</pre></div>
+</div>
+<p>Pod创建之初运行正常，容器全部准备就绪：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get  pod readiness-exec
+NAME                     READY    STATUS    RESTARTS   AGE
+readiness-exec-pod   1/1      Running   0            26s
+</pre></div>
+</div>
+<p>过1分钟以后，发现Pod的READY数目变为0：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod readiness-exec-pod
+NAME                     READY     STATUS    RESTARTS   AGE
+readiness-exec-pod   0/1        Running   0           1m
+</pre></div>
+</div>
+<p>通过查询Pod事件可以看到，Readiness Probe检查失败：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl describe  pod readiness-exec|grep Unhealthy
+… Unhealthy  Readiness probe failed: cat: /tmp/ready: No such file or directory
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id21">
+<h2><a class="toc-backref" href="#id48">调度Pod</a><a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h2>
+<p>Pod的调度指的是Pod在创建之后分配到哪一个Node上，调度算法分为两个步骤，第一步筛选出符合条件的Node，第二步选择最优的Node。</p>
+<p>Pod在正式上线前，需要先在测试的Node上运行，测试完成再发布到生产环境的Node上运行。这时候就可以用到Node
+Selector，通过Node的Label进行选择。</p>
+<p>查询所有的node</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">chapter01</span><span class="p">]</span><span class="c1"># kubectl get node</span>
+<span class="n">NAME</span>         <span class="n">STATUS</span>   <span class="n">ROLES</span>    <span class="n">AGE</span>   <span class="n">VERSION</span>
+<span class="n">k8s</span><span class="o">-</span><span class="n">master</span>   <span class="n">Ready</span>    <span class="n">master</span>   <span class="mi">8</span><span class="n">d</span>    <span class="n">v1</span><span class="o">.</span><span class="mf">19.2</span>
+<span class="n">k8s</span><span class="o">-</span><span class="n">node01</span>   <span class="n">Ready</span>    <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>   <span class="mi">8</span><span class="n">d</span>    <span class="n">v1</span><span class="o">.</span><span class="mf">19.2</span>
+</pre></div>
+</div>
+<p>目前共有1个Node，状态是Ready，为Node k8s-node01增加新的Label：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl label nodes k8s-node01 env=test
+</pre></div>
+</div>
+<p>在定义Pod的时候通过设置 Node Selector（.spec.nodeSelector）来选择
+Node，Pod的定义文件nginx-pod.yaml：</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Pod</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">test</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">containers</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">nginx</span>
+    <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">IfNotPresent</span>
+  <span class="n">nodeSelector</span><span class="p">:</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">test</span>
+</pre></div>
+</div>
+<p>Pod创建成功后将会被分配到Node k8s-node01：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">chapter01</span><span class="p">]</span><span class="c1"># kubectl get pod nginx -o wide</span>
+<span class="n">NAME</span>    <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>   <span class="n">IP</span>              <span class="n">NODE</span>         <span class="n">NOMINATED</span> <span class="n">NODE</span>   <span class="n">READINESS</span> <span class="n">GATES</span>
+<span class="n">nginx</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">72</span><span class="n">s</span>   <span class="mf">10.100</span><span class="o">.</span><span class="mf">85.238</span>   <span class="n">k8s</span><span class="o">-</span><span class="n">node01</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id22">
+<h2><a class="toc-backref" href="#id49">问题定位指南</a><a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h2>
+<p>Pod是应用的承载体，当Pod运行异常的时候，可能是Kubernetes系统问题，也可能是应用本身的问题，那么就需要提供足够的信息用于问题定位，Kubernetes针对Pod提供的事件记录、日志查询和远程调试功能进行问题定位。</p>
+<p>Kubernetes从Pod的创建开始，在Pod的生命周期内会产生各种事件信息，比如Pod完成调度、下载镜像完成等。在Pod运行异常的时候，通过排除相关事件可以了解是否是由于Kubernetes的原因导致Pod异常。</p>
+<p>事件查询可以先查询所有的事件：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get event
+</pre></div>
+</div>
+<p>然后再查询Pod相关的事件：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl describe pod my-pod
+</pre></div>
+</div>
+<div class="section" id="id23">
+<h3><a class="toc-backref" href="#id50">日志查询</a><a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<p>日志是一项很重要的信息，可以用来定位问题和显示应用运行状态。Docker容器可以使用docker
+logs命令查询日志，可以通过kubectl logs命令查询Pod中容器的日志。</p>
+<p>现在要定义一个Pod，包含两个容器，容器container1输出一条日志然后正常退出（exit
+0），容器container2输出一条日志异常退出（exit
+1），并且设置Pod的重启策略是OnFailure，即当容器异常退出时才进行重启，Pod的定义文件<code class="docutils literal notranslate"><span class="pre">log-pod.yaml</span></code>：</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Pod</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">log</span><span class="o">-</span><span class="n">pod</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">containers</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">container1</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">14.04</span>
+    <span class="n">command</span><span class="p">:</span>
+    <span class="o">-</span> <span class="s2">&quot;bash&quot;</span>
+    <span class="o">-</span> <span class="s2">&quot;-c&quot;</span>
+    <span class="o">-</span> <span class="s2">&quot;echo </span><span class="se">\&quot;</span><span class="s2">container1: `date --rfc-3339 ns`</span><span class="se">\&quot;</span><span class="s2">; exit 0&quot;</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">container2</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">14.04</span>
+    <span class="n">command</span><span class="p">:</span>
+    <span class="o">-</span> <span class="s2">&quot;bash&quot;</span>
+    <span class="o">-</span> <span class="s2">&quot;-c&quot;</span>
+    <span class="o">-</span> <span class="s2">&quot;echo </span><span class="se">\&quot;</span><span class="s2">container2: `date --rfc-3339 ns`</span><span class="se">\&quot;</span><span class="s2">; exit 1&quot;</span>
+  <span class="n">restartPolicy</span><span class="p">:</span> <span class="n">OnFailure</span>
+</pre></div>
+</div>
+<p>通过定义文件创建Pod：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f log-pod.yaml
+pod &quot;log-pod&quot; created
+</pre></div>
+</div>
+<p>Pod创建成功后，会重新创建异常退出的容器container2：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod log-pod
+NAME      READY     STATUS    RESTARTS   AGE
+log-pod   0/2       Error     1           19s
+</pre></div>
+</div>
+<p>然后分别查询Pod中两个容器的日志：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl logs log-pod container1
+container1: 2015-11-21 14:52:55.622701243+00:00
+
+$ kubectl logs log-pod container2
+Pod &quot;log-pod&quot; in namespace &quot;default&quot;: container &quot;container2&quot; is in waiting state.
+</pre></div>
+</div>
+<p>因为容器container2将会异常退出然后重建，所以将处于异常状态，从而查询不到当前运行日志。但是kubectl
+logs可以查询之前容器（如果存在的话）的日志，这对于问题定位非常有帮助，往往容器停止前的日志价值更高，获取方法只需要加上–previous/-p参数：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl logs log-pod container2 —previous
+
+container2: 2015-11-21 14:53:37.377629086+00:00
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id24">
+<h2><a class="toc-backref" href="#id51">Pod的临终遗言</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h2>
+<p>前面我们提到过容器停止前的日志价值更高，能够获取最后的错误异常消息、调用栈等，我们可以把这些信息形象地称为临终遗言，临终遗言对于问题定位是很有帮助的。在Kubernetes中为Pod提供了一个持久化文件，用来保存临终遗言。</p>
+<p>Pod的定义中通过<code class="docutils literal notranslate"><span class="pre">.spec.containers[].terminationMessagePath</span></code>指定在容器中的临终遗言日志文件的路径，默认值是/dev/termination-log。这个文件在Pod的整个生命周期内都会保存，每次新建一个Pod，都会在宿主机上创建一个文件，然后挂载到Pod的容器中，这些文件不会因为容器的销毁而丢失，所以容器可以把临终遗言写入这个文件，方便问题排错。</p>
+<p>现在创建一个Pod，其中的容器将写入临终遗言，Pod的定义文件<code class="docutils literal notranslate"><span class="pre">w-message-pod.yaml</span></code>：</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Pod</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">w</span><span class="o">-</span><span class="n">message</span><span class="o">-</span><span class="n">pod</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">containers</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">messager</span>
+    <span class="n">image</span><span class="p">:</span> <span class="s2">&quot;ubuntu:14.04&quot;</span>
+    <span class="n">terminationMessagePath</span><span class="p">:</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">termination</span><span class="o">-</span><span class="n">log</span>
+    <span class="n">command</span><span class="p">:</span>
+    <span class="o">-</span> <span class="s2">&quot;bash&quot;</span>
+    <span class="o">-</span> <span class="s2">&quot;-c&quot;</span>
+    <span class="o">-</span> <span class="s2">&quot;echo </span><span class="se">\&quot;</span><span class="s2">`date --rfc-3339 ns` I was going to die</span><span class="se">\&quot;</span><span class="s2"> &gt;&gt; /dev/termination-log;&quot;</span>
+</pre></div>
+</div>
+<p>通过定义文件创建Pod：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f w-message-pod.yaml
+pod &quot;w-message-pod&quot; created
+</pre></div>
+</div>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">chapter01</span><span class="p">]</span><span class="c1"># kubectl get pod w-message-pod</span>
+<span class="n">NAME</span>            <span class="n">READY</span>   <span class="n">STATUS</span>             <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">w</span><span class="o">-</span><span class="n">message</span><span class="o">-</span><span class="n">pod</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">CrashLoopBackOff</span>   <span class="mi">4</span>          <span class="mi">119</span><span class="n">s</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">chapter01</span><span class="p">]</span><span class="c1"># kubectl get pod w-message-pod --template=&quot;{{range .status.containerStatuses}}{{.lastState.terminated.message}}{{end}}&quot;</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">21</span> <span class="mi">05</span><span class="p">:</span><span class="mi">49</span><span class="p">:</span><span class="mf">46.448339098</span><span class="o">+</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="n">I</span> <span class="n">was</span> <span class="n">going</span> <span class="n">to</span> <span class="n">die</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id25">
+<h2><a class="toc-backref" href="#id52">远程连接容器</a><a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h2>
+<p>问题定位时往往需要连接到应用的运行环境进行操作，相比于传统的SSH方式，Docker提供了docker
+attach和docker
+exec两个命令可以连接容器进行操作。同样的，Kubernetes对应地提供了kubectl
+attach和kubectl exec两个命令用来远程连接Pod中的容器。</p>
+<p>其中attach命令使用起来不太方便，相比之下，exec命令则非常强大，我们可以使用kubectl
+exec命令远程连接Pod中的容器运行命令（当Pod只有一个容器时，不需要指定容器）：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl exec my-pod -- date
+Wed Jan  6 18:19:07 CST 2016
+</pre></div>
+</div>
+<p>或者直接进入Pod的容器中：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl exec -ti my-pod /bin/bash
+[root@ my-pod /]#
+</pre></div>
+</div>
+<blockquote>
+<div>提示 kubectl exec命令需要在Kubernetes Node上安装nsenter。</div></blockquote>
 </div>
 </div>
 
