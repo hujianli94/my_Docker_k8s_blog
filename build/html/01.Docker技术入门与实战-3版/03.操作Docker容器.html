@@ -122,6 +122,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#cpublock-io">限制容器对内存、CPU、Block IO的使用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kitematicdocker">使用Kitematic来管理Docker容器</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="04.访问Docker仓库.html">访问Docker仓库</a></li>
@@ -246,6 +247,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#cpublock-io" id="id31">限制容器对内存、CPU、Block IO的使用</a></li>
+<li><a class="reference internal" href="#kitematicdocker" id="id32">使用Kitematic来管理Docker容器</a></li>
 </ul>
 </li>
 </ul>
@@ -599,6 +601,11 @@ bdbdb0d56db9
 
 ## 根据格式删除所有容器，容器的状态为停止的
 docker rm -v $(docker ps -aq -f status=exited)
+docker rm $(docker ps -a -q)
+
+## 强制批量删除
+docker rm $(docker ps -a -q) --force
+
 # 使用awk实现
 docker rm $(docker ps -a|awk &#39;/Exited/{print $1}&#39;)
 
@@ -607,6 +614,10 @@ docker rmi $(docker images -q -f dangling=true)
 
 #批量删除运行中的容器
 docker rm -f $(docker ps|grep -v &quot;CONTAINER&quot;|awk &#39;{print $1}&#39;)
+
+# 执行无法删除运行中的容器，我们需要先停止然后在删除
+docker stop d8f00
+docker rm d8f00
 </pre></div>
 </div>
 </div>
@@ -687,6 +698,20 @@ iops 是 io per second，每秒 IO 的次数。
 --device-write-iops，限制写某个设备的 iops。
 </pre></div>
 </div>
+</div>
+<div class="section" id="kitematicdocker">
+<h2><a class="toc-backref" href="#id32">使用Kitematic来管理Docker容器</a><a class="headerlink" href="#kitematicdocker" title="Permalink to this headline">¶</a></h2>
+<p>Kitematic是一个开源项目，旨在简化在Mac或Windows
+PC上使用Docker的过程。Kitematic自动化Docker安装和设置过程，并提供直观的图形用户界面（GUI）来运行Docker容器。</p>
+<p>因此，我们推荐使用Kitematic工具来查看和管理自己的容器服务。如果尚未安装此工具，可以通过以下方式进行安装：</p>
+<p>● 从Docker for Mac或Docker for
+Windows菜单中选择“Kitematic”选项，开始使用Kitematic安装。</p>
+<p>●
+直接从Kitematic版本页面下载Kitematic，下载地址为https://github.com/docker/kitematic/releases/。</p>
+<p>另外，Kitematic集成了Docker
+Hub，允许通过搜索、拉取任何需要的镜像，并在上面部署应用，同时也能很好地切换到命令行模式。目前包括自动映射端口、可视化更改环境变量、配置卷、流式日志等功能。</p>
+<p>如果安装完成后无法打开，可以将Kitematic安装后的文件迁移到Docker指定目录<code class="docutils literal notranslate"><span class="pre">“C:\Program</span> <span class="pre">Files\Docker\Kitematic”。</span></code></p>
+<p>Kitematic是开源的，如果大家有兴趣，可以访问其开源库下载全部源代码进行研究，下载地址为https://github.com/docker/kitematic。</p>
 </div>
 </div>
 

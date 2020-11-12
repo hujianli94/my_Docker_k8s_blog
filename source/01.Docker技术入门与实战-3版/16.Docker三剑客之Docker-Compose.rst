@@ -8,7 +8,8 @@ Docker三剑客之Docker-Compose
 Compose项目是Docker官方的开源项目，负责实现对基于Docker容器的多应用服务的快速编排。从功能上看，跟OpenStack中的Heat十分类似。其代码目前在\ https://github.com/docker/compose
 上开源。
 
-|image0|
+.. figure:: ../_static/docker_compose00001.png
+   :alt: 
 
 简介
 ----
@@ -32,6 +33,27 @@ Compose的默认管理对象是服务栈，通过子命令对栈中的多个服�
 Compose项目由Python编写，实现上调用了Docker服务提供的API来对容器进行管理。因此，只要所操作的平台支持Docker
 API，就可以在其上利用Compose来进行编排管理。
 
+Docker Compose常见场景
+----------------------
+
+（1）开发或本地环境运行多个服务。
+
+Compose命令行工具可用于创建环境并与之交互。比如通过Compose文件，配置所有应用程序的服务依赖（数据库、消息队列、高速缓存、Web服务的API等），然后使用单个命令（docker-compose
+up）为每个依赖项创建和启动一个或多个容器，使整个程序能够正常运行起来。
+
+（2）自动化测试环境。任何持续部署或持续集成过程的一个重要部分都是自动化测试套件。自动化端到端测试需要一个运行测试的环境。Compose提供了一种方便的方法来创建和销毁隔离的测试环境。我们只需要通过Compose文件即可定义完整环境，并且可以在几个命令中创建和销毁这些环境。
+
+::
+
+    # 执行compose启动命令
+    docker-compose up -d
+
+    # 执行自动化测试脚本
+    ./run_tests
+
+    # 执行compose销毁命令
+    docker-compose down
+
 安装与卸载
 ----------
 
@@ -51,7 +73,7 @@ Compose可以通过Python的pip工具进行安装，可以直接下载编译好�
 
 .. code:: shell
 
-   $ sudo pip install -U docker-compose
+    $ sudo pip install -U docker-compose
 
 --------------
 
@@ -61,10 +83,10 @@ Compose可以通过Python的pip工具进行安装，可以直接下载编译好�
 
 .. code:: shell
 
-   Collecting docker-compose
-       Downloading docker_compose-1.19.0-py2.py3-none-any.whl (115kB)
-   ...
-   Successfully installed cached-property-1.3.1 certifi-2018.1.18 chardet-3.0.4 docker-2.7.0 docker-compose-1.19.0 docker-pycreds-0.2.2 idna-2.6 ipaddress-1.0.19 requests-2.18.4 six-1.10.0 texttable-0.9.1 urllib3-1.22 websocket-client-0.47.0
+    Collecting docker-compose
+        Downloading docker_compose-1.19.0-py2.py3-none-any.whl (115kB)
+    ...
+    Successfully installed cached-property-1.3.1 certifi-2018.1.18 chardet-3.0.4 docker-2.7.0 docker-compose-1.19.0 docker-pycreds-0.2.2 idna-2.6 ipaddress-1.0.19 requests-2.18.4 six-1.10.0 texttable-0.9.1 urllib3-1.22 websocket-client-0.47.0
 
 --------------
 
@@ -74,55 +96,55 @@ Compose可以通过Python的pip工具进行安装，可以直接下载编译好�
 
 .. code:: shell
 
-   $ docker-compose -h
-   Define and run multi-container applications with Docker.
-   Usage:
-       docker-compose [-f <arg>...] [options] [COMMAND] [ARGS...]
-       docker-compose -h|--help
-   Options:
-       -f, --file FILE             Specify an alternate compose file (default: docker-compose.yml)
-       -p, --project-name NAME     Specify an alternate project name (default: dir-ectory name)
-       --verbose                   Show more output
-       --no-ansi                   Do not print ANSI control characters
-       -v, --version               Print version and exit
-       -H, --host HOST             Daemon socket to connect to
-       --tls                       Use TLS; implied by --tlsverify
-       --tlscacert CA_PATH         Trust certs signed only by this CA
-       --tlscert CLIENT_CERT_PATH  Path to TLS certificate file
-       --tlskey TLS_KEY_PATH       Path to TLS key file
-       --tlsverify                 Use TLS and verify the remote
-       --skip-hostname-check       Don't check the daemon's hostname against the name specified
-                                   in the client certificate (for example if your docker host
-                                   is an IP address)
-       --project-directory PATH    Specify an alternate working directory
-                                   (default: the path of the Compose file)
-   Commands:
-       build              Build or rebuild services
-       bundle             Generate a Docker bundle from the Compose file
-       config             Validate and view the Compose file
-       create             Create services
-       down               Stop and remove containers, networks, images, and volumes
-       events             Receive real time events from containers
-       exec               Execute a command in a running container
-       help               Get help on a command
-       images             List images
-       kill               Kill containers
-       logs               View output from containers
-       pause              Pause services
-       port               Print the public port for a port binding
-       ps                 List containers
-       pull               Pull service images
-       push               Push service images
-       restart            Restart services
-       rm                 Remove stopped containers
-       run                Run a one-off command
-       scale              Set number of containers for a service
-       start              Start services
-       stop               Stop services
-       top                Display the running processes
-       unpause            Unpause services
-       up                 Create and start containers
-       version            Show the Docker-Compose version information
+    $ docker-compose -h
+    Define and run multi-container applications with Docker.
+    Usage:
+        docker-compose [-f <arg>...] [options] [COMMAND] [ARGS...]
+        docker-compose -h|--help
+    Options:
+        -f, --file FILE             Specify an alternate compose file (default: docker-compose.yml)
+        -p, --project-name NAME     Specify an alternate project name (default: dir-ectory name)
+        --verbose                   Show more output
+        --no-ansi                   Do not print ANSI control characters
+        -v, --version               Print version and exit
+        -H, --host HOST             Daemon socket to connect to
+        --tls                       Use TLS; implied by --tlsverify
+        --tlscacert CA_PATH         Trust certs signed only by this CA
+        --tlscert CLIENT_CERT_PATH  Path to TLS certificate file
+        --tlskey TLS_KEY_PATH       Path to TLS key file
+        --tlsverify                 Use TLS and verify the remote
+        --skip-hostname-check       Don't check the daemon's hostname against the name specified
+                                    in the client certificate (for example if your docker host
+                                    is an IP address)
+        --project-directory PATH    Specify an alternate working directory
+                                    (default: the path of the Compose file)
+    Commands:
+        build              Build or rebuild services
+        bundle             Generate a Docker bundle from the Compose file
+        config             Validate and view the Compose file
+        create             Create services
+        down               Stop and remove containers, networks, images, and volumes
+        events             Receive real time events from containers
+        exec               Execute a command in a running container
+        help               Get help on a command
+        images             List images
+        kill               Kill containers
+        logs               View output from containers
+        pause              Pause services
+        port               Print the public port for a port binding
+        ps                 List containers
+        pull               Pull service images
+        push               Push service images
+        restart            Restart services
+        rm                 Remove stopped containers
+        run                Run a one-off command
+        scale              Set number of containers for a service
+        start              Start services
+        stop               Stop services
+        top                Display the running processes
+        unpause            Unpause services
+        up                 Create and start containers
+        version            Show the Docker-Compose version information
 
 --------------
 
@@ -132,7 +154,7 @@ Compose可以通过Python的pip工具进行安装，可以直接下载编译好�
 
 .. code:: shell
 
-   $ curl -L https://raw.githubusercontent.com/docker/compose/1.19.0/contrib/com-pletion/bash/docker-compose > /etc/bash_completion.d/docker-compose
+    $ curl -L https://raw.githubusercontent.com/docker/compose/1.19.0/contrib/com-pletion/bash/docker-compose > /etc/bash_completion.d/docker-compose
 
 --------------
 
@@ -148,9 +170,9 @@ Compose可以通过Python的pip工具进行安装，可以直接下载编译好�
 
 .. code:: shell
 
-   $ sudo curl -L "https://github.com/docker/compose/releases/download/1.26.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    $ sudo curl -L "https://github.com/docker/compose/releases/download/1.26.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
-   $ sudo chmod a+x /usr/local/bin/docker-compose
+    $ sudo chmod a+x /usr/local/bin/docker-compose
 
 --------------
 
@@ -160,11 +182,11 @@ Compose可以通过Python的pip工具进行安装，可以直接下载编译好�
 
 .. code:: shell
 
-   $ docker-compose version
-   docker-compose version 1.19.0, build 9e633ef
-   docker-py version: 2.7.0
-   CPython version: 2.7.12
-   OpenSSL version: OpenSSL 1.0.2g  1 Mar 2016
+    $ docker-compose version
+    docker-compose version 1.19.0, build 9e633ef
+    docker-py version: 2.7.0
+    CPython version: 2.7.12
+    OpenSSL version: OpenSSL 1.0.2g  1 Mar 2016
 
 --------------
 
@@ -180,8 +202,8 @@ Compose既然是一个Python应用，自然也可以直接用容器来执行它�
 
 .. code:: shell
 
-   $ curl -L https://github.com/docker/compose/releases/download/1.19.0/run.sh > /usr/local/bin/docker-compose
-   $ chmod +x /usr/local/bin/docker-compose
+    $ curl -L https://github.com/docker/compose/releases/download/1.19.0/run.sh > /usr/local/bin/docker-compose
+    $ chmod +x /usr/local/bin/docker-compose
 
 --------------
 
@@ -191,40 +213,40 @@ Compose既然是一个Python应用，自然也可以直接用容器来执行它�
 
 .. code:: shell
 
-   set -e
-   VERSION="1.19.0"
-   IMAGE="docker/compose:$VERSION"
-   # Setup options for connecting to docker host
-   if [ -z "$DOCKER_HOST" ]; then
-       DOCKER_HOST="/var/run/docker.sock"
-   fi
-   if [ -S "$DOCKER_HOST" ]; then
-       DOCKER_ADDR="-v $DOCKER_HOST:$DOCKER_HOST -e DOCKER_HOST"
-   else
-       DOCKER_ADDR="-e DOCKER_HOST -e DOCKER_TLS_VERIFY -e DOCKER_CERT_PATH"
-   fi
-   # Setup volume mounts for compose config and context
-   if [ "$(pwd)" != '/' ]; then
-       VOLUMES="-v $(pwd):$(pwd)"
-   fi
-   if [ -n "$COMPOSE_FILE" ]; then
-       compose_dir=$(dirname $COMPOSE_FILE)
-   fi
-   # TODO: also check --file argument
-   if [ -n "$compose_dir" ]; then
-       VOLUMES="$VOLUMES -v $compose_dir:$compose_dir"
-   fi
-   if [ -n "$HOME" ]; then
-       VOLUMES="$VOLUMES -v $HOME:$HOME -v $HOME:/root" # mount $HOME in /root to share docker.config
-   fi
-   # Only allocate tty if we detect one
-   if [ -t 1 ]; then
-       DOCKER_RUN_OPTIONS="-t"
-   fi
-   if [ -t 0 ]; then
-       DOCKER_RUN_OPTIONS="$DOCKER_RUN_OPTIONS -i"
-   fi
-   exec docker run --rm $DOCKER_RUN_OPTIONS $DOCKER_ADDR $COMPOSE_OPTIONS $VOLUMES -w "$(pwd)" $IMAGE "$@"
+    set -e
+    VERSION="1.19.0"
+    IMAGE="docker/compose:$VERSION"
+    # Setup options for connecting to docker host
+    if [ -z "$DOCKER_HOST" ]; then
+        DOCKER_HOST="/var/run/docker.sock"
+    fi
+    if [ -S "$DOCKER_HOST" ]; then
+        DOCKER_ADDR="-v $DOCKER_HOST:$DOCKER_HOST -e DOCKER_HOST"
+    else
+        DOCKER_ADDR="-e DOCKER_HOST -e DOCKER_TLS_VERIFY -e DOCKER_CERT_PATH"
+    fi
+    # Setup volume mounts for compose config and context
+    if [ "$(pwd)" != '/' ]; then
+        VOLUMES="-v $(pwd):$(pwd)"
+    fi
+    if [ -n "$COMPOSE_FILE" ]; then
+        compose_dir=$(dirname $COMPOSE_FILE)
+    fi
+    # TODO: also check --file argument
+    if [ -n "$compose_dir" ]; then
+        VOLUMES="$VOLUMES -v $compose_dir:$compose_dir"
+    fi
+    if [ -n "$HOME" ]; then
+        VOLUMES="$VOLUMES -v $HOME:$HOME -v $HOME:/root" # mount $HOME in /root to share docker.config
+    fi
+    # Only allocate tty if we detect one
+    if [ -t 1 ]; then
+        DOCKER_RUN_OPTIONS="-t"
+    fi
+    if [ -t 0 ]; then
+        DOCKER_RUN_OPTIONS="$DOCKER_RUN_OPTIONS -i"
+    fi
+    exec docker run --rm $DOCKER_RUN_OPTIONS $DOCKER_ADDR $COMPOSE_OPTIONS $VOLUMES -w "$(pwd)" $IMAGE "$@"
 
 --------------
 
@@ -239,7 +261,7 @@ Compose既然是一个Python应用，自然也可以直接用容器来执行它�
 
 .. code:: shell
 
-   $ sudo rm /usr/local/bin/docker-compose
+    $ sudo rm /usr/local/bin/docker-compose
 
 --------------
 
@@ -249,12 +271,12 @@ Compose既然是一个Python应用，自然也可以直接用容器来执行它�
 
 .. code:: shell
 
-   $ sudo pip uninstall docker-compose
+    $ sudo pip uninstall docker-compose
 
 Compose模板文件
 ---------------
 
-模板文件是使用Compose的核心，涉及的指令关键字也比较多。但大家不用担心，这里的大部分指令与docker[container]create|run相关参数的含义都是类似的。
+模板文件是使用Compose的核心，涉及的指令关键字也比较多。但大家不用担心，这里的大部分指令与docker[container]create\|run相关参数的含义都是类似的。
 
 默认的模板文件名称为docker-compose.yml，格式为YAML格式，目前最新的版本为v3。
 
@@ -264,12 +286,12 @@ Compose模板文件
 
 ::
 
-   webapp:
-       image: examples/web
-       ports:
-           - "80:80"
-       volumes:
-           - "/data"
+    webapp:
+        image: examples/web
+        ports:
+            - "80:80"
+        volumes:
+            - "/data"
 
 --------------
 
@@ -279,28 +301,28 @@ Compose模板文件
 
 --------------
 
-::
+.. code:: yaml
 
-   version:"3"
-   services:
-       webapp:
-           image: examples/web
-           deploy:
-               replicas: 2
-               resources:
-                   limits:
-                       cpus: "0.1"
-                       memory: 100M
-                   restart_policy:
-                       condition: on-failure
-           ports:
-               - "80:80"
-           networks:
-               - mynet
-           volumes:
-               - "/data"
-   networks:
-       mynet:
+    version:"3"
+    services:
+        webapp:
+            image: examples/web
+            deploy:
+                replicas: 2
+                resources:
+                    limits:
+                        cpus: "0.1"
+                        memory: 100M
+                    restart_policy:
+                        condition: on-failure
+            ports:
+                - "80:80"
+            networks:
+                - mynet
+            volumes:
+                - "/data"
+    networks:
+        mynet:
 
 --------------
 
@@ -312,9 +334,11 @@ Compose模板文件
 
 表24-1　Compose模板文件主要命令
 
-|image1|
+.. figure:: ../_static/docker_compose_cmd00001.png
+   :alt: 
 
-|image2|
+.. figure:: ../_static/docker_compose_cmd_00002.png
+   :alt: 
 
 下面介绍部分指令的用法。
 
@@ -326,10 +350,10 @@ Compose模板文件
 
 .. code:: yaml
 
-   version: '3'
-   services:
-       app:
-           build: /path/to/build/dir
+    version: '3'
+    services:
+        app:
+            build: /path/to/build/dir
 
 --------------
 
@@ -339,25 +363,25 @@ build指令还可以指定创建镜像的上下文、Dockerfile路径、标签�
 
 .. code:: yaml
 
-   version: '3'
-   services:
-       app:
-           build:
-               context: /path/to/build/dir
-               dockerfile: Dockerfile-app
-               labels:
-                   version: "2.0"
-                   released: "true"
-               shm_size: '2gb'
-               args:
-                   key: value
-                   name: myApp
-               cache_from:
-                   - myApp:1.0
+    version: '3'
+    services:
+        app:
+            build:
+                context: /path/to/build/dir
+                dockerfile: Dockerfile-app
+                labels:
+                    version: "2.0"
+                    released: "true"
+                shm_size: '2gb'
+                args:
+                    key: value
+                    name: myApp
+                cache_from:
+                    - myApp:1.0
 
 --------------
 
-2.cap_add，cap_drop
+2.cap\_add，cap\_drop
 
 指定容器的内核能力（capacity）分配。例如，让容器拥有所有能力可以指定为：
 
@@ -365,19 +389,19 @@ build指令还可以指定创建镜像的上下文、Dockerfile路径、标签�
 
 ::
 
-   cap_add:
-       - ALL
+    cap_add:
+        - ALL
 
 --------------
 
-去掉NET_ADMIN能力可以指定为：
+去掉NET\_ADMIN能力可以指定为：
 
 --------------
 
 ::
 
-   cap_drop:
-       - NET_ADMIN
+    cap_drop:
+        - NET_ADMIN
 
 --------------
 
@@ -389,7 +413,7 @@ build指令还可以指定创建镜像的上下文、Dockerfile路径、标签�
 
 .. code:: shell
 
-   command: echo "hello world"
+    command: echo "hello world"
 
 --------------
 
@@ -399,7 +423,7 @@ build指令还可以指定创建镜像的上下文、Dockerfile路径、标签�
 
 .. code:: shell
 
-   command: ["bash", "-c", "echo", "hello world"]
+    command: ["bash", "-c", "echo", "hello world"]
 
 --------------
 
@@ -412,44 +436,44 @@ Swarm模式下，可以通过configs来管理和访问非敏感的配置信息�
 
 .. code:: yaml
 
-   version: "3.3"
-   services:
-       app:
-           image: myApp:1.0
-           deploy:
-               replicas: 1
-           configs:
-               - file_config
-               - external_config
-   configs:
-       file_config:
-           file: ./config_file.cfg
-       external_config:
-           external: true
+    version: "3.3"
+    services:
+        app:
+            image: myApp:1.0
+            deploy:
+                replicas: 1
+            configs:
+                - file_config
+                - external_config
+    configs:
+        file_config:
+            file: ./config_file.cfg
+        external_config:
+            external: true
 
 --------------
 
-5.cgroup_parent
+5.cgroup\_parent
 
-指定父cgroup组，意味着将继承该组的资源限制。目前不支持在Swarm模式中使用。例如，创建了一个cgroup组名称为cgroups_1：
-
---------------
-
-::
-
-   cgroup_parent: cgroups_1
-
---------------
-
-6.container_name
-
-指定容器名称。默认将会使用“项目名称_服务名称_序号”这样的格式。目前不支持在Swarm模式中使用。例如：
+指定父cgroup组，意味着将继承该组的资源限制。目前不支持在Swarm模式中使用。例如，创建了一个cgroup组名称为cgroups\_1：
 
 --------------
 
 ::
 
-   container_name: docker-web-container
+    cgroup_parent: cgroups_1
+
+--------------
+
+6.container\_name
+
+指定容器名称。默认将会使用“项目名称\_服务名称\_序号”这样的格式。目前不支持在Swarm模式中使用。例如：
+
+--------------
+
+::
+
+    container_name: docker-web-container
 
 --------------
 
@@ -463,12 +487,12 @@ Swarm模式下，可以通过configs来管理和访问非敏感的配置信息�
 
 ::
 
-   devices:
-       - "/dev/ttyUSB1:/dev/ttyUSB0"
+    devices:
+        - "/dev/ttyUSB1:/dev/ttyUSB0"
 
 --------------
 
-8.depends_on
+8.depends\_on
 
 指定多个服务之间的依赖关系。启动时，会先启动被依赖服务。例如，可以指定依赖于db服务：
 
@@ -476,7 +500,7 @@ Swarm模式下，可以通过configs来管理和访问非敏感的配置信息�
 
 ::
 
-   depends_on: db
+    depends_on: db
 
 --------------
 
@@ -488,14 +512,14 @@ Swarm模式下，可以通过configs来管理和访问非敏感的配置信息�
 
 ::
 
-   dns: 8.8.8.8
-   dns:
-       - 8.8.8.8
-       - 9.9.9.9
+    dns: 8.8.8.8
+    dns:
+        - 8.8.8.8
+        - 9.9.9.9
 
 --------------
 
-10.dns_search
+10.dns\_search
 
 配置DNS搜索域。可以是一个值，也可以是一个列表。例如：
 
@@ -503,10 +527,10 @@ Swarm模式下，可以通过configs来管理和访问非敏感的配置信息�
 
 .. code:: yaml
 
-   dns_search: example.com
-   dns_search:
-       - domain1.example.com
-       - domain2.example.com
+    dns_search: example.com
+    dns_search:
+        - domain1.example.com
+        - domain2.example.com
 
 --------------
 
@@ -518,7 +542,7 @@ Swarm模式下，可以通过configs来管理和访问非敏感的配置信息�
 
 .. code:: shell
 
-   dockerfile: Dockerfile-alternate
+    dockerfile: Dockerfile-alternate
 
 --------------
 
@@ -534,24 +558,24 @@ Swarm模式下，可以通过configs来管理和访问非敏感的配置信息�
 
 ::
 
-   entrypoint: python app.py
+    entrypoint: python app.py
 
 --------------
 
-13.env_file
+13.env\_file
 
 从文件中获取环境变量，可以为单独的文件路径或列表。如果通过docker-compose-f
-FILE方式来指定Compose模板文件，则env_file中变量的路径会基于模板文件路径。如果有变量名称与environment指令冲突，则按照惯例，以后者为准。例如：
+FILE方式来指定Compose模板文件，则env\_file中变量的路径会基于模板文件路径。如果有变量名称与environment指令冲突，则按照惯例，以后者为准。例如：
 
 --------------
 
 .. code:: yaml
 
-   env_file: .env
-   env_file:
-       - ./common.env
-       - ./apps/web.env
-       - /opt/secrets.env
+    env_file: .env
+    env_file:
+        - ./common.env
+        - ./apps/web.env
+        - /opt/secrets.env
 
 --------------
 
@@ -561,8 +585,8 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
 
 ::
 
-   # common.env: Set development environment
-   PROG_ENV=development
+    # common.env: Set development environment
+    PROG_ENV=development
 
 --------------
 
@@ -574,9 +598,9 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
 
 .. code:: yaml
 
-   environment:
-       RACK_ENV: development
-       SESSION_SECRET:
+    environment:
+        RACK_ENV: development
+        SESSION_SECRET:
 
 --------------
 
@@ -586,13 +610,13 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
 
 .. code:: yaml
 
-   environment:
-       - RACK_ENV=development
-       - SESSION_SECRET
+    environment:
+        - RACK_ENV=development
+        - SESSION_SECRET
 
 --------------
 
-注意，如果变量名称或者值中用到true|false，yes|no等表达布尔含义的词汇，最好放到引号里，避免YAML自动解析某些内容为对应的布尔语义：
+注意，如果变量名称或者值中用到true\|false，yes\|no等表达布尔含义的词汇，最好放到引号里，避免YAML自动解析某些内容为对应的布尔语义：
 
 http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
@@ -600,9 +624,9 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 ::
 
-   y|Y|yes|Yes|YES|n|N|no|No|NO
-   |true|True|TRUE|false|False|FALSE
-   |on|On|ON|off|Off|OFF
+    y|Y|yes|Yes|YES|n|N|no|No|NO
+    |true|True|TRUE|false|False|FALSE
+    |on|On|ON|off|Off|OFF
 
 --------------
 
@@ -614,9 +638,9 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 .. code:: yaml
 
-   expose:
-       - "3000"
-       - "8000"
+    expose:
+        - "3000"
+        - "8000"
 
 --------------
 
@@ -628,12 +652,12 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 .. code:: yaml
 
-   # common.yml
-   webapp:
-       build: ./webapp
-       environment:
-           - DEBUG=false
-           - SEND_EMAILS=false
+    # common.yml
+    webapp:
+        build: ./webapp
+        environment:
+            - DEBUG=false
+            - SEND_EMAILS=false
 
 --------------
 
@@ -643,19 +667,19 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 .. code:: yaml
 
-   # development.yml
-   web:
-       extends:
-           file: common.yml
-           service: webapp
-       ports:
-           - "8000:8000"
-       links:
-           - db
-       environment:
-           - DEBUG=true
-   db:
-       image: postgres
+    # development.yml
+    web:
+        extends:
+            file: common.yml
+            service: webapp
+        ports:
+            - "8000:8000"
+        links:
+            - db
+        environment:
+            - DEBUG=true
+    db:
+        image: postgres
 
 --------------
 
@@ -663,11 +687,11 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 ·要避免出现循环依赖，例如A依赖B，B依赖C，C反过来依赖A的情况。
 
-·extends不会继承links和volumes_from中定义的容器和数据卷资源。
+·extends不会继承links和volumes\_from中定义的容器和数据卷资源。
 
 一般情况下，推荐在基础模板中只定义一些可以共享的镜像和环境变量，在扩展模板中具体指定应用变量、链接、数据卷等信息。
 
-17.external_links
+17.external\_links
 
 链接到docker-compose.yml外部的容器，甚至并非Compose管理的外部容器。参数格式跟links类似。
 
@@ -675,16 +699,16 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 .. code:: yaml
 
-   external_links:
-       - redis_1
-       - project_db_1:mysql
-       - project_db_1:postgresql
+    external_links:
+        - redis_1
+        - project_db_1:mysql
+        - project_db_1:postgresql
 
 --------------
 
-18.extra_hosts
+18.extra\_hosts
 
-类似Docker中的–add-host参数，指定额外的host名称映射信息。
+类似Docker中的--add-host参数，指定额外的host名称映射信息。
 
 例如：
 
@@ -692,9 +716,9 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 .. code:: yaml
 
-   extra_hosts:
-       - "googledns:8.8.8.8"
-       - "dockerhub:52.1.157.61"
+    extra_hosts:
+        - "googledns:8.8.8.8"
+        - "dockerhub:52.1.157.61"
 
 --------------
 
@@ -704,14 +728,14 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 .. code:: yaml
 
-   8.8.8.8 googledns
-   52.1.157.61 dockerhub
+    8.8.8.8 googledns
+    52.1.157.61 dockerhub
 
 --------------
 
 19.healthcheck
 
-指定检测应用健康状态的机制，包括检测方法（test）、间隔（interval）、超时（timeout）、重试次数（retries）、启动等待时间（start_period）等。
+指定检测应用健康状态的机制，包括检测方法（test）、间隔（interval）、超时（timeout）、重试次数（retries）、启动等待时间（start\_period）等。
 
 例如，指定检测方法为访问8080端口，间隔为30秒，超时为15秒，重试3次，启动后等待30秒再做检查。
 
@@ -719,12 +743,12 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 .. code:: yaml
 
-   healthcheck:
-       test: ["CMD", "curl", "-f", "http://localhost:8080"]
-       interval: 30s
-       timeout: 15s
-       retries: 3
-       start_period: 30s
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8080"]
+        interval: 30s
+        timeout: 15s
+        retries: 3
+        start_period: 30s
 
 --------------
 
@@ -738,9 +762,9 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 ::
 
-   image: ubuntu
-   image: orchardup/postgresql
-   image: a4bc65fd
+    image: ubuntu
+    image: orchardup/postgresql
+    image: a4bc65fd
 
 --------------
 
@@ -756,10 +780,10 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 ::
 
-   labels:
-       com.startupteam.description: "webapp for a startup team"
-       com.startupteam.department: "devops department"
-       com.startupteam.release: "rc3 for v1.0"
+    labels:
+        com.startupteam.description: "webapp for a startup team"
+        com.startupteam.department: "devops department"
+        com.startupteam.release: "rc3 for v1.0"
 
 --------------
 
@@ -773,10 +797,10 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 ::
 
-   links:
-       - db
-       - db:database
-       - redis
+    links:
+        - db
+        - db:database
+        - redis
 
 --------------
 
@@ -786,9 +810,9 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 ::
 
-   172.17.2.186  db
-   172.17.2.186  database
-   172.17.2.187  redis
+    172.17.2.186  db
+    172.17.2.186  database
+    172.17.2.187  redis
 
 --------------
 
@@ -798,15 +822,15 @@ http://yaml.org/type/bool.html\ 中给出了这些特定词汇，包括
 
 跟日志相关的配置，包括一系列子配置。
 
-logging.driver：类似于Docker中的–log-driver参数，指定日志驱动类型。目前支持三种日志驱动类型：
+logging.driver：类似于Docker中的--log-driver参数，指定日志驱动类型。目前支持三种日志驱动类型：
 
 --------------
 
 ::
 
-   driver: "json-file"
-   driver: "syslog"
-   driver: "none"
+    driver: "json-file"
+    driver: "syslog"
+    driver: "none"
 
 --------------
 
@@ -816,10 +840,10 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   logging:
-       driver: "syslog"
-       options:
-           syslog-address: "tcp://192.168.0.42:123"
+    logging:
+        driver: "syslog"
+        options:
+            syslog-address: "tcp://192.168.0.42:123"
 
 --------------
 
@@ -829,27 +853,27 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   logging:
-       driver: "json-file"
-       options:
-           max-size: "1000k"
-           max-file: "20"
+    logging:
+        driver: "json-file"
+        options:
+            max-size: "1000k"
+            max-file: "20"
 
 --------------
 
-25.network_mode
+25.network\_mode
 
-设置网络模式。使用和docker client的–net参数一样的值。
+设置网络模式。使用和docker client的--net参数一样的值。
 
 --------------
 
 ::
 
-   network_mode: "none"
-   network_mode: "bridge"
-   network_mode: "host"
-   network_mode: "service:[service name]"
-   network_mode: "container:[name or id]"
+    network_mode: "none"
+    network_mode: "bridge"
+    network_mode: "host"
+    network_mode: "service:[service name]"
+    network_mode: "container:[name or id]"
 
 --------------
 
@@ -857,26 +881,26 @@ logging.options：日志驱动的相关参数。例如：
 
 所加入的网络。需要在顶级的networks字段中定义具体的网络信息。
 
-例如，指定web服务的网络为web_net，并添加服务在网络中别名为web_app。
+例如，指定web服务的网络为web\_net，并添加服务在网络中别名为web\_app。
 
 --------------
 
 .. code:: yaml
 
-   services:
-       web:
-           networks:
-               web_net：
-                   aliases: web_app
-               ipv4_address: 172.16.0.10
-   networks:
-       web_net:
-           driver: bridge
-           enable_ipv6: true
-           ipam:
-               driver: default
-               config:
-                   subnet: 172.16.0.0/24
+    services:
+        web:
+            networks:
+                web_net：
+                    aliases: web_app
+                ipv4_address: 172.16.0.10
+    networks:
+        web_net:
+            driver: bridge
+            enable_ipv6: true
+            ipam:
+                driver: default
+                config:
+                    subnet: 172.16.0.0/24
 
 --------------
 
@@ -888,7 +912,7 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   pid: "host"
+    pid: "host"
 
 --------------
 
@@ -902,11 +926,11 @@ logging.options：日志驱动的相关参数。例如：
 
 .. code:: yaml
 
-   ports:
-       - "3000"
-       - "8000:8000"
-       - "49100:22"
-       - "127.0.0.1:8001:8001"
+    ports:
+        - "3000"
+        - "8000:8000"
+        - "49100:22"
+        - "127.0.0.1:8001:8001"
 
 --------------
 
@@ -916,11 +940,11 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   ports:
-       - target: 80
-         published: 8080
-         protocol: tcp
-         mode: ingress
+    ports:
+        - target: 80
+          published: 8080
+          protocol: tcp
+          mode: ingress
 
 注意
 
@@ -938,25 +962,25 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   version: "3.1"
-   services:
-       web:
-           image: webapp:stable
-           deploy:
-               replicas: 2
-           secrets:
-               - source: web_secret
-                 target: web_secret
-                 uid: '103'
-                 gid: '103'
-                 mode: 0444
-   secrets:
-       web_secret:
-           file: ./web_secret.txt
+    version: "3.1"
+    services:
+        web:
+            image: webapp:stable
+            deploy:
+                replicas: 2
+            secrets:
+                - source: web_secret
+                  target: web_secret
+                  uid: '103'
+                  gid: '103'
+                  mode: 0444
+    secrets:
+        web_secret:
+            file: ./web_secret.txt
 
 --------------
 
-30.security_opt
+30.security\_opt
 
 指定容器模板标签（label）机制的默认属性（用户、角色、类型、级别等）。
 
@@ -966,19 +990,19 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   security_opt:
-       - label:user:USER
-       - label:role:ROLE
+    security_opt:
+        - label:user:USER
+        - label:role:ROLE
 
 --------------
 
-31.stop_grace_period
+31.stop\_grace\_period
 
 指定应用停止时，容器的优雅停止期限。过期后则通过SIGKILL强制退出。
 
 默认值为10s。
 
-32.stop_signal
+32.stop\_signal
 
 指定停止容器的信号，默认为SIGTERM。
 
@@ -992,9 +1016,9 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   sysctls:
-       net.core.somaxconn: 4096
-       net.ipv4.tcp_syncookies: 1
+    sysctls:
+        net.core.somaxconn: 4096
+        net.ipv4.tcp_syncookies: 1
 
 --------------
 
@@ -1008,15 +1032,15 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   ulimits:
-       nproc: 65535
-       nofile:
-         soft: 20000
-         hard: 40000
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000
 
 --------------
 
-35.userns_mode
+35.userns\_mode
 
 指定用户命名空间模式。Swarm模式中不支持。例如，使用主机上的用户命名空间：
 
@@ -1024,7 +1048,7 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   userns_mode: "host"
+    userns_mode: "host"
 
 --------------
 
@@ -1032,7 +1056,7 @@ logging.options：日志驱动的相关参数。例如：
 
 数据卷所挂载路径设置。可以设置宿主机路径（HOST：CONTAINER）或加上访问模式（HOST：CONTAINER：ro）。
 
-支持driver、driver_opts、external、labels、name等子配置。
+支持driver、driver\_opts、external、labels、name等子配置。
 
 该指令中路径支持相对路径。例如
 
@@ -1040,10 +1064,10 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   volumes:
-       - /var/lib/mysql
-       - cache/:/tmp/cache
-       - ~/configs:/etc/configs/:ro
+    volumes:
+        - /var/lib/mysql
+        - cache/:/tmp/cache
+        - ~/configs:/etc/configs/:ro
 
 --------------
 
@@ -1053,14 +1077,14 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   volumes:
-       - type: volume
-           source: mydata
-           target: /data
-           volume:
-               nocopy: true
-   volumes:
-       mydata:
+    volumes:
+        - type: volume
+            source: mydata
+            target: /data
+            volume:
+                nocopy: true
+    volumes:
+        mydata:
 
 --------------
 
@@ -1068,7 +1092,7 @@ logging.options：日志驱动的相关参数。例如：
 
 指定重启策略，可以为no（不重启）、always（总是）、on-failure（失败时）、unless-stopped（除非停止）。
 
-注意Swarm模式下要使用restart_policy。在生产环境中推荐配置为always或者unless-stopped。
+注意Swarm模式下要使用restart\_policy。在生产环境中推荐配置为always或者unless-stopped。
 
 例如，配置除非停止：
 
@@ -1076,7 +1100,7 @@ logging.options：日志驱动的相关参数。例如：
 
 ::
 
-   restart: unless-stopped
+    restart: unless-stopped
 
 --------------
 
@@ -1091,23 +1115,23 @@ stack deploy命令部署。
 
 ::
 
-   version: '3'
-   services:
-       redis:
-           image: web:stable
-           deploy:
-               replicas: 3
-               update_config:
-                   parallelism: 2
-                   delay: 10s
-               restart_policy:
-                   condition: on-failure
+    version: '3'
+    services:
+        redis:
+            image: web:stable
+            deploy:
+                replicas: 3
+                update_config:
+                    parallelism: 2
+                    delay: 10s
+                restart_policy:
+                    condition: on-failure
 
 --------------
 
-deploy命令中包括endpoint_mode、labels、mode、placement、replicas、resources、restart_policy、update_config等配置项。
+deploy命令中包括endpoint\_mode、labels、mode、placement、replicas、resources、restart\_policy、update\_config等配置项。
 
-（1）endpoint_mode
+（1）endpoint\_mode
 
 指定服务端点模式。包括两种类型：
 
@@ -1121,14 +1145,14 @@ dnsrr：Swarm分配一个域名给服务，用户访问域名时候回按照轮�
 
 .. code:: yaml
 
-   version: '3'
-   services:
-       redis:
-           image: web:stable
-           deploy:
-               mode: replicated
-               replicas: 3
-               endpoint_mode: vip
+    version: '3'
+    services:
+        redis:
+            image: web:stable
+            deploy:
+                mode: replicated
+                replicas: 3
+                endpoint_mode: vip
 
 --------------
 
@@ -1142,13 +1166,13 @@ dnsrr：Swarm分配一个域名给服务，用户访问域名时候回按照轮�
 
 .. code:: yaml
 
-   version: "3"
-   services:
-       web:
-           image: web:stable
-           deploy:
-               labels:
-                   description: "This is a web application service."
+    version: "3"
+    services:
+        web:
+            image: web:stable
+            deploy:
+                labels:
+                    description: "This is a web application service."
 
 --------------
 
@@ -1166,13 +1190,13 @@ replicated：整个集群中存在指定份数的应用容器副本，默认值�
 
 .. code:: yaml
 
-   version: "3"
-   services:
-       web:
-           image: web:stable
-           deploy:
-               mode: replicated
-               replicas: 3
+    version: "3"
+    services:
+        web:
+            image: web:stable
+            deploy:
+                mode: replicated
+                replicas: 3
 
 --------------
 
@@ -1184,16 +1208,16 @@ replicated：整个集群中存在指定份数的应用容器副本，默认值�
 
 .. code:: yaml
 
-   version: '3'
-   services:
-       db:
-           image: web:stable
-           deploy:
-               placement:
-                   constraints:
-                       - node.labels.security==high
-                   preferences:
-                       - spread: node.labels.zone
+    version: '3'
+    services:
+        db:
+            image: web:stable
+            deploy:
+                placement:
+                    constraints:
+                        - node.labels.security==high
+                    preferences:
+                        - spread: node.labels.zone
 
 --------------
 
@@ -1210,22 +1234,22 @@ MB到500 MB。
 
 .. code:: yaml
 
-   version: '3'
-   services:
-       redis:
-           image: web:stable
-           deploy:
-               resources:
-                   limits:
-                       cpus: '0.25'
-                       memory: 500M
-                   reservations:
-                       cpus: '0.10'
-                       memory: 200M
+    version: '3'
+    services:
+        redis:
+            image: web:stable
+            deploy:
+                resources:
+                    limits:
+                        cpus: '0.25'
+                        memory: 500M
+                    reservations:
+                        cpus: '0.10'
+                        memory: 200M
 
 --------------
 
-（7）restart_policy
+（7）restart\_policy
 
 指定容器重启的策略。例如，指定重启策略为失败时重启，等待2s，重启最多尝试3次，检测状态的等待时间为10s。
 
@@ -1233,49 +1257,49 @@ MB到500 MB。
 
 .. code:: yaml
 
-   version: "3"
-   services:
-       redis:
-           image: web:stable
-           deploy:
-               restart_policy:
-                   condition: on-failure
-                   delay: 2s
-                   max_attempts: 3
-                   window: 10s
+    version: "3"
+    services:
+        redis:
+            image: web:stable
+            deploy:
+                restart_policy:
+                    condition: on-failure
+                    delay: 2s
+                    max_attempts: 3
+                    window: 10s
 
 --------------
 
-（8）update_config
+（8）update\_config
 
-有些时候需要对容器内容进行更新，可以使用该配置指定升级的行为。包括每次升级多少个容器（parallelism）、升级的延迟（delay）、升级失败后的行动（failure_action）、检测升级后状态的等待时间（monitor）、升级后容忍的最大失败比例（max_failure_ratio）、升级顺序（order）等。例如，指定每次更新两个容器、更新等待10s、先停止旧容器再升级。
+有些时候需要对容器内容进行更新，可以使用该配置指定升级的行为。包括每次升级多少个容器（parallelism）、升级的延迟（delay）、升级失败后的行动（failure\_action）、检测升级后状态的等待时间（monitor）、升级后容忍的最大失败比例（max\_failure\_ratio）、升级顺序（order）等。例如，指定每次更新两个容器、更新等待10s、先停止旧容器再升级。
 
 --------------
 
 .. code:: yaml
 
-   version: "3.4"
-   services:
-       redis:
-           image: web:stable
-           deploy:
-               replicas: 2
-               update_config:
-                   parallelism: 2
-                   delay: 10s
-                   order: stop-first
+    version: "3.4"
+    services:
+        redis:
+            image: web:stable
+            deploy:
+                replicas: 2
+                update_config:
+                    parallelism: 2
+                    delay: 10s
+                    order: stop-first
 
 --------------
 
 39.其他指令
 
-此外，还有包括domainname、hostname、ipc、mac_address、privileged、read_only、shm_size、stdin_open、tty、user、working_dir等指令，基本跟docker-run中对应参数的功能一致。例如，指定容器中工作目录：
+此外，还有包括domainname、hostname、ipc、mac\_address、privileged、read\_only、shm\_size、stdin\_open、tty、user、working\_dir等指令，基本跟docker-run中对应参数的功能一致。例如，指定容器中工作目录：
 
 --------------
 
 .. code:: shell
 
-   working_dir: /code
+    working_dir: /code
 
 --------------
 
@@ -1285,9 +1309,9 @@ MB到500 MB。
 
 .. code:: shell
 
-   domainname: your_website.com
-   hostname: test
-   mac_address: 08-00-27-00-0C-0A
+    domainname: your_website.com
+    hostname: test
+    mac_address: 08-00-27-00-0C-0A
 
 --------------
 
@@ -1297,25 +1321,25 @@ MB到500 MB。
 
 .. code:: shell
 
-   privileged: true
+    privileged: true
 
 --------------
 
 40.读取环境变量
 
-从1.5.0版本开始，Compose模板文件支持动态读取主机的系统环境变量。例如，下面的Compose文件将从运行它的环境中读取变量${MONGO_VERSION}的值（不指定时则采用默认值3.2），并写入执行的指令中。
+从1.5.0版本开始，Compose模板文件支持动态读取主机的系统环境变量。例如，下面的Compose文件将从运行它的环境中读取变量${MONGO\_VERSION}的值（不指定时则采用默认值3.2），并写入执行的指令中。
 
 --------------
 
 .. code:: shell
 
-   db:
-       image: "mongo:${MONGO_VERSION-3.2}"
+    db:
+        image: "mongo:${MONGO_VERSION-3.2}"
 
 --------------
 
 如果直接执行docker-compose
-up则会启动一个mongo：3.2镜像的容器；如果执行MONGO_VERSION=2.8
+up则会启动一个mongo：3.2镜像的容器；如果执行MONGO\_VERSION=2.8
 docker-compose up则会启动一个mongo：2.8镜像的容器。
 
 41.扩展特性
@@ -1326,24 +1350,24 @@ docker-compose up则会启动一个mongo：2.8镜像的容器。
 
 .. code:: yaml
 
-   version: '3.4'
-   x-logging:
-       &default-logging
-       options:
-           max-size: '10m'
-           max-file: '10'
-       driver: json-file
-   services:
-       web:
-           image: webapp:stable
-           logging: *default-logging
+    version: '3.4'
+    x-logging:
+        &default-logging
+        options:
+            max-size: '10m'
+            max-file: '10'
+        driver: json-file
+    services:
+        web:
+            image: webapp:stable
+            logging: *default-logging
 
 Compose命令说明
 ---------------
 
 对于Compose来说，大部分命令的对象既可以是项目本身，也可以指定为项目中的服务或者容器。如果没有特别的说明，命令对象将是项目，这意味着项目中所有的服务都会受到命令影响。
 
-执行docker-compose[COMMAND]–help或者docker-compose
+执行docker-compose[COMMAND]--help或者docker-compose
 help[COMMAND]可以查看具体某个命令的使用格式。
 
 Compose命令的基本的使用格式是：
@@ -1352,7 +1376,7 @@ Compose命令的基本的使用格式是：
 
 ::
 
-   docker-compose [-f=<arg>...] [options] [COMMAND] [ARGS...]
+    docker-compose [-f=<arg>...] [options] [COMMAND] [ARGS...]
 
 --------------
 
@@ -1362,35 +1386,36 @@ Compose命令的基本的使用格式是：
 
 
 
-   ·-f，--file FILE：指定使用的Compose模板文件，默认为docker-compose.yml，可以多次指定；
+    ·-f，--file FILE：指定使用的Compose模板文件，默认为docker-compose.yml，可以多次指定；
 
-   ·-p，--project-name NAME：指定项目名称，默认将使用所在目录名称作为项目名；
+    ·-p，--project-name NAME：指定项目名称，默认将使用所在目录名称作为项目名；
 
-   ·--verbose：输出更多调试信息；
+    ·--verbose：输出更多调试信息；
 
-   ·-v，--version：打印版本并退出；
+    ·-v，--version：打印版本并退出；
 
-   ·-H，-host HOST：指定所操作的Docker服务地址；
+    ·-H，-host HOST：指定所操作的Docker服务地址；
 
-   ·-tls：启用TLS，如果指定-tlsverify则默认开启；
+    ·-tls：启用TLS，如果指定-tlsverify则默认开启；
 
-   ·-tlscacert CA_PATH：信任的TLS CA的证书；
+    ·-tlscacert CA_PATH：信任的TLS CA的证书；
 
-   ·-tlscert CLIENT_CERT_PATH：客户端使用的TLS证书；
+    ·-tlscert CLIENT_CERT_PATH：客户端使用的TLS证书；
 
-   ·-tlskey TLS_KEY_PATH：TLS的私钥文件路径；
+    ·-tlskey TLS_KEY_PATH：TLS的私钥文件路径；
 
-   ·-tlsverify：使用TLS校验连接对方；
+    ·-tlsverify：使用TLS校验连接对方；
 
-   ·-skip-hostname-check：不使用TLS证书校验对方的主机名；
+    ·-skip-hostname-check：不使用TLS证书校验对方的主机名；
 
-   ·-project-directory PATH：指定工作目录，默认为Compose文件所在路径。
+    ·-project-directory PATH：指定工作目录，默认为Compose文件所在路径。
 
 命令列表见表24-2。
 
 表24-2　Compose命令
 
-|image3|
+.. figure:: ../_static/docker_compose_cmd00004.png
+   :alt: 
 
 Compose命令使用说明如下
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1398,11 +1423,11 @@ Compose命令使用说明如下
 1.build
 ^^^^^^^
 
-格式为docker-compose build[options][SERVICE…]。
+格式为\ ``docker-compose build [options] [SERVICE...]``\ 。
 
 构建（重新构建）项目中的服务容器。
 
-服务容器一旦构建后，将会带上一个标记名，例如对于Web项目中的一个db容器，可能是web_db。
+服务容器一旦构建后，将会带上一个标记名，例如对于Web项目中的一个db容器，可能是web\_db。
 
 可以随时在项目目录下运行docker-compose build来重新构建服务。
 
@@ -1410,16 +1435,16 @@ Compose命令使用说明如下
 
 ::
 
-   ·--force-rm：强制删除构建过程中的临时容器；
-   ·--no-cache：构建镜像过程中不使用cache（这将加长构建过程）；
-   ·--pull：始终尝试通过pull来获取更新版本的镜像；
-   ·-m，-memory MEM：指定创建服务所使用的内存限制；
-   ·-build-arg key=val：指定服务创建时的参数。
+    ·--force-rm：强制删除构建过程中的临时容器；
+    ·--no-cache：构建镜像过程中不使用cache（这将加长构建过程）；
+    ·--pull：始终尝试通过pull来获取更新版本的镜像；
+    ·-m，-memory MEM：指定创建服务所使用的内存限制；
+    ·-build-arg key=val：指定服务创建时的参数。
 
 2.bundle
 ^^^^^^^^
 
-格式为docker-compose bundle[options]。
+格式为\ ``docker-compose bundle [options]``\ 。
 
 创建一个可分发（Distributed Application
 Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可以利用该文件启动服务栈。
@@ -1428,13 +1453,13 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 
 ::
 
-   ·-push-images：自动推送镜像到仓库；
-   ·-o，-output PATH：配置包的导出路径。
+    ·-push-images：自动推送镜像到仓库；
+    ·-o，-output PATH：配置包的导出路径。
 
 3.config
 ^^^^^^^^
 
-格式为docker-compose config[options]。
+格式为\ ``docker-compose config [options]``\ 。
 
 校验和查看Compose文件的配置信息。
 
@@ -1442,15 +1467,15 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 
 ::
 
-   ·-resolve-image-digests：为镜像添加对应的摘要信息；
-   ·-q，-quiet：只检验格式正确与否，不输出内容；
-   ·-services：打印出Compose中所有的服务信息；
-   ·-volumes：打印出Compose中所有的挂载卷信息；
+    ·-resolve-image-digests：为镜像添加对应的摘要信息；
+    ·-q，-quiet：只检验格式正确与否，不输出内容；
+    ·-services：打印出Compose中所有的服务信息；
+    ·-volumes：打印出Compose中所有的挂载卷信息；
 
 4.down
 ^^^^^^
 
-格式为docker-compose down[options]。
+格式为\ ``docker-compose down [options]``\ 。
 
 停止服务栈，并删除相关资源，包括容器、挂载卷、网络、创建镜像等。
 
@@ -1460,15 +1485,15 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 
 ::
 
-   ·-rmi type：指定删除镜像的类型，包括all（所有镜像），local（仅本地）；
-   ·-v，-volumes：删除挂载数据卷；
-   ·-remove-orphans：清除孤儿容器，即未在Compose服务中定义的容器；
-   ·-t，-timeout TIMEOUT：指定超时时间，默认为10s。
+    ·-rmi type：指定删除镜像的类型，包括all（所有镜像），local（仅本地）；
+    ·-v，-volumes：删除挂载数据卷；
+    ·-remove-orphans：清除孤儿容器，即未在Compose服务中定义的容器；
+    ·-t，-timeout TIMEOUT：指定超时时间，默认为10s。
 
 5.events
 ^^^^^^^^
 
-格式为docker-compose events[options][SERVICE…]。
+格式为\ ``docker-compose events [options] [SERVICE...]``\ 。
 
 实时监控容器的事件信息。
 
@@ -1477,7 +1502,7 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 6.exec
 ^^^^^^
 
-格式为docker-compose exec[options][-e KEY=VAL…]SERVICE COMMAND[ARGS…]。
+格式为\ ``docker-compose exec [options] [-e KEY=VAL...] SERVICE COMMAND[ARGS...]``\ 。
 
 在一个运行中的容器内执行给定命令。
 
@@ -1485,12 +1510,12 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 
 ::
 
-   ·-d：在后台运行命令；
-   ·-privileged：以特权角色运行命令；
-   ·-u，-user USER：以给定用户身份运行命令；
-   ·-T：不分配TTY伪终端，默认情况下会打开；
-   ·-index=index：当服务有多个容器实例时指定容器索引，默认为第一个；
-   ·-e，-env KEY=VAL：设置环境变量。
+    ·-d：在后台运行命令；
+    ·-privileged：以特权角色运行命令；
+    ·-u，-user USER：以给定用户身份运行命令；
+    ·-T：不分配TTY伪终端，默认情况下会打开；
+    ·-index=index：当服务有多个容器实例时指定容器索引，默认为第一个；
+    ·-e，-env KEY=VAL：设置环境变量。
 
 7.help
 ^^^^^^
@@ -1508,7 +1533,7 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 
 ::
 
-   ·-q：仅显示镜像的ID。
+    ·-q：仅显示镜像的ID。
 
 9.kill
 ^^^^^^
@@ -1523,7 +1548,7 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 
 ::
 
-   $ docker-compose kill -s SIGINT
+    $ docker-compose kill -s SIGINT
 
 --------------
 
@@ -1532,7 +1557,7 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 
 格式为\ ``docker-compose logs [options] [SERVICE...]。``
 
-查看服务容器的输出。默认情况下，docker-compose将对不同的服务输出使用不同的颜色来区分。可以通过–no-color来关闭颜色。
+查看服务容器的输出。默认情况下，docker-compose将对不同的服务输出使用不同的颜色来区分。可以通过--no-color来关闭颜色。
 
 该命令在调试问题的时候十分有用。
 
@@ -1540,13 +1565,13 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 
 ::
 
-   ·-no-color：关闭彩色输出；
+    ·-no-color：关闭彩色输出；
 
-   ·-f，-follow：持续跟踪输出日志消息；
+    ·-f，-follow：持续跟踪输出日志消息；
 
-   ·-t，-timestamps：显示时间戳信息；
+    ·-t，-timestamps：显示时间戳信息；
 
-   ·-tail="all"：仅显示指定行数的最新日志消息。
+    ·-tail="all"：仅显示指定行数的最新日志消息。
 
 11.pause
 ^^^^^^^^
@@ -1566,9 +1591,9 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 
 ::
 
-   ·--protocol=proto：指定端口协议，tcp（默认值）或者udp；
+    ·--protocol=proto：指定端口协议，tcp（默认值）或者udp；
 
-   ·--index=index：如果同一服务存在多个容器，指定命令对象容器的序号（默认为1）。
+    ·--index=index：如果同一服务存在多个容器，指定命令对象容器的序号（默认为1）。
 
 13.ps
 ^^^^^
@@ -1618,9 +1643,9 @@ stop命令来停止容器。
 
 ::
 
-   ·-f，--force：强制直接删除，包括非停止状态的容器。一般尽量不要使用该选项。
+    ·-f，--force：强制直接删除，包括非停止状态的容器。一般尽量不要使用该选项。
 
-   ·-v：删除容器所挂载的数据卷。
+    ·-v：删除容器所挂载的数据卷。
 
 18.run
 ^^^^^^
@@ -1635,7 +1660,7 @@ stop命令来停止容器。
 
 ::
 
-   $ docker-compose run ubuntu ping docker.com
+    $ docker-compose run ubuntu ping docker.com
 
 --------------
 
@@ -1651,13 +1676,13 @@ stop命令来停止容器。
 
 ·会自动创建端口，以避免冲突。
 
-如果不希望自动启动关联的容器，可以使用–no-deps选项，例如
+如果不希望自动启动关联的容器，可以使用--no-deps选项，例如
 
 --------------
 
 ::
 
-   $ docker-compose run --no-deps web python manage.py shell
+    $ docker-compose run --no-deps web python manage.py shell
 
 --------------
 
@@ -1667,16 +1692,16 @@ stop命令来停止容器。
 
 ::
 
-   ·-d：后台运行容器；
-   ·--name NAME：为容器指定一个名字；
-   ·--entrypoint CMD：覆盖默认的容器启动指令；
-   ·-e KEY=VAL：设置环境变量值，可多次使用选项来设置多个环境变量；
-   ·-u，--user=""：指定运行容器的用户名或者uid；
-   ·--no-deps：不自动启动关联的服务容器；
-   ·--rm：运行命令后自动删除容器，d模式下将忽略；
-   ·-p，--publish=[]：映射容器端口到本地主机；
-   ·--service-ports：配置服务端口并映射到本地主机；
-   ·-T：不分配伪tty，意味着依赖tty的指令将无法运行。
+    ·-d：后台运行容器；
+    ·--name NAME：为容器指定一个名字；
+    ·--entrypoint CMD：覆盖默认的容器启动指令；
+    ·-e KEY=VAL：设置环境变量值，可多次使用选项来设置多个环境变量；
+    ·-u，--user=""：指定运行容器的用户名或者uid；
+    ·--no-deps：不自动启动关联的服务容器；
+    ·--rm：运行命令后自动删除容器，d模式下将忽略；
+    ·-p，--publish=[]：映射容器端口到本地主机；
+    ·--service-ports：配置服务端口并映射到本地主机；
+    ·-T：不分配伪tty，意味着依赖tty的指令将无法运行。
 
 19.scale
 ^^^^^^^^
@@ -1691,7 +1716,7 @@ stop命令来停止容器。
 
 ::
 
-   $ docker-compose scale web=3 db=2
+    $ docker-compose scale web=3 db=2
 
 --------------
 
@@ -1699,7 +1724,7 @@ stop命令来停止容器。
 
 一般的，当指定数目多于该服务当前实际运行容器，将新创建并启动容器；反之，将停止容器。
 
-选项包括-t，–timeout TIMEOUT：停止容器时候的超时（默认为10秒）。
+选项包括-t，--timeout TIMEOUT：停止容器时候的超时（默认为10秒）。
 
 20.start
 ^^^^^^^^
@@ -1716,7 +1741,7 @@ stop命令来停止容器。
 停止已经处于运行状态的容器，但不删除它。通过docker-compose
 start可以再次启动这些容器。
 
-选项包括-t，–timeout TIMEOUT：停止容器时候的超时（默认为10秒）。
+选项包括-t，--timeout TIMEOUT：停止容器时候的超时（默认为10秒）。
 
 22.top
 ^^^^^^
@@ -1757,19 +1782,19 @@ up将会尝试停止容器，然后重新创建（保持使用volumes-from挂载
 
 ::
 
-   ·-d：在后台运行服务容器；
-   ·--no-color：不使用颜色来区分不同的服务的控制台输出；
-   ·--no-deps：不启动服务所链接的容器；
-   ·--force-recreate：强制重新创建容器，不能与--no-recreate同时使用；
-   ·--no-recreate：如果容器已经存在了，则不重新创建，不能与--force-recreate同时使用；
+    ·-d：在后台运行服务容器；
+    ·--no-color：不使用颜色来区分不同的服务的控制台输出；
+    ·--no-deps：不启动服务所链接的容器；
+    ·--force-recreate：强制重新创建容器，不能与--no-recreate同时使用；
+    ·--no-recreate：如果容器已经存在了，则不重新创建，不能与--force-recreate同时使用；
 
-   ·--no-build：不自动构建缺失的服务镜像；
-   ·--abort-on-container-exit：当有容器停止时中止整个服务，与-d选项冲突。
+    ·--no-build：不自动构建缺失的服务镜像；
+    ·--abort-on-container-exit：当有容器停止时中止整个服务，与-d选项冲突。
 
-   ·-t，--timeout TIMEOUT：停止容器时候的超时（默认为10秒），与-d选项冲突；
-   ·--remove-orphans：删除服务中未定义的孤儿容器；
-   ·--exit-code-from SERVICE：退出时返回指定服务容器的退出符；
-   ·--scale SERVICE=NUM：扩展指定服务实例到指定数目。
+    ·-t，--timeout TIMEOUT：停止容器时候的超时（默认为10秒），与-d选项冲突；
+    ·--remove-orphans：删除服务中未定义的孤儿容器；
+    ·--exit-code-from SERVICE：退出时返回指定服务容器的退出符；
+    ·--scale SERVICE=NUM：扩展指定服务实例到指定数目。
 
 25.version
 ^^^^^^^^^^
@@ -1778,6 +1803,11 @@ up将会尝试停止容器，然后重新创建（保持使用volumes-from挂载
 
 打印版本信息。
 
+docker-compose.yml文件配置项
+----------------------------
+
+https://docs.docker.com/compose/compose-file/#reference-and-guidelines
+
 Compose环境变量
 ---------------
 
@@ -1785,14 +1815,15 @@ Compose环境变量
 
 表24-3　Compose环境变量
 
-|image4|
+.. figure:: ../_static/docker_compose_env00001.png
+   :alt: 
 
 Compose应用案例一：Web负载均衡
 ------------------------------
 
 负载均衡器+Web应用是十分经典的应用结构。下面，笔者将创建一个该结构的Web项目：一个Haproxy作为负载均衡器，后端挂载三个Web容器。
 
-首先创建一个haproxy_web目录，作为项目工作目录，并在其中分别创建两个子目录：web和haproxy。
+首先创建一个haproxy\_web目录，作为项目工作目录，并在其中分别创建两个子目录：web和haproxy。
 
 1.web子目录
 ~~~~~~~~~~~
@@ -1805,70 +1836,70 @@ Compose应用案例一：Web负载均衡
 
 .. code:: shell
 
-   #!/usr/bin/python
-   #authors: yeasy.github.com
-   import sys
-   import BaseHTTPServer
-   from SimpleHTTPServer import SimpleHTTPRequestHandler
-   import socket
-   import fcntl
-   import struct
-   import pickle
-   from datetime import datetime
-   from collections import OrderedDict
-   class HandlerClass(SimpleHTTPRequestHandler):
-       def get_ip_address(self,ifname):
-           s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-           return socket.inet_ntoa(fcntl.ioctl(
-               s.fileno(),
-               0x8915,  # SIOCGIFADDR
-               struct.pack('256s', ifname[:15])
-           )[20:24])
-       def log_message(self, format, *args):
-           if len(args) < 3 or "200" not in args[1]:
-               return
-           try:
-               request = pickle.load(open("pickle_data.txt","r"))
-           except:
-               request=OrderedDict()
-           time_now = datetime.now()
-           ts = time_now.strftime('%Y-%m-%d %H:%M:%S')
-           server = self.get_ip_address('eth0')
-           host=self.address_string()
-           addr_pair = (host,server)
-           if addr_pair not in request:
-               request[addr_pair]=[1,ts]
-           else:
-               num = request[addr_pair][0]+1
-               del request[addr_pair]
-               request[addr_pair]=[num,ts]
-           file=open("index.html", "w")
-           file.write("<!DOCTYPE html> <html> <body><center><h1><font color=\"blue\" face=\"Georgia, Arial\" size=8><em>HA</em></font> Webpage Visit Results</h1></center>");
-           for pair in request:
-               if pair[0] == host:
-                   guest = "LOCAL: "+pair[0]
-               else:
-                   guest = pair[0]
-               if (time_now-datetime.strptime(request[pair][1],'%Y-%m-%d %H:%M:%S')).seconds < 3:
-                   file.write("<p style=\"font-size:150%\" >#"+ str(request[pair][1]) +": <font color=\"red\">"+str(request[pair][0])+ "</font> requests " + "from &lt<font color=\"blue\">"+guest+"</font>&gt to WebServer &lt<font color=\"blue\">"+pair[1]+"</font>&gt</p>")
-               else:
-                   file.write("<p style=\"font-size:150%\" >#"+ str(request[pair][1]) +": <font color=\"maroon\">"+str(request[pair][0])+ "</font> requests " + "from &lt<font color=\"navy\">"+guest+"</font>&gt to WebServer &lt<font color=\"navy\">"+pair[1]+"</font>&gt</p>")
-           file.write("</body> </html>");
-           file.close()
-           pickle.dump(request,open("pickle_data.txt","w"))
-   if __name__ == '__main__':
-       try:
-           ServerClass  = BaseHTTPServer.HTTPServer
-           Protocol     = "HTTP/1.0"
-           addr = len(sys.argv) < 2 and "0.0.0.0" or sys.argv[1]
-           port = len(sys.argv) < 3 and 80 or int(sys.argv[2])
-           HandlerClass.protocol_version = Protocol
-           httpd = ServerClass((addr, port), HandlerClass)
-           sa = httpd.socket.getsockname()
-           print "Serving HTTP on", sa[0], "port", sa[1], "..."
-           httpd.serve_forever()
-       except:
-           exit()
+    #!/usr/bin/python
+    #authors: yeasy.github.com
+    import sys
+    import BaseHTTPServer
+    from SimpleHTTPServer import SimpleHTTPRequestHandler
+    import socket
+    import fcntl
+    import struct
+    import pickle
+    from datetime import datetime
+    from collections import OrderedDict
+    class HandlerClass(SimpleHTTPRequestHandler):
+        def get_ip_address(self,ifname):
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            return socket.inet_ntoa(fcntl.ioctl(
+                s.fileno(),
+                0x8915,  # SIOCGIFADDR
+                struct.pack('256s', ifname[:15])
+            )[20:24])
+        def log_message(self, format, *args):
+            if len(args) < 3 or "200" not in args[1]:
+                return
+            try:
+                request = pickle.load(open("pickle_data.txt","r"))
+            except:
+                request=OrderedDict()
+            time_now = datetime.now()
+            ts = time_now.strftime('%Y-%m-%d %H:%M:%S')
+            server = self.get_ip_address('eth0')
+            host=self.address_string()
+            addr_pair = (host,server)
+            if addr_pair not in request:
+                request[addr_pair]=[1,ts]
+            else:
+                num = request[addr_pair][0]+1
+                del request[addr_pair]
+                request[addr_pair]=[num,ts]
+            file=open("index.html", "w")
+            file.write("<!DOCTYPE html> <html> <body><center><h1><font color=\"blue\" face=\"Georgia, Arial\" size=8><em>HA</em></font> Webpage Visit Results</h1></center>");
+            for pair in request:
+                if pair[0] == host:
+                    guest = "LOCAL: "+pair[0]
+                else:
+                    guest = pair[0]
+                if (time_now-datetime.strptime(request[pair][1],'%Y-%m-%d %H:%M:%S')).seconds < 3:
+                    file.write("<p style=\"font-size:150%\" >#"+ str(request[pair][1]) +": <font color=\"red\">"+str(request[pair][0])+ "</font> requests " + "from &lt<font color=\"blue\">"+guest+"</font>&gt to WebServer &lt<font color=\"blue\">"+pair[1]+"</font>&gt</p>")
+                else:
+                    file.write("<p style=\"font-size:150%\" >#"+ str(request[pair][1]) +": <font color=\"maroon\">"+str(request[pair][0])+ "</font> requests " + "from &lt<font color=\"navy\">"+guest+"</font>&gt to WebServer &lt<font color=\"navy\">"+pair[1]+"</font>&gt</p>")
+            file.write("</body> </html>");
+            file.close()
+            pickle.dump(request,open("pickle_data.txt","w"))
+    if __name__ == '__main__':
+        try:
+            ServerClass  = BaseHTTPServer.HTTPServer
+            Protocol     = "HTTP/1.0"
+            addr = len(sys.argv) < 2 and "0.0.0.0" or sys.argv[1]
+            port = len(sys.argv) < 3 and 80 or int(sys.argv[2])
+            HandlerClass.protocol_version = Protocol
+            httpd = ServerClass((addr, port), HandlerClass)
+            sa = httpd.socket.getsockname()
+            print "Serving HTTP on", sa[0], "port", sa[1], "..."
+            httpd.serve_forever()
+        except:
+            exit()
 
 --------------
 
@@ -1878,7 +1909,7 @@ Compose应用案例一：Web负载均衡
 
 ::
 
-   $ touch index.html
+    $ touch index.html
 
 --------------
 
@@ -1888,11 +1919,11 @@ Compose应用案例一：Web负载均衡
 
 .. code:: shell
 
-   FROM python:2.7
-   WORKDIR /code
-   ADD . /code
-   EXPOSE 80
-   CMD python index.py
+    FROM python:2.7
+    WORKDIR /code
+    ADD . /code
+    EXPOSE 80
+    CMD python index.py
 
 --------------
 
@@ -1905,99 +1936,99 @@ Compose应用案例一：Web负载均衡
 
 .. code:: shell
 
-   global
-       log 127.0.0.1 local0
-       log 127.0.0.1 local1 notice
-       maxconn 4096
-   defaults
-       log global
-       mode http
-       option httplog
-       option dontlognull
-       timeout connect 5000ms
-       timeout client 50000ms
-       timeout server 50000ms
-   listen stats
-       bind 0.0.0.0:70
-       mode http
-       stats enable
-       stats hide-version
-       stats scope .
-       stats realm Haproxy\ Statistics
-       stats uri /
-       stats auth user:pass
-   frontend balancer
-       bind 0.0.0.0:80
-       mode http
-       default_backend web_backends
-   backend web_backends
-       mode http
-       option forwardfor
-       balance roundrobin
-       server weba weba:80 check
-       server webb webb:80 check
-       server webc webc:80 check
-       option httpchk GET /
-       http-check expect status 200
+    global
+        log 127.0.0.1 local0
+        log 127.0.0.1 local1 notice
+        maxconn 4096
+    defaults
+        log global
+        mode http
+        option httplog
+        option dontlognull
+        timeout connect 5000ms
+        timeout client 50000ms
+        timeout server 50000ms
+    listen stats
+        bind 0.0.0.0:70
+        mode http
+        stats enable
+        stats hide-version
+        stats scope .
+        stats realm Haproxy\ Statistics
+        stats uri /
+        stats auth user:pass
+    frontend balancer
+        bind 0.0.0.0:80
+        mode http
+        default_backend web_backends
+    backend web_backends
+        mode http
+        option forwardfor
+        balance roundrobin
+        server weba weba:80 check
+        server webb webb:80 check
+        server webc webc:80 check
+        option httpchk GET /
+        http-check expect status 200
 
 --------------
 
 3.docker-compose.yml
 
-在haproxy_web目录下编写一个docker-compose.yml文件，该文件是Compose使用的主模板文件。其中，指定启动3个Web容器（weba、webb、webc），以及1个haproxy容器：
+在haproxy\_web目录下编写一个docker-compose.yml文件，该文件是Compose使用的主模板文件。其中，指定启动3个Web容器（weba、webb、webc），以及1个haproxy容器：
 
 --------------
 
 .. code:: shell
 
-   # This will start a haproxy and three web services. haproxy will act as a loadbalancer.
-   # Authors: yeasy.github.com
-   weba:
-       build: ./web
-       expose:
-           - 80
-   webb:
-       build: ./web
-       expose:
-           - 80
-   webc:
-       build: ./web
-       expose:
-           - 80
-   haproxy:
-       image: haproxy:1.6
-       volumes:
-           - ./haproxy:/haproxy-override
-           - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-       links:
-           - weba
-           - webb
-           - webc
-       ports:
-           - "80:80"
-           - "70:70"
+    # This will start a haproxy and three web services. haproxy will act as a loadbalancer.
+    # Authors: yeasy.github.com
+    weba:
+        build: ./web
+        expose:
+            - 80
+    webb:
+        build: ./web
+        expose:
+            - 80
+    webc:
+        build: ./web
+        expose:
+            - 80
+    haproxy:
+        image: haproxy:1.6
+        volumes:
+            - ./haproxy:/haproxy-override
+            - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+        links:
+            - weba
+            - webb
+            - webc
+        ports:
+            - "80:80"
+            - "70:70"
 
 --------------
 
 4.运行compose项目
 
-现在haproxy_web目录应该长成下面的样子：
+现在haproxy\_web目录应该长成下面的样子：
 
 --------------
 
 .. code:: shell
 
-   [root@k8s-node1 haproxy_web]# tree -L 3
-   .
-   ├── docker-compose.yml
-   ├── haproxy
-   │   └── haproxy.cfg
-   └── web
-       ├── Dockerfile
-       ├── index.html
-       └── index.py
+    [root@k8s-node1 haproxy_web]# tree -L 3
+    .
+    ├── docker-compose.yml
+    ├── haproxy
+    │   └── haproxy.cfg
+    └── web
+        ├── Dockerfile
+        ├── index.html
+        └── index.py
 
-   2 directories, 5 files
+    2 directories, 5 files
 
 --------------
 
@@ -2008,18 +2039,19 @@ up命令，控制台会整合打印出所有容器的输出信息：
 
 .. code:: shell
 
-   $ sudo docker-compose up
-   Recreating haproxyweb_webb_1...
-   Recreating haproxyweb_webc_1...
-   Recreating composehaproxyweb_weba_1...
-   Recreating composehaproxyweb_haproxy_1...
-   Attaching to composehaproxyweb_webb_1, composehaproxyweb_webc_1, composeha-proxyweb_weba_1, composehaproxyweb_haproxy_1
+    $ sudo docker-compose up
+    Recreating haproxyweb_webb_1...
+    Recreating haproxyweb_webc_1...
+    Recreating composehaproxyweb_weba_1...
+    Recreating composehaproxyweb_haproxy_1...
+    Attaching to composehaproxyweb_webb_1, composehaproxyweb_webc_1, composeha-proxyweb_weba_1, composehaproxyweb_haproxy_1
 
 --------------
 
 此时通过浏览器访问本地的80端口，会获取到页面信息，如图所示。
 
-|image5|
+.. figure:: ../_static/docker_haproxy00001.png
+   :alt: 
 
 图24-1　访问本地80端口
 
@@ -2027,19 +2059,20 @@ up命令，控制台会整合打印出所有容器的输出信息：
 
 访问本地70端口，可以查看到haproxy的统计信息，如图所示。
 
-|image6|
+.. figure:: ../_static/docker_haproxy00002.png
+   :alt: 
 
-查看本地的镜像，会发现Compose自动创建的haproxyweb_weba、haproxyweb_webb、haproxyweb_webc镜像：
+查看本地的镜像，会发现Compose自动创建的haproxyweb\_weba、haproxyweb\_webb、haproxyweb\_webc镜像：
 
 --------------
 
 .. code:: shell
 
-   $ docker images
-   REPOSITORY         TAG         IMAGE ID         CREATED            VIRTUAL SIZE
-   haproxyweb_webb    latest      33d5e6f5e20b     44 minutes ago     675.2 MB
-   haproxyweb_weba    latest      33d5e6f5e20b     44 minutes ago     675.2 MB
-   haproxyweb_webc    latest      33d5e6f5e20b     44 minutes ago     675.2 MB
+    $ docker images
+    REPOSITORY         TAG         IMAGE ID         CREATED            VIRTUAL SIZE
+    haproxyweb_webb    latest      33d5e6f5e20b     44 minutes ago     675.2 MB
+    haproxyweb_weba    latest      33d5e6f5e20b     44 minutes ago     675.2 MB
+    haproxyweb_webc    latest      33d5e6f5e20b     44 minutes ago     675.2 MB
 
 --------------
 
@@ -2052,35 +2085,35 @@ python2.X上会出现一个问题，出现的问题如下：
 
 .. code:: shell
 
-   webb_1     | Traceback (most recent call last):
-   webb_1     |   File "/usr/local/lib/python2.7/SocketServer.py", line 290, in _handle_request_noblock
-   webb_1     |     self.process_request(request, client_address)
-   webb_1     |   File "/usr/local/lib/python2.7/SocketServer.py", line 318, in process_request
-   webb_1     |     self.finish_request(request, client_address)
-   webb_1     |   File "/usr/local/lib/python2.7/SocketServer.py", line 331, in finish_request
-   webb_1     |     self.RequestHandlerClass(request, client_address, self)
-   webb_1     |   File "/usr/local/lib/python2.7/SocketServer.py", line 654, in __init__
-   webb_1     |     self.finish()
-   webb_1     |   File "/usr/local/lib/python2.7/SocketServer.py", line 713, in finish
-   webb_1     |     self.wfile.close()
-   webb_1     |   File "/usr/local/lib/python2.7/socket.py", line 283, in close
-   webb_1     |     self.flush()
-   webb_1     |   File "/usr/local/lib/python2.7/socket.py", line 307, in flush
-   webb_1     |     self._sock.sendall(view[write_offset:write_offset+buffer_size])
-   webb_1     | error: [Errno 32] Broken pipe
+    webb_1     | Traceback (most recent call last):
+    webb_1     |   File "/usr/local/lib/python2.7/SocketServer.py", line 290, in _handle_request_noblock
+    webb_1     |     self.process_request(request, client_address)
+    webb_1     |   File "/usr/local/lib/python2.7/SocketServer.py", line 318, in process_request
+    webb_1     |     self.finish_request(request, client_address)
+    webb_1     |   File "/usr/local/lib/python2.7/SocketServer.py", line 331, in finish_request
+    webb_1     |     self.RequestHandlerClass(request, client_address, self)
+    webb_1     |   File "/usr/local/lib/python2.7/SocketServer.py", line 654, in __init__
+    webb_1     |     self.finish()
+    webb_1     |   File "/usr/local/lib/python2.7/SocketServer.py", line 713, in finish
+    webb_1     |     self.wfile.close()
+    webb_1     |   File "/usr/local/lib/python2.7/socket.py", line 283, in close
+    webb_1     |     self.flush()
+    webb_1     |   File "/usr/local/lib/python2.7/socket.py", line 307, in flush
+    webb_1     |     self._sock.sendall(view[write_offset:write_offset+buffer_size])
+    webb_1     | error: [Errno 32] Broken pipe
 
 为了能够显示一下效果，在网上找了个python3的http服务代码(https://blog.csdn.net/aaa000830/article/details/79579579)替换上面的index.py:
 
 .. code:: python
 
-   #!/usr/bin/python3
-   from wsgiref.simple_server import make_server
-   def application(environ, start_response):
-       start_response('200 OK', [('Content-Type', 'text/html')])
-       return ['<h1>Hello, web!</h1>'.encode()]
+    #!/usr/bin/python3
+    from wsgiref.simple_server import make_server
+    def application(environ, start_response):
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        return ['<h1>Hello, web!</h1>'.encode()]
 
-   httpd = make_server("127.0.0.1",80,application)
-   httpd.serve_forever()
+    httpd = make_server("127.0.0.1",80,application)
+    httpd.serve_forever()
 
 Compose应用案例二：大数据Spark集群
 ----------------------------------
@@ -2099,42 +2132,42 @@ GB多），推荐先下载镜像到本地：
 
 .. code:: bash
 
-   $ docker pull sequenceiq/spark:1.4.0
+    $ docker pull sequenceiq/spark:1.4.0
 
 （1）docker-compose.yml文件
 
-首先新建一个spark_cluster目录，并在其中创建一个docker-compose.yml文件。文件内容如下：
+首先新建一个spark\_cluster目录，并在其中创建一个docker-compose.yml文件。文件内容如下：
 
 .. code:: yaml
 
-   master:
-     image: sequenceiq/spark:1.4.0
-     hostname: master
-     ports:
-       - "4040:4040"
-         - "8042:8042"
-         - "7077:7077"
-         - "8088:8088"
-         - "8080:8080"
-     restart: always
-     deploy:
-       resources:
-         limits:
-           cpus: '0.50'
-           memory: 1024M
-         reservations:
-           cpus: '0.25'
-           memory: 256M
-     command: bash /usr/local/spark/sbin/start-master.sh && ping localhost > /dev/null
-     
-   worker:
-     image: sequenceiq/spark:1.4.0
-     links:
-       - master:master
-     expose:
-       - "8081"
-     restart: always
-     command: bash /usr/local/spark/sbin/start-slave.sh spark://master:7077 && ping localhost >/dev/null
+    master:
+      image: sequenceiq/spark:1.4.0
+      hostname: master
+      ports:
+        - "4040:4040"
+          - "8042:8042"
+          - "7077:7077"
+          - "8088:8088"
+          - "8080:8080"
+      restart: always
+      deploy:
+        resources:
+          limits:
+            cpus: '0.50'
+            memory: 1024M
+          reservations:
+            cpus: '0.25'
+            memory: 256M
+      command: bash /usr/local/spark/sbin/start-master.sh && ping localhost > /dev/null
+      
+    worker:
+      image: sequenceiq/spark:1.4.0
+      links:
+        - master:master
+      expose:
+        - "8081"
+      restart: always
+      command: bash /usr/local/spark/sbin/start-slave.sh spark://master:7077 && ping localhost >/dev/null
 
 docker-compose.yml中定义了两种类型的服务：master和slave。master类型的服务容器将负责管理操作，worker则负责具体处理。
 
@@ -2154,8 +2187,8 @@ master服务映射了好几组端口到本地，分别功能为：
 
 参考文献
 
-`利用Docker Compose 搭建\ Spark 集群 <https://www.baidu.com/link?url=3hLuzRGHWeIvI2SxPNDZlLcW9wLFV1JFi7QE-Hg-1vG-cD_Thcch1KzpY3AsIQ2PIbCYZEH0sNxCikJTW2pN5B4l4gnboqmAF8n6ujGJueVaStvmC2sfT9wkRc3rVGtW&wd=&eqid=8fb8b4530000cff4000000025efc2b95>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`利用Docker *Compose* 搭建\ *Spark 集群* <https://www.baidu.com/link?url=3hLuzRGHWeIvI2SxPNDZlLcW9wLFV1JFi7QE-Hg-1vG-cD_Thcch1KzpY3AsIQ2PIbCYZEH0sNxCikJTW2pN5B4l4gnboqmAF8n6ujGJueVaStvmC2sfT9wkRc3rVGtW&wd=&eqid=8fb8b4530000cff4000000025efc2b95>`__
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Compose应用案例三：一键部署LNMP
 -------------------------------
@@ -2198,11 +2231,3 @@ Compose菜鸟教程 <https://www.runoob.com/docker/docker-compose.html>`__
 在Docker三剑客中，Compose掌管运行时的编排能力，位置十分关键。使用Compose模板文件，用户可以编写包括若干服务的一个模板文件快速启动服务栈；如果分发给他人，也可快速创建一套相同的服务栈。
 
 推荐读者在日常工作中注意使用Compose来编写服务模板，并注意对常见工具栈的模板文件进行积累。
-
-.. |image0| image:: ../_static/docker_compose00001.png
-.. |image1| image:: ../_static/docker_compose_cmd00001.png
-.. |image2| image:: ../_static/docker_compose_cmd_00002.png
-.. |image3| image:: ../_static/docker_compose_cmd00004.png
-.. |image4| image:: ../_static/docker_compose_env00001.png
-.. |image5| image:: ../_static/docker_haproxy00001.png
-.. |image6| image:: ../_static/docker_haproxy00002.png

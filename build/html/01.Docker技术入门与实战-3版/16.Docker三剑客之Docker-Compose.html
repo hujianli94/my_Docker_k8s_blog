@@ -109,14 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="06.Docker数据管理.html">Docker数据管理</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Docker使用网络.html">Docker使用网络</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.使用Dockerfile创建镜像.html">使用Dockerfile创建镜像</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">操作系统</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#ssh">为镜像添加SSH服务</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#web">Web服务与应用</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id25">数据库应用</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id55">分布式处理与大数据平台</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id73">编程开发</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id96">容器与云服务</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id113">容器实战思考</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">实战案例</a></li>
 <li class="toctree-l2"><a class="reference internal" href="10.Docker核心实现技术.html">Docker核心实现技术</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11.配置私有仓库.html">配置私有仓库</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12.安全防护与配置.html">安全防护与配置</a></li>
@@ -125,6 +118,7 @@
 <li class="toctree-l2"><a class="reference internal" href="15.Etcd——高可用的键值数据库.html">Etcd——高可用的键值数据库</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Docker三剑客之Docker-Compose</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">简介</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-compose">Docker Compose常见场景</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id2">安装与卸载</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pip">1.pip安装</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">2.二进制包</a></li>
@@ -137,6 +131,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#id7">Compose命令使用说明如下</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-compose-yml">docker-compose.yml文件配置项</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id8">Compose环境变量</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#compose-web">Compose应用案例一：Web负载均衡</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#web">1.web子目录</a></li>
@@ -144,7 +139,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#compose-spark">Compose应用案例二：大数据Spark集群</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#docker-compose-spark">利用Docker Compose 搭建Spark 集群</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#docker-compose-spark">利用Docker *Compose* 搭建*Spark 集群*</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#compose-lnmp">Compose应用案例三：一键部署LNMP</a></li>
@@ -240,32 +235,34 @@
 <ul class="simple">
 <li><a class="reference internal" href="#dockerdocker-compose" id="id11">Docker三剑客之Docker-Compose</a><ul>
 <li><a class="reference internal" href="#id1" id="id12">简介</a></li>
-<li><a class="reference internal" href="#id2" id="id13">安装与卸载</a><ul>
-<li><a class="reference internal" href="#pip" id="id14">1.pip安装</a></li>
-<li><a class="reference internal" href="#id3" id="id15">2.二进制包</a></li>
-<li><a class="reference internal" href="#id4" id="id16">3.容器中执行</a></li>
-<li><a class="reference internal" href="#id5" id="id17">4.卸载</a></li>
+<li><a class="reference internal" href="#docker-compose" id="id13">Docker Compose常见场景</a></li>
+<li><a class="reference internal" href="#id2" id="id14">安装与卸载</a><ul>
+<li><a class="reference internal" href="#pip" id="id15">1.pip安装</a></li>
+<li><a class="reference internal" href="#id3" id="id16">2.二进制包</a></li>
+<li><a class="reference internal" href="#id4" id="id17">3.容器中执行</a></li>
+<li><a class="reference internal" href="#id5" id="id18">4.卸载</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#compose" id="id18">Compose模板文件</a></li>
-<li><a class="reference internal" href="#id6" id="id19">Compose命令说明</a><ul>
-<li><a class="reference internal" href="#id7" id="id20">Compose命令使用说明如下</a></li>
+<li><a class="reference internal" href="#compose" id="id19">Compose模板文件</a></li>
+<li><a class="reference internal" href="#id6" id="id20">Compose命令说明</a><ul>
+<li><a class="reference internal" href="#id7" id="id21">Compose命令使用说明如下</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id8" id="id21">Compose环境变量</a></li>
-<li><a class="reference internal" href="#compose-web" id="id22">Compose应用案例一：Web负载均衡</a><ul>
-<li><a class="reference internal" href="#web" id="id23">1.web子目录</a></li>
-<li><a class="reference internal" href="#haproxy" id="id24">2.haproxy目录</a></li>
+<li><a class="reference internal" href="#docker-compose-yml" id="id22">docker-compose.yml文件配置项</a></li>
+<li><a class="reference internal" href="#id8" id="id23">Compose环境变量</a></li>
+<li><a class="reference internal" href="#compose-web" id="id24">Compose应用案例一：Web负载均衡</a><ul>
+<li><a class="reference internal" href="#web" id="id25">1.web子目录</a></li>
+<li><a class="reference internal" href="#haproxy" id="id26">2.haproxy目录</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#compose-spark" id="id25">Compose应用案例二：大数据Spark集群</a><ul>
-<li><a class="reference internal" href="#docker-compose-spark" id="id26">利用Docker Compose 搭建Spark 集群</a></li>
+<li><a class="reference internal" href="#compose-spark" id="id27">Compose应用案例二：大数据Spark集群</a><ul>
+<li><a class="reference internal" href="#docker-compose-spark" id="id28">利用Docker *Compose* 搭建*Spark 集群*</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#compose-lnmp" id="id27">Compose应用案例三：一键部署LNMP</a></li>
-<li><a class="reference internal" href="#compose-nginxtomcat" id="id28">Compose应用案例四： 一键部署Nginx代理Tomcat集群</a></li>
-<li><a class="reference internal" href="#id9" id="id29">参考资料</a><ul>
-<li><a class="reference internal" href="#id10" id="id30">本章小结</a></li>
+<li><a class="reference internal" href="#compose-lnmp" id="id29">Compose应用案例三：一键部署LNMP</a></li>
+<li><a class="reference internal" href="#compose-nginxtomcat" id="id30">Compose应用案例四： 一键部署Nginx代理Tomcat集群</a></li>
+<li><a class="reference internal" href="#id9" id="id31">参考资料</a><ul>
+<li><a class="reference internal" href="#id10" id="id32">本章小结</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +273,9 @@
 <h1><a class="toc-backref" href="#id11">Docker三剑客之Docker-Compose</a><a class="headerlink" href="#dockerdocker-compose" title="Permalink to this headline">¶</a></h1>
 <p>Compose项目是Docker官方的开源项目，负责实现对基于Docker容器的多应用服务的快速编排。从功能上看，跟OpenStack中的Heat十分类似。其代码目前在<a class="reference external" href="https://github.com/docker/compose">https://github.com/docker/compose</a>
 上开源。</p>
-<p><img alt="image0" src="../_images/docker_compose00001.png" /></p>
+<div class="figure">
+<img alt="" src="../_images/docker_compose00001.png" />
+</div>
 <div class="section" id="id1">
 <h2><a class="toc-backref" href="#id12">简介</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Compose定位是“定义和运行多个Docker容器的应用”，其前身是开源项目Fig，目前仍然兼容Fig格式的模板文件。</p>
@@ -290,13 +289,30 @@
 <p>Compose项目由Python编写，实现上调用了Docker服务提供的API来对容器进行管理。因此，只要所操作的平台支持Docker
 API，就可以在其上利用Compose来进行编排管理。</p>
 </div>
+<div class="section" id="docker-compose">
+<h2><a class="toc-backref" href="#id13">Docker Compose常见场景</a><a class="headerlink" href="#docker-compose" title="Permalink to this headline">¶</a></h2>
+<p>（1）开发或本地环境运行多个服务。</p>
+<p>Compose命令行工具可用于创建环境并与之交互。比如通过Compose文件，配置所有应用程序的服务依赖（数据库、消息队列、高速缓存、Web服务的API等），然后使用单个命令（docker-compose
+up）为每个依赖项创建和启动一个或多个容器，使整个程序能够正常运行起来。</p>
+<p>（2）自动化测试环境。任何持续部署或持续集成过程的一个重要部分都是自动化测试套件。自动化端到端测试需要一个运行测试的环境。Compose提供了一种方便的方法来创建和销毁隔离的测试环境。我们只需要通过Compose文件即可定义完整环境，并且可以在几个命令中创建和销毁这些环境。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 执行compose启动命令</span>
+<span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span> <span class="o">-</span><span class="n">d</span>
+
+<span class="c1"># 执行自动化测试脚本</span>
+<span class="o">./</span><span class="n">run_tests</span>
+
+<span class="c1"># 执行compose销毁命令</span>
+<span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">down</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="id2">
-<h2><a class="toc-backref" href="#id13">安装与卸载</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">安装与卸载</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>Compose目前支持Linux和Mac
 OS平台，两者的安装过程大同小异。安装Compose之前，要先安装Docker引擎，请参考第一部分中章节，在此不再赘述。</p>
 <p>Compose可以通过Python的pip工具进行安装，可以直接下载编译好的二进制文件使用，甚至直接运行在Docker容器中。前两种方式是传统方式，适合本地环境下安装使用；最后一种方式则不破坏系统环境，更适合云计算场景。</p>
 <div class="section" id="pip">
-<h3><a class="toc-backref" href="#id14">1.pip安装</a><a class="headerlink" href="#pip" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">1.pip安装</a><a class="headerlink" href="#pip" title="Permalink to this headline">¶</a></h3>
 <p>这种方式是将Compose当作一个Python应用从PyPI源中安装。</p>
 <p>执行安装命令：</p>
 <hr class="docutils" />
@@ -375,7 +391,7 @@ Commands:
 </div>
 <hr class="docutils" />
 <div class="section" id="id3">
-<h3><a class="toc-backref" href="#id15">2.二进制包</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">2.二进制包</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>官方定义编译好二进制包，供大家使用。这些发布的二进制包可以在<a class="reference external" href="https://github.com/docker/compose/releases">https://github.com/docker/compose/releases</a>
 页面找到。</p>
 <p>将这些二进制文件下载后直接放到执行路径下，并添加执行权限即可。例如，在Linux平台上：</p>
@@ -400,7 +416,7 @@ OpenSSL version: OpenSSL 1.0.2g  1 Mar 2016
 <a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12377113.html">centos7安装docker-compose</a></p>
 </div>
 <div class="section" id="id4">
-<h3><a class="toc-backref" href="#id16">3.容器中执行</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">3.容器中执行</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>Compose既然是一个Python应用，自然也可以直接用容器来执行它：</p>
 <hr class="docutils" />
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl -L https://github.com/docker/compose/releases/download/1.19.0/run.sh &gt; /usr/local/bin/docker-compose
@@ -450,7 +466,7 @@ exec docker run --rm $DOCKER_RUN_OPTIONS $DOCKER_ADDR $COMPOSE_OPTIONS $VOLUMES 
 <p>可以看到，它其实是下载了docker/compose镜像并运行。</p>
 </div>
 <div class="section" id="id5">
-<h3><a class="toc-backref" href="#id17">4.卸载</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">4.卸载</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>如果是二进制包方式安装的，删除二进制文件即可：</p>
 <hr class="docutils" />
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo rm /usr/local/bin/docker-compose
@@ -465,7 +481,7 @@ exec docker run --rm $DOCKER_RUN_OPTIONS $DOCKER_ADDR $COMPOSE_OPTIONS $VOLUMES 
 </div>
 </div>
 <div class="section" id="compose">
-<h2><a class="toc-backref" href="#id18">Compose模板文件</a><a class="headerlink" href="#compose" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">Compose模板文件</a><a class="headerlink" href="#compose" title="Permalink to this headline">¶</a></h2>
 <p>模板文件是使用Compose的核心，涉及的指令关键字也比较多。但大家不用担心，这里的大部分指令与docker[container]create|run相关参数的含义都是类似的。</p>
 <p>默认的模板文件名称为docker-compose.yml，格式为YAML格式，目前最新的版本为v3。</p>
 <p>版本1的Compose文件结构十分简单，每个顶级元素为服务名称，次级元素为服务容器的配置信息，例如：</p>
@@ -482,7 +498,7 @@ exec docker run --rm $DOCKER_RUN_OPTIONS $DOCKER_ADDR $COMPOSE_OPTIONS $VOLUMES 
 <p>版本2和3扩展了Compose的语法，同时尽量保持跟旧版本的兼容，除了可以声明网络和存储信息外，最大的不同一是添加了版本信息，另一个是需要将所有的服务放到services根下面。</p>
 <p>例如，上面例子改写为版本3，并启用资源限制，内容如下：</p>
 <hr class="docutils" />
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span><span class="s2">&quot;3&quot;</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span><span class="s2">&quot;3&quot;</span>
 <span class="n">services</span><span class="p">:</span>
     <span class="n">webapp</span><span class="p">:</span>
         <span class="n">image</span><span class="p">:</span> <span class="n">examples</span><span class="o">/</span><span class="n">web</span>
@@ -509,8 +525,12 @@ exec docker run --rm $DOCKER_RUN_OPTIONS $DOCKER_ADDR $COMPOSE_OPTIONS $VOLUMES 
 <p>如果使用build指令，在Dockerfile中设置的选项（例如：CMD、EXPOSE、VOLUME、ENV等）将会自动被获取，无须在docker-compose.yml中再次设置。</p>
 <p>命令列表参见表24-1。</p>
 <p>表24-1　Compose模板文件主要命令</p>
-<p><img alt="image1" src="../_images/docker_compose_cmd00001.png" /></p>
-<p><img alt="image2" src="../_images/docker_compose_cmd_00002.png" /></p>
+<div class="figure">
+<img alt="" src="../_images/docker_compose_cmd00001.png" />
+</div>
+<div class="figure">
+<img alt="" src="../_images/docker_compose_cmd_00002.png" />
+</div>
 <p>下面介绍部分指令的用法。</p>
 <p>1.build</p>
 <p>指定Dockerfile所在文件夹的路径（可以是绝对路径，或者相对docker-compose.yml文件的路径）。Compose将会利用它自动构建应用镜像，然后使用这个镜像，例如：</p>
@@ -1205,7 +1225,7 @@ docker-compose up则会启动一个mongo：2.8镜像的容器。</p>
 </div>
 </div>
 <div class="section" id="id6">
-<h2><a class="toc-backref" href="#id19">Compose命令说明</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id20">Compose命令说明</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>对于Compose来说，大部分命令的对象既可以是项目本身，也可以指定为项目中的服务或者容器。如果没有特别的说明，命令对象将是项目，这意味着项目中所有的服务都会受到命令影响。</p>
 <p>执行docker-compose[COMMAND]–help或者docker-compose
 help[COMMAND]可以查看具体某个命令的使用格式。</p>
@@ -1243,12 +1263,14 @@ help[COMMAND]可以查看具体某个命令的使用格式。</p>
 </div>
 <p>命令列表见表24-2。</p>
 <p>表24-2　Compose命令</p>
-<p><img alt="image3" src="../_images/docker_compose_cmd00004.png" /></p>
+<div class="figure">
+<img alt="" src="../_images/docker_compose_cmd00004.png" />
+</div>
 <div class="section" id="id7">
-<h3><a class="toc-backref" href="#id20">Compose命令使用说明如下</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">Compose命令使用说明如下</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="build">
 <h4>1.build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h4>
-<p>格式为docker-compose build[options][SERVICE…]。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span> <span class="pre">[options]</span> <span class="pre">[SERVICE...]</span></code>。</p>
 <p>构建（重新构建）项目中的服务容器。</p>
 <p>服务容器一旦构建后，将会带上一个标记名，例如对于Web项目中的一个db容器，可能是web_db。</p>
 <p>可以随时在项目目录下运行docker-compose build来重新构建服务。</p>
@@ -1263,7 +1285,7 @@ help[COMMAND]可以查看具体某个命令的使用格式。</p>
 </div>
 <div class="section" id="bundle">
 <h4>2.bundle<a class="headerlink" href="#bundle" title="Permalink to this headline">¶</a></h4>
-<p>格式为docker-compose bundle[options]。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">bundle</span> <span class="pre">[options]</span></code>。</p>
 <p>创建一个可分发（Distributed Application
 Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可以利用该文件启动服务栈。</p>
 <p>支持选项包括：</p>
@@ -1274,7 +1296,7 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 </div>
 <div class="section" id="config">
 <h4>3.config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h4>
-<p>格式为docker-compose config[options]。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">config</span> <span class="pre">[options]</span></code>。</p>
 <p>校验和查看Compose文件的配置信息。</p>
 <p>支持选项包括：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·-resolve-image-digests：为镜像添加对应的摘要信息；
@@ -1286,7 +1308,7 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 </div>
 <div class="section" id="down">
 <h4>4.down<a class="headerlink" href="#down" title="Permalink to this headline">¶</a></h4>
-<p>格式为docker-compose down[options]。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">down</span> <span class="pre">[options]</span></code>。</p>
 <p>停止服务栈，并删除相关资源，包括容器、挂载卷、网络、创建镜像等。</p>
 <p>默认情况下只清除所创建的容器和网络资源。</p>
 <p>支持选项包括：</p>
@@ -1299,13 +1321,13 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 </div>
 <div class="section" id="events">
 <h4>5.events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h4>
-<p>格式为docker-compose events[options][SERVICE…]。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">events</span> <span class="pre">[options]</span> <span class="pre">[SERVICE...]</span></code>。</p>
 <p>实时监控容器的事件信息。</p>
 <p>支持选项包括-json：以Json对象流格式输出事件信息。</p>
 </div>
 <div class="section" id="exec">
 <h4>6.exec<a class="headerlink" href="#exec" title="Permalink to this headline">¶</a></h4>
-<p>格式为docker-compose exec[options][-e KEY=VAL…]SERVICE COMMAND[ARGS…]。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">exec</span> <span class="pre">[options]</span> <span class="pre">[-e</span> <span class="pre">KEY=VAL...]</span> <span class="pre">SERVICE</span> <span class="pre">COMMAND[ARGS...]</span></code>。</p>
 <p>在一个运行中的容器内执行给定命令。</p>
 <p>支持选项包括：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·-d：在后台运行命令；
@@ -1518,18 +1540,24 @@ up将会尝试停止容器，然后重新创建（保持使用volumes-from挂载
 </div>
 </div>
 </div>
+<div class="section" id="docker-compose-yml">
+<h2><a class="toc-backref" href="#id22">docker-compose.yml文件配置项</a><a class="headerlink" href="#docker-compose-yml" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://docs.docker.com/compose/compose-file/#reference-and-guidelines">https://docs.docker.com/compose/compose-file/#reference-and-guidelines</a></p>
+</div>
 <div class="section" id="id8">
-<h2><a class="toc-backref" href="#id21">Compose环境变量</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">Compose环境变量</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <p>环境变量可以用来配置Compose的行为，参见表24-3。</p>
 <p>表24-3　Compose环境变量</p>
-<p><img alt="image4" src="../_images/docker_compose_env00001.png" /></p>
+<div class="figure">
+<img alt="" src="../_images/docker_compose_env00001.png" />
+</div>
 </div>
 <div class="section" id="compose-web">
-<h2><a class="toc-backref" href="#id22">Compose应用案例一：Web负载均衡</a><a class="headerlink" href="#compose-web" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id24">Compose应用案例一：Web负载均衡</a><a class="headerlink" href="#compose-web" title="Permalink to this headline">¶</a></h2>
 <p>负载均衡器+Web应用是十分经典的应用结构。下面，笔者将创建一个该结构的Web项目：一个Haproxy作为负载均衡器，后端挂载三个Web容器。</p>
 <p>首先创建一个haproxy_web目录，作为项目工作目录，并在其中分别创建两个子目录：web和haproxy。</p>
 <div class="section" id="web">
-<h3><a class="toc-backref" href="#id23">1.web子目录</a><a class="headerlink" href="#web" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">1.web子目录</a><a class="headerlink" href="#web" title="Permalink to this headline">¶</a></h3>
 <p>在web子目录下将放置所需Web应用代码和Dockerfile，一会将生成需要的Web镜像。</p>
 <p>这里用Python程序来实现一个简单的Web应用，该应用能响应HTTP请求，返回的页面将打印出访问者的IP和响应请求的后端容器的IP。</p>
 <p>编写一个index.py作为服务器文件，代码为：</p>
@@ -1618,7 +1646,7 @@ up将会尝试停止容器，然后重新创建（保持使用volumes-from挂载
 </div>
 <hr class="docutils" />
 <div class="section" id="haproxy">
-<h3><a class="toc-backref" href="#id24">2.haproxy目录</a><a class="headerlink" href="#haproxy" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id26">2.haproxy目录</a><a class="headerlink" href="#haproxy" title="Permalink to this headline">¶</a></h3>
 <p>该目录将配置haproxy镜像。在其中生成一个haproxy.cfg文件，内容为：</p>
 <hr class="docutils" />
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">global</span>
@@ -1720,11 +1748,15 @@ Attaching to composehaproxyweb_webb_1, composehaproxyweb_webc_1, composeha-proxy
 </div>
 <hr class="docutils" />
 <p>此时通过浏览器访问本地的80端口，会获取到页面信息，如图所示。</p>
-<p><img alt="image5" src="../_images/docker_haproxy00001.png" /></p>
+<div class="figure">
+<img alt="" src="../_images/docker_haproxy00001.png" />
+</div>
 <p>图24-1　访问本地80端口</p>
 <p>经过haproxy自动转发到后端的某个Web容器上，刷新页面，可以观察到访问的容器地址的变化。</p>
 <p>访问本地70端口，可以查看到haproxy的统计信息，如图所示。</p>
-<p><img alt="image6" src="../_images/docker_haproxy00002.png" /></p>
+<div class="figure">
+<img alt="" src="../_images/docker_haproxy00002.png" />
+</div>
 <p>查看本地的镜像，会发现Compose自动创建的haproxyweb_weba、haproxyweb_webb、haproxyweb_webc镜像：</p>
 <hr class="docutils" />
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker images
@@ -1771,7 +1803,7 @@ haproxyweb_webc    latest      33d5e6f5e20b     44 minutes ago     675.2 MB
 </div>
 </div>
 <div class="section" id="compose-spark">
-<h2><a class="toc-backref" href="#id25">Compose应用案例二：大数据Spark集群</a><a class="headerlink" href="#compose-spark" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id27">Compose应用案例二：大数据Spark集群</a><a class="headerlink" href="#compose-spark" title="Permalink to this headline">¶</a></h2>
 <p>Spark是Berkeley开发的分布式计算的框架，相对于Hadoop来说，Spark可以缓存中间结果到内存而提高某些需要迭代的计算场景的效率，目前收到广泛关注。</p>
 <p>熟悉Hadoop的同学也不必担心，Spark很多设计理念和用法都跟Hadoop保持一致和相似，并且在使用上完全兼容HDFS。但是Spark的安装并不容易，依赖包括Java、Scala、HDFS等。</p>
 <p>通过使用Docker
@@ -1824,21 +1856,21 @@ GB多），推荐先下载镜像到本地：</p>
 <p>·8088：Hadoop集群的整体监控界面</p>
 <p>参考文献</p>
 <div class="section" id="docker-compose-spark">
-<h3><a class="reference external" href="https://www.baidu.com/link?url=3hLuzRGHWeIvI2SxPNDZlLcW9wLFV1JFi7QE-Hg-1vG-cD_Thcch1KzpY3AsIQ2PIbCYZEH0sNxCikJTW2pN5B4l4gnboqmAF8n6ujGJueVaStvmC2sfT9wkRc3rVGtW&amp;wd=&amp;eqid=8fb8b4530000cff4000000025efc2b95">利用Docker Compose 搭建Spark 集群</a><a class="headerlink" href="#docker-compose-spark" title="Permalink to this headline">¶</a></h3>
+<h3><a class="reference external" href="https://www.baidu.com/link?url=3hLuzRGHWeIvI2SxPNDZlLcW9wLFV1JFi7QE-Hg-1vG-cD_Thcch1KzpY3AsIQ2PIbCYZEH0sNxCikJTW2pN5B4l4gnboqmAF8n6ujGJueVaStvmC2sfT9wkRc3rVGtW&amp;wd=&amp;eqid=8fb8b4530000cff4000000025efc2b95">利用Docker *Compose* 搭建*Spark 集群*</a><a class="headerlink" href="#docker-compose-spark" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 <div class="section" id="compose-lnmp">
-<h2><a class="toc-backref" href="#id27">Compose应用案例三：一键部署LNMP</a><a class="headerlink" href="#compose-lnmp" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id29">Compose应用案例三：一键部署LNMP</a><a class="headerlink" href="#compose-lnmp" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/9843930.html">https://www.cnblogs.com/xiangsikai/p/9843930.html</a></p>
 </div>
 <div class="section" id="compose-nginxtomcat">
-<h2><a class="toc-backref" href="#id28">Compose应用案例四： 一键部署Nginx代理Tomcat集群</a><a class="headerlink" href="#compose-nginxtomcat" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id30">Compose应用案例四： 一键部署Nginx代理Tomcat集群</a><a class="headerlink" href="#compose-nginxtomcat" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/9850425.html">https://www.cnblogs.com/xiangsikai/p/9850425.html</a></p>
 <p>## Compose应用案例五： 一键部署多节点爬虫程序</p>
 <p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/9850945.html">https://www.cnblogs.com/xiangsikai/p/9850945.html</a></p>
 </div>
 <div class="section" id="id9">
-<h2><a class="toc-backref" href="#id29">参考资料</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id31">参考资料</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://blog.csdn.net/luanpeng825485697/article/details/102620131">https://blog.csdn.net/luanpeng825485697/article/details/102620131</a></p>
 <p><a class="reference external" href="https://docs.docker.com/compose/install/">https://docs.docker.com/compose/install/</a></p>
 <p><a class="reference external" href="https://www.ctolib.com/topics-141386.html">https://www.ctolib.com/topics-141386.html</a></p>
@@ -1849,7 +1881,7 @@ Compose菜鸟教程</a></p>
 <p><a class="reference external" href="https://blog.csdn.net/qq_36148847/article/details/79427878">docker-compose.yml
 配置文件编写详解</a></p>
 <div class="section" id="id10">
-<h3><a class="toc-backref" href="#id30">本章小结</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id32">本章小结</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>本章介绍了Docker的官方工具Compose的安装和使用，以及模板文件的语法和命令，并结合两个具体案例展示Compose带来的编排能力。</p>
 <p>在Docker三剑客中，Compose掌管运行时的编排能力，位置十分关键。使用Compose模板文件，用户可以编写包括若干服务的一个模板文件快速启动服务栈；如果分发给他人，也可快速创建一套相同的服务栈。</p>
 <p>推荐读者在日常工作中注意使用Compose来编写服务模板，并注意对常见工具栈的模板文件进行积累。</p>

@@ -28,7 +28,7 @@ Distribution。目前其核心的功能组件仍为负责镜像仓库的管理�
 
 .. code:: shell
 
-   $ docker run -d -p 5000:5000 --restart=always --name registry registry:2
+    $ docker run -d -p 5000:5000 --restart=always --name registry registry:2
 
 --------------
 
@@ -41,11 +41,11 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
 
 .. code:: shell
 
-   $ docker run -d -p 5000:5000 \
-       --restart=always \
-       --name registry \
-       -v /home/user/registry-conf/config.yml:/etc/docker/registry/config.yml \
-       registry:2
+    $ docker run -d -p 5000:5000 \
+        --restart=always \
+        --name registry \
+        -v /home/user/registry-conf/config.yml:/etc/docker/registry/config.yml \
+        registry:2
 
 --------------
 
@@ -57,11 +57,11 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
 
 .. code:: shell
 
-   $ docker run -d -p 5000:5000 \
-       --restart=always \
-       --name registry \
-       -v /opt/data/registry:/var/lib/registry \
-       registry:2
+    $ docker run -d -p 5000:5000 \
+        --restart=always \
+        --name registry \
+        -v /opt/data/registry:/var/lib/registry \
+        registry:2
 
 --------------
 
@@ -76,9 +76,9 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
 
 .. code:: shell
 
-   $ sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
-   $ sudo apt-get update
-   $ sudo apt-get install golang
+    $ sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
+    $ sudo apt-get update
+    $ sudo apt-get install golang
 
 --------------
 
@@ -90,10 +90,10 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
 
 .. code:: shell
 
-   $ mkdir -p $GOPATH/src/github.com/docker/
-   $ cd $GOPATH/src/github.com/docker/
-   $ git clone https://github.com/docker/distribution.git
-   $ cd distribution
+    $ mkdir -p $GOPATH/src/github.com/docker/
+    $ cd $GOPATH/src/github.com/docker/
+    $ git clone https://github.com/docker/distribution.git
+    $ cd distribution
 
 --------------
 
@@ -103,8 +103,8 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
 
 .. code:: shell
 
-   $ cp cmd/registry/config-dev.yml /etc/docker/registry/config.yml
-   $ mkdir -p /var/lib/registry
+    $ cp cmd/registry/config-dev.yml /etc/docker/registry/config.yml
+    $ mkdir -p /var/lib/registry
 
 --------------
 
@@ -114,7 +114,7 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
 
 .. code:: shell
 
-   $ make PREFIX=/go clean binaries
+    $ make PREFIX=/go clean binaries
 
 --------------
 
@@ -124,7 +124,7 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
 
 .. code:: shell
 
-   $ registry serve /etc/docker/registry/config.yml
+    $ registry serve /etc/docker/registry/config.yml
 
 --------------
 
@@ -134,14 +134,14 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
 
 .. code:: shell
 
-   $ curl -i 127.0.0.1:5000/v2/
-   HTTP/1.1 200 OK
-   Content-Length: 2
-   Content-Type: application/json; charset=utf-8
-   Docker-Distribution-Api-Version: registry/2.0
-   X-Content-Type-Options: nosniff
-   Date: Wed, 31 Sep 2016 06:36:10 GMT
-   {}
+    $ curl -i 127.0.0.1:5000/v2/
+    HTTP/1.1 200 OK
+    Content-Length: 2
+    Content-Type: application/json; charset=utf-8
+    Docker-Distribution-Api-Version: registry/2.0
+    X-Content-Type-Options: nosniff
+    Date: Wed, 31 Sep 2016 06:36:10 GMT
+    {}
 
 配置TLS证书
 -----------
@@ -155,8 +155,8 @@ Host都可以把它作为私有仓库使用，只需要在镜像名称前面添�
 
 .. code:: shell
 
-   $ docker tag ubuntu:latest myrepo.com:5000/ubuntu:latest
-   $ docker push myrepo.com:5000/ubuntu:latest
+    $ docker tag ubuntu:latest myrepo.com:5000/ubuntu:latest
+    $ docker push myrepo.com:5000/ubuntu:latest
 
 --------------
 
@@ -166,12 +166,12 @@ Host都可以把它作为私有仓库使用，只需要在镜像名称前面添�
 
 .. code:: shell
 
-   $ docker pull myrepo.com:5000/ubuntu
-   $ docker tag myrepo.com:5000/ubuntu ubuntu
+    $ docker pull myrepo.com:5000/ubuntu
+    $ docker tag myrepo.com:5000/ubuntu ubuntu
 
 --------------
 
-私有仓库需要启用TLS认证，否则会报错。在第一部分中，我们介绍了通过添加DOCKER_OPTS="–insecure-registry
+私有仓库需要启用TLS认证，否则会报错。在第一部分中，我们介绍了通过添加DOCKER\_OPTS="--insecure-registry
 myrepo.com：5000来避免这个问题。在这里将介绍如何获取和生成TLS证书。
 
 1.自行生成证书
@@ -183,8 +183,8 @@ myrepo.com：5000来避免这个问题。在这里将介绍如何获取和生成
 
 .. code:: shell
 
-   $ mkdir -p certs
-   $ openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/myrepo.key -x509 -days 365 -out certs/myrepo.crt
+    $ mkdir -p certs
+    $ openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/myrepo.key -x509 -days 365 -out certs/myrepo.crt
 
 --------------
 
@@ -197,7 +197,7 @@ Host上，注意路径需要跟域名一致，例如：
 
 .. code:: shell
 
-   /etc/docker/certs.d/myrepo.com:5000/ca.crt
+    /etc/docker/certs.d/myrepo.com:5000/ca.crt
 
 --------------
 
@@ -208,28 +208,29 @@ Host上，注意路径需要跟域名一致，例如：
 
 3.启用证书
 
-当拥有秘钥文件和证书文件后，可以配置Registry启用证书支持，主要通过使用REGI-STRY_HTTP_TLS_CERTIFICATE和REGISTRY_HTTP_TLS_KEY参数：
+当拥有秘钥文件和证书文件后，可以配置Registry启用证书支持，主要通过使用REGI-STRY\_HTTP\_TLS\_CERTIFICATE和REGISTRY\_HTTP\_TLS\_KEY参数：
 
 --------------
 
 .. code:: shell
 
-   docker run -d \
-       --restart=always \
-       --name registry \
-       -v 'pwd'/certs:/certs \
-       -e REGISTRY_HTTP_ADDR=0.0.0.0:443 \
-       -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/myrepo.crt \
-       -e REGISTRY_HTTP_TLS_KEY=/certs/myrepo.key \
-       -p 443:443 \
-       registry:2
+    docker run -d \
+        --restart=always \
+        --name registry \
+        -v 'pwd'/certs:/certs \
+        -e REGISTRY_HTTP_ADDR=0.0.0.0:443 \
+        -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/myrepo.crt \
+        -e REGISTRY_HTTP_TLS_KEY=/certs/myrepo.key \
+        -p 443:443 \
+        registry:2
 
 管理访问权限
 ------------
 
 通常在生产场景中，对私有仓库还需要进行访问代理并提供认证和用户管理。
 
-|image0|
+.. figure:: ../_static/docker_acl_00001.png
+   :alt: 
 
 图18-1　Docker Registry v2的认证模式
 
@@ -266,7 +267,7 @@ Service，Docker官方目前并没有放出对应的实现方案，需要自行�
 ·Registry服务和Authentication服务之间通过证书进行Bearer
 token的生成和认证，所以要保证两个服务之间证书的匹配。
 
-除了使用第三方实现的认证服务（如docker_auth、SUSE
+除了使用第三方实现的认证服务（如docker\_auth、SUSE
 Portus等）外，还可以通过Nginx代理方式来配置基于用户名和密码的认证。
 
 2.配置Nginx代理
@@ -279,7 +280,7 @@ Portus等）外，还可以通过Nginx代理方式来配置基于用户名和密
 
 .. code:: shell
 
-   $ sudo apt-get -y install nginx
+    $ sudo apt-get -y install nginx
 
 --------------
 
@@ -291,38 +292,38 @@ Portus等）外，还可以通过Nginx代理方式来配置基于用户名和密
 
 .. code:: shell
 
-   # 本地的registry服务监听在15000端口
-   upstream docker-registry {
-       server localhost:5000;
-   }
-   #代理服务器监听在15000端口
-   server {
-       listen 15000;
-       server_name private-registry-server.com;
-       add_header 'Docker-Distribution-Api-Version' 'registry/2.0' always;
-       # If you have SSL certification files, then can enable this section.
-       ssl on;
-       ssl_certificate /etc/ssl/certs/myrepo.crt;
-       ssl_certificate_key /etc/ssl/private/myrepo.key;
-       proxy_pass                          http://docker-registry;
-       proxy_set_header  Host              \$http_host;   # required for docker client's sake
-       proxy_set_header  X-Real-IP         \$remote_addr; # pass on real client's IP
-       proxy_set_header  X-Forwarded-For   \$proxy_add_x_forwarded_for;
-       proxy_set_header  X-Forwarded-Proto \$scheme;
-       proxy_read_timeout                  600;
-       client_max_body_size 0; # disable any limits to avoid HTTP 413 for large image uploads
-       # required to avoid HTTP 411: see Issue #1486
-       (https://github.com/dotcloud/docker/issues/1486)
-       chunked_transfer_encoding on;
-       location /v2/ {
-           # 禁止旧版本 Docker 访问
-           if (\$http_user_agent ~ "^(docker\/1\.(3|4|5(?!\.[0-9]-dev))|Go ).*\$" ) {
-               return 404;
-           }
-            #配置转发访问请求到registry服务
-            proxy_pass http://docker-registry;
-       }
-   }
+    # 本地的registry服务监听在15000端口
+    upstream docker-registry {
+        server localhost:5000;
+    }
+    #代理服务器监听在15000端口
+    server {
+        listen 15000;
+        server_name private-registry-server.com;
+        add_header 'Docker-Distribution-Api-Version' 'registry/2.0' always;
+        # If you have SSL certification files, then can enable this section.
+        ssl on;
+        ssl_certificate /etc/ssl/certs/myrepo.crt;
+        ssl_certificate_key /etc/ssl/private/myrepo.key;
+        proxy_pass                          http://docker-registry;
+        proxy_set_header  Host              \$http_host;   # required for docker client's sake
+        proxy_set_header  X-Real-IP         \$remote_addr; # pass on real client's IP
+        proxy_set_header  X-Forwarded-For   \$proxy_add_x_forwarded_for;
+        proxy_set_header  X-Forwarded-Proto \$scheme;
+        proxy_read_timeout                  600;
+        client_max_body_size 0; # disable any limits to avoid HTTP 413 for large image uploads
+        # required to avoid HTTP 411: see Issue #1486
+        (https://github.com/dotcloud/docker/issues/1486)
+        chunked_transfer_encoding on;
+        location /v2/ {
+            # 禁止旧版本 Docker 访问
+            if (\$http_user_agent ~ "^(docker\/1\.(3|4|5(?!\.[0-9]-dev))|Go ).*\$" ) {
+                return 404;
+            }
+             #配置转发访问请求到registry服务
+             proxy_pass http://docker-registry;
+        }
+    }
 
 --------------
 
@@ -332,8 +333,8 @@ Portus等）外，还可以通过Nginx代理方式来配置基于用户名和密
 
 .. code:: shell
 
-   $ sudo ln -s /etc/nginx/sites-available/docker-registry.conf /etc/nginx/sites-enabled/docker-registry.conf
-   $ service nginx restart
+    $ sudo ln -s /etc/nginx/sites-available/docker-registry.conf /etc/nginx/sites-enabled/docker-registry.conf
+    $ service nginx restart
 
 --------------
 
@@ -345,8 +346,8 @@ Portus等）外，还可以通过Nginx代理方式来配置基于用户名和密
 
 .. code:: shell
 
-   $ docker tag ubuntu:16.04 127.0.0.1:15000/ubuntu:latest
-   $ docker push 127.0.0.1:15000/ubuntu:latest
+    $ docker tag ubuntu:16.04 127.0.0.1:15000/ubuntu:latest
+    $ docker push 127.0.0.1:15000/ubuntu:latest
 
 --------------
 
@@ -360,18 +361,18 @@ Portus等）外，还可以通过Nginx代理方式来配置基于用户名和密
 
 .. code:: shell
 
-   ...
-   location / {
-           # let Nginx know about our auth file
-           auth_basic              "Please Input username/password";
-           auth_basic_user_file    docker-registry-htpasswd;
-           proxy_pass http://docker-registry;
-       }
     ...
+    location / {
+            # let Nginx know about our auth file
+            auth_basic              "Please Input username/password";
+            auth_basic_user_file    docker-registry-htpasswd;
+            proxy_pass http://docker-registry;
+        }
+     ...
 
 --------------
 
-其中，auth_basic行说明启用认证服务，不通过的请求将无法转发。auth_basic_user_file
+其中，auth\_basic行说明启用认证服务，不通过的请求将无法转发。auth\_basic\_user\_file
 docker-registry-htpasswd；行指定了验证的用户名和密码存储文件为本地（/etc/nginx/下）的docker-registry-htpasswd文件。
 
 docker-registry-htpasswd文件中存储用户名和密码的格式为每行放一个用户名、密码对。例如：
@@ -380,10 +381,10 @@ docker-registry-htpasswd文件中存储用户名和密码的格式为每行放�
 
 .. code:: shell
 
-   ...
-   user1:password1
-   user2:password2
-   ...
+    ...
+    user1:password1
+    user2:password2
+    ...
 
 --------------
 
@@ -395,7 +396,7 @@ docker-registry-htpasswd文件中存储用户名和密码的格式为每行放�
 
 .. code:: shell
 
-   $ sudo aptitude install apache2-utils -y
+    $ sudo aptitude install apache2-utils -y
 
 --------------
 
@@ -407,10 +408,10 @@ docker-registry-htpasswd文件中存储用户名和密码的格式为每行放�
 
 .. code:: shell
 
-   $ sudo htpasswd -c /etc/nginx/docker-registry-htpasswd user1
-   $ New password:
-   $ Re-type new password:
-   $ Adding password for user user1
+    $ sudo htpasswd -c /etc/nginx/docker-registry-htpasswd user1
+    $ New password:
+    $ Re-type new password:
+    $ Adding password for user user1
 
 --------------
 
@@ -422,7 +423,7 @@ docker-registry-htpasswd文件中存储用户名和密码的格式为每行放�
 
 .. code:: shell
 
-   $ sudo service nginx restart
+    $ sudo service nginx restart
 
 --------------
 
@@ -435,7 +436,7 @@ docker-registry-htpasswd文件中存储用户名和密码的格式为每行放�
 
 ::
 
-   $ curl USERNAME:PASSWORD@127.0.0.1:15000/v2/
+    $ curl USERNAME:PASSWORD@127.0.0.1:15000/v2/
 
 --------------
 
@@ -445,9 +446,9 @@ docker-registry-htpasswd文件中存储用户名和密码的格式为每行放�
 
 ::
 
-   REGISTRY_AUTH: htpasswd
-   REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
-   REGISTRY_AUTH_HTPASSWD_REALM: basic
+    REGISTRY_AUTH: htpasswd
+    REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+    REGISTRY_AUTH_HTPASSWD_REALM: basic
 
 --------------
 
@@ -460,21 +461,21 @@ Compose的快速启动Registry的模板：
 
 .. code:: shell
 
-   registry:
-       restart: always
-       image: registry:2.1
-       ports:
-           - 5000:5000
-       environment:
-           REGISTRY_HTTP_TLS_CERTIFICATE: /certs/myrepo.crt
-           REGISTRY_HTTP_TLS_KEY: /certs/myrepo.key
-           REGISTRY_AUTH: htpasswd
-           REGISTRY_AUTH_HTPASSWD_PATH: /auth/docker-registry-htpasswd
-           REGISTRY_AUTH_HTPASSWD_REALM: basic
-       volumes:
-           - /path/to/data:/var/lib/registry
-           - /path/to/certs:/certs
-           - /path/to/auth:/auth
+    registry:
+        restart: always
+        image: registry:2.1
+        ports:
+            - 5000:5000
+        environment:
+            REGISTRY_HTTP_TLS_CERTIFICATE: /certs/myrepo.crt
+            REGISTRY_HTTP_TLS_KEY: /certs/myrepo.key
+            REGISTRY_AUTH: htpasswd
+            REGISTRY_AUTH_HTPASSWD_PATH: /auth/docker-registry-htpasswd
+            REGISTRY_AUTH_HTPASSWD_REALM: basic
+        volumes:
+            - /path/to/data:/var/lib/registry
+            - /path/to/certs:/certs
+            - /path/to/auth:/auth
 
 配置Registry
 ------------
@@ -491,72 +492,72 @@ Registry利用提供了一些样例配置，用户可以直接使用它们进行
 
 .. code:: shell
 
-   version: 0.1
-   log:
-       level: debug
-       fields:
-           service: registry
-           environment: development
-       hooks:
-           - type: mail
-             disabled: true
-             levels:
-               - panic
-             options:
-               smtp:
-                   addr: mail.example.com:25
-                   username: mailuser
-                   password: password
-                   insecure: true
-               from: sender@example.com
-               to:
-                   - errors@example.com
-   storage:
-       delete:
-           enabled: true
-       cache:
-               blobdescriptor: redis
-       filesystem:
-               rootdirectory: /var/lib/registry
-       maintenance:
-               uploadpurging:
-                   enabled: false
-   http:
-       addr: :5000
-       debug:
-           addr: localhost:5001
-       headers:
-           X-Content-Type-Options: [nosniff]
-   redis:
-       addr: localhost:6379
-       pool:
-           maxidle: 16
-           maxactive: 64
-           idletimeout: 300s
-       dialtimeout: 10ms
-       readtimeout: 10ms
-       writetimeout: 10ms
-   notifications:
-       endpoints:
-           - name: local-5003
-             url: http://localhost:5003/callback
-             headers:
-               Authorization: [Bearer <an example token>]
-             timeout: 1s
-             threshold: 10
-             backoff: 1s
-             disabled: true
-           - name: local-8083
-             url: http://localhost:8083/callback
-             timeout: 1s
-             threshold: 10
-             backoff: 1s
-             disabled: true
-   health:
-       storagedriver:
-           enabled: true
-           interval: 10s
-           threshold: 3
+    version: 0.1
+    log:
+        level: debug
+        fields:
+            service: registry
+            environment: development
+        hooks:
+            - type: mail
+              disabled: true
+              levels:
+                - panic
+              options:
+                smtp:
+                    addr: mail.example.com:25
+                    username: mailuser
+                    password: password
+                    insecure: true
+                from: sender@example.com
+                to:
+                    - errors@example.com
+    storage:
+        delete:
+            enabled: true
+        cache:
+                blobdescriptor: redis
+        filesystem:
+                rootdirectory: /var/lib/registry
+        maintenance:
+                uploadpurging:
+                    enabled: false
+    http:
+        addr: :5000
+        debug:
+            addr: localhost:5001
+        headers:
+            X-Content-Type-Options: [nosniff]
+    redis:
+        addr: localhost:6379
+        pool:
+            maxidle: 16
+            maxactive: 64
+            idletimeout: 300s
+        dialtimeout: 10ms
+        readtimeout: 10ms
+        writetimeout: 10ms
+    notifications:
+        endpoints:
+            - name: local-5003
+              url: http://localhost:5003/callback
+              headers:
+                Authorization: [Bearer <an example token>]
+              timeout: 1s
+              threshold: 10
+              backoff: 1s
+              disabled: true
+            - name: local-8083
+              url: http://localhost:8083/callback
+              timeout: 1s
+              threshold: 10
+              backoff: 1s
+              disabled: true
+    health:
+        storagedriver:
+            enabled: true
+            interval: 10s
+            threshold: 3
 
 --------------
 
@@ -571,7 +572,7 @@ Registry利用提供了一些样例配置，用户可以直接使用它们进行
 
 ::
 
-   export LOG_LEVEL=debug
+    export LOG_LEVEL=debug
 
 --------------
 
@@ -583,7 +584,7 @@ Registry利用提供了一些样例配置，用户可以直接使用它们进行
 
 ::
 
-   version: 0.1
+    version: 0.1
 
 --------------
 
@@ -595,12 +596,12 @@ Registry利用提供了一些样例配置，用户可以直接使用它们进行
 
 ::
 
-   log:
-       level: debug
-       formatter: text
-       fields:
-           service: registry
-           environment: staging
+    log:
+        level: debug
+        formatter: text
+        fields:
+            service: registry
+            environment: staging
 
 --------------
 
@@ -620,19 +621,19 @@ Registry利用提供了一些样例配置，用户可以直接使用它们进行
 
 ::
 
-   hooks:
-       - type: mail
-         levels:
-               - panic
-       options:
-           smtp:
-                   addr: smtp.sendhost.com:25
-                   username: sendername
-                   password: password
-                   insecure: true
-               from: name@sendhost.com
-               to:
-                   - name@receivehost.com
+    hooks:
+        - type: mail
+          levels:
+                - panic
+        options:
+            smtp:
+                    addr: smtp.sendhost.com:25
+                    username: sendername
+                    password: password
+                    insecure: true
+                from: name@sendhost.com
+                to:
+                    - name@receivehost.com
 
 --------------
 
@@ -645,69 +646,69 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
 
 ::
 
-   storage:
-       filesystem:
-           rootdirectory: /var/lib/registry
-       azure:
-           accountname: accountname
-           accountkey: base64encodedaccountkey
-           container: containername
-       gcs:
-           bucket: bucketname
-           keyfile: /path/to/keyfile
-           rootdirectory: /gcs/object/name/prefix
-       s3:
-           accesskey: awsaccesskey
-           secretkey: awssecretkey
-           region: us-west-1
-           regionendpoint: http://myobjects.local
-           bucket: bucketname
-           encrypt: true
-           keyid: mykeyid
-           secure: true
-           v4auth: true
-           chunksize: 5242880
-           multipartcopychunksize: 33554432
-           multipartcopymaxconcurrency: 100
-           multipartcopythresholdsize: 33554432
-           rootdirectory: /s3/object/name/prefix
-       swift:
-           username: username
-           password: password
-           authurl: https://storage.myprovider.com/auth/v1.0 or
-               https://storage.myprovider.com/v2.0 or https://storage.myprovider.com/v3/auth
-           tenant: tenantname
-           tenantid: tenantid
-           domain: domain name for Openstack Identity v3 API
-           domainid: domain id for Openstack Identity v3 API
-           insecureskipverify: true
-           region: fr
-           container: containername
-           rootdirectory: /swift/object/name/prefix
-       oss:
-           accesskeyid: accesskeyid
-           accesskeysecret: accesskeysecret
-           region: OSS region name
-           endpoint: optional endpoints
-           internal: optional internal endpoint
-           bucket: OSS bucket
-           encrypt: optional data encryption setting
-           secure: optional ssl setting
-           chunksize: optional size valye
-           rootdirectory: optional root directory
-       inmemory:
-       delete:
-           enabled: false
-       cache:
-           blobdescriptor: inmemory
-       maintenance:
-           uploadpurging:
-               enabled: true
-               age: 168h
-               interval: 24h
-               dryrun: false
-       redirect:
-           disable: false
+    storage:
+        filesystem:
+            rootdirectory: /var/lib/registry
+        azure:
+            accountname: accountname
+            accountkey: base64encodedaccountkey
+            container: containername
+        gcs:
+            bucket: bucketname
+            keyfile: /path/to/keyfile
+            rootdirectory: /gcs/object/name/prefix
+        s3:
+            accesskey: awsaccesskey
+            secretkey: awssecretkey
+            region: us-west-1
+            regionendpoint: http://myobjects.local
+            bucket: bucketname
+            encrypt: true
+            keyid: mykeyid
+            secure: true
+            v4auth: true
+            chunksize: 5242880
+            multipartcopychunksize: 33554432
+            multipartcopymaxconcurrency: 100
+            multipartcopythresholdsize: 33554432
+            rootdirectory: /s3/object/name/prefix
+        swift:
+            username: username
+            password: password
+            authurl: https://storage.myprovider.com/auth/v1.0 or
+                https://storage.myprovider.com/v2.0 or https://storage.myprovider.com/v3/auth
+            tenant: tenantname
+            tenantid: tenantid
+            domain: domain name for Openstack Identity v3 API
+            domainid: domain id for Openstack Identity v3 API
+            insecureskipverify: true
+            region: fr
+            container: containername
+            rootdirectory: /swift/object/name/prefix
+        oss:
+            accesskeyid: accesskeyid
+            accesskeysecret: accesskeysecret
+            region: OSS region name
+            endpoint: optional endpoints
+            internal: optional internal endpoint
+            bucket: OSS bucket
+            encrypt: optional data encryption setting
+            secure: optional ssl setting
+            chunksize: optional size valye
+            rootdirectory: optional root directory
+        inmemory:
+        delete:
+            enabled: false
+        cache:
+            blobdescriptor: inmemory
+        maintenance:
+            uploadpurging:
+                enabled: true
+                age: 168h
+                interval: 24h
+                dryrun: false
+        redirect:
+            disable: false
 
 --------------
 
@@ -727,18 +728,18 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
 
 ::
 
-   auth:
-       silly:
-           realm: silly-realm
-           service: silly-service
-       token:
-           realm: token-realm
-           service: token-service
-           issuer: registry-token-issuer
-           rootcertbundle: /root/certs/bundle
-       htpasswd:
-           realm: basic-realm
-           path: /path/to/htpasswd
+    auth:
+        silly:
+            realm: silly-realm
+            service: silly-service
+        token:
+            realm: token-realm
+            service: token-service
+            issuer: registry-token-issuer
+            rootcertbundle: /root/certs/bundle
+        htpasswd:
+            realm: basic-realm
+            path: /path/to/htpasswd
 
 --------------
 
@@ -758,28 +759,28 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
 
 ::
 
-   http:
-       addr: localhost:5000
-       net: tcp
-       prefix: /my/nested/registry/
-       host: https://myregistryaddress.org:5000
-       secret: asecretforlocaldevelopment
-       relativeurls: false
-       tls:
-           certificate: /path/to/x509/public
-           key: /path/to/x509/private
-           clientcas:
-               - /path/to/ca.pem
-               - /path/to/another/ca.pem
-           letsencrypt:
-               cachefile: /path/to/cache-file
-               email: emailused@letsencrypt.com
-       debug:
-           addr: localhost:5001
-       headers:
-           X-Content-Type-Options: [nosniff]
-       http2:
-           disabled: false
+    http:
+        addr: localhost:5000
+        net: tcp
+        prefix: /my/nested/registry/
+        host: https://myregistryaddress.org:5000
+        secret: asecretforlocaldevelopment
+        relativeurls: false
+        tls:
+            certificate: /path/to/x509/public
+            key: /path/to/x509/private
+            clientcas:
+                - /path/to/ca.pem
+                - /path/to/another/ca.pem
+            letsencrypt:
+                cachefile: /path/to/cache-file
+                email: emailused@letsencrypt.com
+        debug:
+            addr: localhost:5001
+        headers:
+            X-Content-Type-Options: [nosniff]
+        http2:
+            disabled: false
 
 --------------
 
@@ -801,15 +802,15 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
 
 ::
 
-   notifications:
-       endpoints:
-           - name: alistener
-             disabled: false
-             url: https://my.listener.com/event
-             headers: <http.Header>
-             timeout: 500
-             threshold: 5
-             backoff: 1000
+    notifications:
+        endpoints:
+            - name: alistener
+              disabled: false
+              url: https://my.listener.com/event
+              headers: <http.Header>
+              timeout: 500
+              threshold: 5
+              backoff: 1000
 
 --------------
 
@@ -821,17 +822,17 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
 
 ::
 
-   redis:
-       addr: localhost:6379
-       password: asecret
-       db: 0
-       dialtimeout: 10ms
-       readtimeout: 10ms
-       writetimeout: 10ms
-       pool:
-           maxidle: 16
-           maxactive: 64
-           idletimeout: 300s
+    redis:
+        addr: localhost:6379
+        password: asecret
+        db: 0
+        dialtimeout: 10ms
+        readtimeout: 10ms
+        writetimeout: 10ms
+        pool:
+            maxidle: 16
+            maxactive: 64
+            idletimeout: 300s
 
 --------------
 
@@ -843,27 +844,27 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
 
 ::
 
-   health:
-       storagedriver:
-           enabled: true
-           interval: 10s
-           threshold: 3
-       file:
-           - file: /path/to/checked/file
-             interval: 10s
-       http:
-           - uri: http://server.to.check/must/return/200
-             headers:
-               Authorization: [Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==]
-           statuscode: 200
-           timeout: 3s
-           interval: 10s
-           threshold: 3
-       tcp:
-           - addr: redis-server.domain.com:6379
-             timeout: 3s
-             interval: 10s
-             threshold: 3
+    health:
+        storagedriver:
+            enabled: true
+            interval: 10s
+            threshold: 3
+        file:
+            - file: /path/to/checked/file
+              interval: 10s
+        http:
+            - uri: http://server.to.check/must/return/200
+              headers:
+                Authorization: [Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==]
+            statuscode: 200
+            timeout: 3s
+            interval: 10s
+            threshold: 3
+        tcp:
+            - addr: redis-server.domain.com:6379
+              timeout: 3s
+              interval: 10s
+              threshold: 3
 
 --------------
 
@@ -877,10 +878,10 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
 
 ::
 
-   proxy:
-       remoteurl: https://registry-1.docker.io
-       username: [username]
-       password: [password]
+    proxy:
+        remoteurl: https://registry-1.docker.io
+        username: [username]
+        password: [password]
 
 --------------
 
@@ -890,7 +891,7 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
 
 ::
 
-   $ docker --registry-mirror=https://myrepo.com:5000 daemon
+    $ docker --registry-mirror=https://myrepo.com:5000 daemon
 
 --------------
 
@@ -902,14 +903,14 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
 
 ::
 
-   validation:
-       enabled: true
-       manifests:
-           urls:
-               allow:
-                   - ^https?://([^/]+\.)*example\.com/
-               deny:
-                   - ^https?://www\.example\.com/
+    validation:
+        enabled: true
+        manifests:
+            urls:
+                allow:
+                    - ^https?://([^/]+\.)*example\.com/
+                deny:
+                    - ^https?://www\.example\.com/
 
 批量管理镜像
 ------------
@@ -919,52 +920,52 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
 1.批量上传指定镜像
 ~~~~~~~~~~~~~~~~~~
 
-可以使用下面的push_images.sh脚本，批量上传本地的镜像到注册服务器中，默认是本地注册服务器127.0.0.1：5000，用户可以通过修改registry=127.0.0.1：5000这行来指定目标注册服务器：
+可以使用下面的push\_images.sh脚本，批量上传本地的镜像到注册服务器中，默认是本地注册服务器127.0.0.1：5000，用户可以通过修改registry=127.0.0.1：5000这行来指定目标注册服务器：
 
 --------------
 
 ::
 
-   #!/bin/sh
-   # This script will upload the given local images to a registry server ($registry is the default value).
-   # See:
-   https://github.com/yeasy/docker_practice/blob/master/_local/push_images.sh
-   # Usage:  push_images image1 [image2...]
-   # Author: yeasy@github
-   # Create: 2014-09-23
-   #The registry server address where you want push the images into
-   registry=127.0.0.1:5000
-   ### DO NOT MODIFY THE FOLLOWING PART, UNLESS YOU KNOW WHAT IT MEANS ###
-   echo_r () {
-       [ $# -ne 1 ] && return 0
-       echo -e "\033[31m$1\033[0m"
-   }
-   echo_g () {
-       [ $# -ne 1 ] && return 0
-       echo -e "\033[32m$1\033[0m"
-   }
-   echo_y () {
-       [ $# -ne 1 ] && return 0
-       echo -e "\033[33m$1\033[0m"
-   }
-   echo_b () {
-       [ $# -ne 1 ] && return 0
-       echo -e "\033[34m$1\033[0m"
-   }
-   usage() {
-       docker images
-       echo "Usage: $0 registry1:tag1 [registry2:tag2...]"
-   }
-   [ $# -lt 1 ] && usage && exit
-   echo_b "The registry server is $registry"
-   for image in "$@"
-   do
-       echo_b "Uploading $image..."
-       docker tag $image $registry/$image
-       docker push $registry/$image
-       docker rmi $registry/$image
-       echo_g "Done"
-   done
+    #!/bin/sh
+    # This script will upload the given local images to a registry server ($registry is the default value).
+    # See:
+    https://github.com/yeasy/docker_practice/blob/master/_local/push_images.sh
+    # Usage:  push_images image1 [image2...]
+    # Author: yeasy@github
+    # Create: 2014-09-23
+    #The registry server address where you want push the images into
+    registry=127.0.0.1:5000
+    ### DO NOT MODIFY THE FOLLOWING PART, UNLESS YOU KNOW WHAT IT MEANS ###
+    echo_r () {
+        [ $# -ne 1 ] && return 0
+        echo -e "\033[31m$1\033[0m"
+    }
+    echo_g () {
+        [ $# -ne 1 ] && return 0
+        echo -e "\033[32m$1\033[0m"
+    }
+    echo_y () {
+        [ $# -ne 1 ] && return 0
+        echo -e "\033[33m$1\033[0m"
+    }
+    echo_b () {
+        [ $# -ne 1 ] && return 0
+        echo -e "\033[34m$1\033[0m"
+    }
+    usage() {
+        docker images
+        echo "Usage: $0 registry1:tag1 [registry2:tag2...]"
+    }
+    [ $# -lt 1 ] && usage && exit
+    echo_b "The registry server is $registry"
+    for image in "$@"
+    do
+        echo_b "Uploading $image..."
+        docker tag $image $registry/$image
+        docker push $registry/$image
+        docker rmi $registry/$image
+        echo_g "Done"
+    done
 
 --------------
 
@@ -974,7 +975,7 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
 
 ::
 
-   $ sudo chmod a+x /usr/local/bin/push_images.sh
+    $ sudo chmod a+x /usr/local/bin/push_images.sh
 
 --------------
 
@@ -984,34 +985,34 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
 
 ::
 
-   $ ./push_images.sh ubuntu:latest centos:centos7
-   The registry server is 127.0.0.1
-   Uploading ubuntu:latest...
-   The push refers to a repository [127.0.0.1:5000/ubuntu] (len: 1)
-   Sending image list
-   Pushing repository 127.0.0.1:5000/ubuntu (1 tags)
-   Image 511136ea3c5a already pushed, skipping
-   Image bfb8b5a2ad34 already pushed, skipping
-   Image c1f3bdbd8355 already pushed, skipping
-   Image 897578f527ae already pushed, skipping
-   Image 9387bcc9826e already pushed, skipping
-   Image 809ed259f845 already pushed, skipping
-   Image 96864a7d2df3 already pushed, skipping
-   Pushing tag for rev [96864a7d2df3] on
-       {http://127.0.0.1:5000/v1/repositories/ubuntu/ tags/latest}
-   Untagged: 127.0.0.1:5000/ubuntu:latest
-   Done
-   Uploading centos:centos7...
-   The push refers to a repository [127.0.0.1:5000/centos] (len: 1)
-   Sending image list
-   Pushing repository 127.0.0.1:5000/centos (1 tags)
-   Image 511136ea3c5a already pushed, skipping
-   34e94e67e63a: Image successfully pushed
-   70214e5d0a90: Image successfully pushed
-   Pushing tag for rev [70214e5d0a90] on
-       {http://127.0.0.1:5000/v1/repositories/centos/ tags/centos7}
-   Untagged: 127.0.0.1:5000/centos:centos7
-   Done
+    $ ./push_images.sh ubuntu:latest centos:centos7
+    The registry server is 127.0.0.1
+    Uploading ubuntu:latest...
+    The push refers to a repository [127.0.0.1:5000/ubuntu] (len: 1)
+    Sending image list
+    Pushing repository 127.0.0.1:5000/ubuntu (1 tags)
+    Image 511136ea3c5a already pushed, skipping
+    Image bfb8b5a2ad34 already pushed, skipping
+    Image c1f3bdbd8355 already pushed, skipping
+    Image 897578f527ae already pushed, skipping
+    Image 9387bcc9826e already pushed, skipping
+    Image 809ed259f845 already pushed, skipping
+    Image 96864a7d2df3 already pushed, skipping
+    Pushing tag for rev [96864a7d2df3] on
+        {http://127.0.0.1:5000/v1/repositories/ubuntu/ tags/latest}
+    Untagged: 127.0.0.1:5000/ubuntu:latest
+    Done
+    Uploading centos:centos7...
+    The push refers to a repository [127.0.0.1:5000/centos] (len: 1)
+    Sending image list
+    Pushing repository 127.0.0.1:5000/centos (1 tags)
+    Image 511136ea3c5a already pushed, skipping
+    34e94e67e63a: Image successfully pushed
+    70214e5d0a90: Image successfully pushed
+    Pushing tag for rev [70214e5d0a90] on
+        {http://127.0.0.1:5000/v1/repositories/centos/ tags/centos7}
+    Untagged: 127.0.0.1:5000/centos:centos7
+    Done
 
 --------------
 
@@ -1020,26 +1021,26 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
 2.上传本地所有镜像
 ~~~~~~~~~~~~~~~~~~
 
-在push_images工具的基础上，还可以进一步地创建push_all工具，来上传本地所有镜像：
+在push\_images工具的基础上，还可以进一步地创建push\_all工具，来上传本地所有镜像：
 
 --------------
 
 ::
 
-   #!/bin/sh
-   # This script will upload all local images to a registry server ($registry is the default value).
-   # This script requires the push_images, which can be found at https://github.com/yeasy/docker_practice/blob/master/_local/push_images.sh
-   # Usage:  push_all
-   # Author: yeasy@github
-   # Create: 2014-09-23
-   for image in 'docker images|grep -v "REPOSITORY"|grep -v "<none>"|awk '{print $1":"$2}''
-   do
-       push_images.sh $image
-   done
+    #!/bin/sh
+    # This script will upload all local images to a registry server ($registry is the default value).
+    # This script requires the push_images, which can be found at https://github.com/yeasy/docker_practice/blob/master/_local/push_images.sh
+    # Usage:  push_all
+    # Author: yeasy@github
+    # Create: 2014-09-23
+    for image in 'docker images|grep -v "REPOSITORY"|grep -v "<none>"|awk '{print $1":"$2}''
+    do
+        push_images.sh $image
+    done
 
 --------------
 
-另外，推荐读者把它放在/usr/local/bin/下面，并添加可执行权限。这样就可以通过push_all命令来同步本地所有镜像到本地私有仓库了。
+另外，推荐读者把它放在/usr/local/bin/下面，并添加可执行权限。这样就可以通过push\_all命令来同步本地所有镜像到本地私有仓库了。
 
 同样的，读者可以试着修改脚本，实现批量化下载镜像、删除镜像、更新镜像标签等更多的操作。
 
@@ -1063,16 +1064,16 @@ Notification在Docker Registry中的相关配置如下：
 
 ::
 
-   notifications:
-       endpoints:
-           -  name: cd-handler
-               disabled: false
-               url: http://cd-service-host/api/v1/cd-service
-               headers:
-                   Authorization: [token ******************]
-               timeout: 1s
-               threshold: 5
-               backoff: 10s
+    notifications:
+        endpoints:
+            -  name: cd-handler
+                disabled: false
+                url: http://cd-service-host/api/v1/cd-service
+                headers:
+                    Authorization: [token ******************]
+                timeout: 1s
+                threshold: 5
+                backoff: 10s
 
 --------------
 
@@ -1082,7 +1083,7 @@ Notification在Docker Registry中的相关配置如下：
 
 ::
 
-   configuring endpoint listener (http://cd-service-host/api/v1/cd-service), time-out=1s, headers=map[Authorization: [token ******]]
+    configuring endpoint listener (http://cd-service-host/api/v1/cd-service), time-out=1s, headers=map[Authorization: [token ******]]
 
 --------------
 
@@ -1094,37 +1095,37 @@ Notification在Docker Registry中的相关配置如下：
 
 ::
 
-   {
-       "events": [
-           {
-               "id": "70f44894-c4b4-4be8-9691-d37db77074cd",
-               "timestamp": "2016-06-05T01:57:04.654256149Z",
-               "action": "push",
-               "target": {
-                   "mediaType": "application/vnd.docker.distribution.manifest.v1+ json",
-                   "size": 45765,
-                   "digest": "sha256:fd0af29ba2ae034449bffb18dd6db2ed90d798464cc43aa81e63770713edaea8",
-                   "length": 45765,
-                   "repository": “test-user/hello-world”,
-                   "url": "http://registry-server/v2/test-user/hello-world/manifests/sha256:fd0af29ba2ae034449bffb18dd6db2ed90d798464cc43aa81e63770713edaea8"
-               },
-               "request": {
-                   "id": "9d3d837f-d7ed-4fa9-afb4-dda58687a6ce",
-                   "addr": “client-host:46504",
-                   "host": “registry-server",
-                   "method": "PUT",
-                   "useragent": "docker/1.9.1 go/go1.4.2 git-commit/a34a1d5 kernel/ 4.2.0-35-generic os/linux arch/amd64"
-               },
-               "actor": {
-                   "name": “test-user"
-               },
-               "source": {
-                   "addr": "8e14c2a190f2:5000",
-                   "instanceID": "c564003e-dd9b-4a9b-8a30-fe8564e97ba9"
-               }
-           }
-       ]
-   }
+    {
+        "events": [
+            {
+                "id": "70f44894-c4b4-4be8-9691-d37db77074cd",
+                "timestamp": "2016-06-05T01:57:04.654256149Z",
+                "action": "push",
+                "target": {
+                    "mediaType": "application/vnd.docker.distribution.manifest.v1+ json",
+                    "size": 45765,
+                    "digest": "sha256:fd0af29ba2ae034449bffb18dd6db2ed90d798464cc43aa81e63770713edaea8",
+                    "length": 45765,
+                    "repository": “test-user/hello-world”,
+                    "url": "http://registry-server/v2/test-user/hello-world/manifests/sha256:fd0af29ba2ae034449bffb18dd6db2ed90d798464cc43aa81e63770713edaea8"
+                },
+                "request": {
+                    "id": "9d3d837f-d7ed-4fa9-afb4-dda58687a6ce",
+                    "addr": “client-host:46504",
+                    "host": “registry-server",
+                    "method": "PUT",
+                    "useragent": "docker/1.9.1 go/go1.4.2 git-commit/a34a1d5 kernel/ 4.2.0-35-generic os/linux arch/amd64"
+                },
+                "actor": {
+                    "name": “test-user"
+                },
+                "source": {
+                    "addr": "8e14c2a190f2:5000",
+                    "instanceID": "c564003e-dd9b-4a9b-8a30-fe8564e97ba9"
+                }
+            }
+        ]
+    }
 
 --------------
 
@@ -1132,7 +1133,8 @@ Notification在Docker Registry中的相关配置如下：
 
 表18-1　通知系统的主要属性及描述
 
-|image1|
+.. figure:: ../_static/docker_tongzhi00001.png
+   :alt: 
 
 2.通知系统的使用场景
 
@@ -1141,7 +1143,8 @@ v2的Notification、Endpoint以及接收的Event数据格式，我们就可以�
 
 图18-2　通知系统整合持续部署
 
-|image2|
+.. figure:: ../_static/docker_tongzhi00002.png
+   :alt: 
 
 （1）镜像上传、下载计数
 
@@ -1170,6 +1173,23 @@ Registry配置文件中各个选项的含义和使用。最后演示如何通过
 
 在生产环境中，笔者推荐使用负载均衡来提高仓库服务的性能；还可以利用HAProxy等方式对仓库服务增加容错功能。同时，为了安全考虑，要为仓库访问启用HTTPS等加密协议来确保通信安全。
 
-.. |image0| image:: ../_static/docker_acl_00001.png
-.. |image1| image:: ../_static/docker_tongzhi00001.png
-.. |image2| image:: ../_static/docker_tongzhi00002.png
+基于Docker容器的内部循环开发工作流
+----------------------------------
+
+相关步骤说明如下：
+
+::
+
+    （1）开发。根据需求开发应用程序，和传统开发没有什么变化，不限编程语言。
+
+    （2）编写Dockerfile。Dockerfile是由一系列命令和参数构成的脚本，用来构建镜像。
+
+    （3）创建自定义镜像。基于“docker build”命令构建自定义镜像。
+
+    （4）定义docker-compose。Docker Compose是一个用于定义和运行多个Docker应用程序的工具，非常适合进行开发和测试，尤其适用于微服务架构。
+
+    （5）启动Docker应用。docker run命令启动docker容器，docker-compose up启动多个容器。
+
+    （6）测试。测试人员基于容器环境进行测试，无须开发人员介入，随时部署或摧毁。
+
+    （7）部署或继续开发。基于容器实现持续交付和部署。

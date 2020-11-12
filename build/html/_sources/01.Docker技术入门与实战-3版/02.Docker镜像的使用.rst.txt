@@ -16,47 +16,47 @@ Hub公共注册服务器中的仓库），用户也可以通过配置，使用�
 
 ::
 
-   通过 docker run 命令指定镜像创建一个容器时，实际上是在该镜像之上创建一个空的可读写
-   文件系统层级。可以将这个文件系统当成一个新的临时镜像，而命令里所指定的镜像称为父镜像。
-   父镜像的内容都是以只读方式挂载进来的，容器会读取共享父镜像的内容。不过一旦需要修改父
-   镜像文件，便会触发Docker从父镜像中复制这个文件到临时镜像中来，所有的修改均发生你的文
-   件系统中，而不会对父镜像造成任何影响，这就是Docker镜像的写时复制机制。
+    通过 docker run 命令指定镜像创建一个容器时，实际上是在该镜像之上创建一个空的可读写
+    文件系统层级。可以将这个文件系统当成一个新的临时镜像，而命令里所指定的镜像称为父镜像。
+    父镜像的内容都是以只读方式挂载进来的，容器会读取共享父镜像的内容。不过一旦需要修改父
+    镜像文件，便会触发Docker从父镜像中复制这个文件到临时镜像中来，所有的修改均发生你的文
+    件系统中，而不会对父镜像造成任何影响，这就是Docker镜像的写时复制机制。
 
 **docker镜像的分层**
 
 ::
 
-   #启动一个nginx容器
-   docker run -d -p 80:80 --name webserver nginx
+    #启动一个nginx容器
+    docker run -d -p 80:80 --name webserver nginx
 
-   #从Docker Hub的Ubuntu仓库下载一个最新的Ubuntu操作系统的镜像。
-   docker pull ubuntu
+    #从Docker Hub的Ubuntu仓库下载一个最新的Ubuntu操作系统的镜像。
+    docker pull ubuntu
 
-   #*  镜像的latest标签意味着该镜像的内容会跟踪最新的非稳定版本而发布，内容是不稳定的。不要在生产环境中忽略镜像的标签信息或使用默认的latest标记的镜像。
+    #*  镜像的latest标签意味着该镜像的内容会跟踪最新的非稳定版本而发布，内容是不稳定的。不要在生产环境中忽略镜像的标签信息或使用默认的latest标记的镜像。
 
-   例如，docker pull ubuntu：14.04命令相当于docker pull registry.hub.docker.com/ubuntu：14.04命令，即从默认的注册服务器Docker Hub Registry中的ubuntu仓库来下载标记为14.04的镜像。 如果从非官方的仓库下载，则需要在仓库名称前指定完整的仓库地址。
+    例如，docker pull ubuntu：14.04命令相当于docker pull registry.hub.docker.com/ubuntu：14.04命令，即从默认的注册服务器Docker Hub Registry中的ubuntu仓库来下载标记为14.04的镜像。 如果从非官方的仓库下载，则需要在仓库名称前指定完整的仓库地址。
 
-   #例如从网易蜂巢的镜像源来下载ubuntu：14.04镜像，可以使用如下命令，此时下载的镜像名称为hub.c.163.com/public/ubuntu：14.04：
+    #例如从网易蜂巢的镜像源来下载ubuntu：14.04镜像，可以使用如下命令，此时下载的镜像名称为hub.c.163.com/public/ubuntu：14.04：
 
-   #下载阿里云的镜像
-   docker pull registry.cn-beijing.aliyuncs.com/mysqld/mysql
+    #下载阿里云的镜像
+    docker pull registry.cn-beijing.aliyuncs.com/mysqld/mysql
 
-   #使用tag命令添加镜像标签
-   docker tag ubuntu:latest myubuntu:latest
-
-
-   #使用inspect命令查看详细信息
-   docker inspect ubuntu
-
-   #返回的是一个JSON格式的消息，如果我们只要其中一项内容时，可以使用参数-f来指定
-   docker inspect -f {{".Architecture"}} ubuntu
+    #使用tag命令添加镜像标签
+    docker tag ubuntu:latest myubuntu:latest
 
 
-   #使用history命令查看镜像历史
-   docker history ubuntu
+    #使用inspect命令查看详细信息
+    docker inspect ubuntu
 
-   #搜寻镜像,在Docker Hub上搜索符合要求的镜像
-   docker search nginx
+    #返回的是一个JSON格式的消息，如果我们只要其中一项内容时，可以使用参数-f来指定
+    docker inspect -f {{".Architecture"}} ubuntu
+
+
+    #使用history命令查看镜像历史
+    docker history ubuntu
+
+    #搜寻镜像,在Docker Hub上搜索符合要求的镜像
+    docker search nginx
 
 本地镜像管理
 ------------
@@ -76,7 +76,7 @@ Hub镜像源来下载镜像。该命令的格式为docker[image]pull NAME[：TAG
 
 ::
 
-   $ docker pull ubuntu:18.04
+    $ docker pull ubuntu:18.04
 
 对于Docker镜像来说，如果不显式指定TAG，则默认会选择latest标签，这会下载仓库中最新版本的镜像。
 
@@ -85,7 +85,7 @@ Hub的Ubuntu仓库下载一个最新版本的Ubuntu操作系统的镜像：
 
 ::
 
-   $ docker pull ubuntu
+    $ docker pull ubuntu
 
 该命令实际上下载的就是ubuntu：latest镜像。
 
@@ -94,70 +94,90 @@ World”命令：
 
 ::
 
-   $ docker run -it ubuntu:18.04 bash
-   root@65663247040f:/# echo "Hello World"
-   Hello World
-   root@65663247040f:/# exit
+    $ docker run -it ubuntu:18.04 bash
+    root@65663247040f:/# echo "Hello World"
+    Hello World
+    root@65663247040f:/# exit
 
 查看镜像
 ~~~~~~~~
 
 **1.使用images命令列出镜像**
 
-::
+.. code:: shell
 
+    docker image ls 
+    # 或者
+    docker images
+    docker images ubun*
 
-   docker images
+    # 筛选指定标签的镜像
+    docker images ubuntu
+    # 语法支持通配符筛选
+    docker image ls ubunt*
+    docker image ls ubunt*:14*
 
-   docker images ubun*
+    # 筛选悬空镜像
+    docker images --filter "dangling=true"
+
+    # 该命令可用于查询镜像（Images）、容器（Containers）和本地卷（LocalVolumes）等空间使用大户的空间占用情况
+    $ docker system df
+    TYPE                TOTAL               ACTIVE              SIZE                RECLAIMABLE
+    Images              13                  0                   1.763GB             1.763GB (100%)
+    Containers          0                   0                   0B                  0B
+    Local Volumes       0                   0                   0B                  0B
+    Build Cache         0                   0                   0B                  0B
+
+    # 具体是哪个镜像、哪个数据卷占用了空间，这时可以通过-v参数来实现：
+    $ docker system df -v
 
 **2.使用tag命令添加镜像标签**
 
 为了方便在后续工作中使用特定镜像，还可以使用docker
 tag命令来为本地镜像任意添加新的标签。例如，添加一个新的myubuntu：latest镜像标签：
 
-::
+.. code:: shell
 
-    docker tag ubuntu:latest myubuntu:latest
+     $ docker tag ubuntu:latest myubuntu:latest
 
 再次使用docker
 images列出本地主机上镜像信息，可以看到多了一个myubuntu：latest标签的镜像：
 
-::
+.. code:: shell
 
-   $ docker images
-   REPOSITORY           TAG           IMAGE ID           CREATED             SIZE
-   ubuntu               18.04         452a96d81c30       2 weeks ago         79.6MB
-   ubuntu               latest        452a96d81c30       2 weeks ago         79.6MB
-   myubuntu             latest        452a96d81c30       2 weeks ago         79.6MB
+    $ docker images
+    REPOSITORY           TAG           IMAGE ID           CREATED             SIZE
+    ubuntu               18.04         452a96d81c30       2 weeks ago         79.6MB
+    ubuntu               latest        452a96d81c30       2 weeks ago         79.6MB
+    myubuntu             latest        452a96d81c30       2 weeks ago         79.6MB
 
 **3.使用inspect命令查看详细信息**
 
 .. code:: shell
 
-   $ docker [image] inspect ubuntu:18.04
-   [
-       {
-           "Id": "sha256:452a96d81c30a1e426bc250428263ac9ca3f47c9bf086f876d11cb39cf57aeec",
-           "RepoTags": [
-               "ubuntu:18.04",
-               "ubuntu:latest"
-           ],
-           "RepoDigests": [
-               "ubuntu@sha256:c8c275751219dadad8fa56b3ac41ca6cb22219ff117ca98fe82b42f24e1ba64e"
-           ],
-           "Parent": "",
-           "Comment": "",
-           "Created": "2018-04-27T23:28:36.319694807Z",
-           ...
-   ]
+    $ docker image inspect ubuntu:18.04
+    [
+        {
+            "Id": "sha256:452a96d81c30a1e426bc250428263ac9ca3f47c9bf086f876d11cb39cf57aeec",
+            "RepoTags": [
+                "ubuntu:18.04",
+                "ubuntu:latest"
+            ],
+            "RepoDigests": [
+                "ubuntu@sha256:c8c275751219dadad8fa56b3ac41ca6cb22219ff117ca98fe82b42f24e1ba64e"
+            ],
+            "Parent": "",
+            "Comment": "",
+            "Created": "2018-04-27T23:28:36.319694807Z",
+            ...
+    ]
 
 上面代码返回的是一个JSON格式的消息，如果我们只要其中一项内容时，可以使用-f来指定，例如，获取镜像的Architecture：
 
 .. code:: shell
 
-   $ docker [image] inspect -f {{".Architecture"}} ubuntu:18.04
-   amd64
+    $ docker image inspect -f {{".Architecture"}} ubuntu:14.04
+    amd64
 
 **4.使用history命令查看镜像历史**
 
@@ -167,10 +187,10 @@ images列出本地主机上镜像信息，可以看到多了一个myubuntu：lat
 
 ::
 
-   $ docker history ubuntu:18.04
-   IMAGE        CREATED       CREATED BY              SIZE                   COMMENT
-   452a96d81c30 5 weeks ago   /bin/sh -c #(nop)  CMD ["/bin/bash"]           0B
-   <missing>    5 weeks ago   /bin/sh -c mkdir -p /run/systemd && echo 'do… 7B
+    $ docker history ubuntu:18.04
+    IMAGE        CREATED       CREATED BY              SIZE                   COMMENT
+    452a96d81c30 5 weeks ago   /bin/sh -c #(nop)  CMD ["/bin/bash"]           0B
+    <missing>    5 weeks ago   /bin/sh -c mkdir -p /run/systemd && echo 'do… 7B
 
 ``注意，过长的命令被自动截断了，可以使用前面提到的--no-trunc选项来输出完整命令。``
 
@@ -182,36 +202,36 @@ search[option]keyword。支持的命令选项主要包括：
 
 ::
 
-   ·-f，--filter filter：过滤输出内容；
+    ·-f，--filter filter：过滤输出内容；
 
-   ·--format string：格式化输出内容；
+    ·--format string：格式化输出内容；
 
-   ·--limit int：限制输出结果个数，默认为25个；
+    ·--limit int：限制输出结果个数，默认为25个；
 
-   ·--no-trunc：不截断输出结果。
+    ·--no-trunc：不截断输出结果。
 
 例如，搜索官方提供的带nginx关键字的镜像，如下所示：
 
 .. code:: shell
 
-   $ docker search --filter=is-official=true nginx
-   NAME DESCRIPTION STARS OFFICIAL AUTOMATED
-   nginx Official build of Nginx. 7978 [OK]
-   kong Open-source Microservice & API Management la… 159 [OK]
+    $ docker search --filter=is-official=true nginx
+    NAME DESCRIPTION STARS OFFICIAL AUTOMATED
+    nginx Official build of Nginx. 7978 [OK]
+    kong Open-source Microservice & API Management la… 159 [OK]
 
 再比如，搜索所有收藏数超过4的关键词包括tensorflow的镜像：
 
 .. code:: shell
 
-   $ docker search --filter=stars=4 tensorflow
-   NAME DESCRIPTION STARS OFFICIAL AUTOMATED
-   tensorflow/tensorflow Official docker images for deep learning fra…   760
-   xblaster/tensorflow-jupyter Dockerized Jupyter with tensorflow 47 [OK]
-   jupyter/tensorflow-notebook Jupyter Notebook Scientific Python Stack w/ …   46
-   romilly/rpi-docker-tensorflow Tensorflow and Jupyter running in docker con…   16
-   floydhub/tensorflow tensorflow 8 [OK]
-   erroneousboat/tensorflow-python3-jupyter Docker container with python 3 version of te…   8 [OK]
-   tensorflow/tf_grpc_server Server for TensorFlow GRPC Distributed Runti…   5
+    $ docker search --filter=stars=4 tensorflow
+    NAME DESCRIPTION STARS OFFICIAL AUTOMATED
+    tensorflow/tensorflow Official docker images for deep learning fra…   760
+    xblaster/tensorflow-jupyter Dockerized Jupyter with tensorflow 47 [OK]
+    jupyter/tensorflow-notebook Jupyter Notebook Scientific Python Stack w/ …   46
+    romilly/rpi-docker-tensorflow Tensorflow and Jupyter running in docker con…   16
+    floydhub/tensorflow tensorflow 8 [OK]
+    erroneousboat/tensorflow-python3-jupyter Docker container with python 3 version of te…   8 [OK]
+    tensorflow/tf_grpc_server Server for TensorFlow GRPC Distributed Runti…   5
 
 可以看到返回了很多包含关键字的镜像，其中包括镜像名字、描述、收藏数（表示该镜像的受欢迎程度）、是否官方创建、是否自动创建等。默认的输出结果将按照星级评价进行排序。
 
@@ -220,61 +240,73 @@ search[option]keyword。支持的命令选项主要包括：
 
 ::
 
-   # 首先本地搜索ubuntu镜像，如果没有就去Docker Hub上拉取ubuntu镜像
-   docker run ubuntu echo "hello docker"
+    # 首先本地搜索ubuntu镜像，如果没有就去Docker Hub上拉取ubuntu镜像
+    docker run ubuntu echo "hello docker"
 
-   #搜索符合要求的镜像
-   docker serach wordpress 
+    #搜索符合要求的镜像
+    docker serach wordpress 
 
 
-   # 可以预先拉取镜像，放置到本地
-   docker pull ubuntu
+    # 可以预先拉取镜像，放置到本地
+    docker pull ubuntu
 
 删除镜像
 ~~~~~~~~
 
-::
+.. code:: shell
 
-   #1.使用标签删除镜像
-   docker rmi myubuntu:latest
-
-   #2.使用镜像ID删除镜像
-   docker rmi 91e7d180c6a3
-
-   #想强行删除镜像，可以使用-f参数
-   docker rmi -f 47b19964fb50
+    #1.使用标签删除镜像
+    docker rmi myubuntu:latest
+    #或者
+    docker image rm 172.16.32.12:9090/jenkinsci/citest:50
 
 
-   #通常并不推荐使用-f参数来强制删除一个存在容器依赖的镜像。正确的做法是，先删除依赖该镜像的所有容器，再来删除镜像
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker rm e90b01fe1248
-   e90b01fe1248
+    #2.使用镜像ID删除镜像
+    docker rmi 91e7d180c6a3
 
-   # 删除本地停止运行的容器，一次性删除无用的容器对镜像的依赖
-   docker rm $(docker ps -a -q)
+    #想强行删除镜像，可以使用-f参数
+    docker rmi -f 47b19964fb50
 
-   # 删除所有镜像
-   docker rmi -f $(docker images|grep -v REPOSITORY|awk '{print $1":"$2}')
+
+    #通常并不推荐使用-f参数来强制删除一个存在容器依赖的镜像。正确的做法是，先删除依赖该镜像的所有容器，再来删除镜像
+    [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker rm e90b01fe1248
+    e90b01fe1248
+
+    # 删除本地停止运行的容器，一次性删除无用的容器对镜像的依赖
+    docker rm $(docker ps -a -q)
+
+    # 删除所有镜像
+    docker rmi -f $(docker images|grep -v REPOSITORY|awk '{print $1":"$2}')
+
+    # 清理悬空镜像
+    docker rmi $(docker images -f "dangling=true" -q)
+
+    # 批量清理按label筛选的镜像
+    docker rmi $(docker images --filter "label=MAINTAINER=hujianli@qq.com" -q)
+
+    # 清理未使用的镜像
+    $ docker system prune
 
 使用Docker一段时间后，系统中可能会遗留一些临时的镜像文件，以及一些没有被使用的镜像，可以通过docker
 image prune命令来进行清理。
 
-::
+.. code:: shell
 
-   支持选项包括：
+    支持选项包括：
 
-   ·-a，-all：删除所有无用镜像，不光是临时镜像；
+    ·-a，-all：删除所有无用镜像，不光是临时镜像；
 
-   ·-filter filter：只清理符合给定过滤器的镜像；
+    ·-filter filter：只清理符合给定过滤器的镜像；
 
-   ·-f，-force：强制删除镜像，而不进行提示确认。
+    ·-f，-force：强制删除镜像，而不进行提示确认。
 
 例如，如下命令会自动清理临时的遗留镜像文件层，最后会提示释放的存储空间：
 
-::
+.. code:: shell
 
-   $ docker image prune -f
-   ...
-   Total reclaimed space: 1.4 GB
+    $ docker image prune -f
+    ...
+    Total reclaimed space: 1.4 GB
 
 创建本地镜像
 ------------
@@ -282,41 +314,41 @@ image prune命令来进行清理。
 使用commit命令创建本地镜像
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
+.. code:: shell
 
-   [root@hujianli-docker01 centos]# docker run -it ubuntu
+    [root@hujianli-docker01 centos]# docker run -it ubuntu
 
-   root@d78a1c4c8541:/# apt-get update
+    root@d78a1c4c8541:/# apt-get update
 
-   #安装sqlite3
-   root@d78a1c4c8541:/# apt-get install sqlite3
-   root@d78a1c4c8541:/# echo "test docker commit" >> hellodocker
-   root@d78a1c4c8541:/# cat hellodocker 
-   test docker commit
-   root@d78a1c4c8541:/# exit
-   exit
+    #安装sqlite3
+    root@d78a1c4c8541:/# apt-get install sqlite3
+    root@d78a1c4c8541:/# echo "test docker commit" >> hellodocker
+    root@d78a1c4c8541:/# cat hellodocker 
+    test docker commit
+    root@d78a1c4c8541:/# exit
+    exit
 
-   #记住上面退出时候的容器id：d78a1c4c8541
+    #记住上面退出时候的容器id：d78a1c4c8541
 
-   # 使用 commit 命令将容器里的所有修改提交到本地库中，形成一个全新的镜像
-   [root@hujianli-docker01 centos]# docker commit -m="Message" --author="hujianli" d78a1c4c8541 hjl_ubuntu/sqlite3:v1
-   sha256:3b450d854758de25b3b90fe30692d55bce75a318136ea7ec48dddbe38fc059a1
+    # 使用 commit 命令将容器里的所有修改提交到本地库中，形成一个全新的镜像
+    [root@hujianli-docker01 centos]# docker commit -m="Message" --author="hujianli" d78a1c4c8541 hjl_ubuntu/sqlite3:v1
+    sha256:3b450d854758de25b3b90fe30692d55bce75a318136ea7ec48dddbe38fc059a1
 
 
-   [root@hujianli-docker01 centos]# docker images
-   REPOSITORY               TAG                 IMAGE ID            CREATED             SIZE
-   hjl_ubuntu/sqlite3       v1                  3b450d854758        54 seconds ago      95.6MB
-   ubuntu                   latest              4c108a37151f        2 weeks ago         64.2MB
-   portworx/px-enterprise   2.0.3.7             a63b970ac332        2 weeks ago         2.51GB
-   quay.io/coreos/etcd      latest              61ad63875109        12 months ago       39.5MB
+    [root@hujianli-docker01 centos]# docker images
+    REPOSITORY               TAG                 IMAGE ID            CREATED             SIZE
+    hjl_ubuntu/sqlite3       v1                  3b450d854758        54 seconds ago      95.6MB
+    ubuntu                   latest              4c108a37151f        2 weeks ago         64.2MB
+    portworx/px-enterprise   2.0.3.7             a63b970ac332        2 weeks ago         2.51GB
+    quay.io/coreos/etcd      latest              61ad63875109        12 months ago       39.5MB
 
-   # 我们使用刚才创建的镜像来构建一个容器并运行，以检视所做的修改
-   [root@hujianli-docker01 centos]# docker run -it hjl_ubuntu/sqlite3:v1
-   root@aa51b9edac11:/# cat hellodocker 
-   test docker commit
+    # 我们使用刚才创建的镜像来构建一个容器并运行，以检视所做的修改
+    [root@hujianli-docker01 centos]# docker run -it hjl_ubuntu/sqlite3:v1
+    root@aa51b9edac11:/# cat hellodocker 
+    test docker commit
 
-   root@aa51b9edac11:/# sqlite3 -version
-   3.22.0 2018-01-22 18:45:57 0c55d179733b46d8d0ba4d88e01a25e10677046ee3da1d5b1581e86726f2alt1
+    root@aa51b9edac11:/# sqlite3 -version
+    3.22.0 2018-01-22 18:45:57 0c55d179733b46d8d0ba4d88e01a25e10677046ee3da1d5b1581e86726f2alt1
 
 使用 Dockerfile 创建镜像
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -328,78 +360,78 @@ image prune命令来进行清理。
 
 ``Dockerfile``
 
-::
+.. code:: dockerfile
 
-   FROM debian:stretch-slim
-   LABEL version="1.0" maintainer="docker user <docker_user@github>"
-   RUN apt-get update && \
-       apt-get install -y python3 && \
-       apt-get clean && \
-       rm -rf /var/lib/apt/lists/*
+    FROM debian:stretch-slim
+    LABEL version="1.0" maintainer="docker user <docker_user@github>"
+    RUN apt-get update && \
+        apt-get install -y python3 && \
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists/*
 
 创建镜像的过程可以使用docker[image]build命令，编译成功后本地将多出一个python:3镜像：
 
-::
+.. code:: shell
 
-   $ docker [image] build -t python:3 .
-   ...
-   Successfully built 4b10f46eacc8
-   Successfully tagged python:3
-   $ docker images|grep python
-   python 3 4b10f46eacc8 About a minute ago   95.1MB
+    $ docker [image] build -t python:3 .
+    ...
+    Successfully built 4b10f46eacc8
+    Successfully tagged python:3
+    $ docker images|grep python
+    python 3 4b10f46eacc8 About a minute ago   95.1MB
 
 推荐使用Dockerfile来构建镜像。将需要对镜像进行的操作全部
 写到一个文件中，然后使用 docker build
 命令从这个文件中创建镜像。这种方法可以使镜像的创
 建变得透明和独立化，并且创建过程可以被重复执行。
 
-::
+.. code:: dockerfile
 
 
-   # Version: 1.0.1
-   FROM ubuntu:latest
-   MAINTAINER xxh "xxh@qq.com"
-   #设置root用户为后续命令的执行者
-   USER root
+    # Version: 1.0.1
+    FROM ubuntu:latest
+    MAINTAINER xxh "xxh@qq.com"
+    #设置root用户为后续命令的执行者
+    USER root
 
-   #执行操作
-   RUN apt-get update
-   RUN apt-get install -y nginx
+    #执行操作
+    RUN apt-get update
+    RUN apt-get install -y nginx
 
-   #使用&&拼接命令
-   RUN touch test.txt && echo "abc" >> abc.txt
+    #使用&&拼接命令
+    RUN touch test.txt && echo "abc" >> abc.txt
 
-   #对外暴露端口
-   EXPOSE 80 8080 1038
+    #对外暴露端口
+    EXPOSE 80 8080 1038
 
-   #添加文件
-   ADD abc.txt /opt/
+    #添加文件
+    ADD abc.txt /opt/
 
-   #添加文件夹
-   ADD /webapp /opt/webapp
+    #添加文件夹
+    ADD /webapp /opt/webapp
 
-   #添加网络文件
-   ADD https://www.baidu.com/img/bd_logo1.png /opt/
+    #添加网络文件
+    ADD https://www.baidu.com/img/bd_logo1.png /opt/
 
 
-   #设置环境变量
-   ENV WEBAPP_PORT=9090
+    #设置环境变量
+    ENV WEBAPP_PORT=9090
 
-   #设置工作目录
-   WORKDIR /opt/
+    #设置工作目录
+    WORKDIR /opt/
 
-   #设置启动命令
-   ENTRYPOINT ["ls"]
+    #设置启动命令
+    ENTRYPOINT ["ls"]
 
-   #设置启动参数
-   CMD ["-a", "-l" ]
+    #设置启动参数
+    CMD ["-a", "-l" ]
 
-   #设置卷
-   VOLUME ["/data", "/var/www"]
+    #设置卷
+    VOLUME ["/data", "/var/www"]
 
-   #设置子镜像的触发操作
-   ONBUILD ADD . /app/src
-   ONBUILD RUN echo "on build excuted" >> onbuild.txt
+    #设置子镜像的触发操作
+    ONBUILD ADD . /app/src
+    ONBUILD RUN echo "on build excuted" >> onbuild.txt
 
 ``docker build -t xixihe/test:v1 .``
 
@@ -410,13 +442,13 @@ xixihe/test:v2指向的是同一个镜像实体 8758374dc545 ：
 
 ::
 
-   docker tag xixihe/test:v1 xixihe/test:v2
+    docker tag xixihe/test:v1 xixihe/test:v2
 
-   # docker images
-   REPOSITORY TAG IMAGE ID CREATED VIRTUAL SIZE
-   xixihe/test v2 8758374dc545 5 minutes ago 192.7 MB
-   xixihe/test v1 8758374dc545 5 minutes ago 192.7 MB
-   ubuntu latest 9bd07e480c5b 6 days ago 192.7 MB
+    # docker images
+    REPOSITORY TAG IMAGE ID CREATED VIRTUAL SIZE
+    xixihe/test v2 8758374dc545 5 minutes ago 192.7 MB
+    xixihe/test v1 8758374dc545 5 minutes ago 192.7 MB
+    ubuntu latest 9bd07e480c5b 6 days ago 192.7 MB
 
 后面会在Docker经典示例中详细介绍。这里就不细解剖知识点了。
 
@@ -425,41 +457,63 @@ xixihe/test:v2指向的是同一个镜像实体 8758374dc545 ：
 
 ::
 
-   #下载了ubuntu-14.04的模板压缩包，之后使用以下命令导入：
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# cat ubuntu-14.04-x86_64-minimal.tar.gz | docker import - ubuntu:14.04
+    #下载了ubuntu-14.04的模板压缩包，之后使用以下命令导入：
+    [root@iZ2ze38chylj63vuj6fqiaZ ~]# cat ubuntu-14.04-x86_64-minimal.tar.gz | docker import - ubuntu:14.04
 
 存出和载入镜像
 --------------
 
 ::
 
-   ##存出镜像
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker save -o ubuntu_14.04.tar ubuntu:14.04
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# ll
-   total 192732
-   -rw------- 1 root root 197355520 May 29 17:53 ubuntu_14.04.tar
-   #用户就可以通过复制ubuntu_14.04.tar文件将该镜像分享给他人使用了
+    ##存出镜像
+    [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker save -o ubuntu_14.04.tar ubuntu:14.04
+    [root@iZ2ze38chylj63vuj6fqiaZ ~]# ll
+    total 192732
+    -rw------- 1 root root 197355520 May 29 17:53 ubuntu_14.04.tar
+    #用户就可以通过复制ubuntu_14.04.tar文件将该镜像分享给他人使用了
 
 
 
-   ##载入镜像
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker images
-   REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+    ##载入镜像
+    [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker images
+    REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker load --input ubuntu_14.04.tar 
-   b057ab380990: Loading layer [==================================================>] 197.1 MB/197.1 MB
-   46c1a22ffea5: Loading layer [==================================================>] 209.9 kB/209.9 kB
-   48334332ed8d: Loading layer [==================================================>] 7.168 kB/7.168 kB
-   66285ac4bf24: Loading layer [==================================================>] 3.072 kB/3.072 kB
-   Loaded image: ubuntu:14.04
+    [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker load --input ubuntu_14.04.tar 
+    b057ab380990: Loading layer [==================================================>] 197.1 MB/197.1 MB
+    46c1a22ffea5: Loading layer [==================================================>] 209.9 kB/209.9 kB
+    48334332ed8d: Loading layer [==================================================>] 7.168 kB/7.168 kB
+    66285ac4bf24: Loading layer [==================================================>] 3.072 kB/3.072 kB
+    Loaded image: ubuntu:14.04
 
-   #或者
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker load < ubuntu_14.04.tar 
-   b057ab380990: Loading layer [==================================================>] 197.1 MB/197.1 MB
-   46c1a22ffea5: Loading layer [==================================================>] 209.9 kB/209.9 kB
-   48334332ed8d: Loading layer [==================================================>] 7.168 kB/7.168 kB
-   66285ac4bf24: Loading layer [==================================================>] 3.072 kB/3.072 kB
-   Loaded image: ubuntu:14.04
+    #或者
+    [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker load < ubuntu_14.04.tar 
+    b057ab380990: Loading layer [==================================================>] 197.1 MB/197.1 MB
+    46c1a22ffea5: Loading layer [==================================================>] 209.9 kB/209.9 kB
+    48334332ed8d: Loading layer [==================================================>] 7.168 kB/7.168 kB
+    66285ac4bf24: Loading layer [==================================================>] 3.072 kB/3.072 kB
+    Loaded image: ubuntu:14.04
+
+镜像推送
+--------
+
+推送到Docker Hub
+~~~~~~~~~~~~~~~~
+
+.. code:: shell
+
+    1.登录Docker Hub
+    2.推送镜像（如果命名空间不一致，就需要使用“docker tag”命令修改名称和标签）。
+    3.docker push 1879324764/myubuntu:latest
+
+推送到腾讯云镜像仓库
+~~~~~~~~~~~~~~~~~~~~
+
+.. code:: shell
+
+    $ docker login --username {用户名} ccr.ccs.tencentyun.com
+    $ docker tag dingtalk.net ccr.css.tencentyun.com/xinlai/dingtalk.net
+    $ docker images ccr.ccs.tencentyun.com/xinlai/ding*
+    $ docker push ccr.css.tencentyun.com/xinlai/dingtalk.net
 
 Docker Hub
 ----------
@@ -482,20 +536,20 @@ Hat等极具背景的大公司）进行
 
 ::
 
-   #登录Docker Hub账号
-   docker login
+    #登录Docker Hub账号
+    docker login
 
-   登录信息都保存在/root/.docker/config.json文件中：
-   [root@hujianli-docker01 centos]# cat ~/.docker/config.json 
-   {
-       "auths": {
-           "https://index.docker.io/v1/": {
-               "auth": "MTg3OTMyNDc2NDphZG1pbiMxMjM="
-           }
-       },
-       "HttpHeaders": {
-           "User-Agent": "Docker-Client/18.09.7 (linux)"
-       }
+    登录信息都保存在/root/.docker/config.json文件中：
+    [root@hujianli-docker01 centos]# cat ~/.docker/config.json 
+    {
+        "auths": {
+            "https://index.docker.io/v1/": {
+                "auth": "MTg3OTMyNDc2NDphZG1pbiMxMjM="
+            }
+        },
+        "HttpHeaders": {
+            "User-Agent": "Docker-Client/18.09.7 (linux)"
+        }
 
 登录成功之后，使用 push 命令上传镜像。如果不指定镜像 TAG
 ，指定的仓库在本地的所有镜像都会上传到Docker Hub。
@@ -505,49 +559,49 @@ Hat等极具背景的大公司）进行
 
 ::
 
-   #可以使用docker push命令上传镜像到仓库，默认上传到Docker Hub官方仓库
-   docker push NAME[:TAG] | [REGISTRY_HOST[:REGISTRY_PORT]/]NAME[:TAG]
+    #可以使用docker push命令上传镜像到仓库，默认上传到Docker Hub官方仓库
+    docker push NAME[:TAG] | [REGISTRY_HOST[:REGISTRY_PORT]/]NAME[:TAG]
 
-   sudo docker login
-   #先得添加新的标签
-   docker tag ubuntu:14.04 1879324764/ubuntu_test:14.04
-   #然后将新添加标签的image上传到DockerHub上
-   docker push 1879324764/ubuntu_test:14.04
+    sudo docker login
+    #先得添加新的标签
+    docker tag ubuntu:14.04 1879324764/ubuntu_test:14.04
+    #然后将新添加标签的image上传到DockerHub上
+    docker push 1879324764/ubuntu_test:14.04
 
 举例说明
 
 ::
 
-   #查看镜像
-   [root@pxe-server ~]# docker images
-   REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-   hu_tomcat_001       latest              fb758b420be9        4 weeks ago         1.49GB
-   mariadb             latest              1813edbc6da2        4 weeks ago         1GB
+    #查看镜像
+    [root@pxe-server ~]# docker images
+    REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+    hu_tomcat_001       latest              fb758b420be9        4 weeks ago         1.49GB
+    mariadb             latest              1813edbc6da2        4 weeks ago         1GB
 
 
-   # 镜像改名，改为 DockerHubaccount/镜像名:版本Tag
-   [root@pxe-server ~]# docker tag mariadb:latest 1879324764/mariadb:latest
+    # 镜像改名，改为 DockerHubaccount/镜像名:版本Tag
+    [root@pxe-server ~]# docker tag mariadb:latest 1879324764/mariadb:latest
 
 
-   [root@pxe-server ~]# docker images
-   REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
-   hu_tomcat_001        latest              fb758b420be9        4 weeks ago         1.49GB
-   1879324764/mariadb   latest              1813edbc6da2        4 weeks ago         1GB
-   mariadb              latest              1813edbc6da2        4 weeks ago         1GB
+    [root@pxe-server ~]# docker images
+    REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
+    hu_tomcat_001        latest              fb758b420be9        4 weeks ago         1.49GB
+    1879324764/mariadb   latest              1813edbc6da2        4 weeks ago         1GB
+    mariadb              latest              1813edbc6da2        4 weeks ago         1GB
 
-   # 登录DcokerHub，使用DockerHubaccount和密码
-   [root@pxe-server ~]# docker login
-   Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create 
-   one.Username: 1879324764
-   Password: 
-   WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
-   Configure a credential helper to remove this warning. See
-   https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+    # 登录DcokerHub，使用DockerHubaccount和密码
+    [root@pxe-server ~]# docker login
+    Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create 
+    one.Username: 1879324764
+    Password: 
+    WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+    Configure a credential helper to remove this warning. See
+    https://docs.docker.com/engine/reference/commandline/login/#credentials-store
 
-   Login Succeeded
+    Login Succeeded
 
-   # 推送镜像到DockerHub上
-   [root@pxe-server ~]# docker push 1879324764/mariadb
+    # 推送镜像到DockerHub上
+    [root@pxe-server ~]# docker push 1879324764/mariadb
 
 第一次上传时，会提示输入登录信息或进行注册，之后登录信息会记录到本地~/.docker目录下。
 
@@ -560,8 +614,8 @@ Hub所使用的注册服务器本身是开源的，并且以镜像的形式分�
 
 ::
 
-   注册服务器源码的地址是https://github.com/docker/docker-registry，
-   Docker Hub上的镜像名是 registry 
+    注册服务器源码的地址是https://github.com/docker/docker-registry，
+    Docker Hub上的镜像名是 registry 
 
 我们只需要两步,就能完成注册服务器的创建
 
@@ -569,35 +623,35 @@ Hub所使用的注册服务器本身是开源的，并且以镜像的形式分�
 
 ::
 
-   # docker pull registry
+    # docker pull registry
 
 ②运行registry：
 
 ::
 
-   # docker run -p 5000:5000 -d -i -t registry
+    # docker run -p 5000:5000 -d -i -t registry
 
 这样我们的注册服务器就已经成功地在5000端口运行了。接下来，可以将我们的镜像提交到,这个注册服务器上。
 
 ::
 
-   我们使用 commit 命令将任意一个容器提交成镜像，
-   并且按照[registry_host: registry_port\image_name:image_tag]方式指定TAG：
+    我们使用 commit 命令将任意一个容器提交成镜像，
+    并且按照[registry_host: registry_port\image_name:image_tag]方式指定TAG：
 
 ::
 
-   # docker ps -a
-   CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS
-   NAMES
-   ...
-   56d26c54b98f    registry:latest "docker-registry" 9 minutes ago Exited (3) 9 minutes ago
-   pensive_davinci
-   ...
+    # docker ps -a
+    CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS
+    NAMES
+    ...
+    56d26c54b98f    registry:latest "docker-registry" 9 minutes ago Exited (3) 9 minutes ago
+    pensive_davinci
+    ...
 
 
-   # docker commit 56d26c54b98f 127.0.0.1:5000/my_image:v1
-   e35c26122c2ada4f2fb1a84542c3a0ec9e1e0dc191949e01cf5ba43da6aef410
+    # docker commit 56d26c54b98f 127.0.0.1:5000/my_image:v1
+    e35c26122c2ada4f2fb1a84542c3a0ec9e1e0dc191949e01cf5ba43da6aef410
 
 
-   接下来，提交这个镜像到注册服务器：
-   # docker push 127.0.0.1:5000/my_image:v1
+    接下来，提交这个镜像到注册服务器：
+    # docker push 127.0.0.1:5000/my_image:v1
