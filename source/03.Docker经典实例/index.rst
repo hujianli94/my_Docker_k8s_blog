@@ -20,3 +20,6 @@
     11.用Docker来搭建discuz论坛
     12.Docker部署LNMP环境
     13.基于Docker的一键LNMP安装程序
+    14.Docker快速部署Jenkins-CICD环境
+    15.部署Docker-Harbor仓库
+    16.基于Docker搭建prometheus+Grafana

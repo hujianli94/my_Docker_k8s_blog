@@ -390,6 +390,52 @@ pause/unpause(暂停/恢复)容器
     docker stop d8f00
     docker rm d8f00
 
+其他容器操作
+------------
+
+1.复制文件
+~~~~~~~~~~
+
+.. code:: shell
+
+    # 容器数据向外复制
+    Usage:  docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH|-
+
+    # 外部数据复制到容器内
+            docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH
+
+.. code:: shell
+
+    $ docker cp 9eac3a /var/jenkins_home/gitee_workspace_parallel/ /home/
+    "docker cp" requires exactly 2 arguments.
+    See 'docker cp --help'.
+
+2.查看变更
+~~~~~~~~~~
+
+查看jenkins\_jenkins\_1容器内的数据修改：
+
+::
+
+    $ docker container diff jenkins_jenkins_1
+    C /tmp
+    A /tmp/hsperfdata_jenkins
+    A /tmp/hsperfdata_jenkins/6
+    A /tmp/jetty-0_0_0_0-8080-war-_-any-6407271552317565788.dir
+    A /tmp/jetty-0_0_0_0-8080-war-_-any-6753302642276023631.dir
+    A /tmp/jetty-0_0_0_0-8080-war-_-any-6829047221675530177.dir
+    A /tmp/winstone3743544242970475678.jar
+    A /tmp/winstone4225465649559590246.jar
+    A /tmp/winstone7204593242092902219.jar
+
+3.查看端口映射
+~~~~~~~~~~~~~~
+
+.. code:: shell
+
+    $ docker container port jenkins_jenkins_1
+    8080/tcp -> 0.0.0.0:8080
+
 导入和导出容器
 --------------
 
