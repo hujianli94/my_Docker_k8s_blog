@@ -112,7 +112,10 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#masterkubeadm">Master初始化kubeadm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#node">node加入集群</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#node">node加入集群</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#join">获得 join命令参数</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#id4">查看部署状态</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#helm-helm">Helm教程：如何安装和配置Helm</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id5">安装方式1</a></li>
@@ -126,6 +129,7 @@
 <li class="toctree-l2"><a class="reference internal" href="03.Docker基础.html">Docker基础</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04.Kubernetes基础.html">Kubernetes基础</a></li>
 <li class="toctree-l2"><a class="reference internal" href="05.Pod.html">Pod</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.Helm使用相关.html">Helm相关</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../03.Docker经典实例/index.html">03.Docker经典实例</a></li>
@@ -209,14 +213,17 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#masterkubeadm" id="id15">Master初始化kubeadm</a></li>
-<li><a class="reference internal" href="#node" id="id16">node加入集群</a></li>
-<li><a class="reference internal" href="#id4" id="id17">查看部署状态</a></li>
-<li><a class="reference internal" href="#helm-helm" id="id18">Helm教程：如何安装和配置Helm</a><ul>
-<li><a class="reference internal" href="#id5" id="id19">安装方式1</a></li>
-<li><a class="reference internal" href="#id6" id="id20">安装方式2</a></li>
+<li><a class="reference internal" href="#node" id="id16">node加入集群</a><ul>
+<li><a class="reference internal" href="#join" id="id17">获得 join命令参数</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id7" id="id21">参考文献</a></li>
+<li><a class="reference internal" href="#id4" id="id18">查看部署状态</a></li>
+<li><a class="reference internal" href="#helm-helm" id="id19">Helm教程：如何安装和配置Helm</a><ul>
+<li><a class="reference internal" href="#id5" id="id20">安装方式1</a></li>
+<li><a class="reference internal" href="#id6" id="id21">安装方式2</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7" id="id22">参考文献</a></li>
 </ul>
 </li>
 </ul>
@@ -552,9 +559,92 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 <span class="n">Run</span> <span class="s1">&#39;kubectl get nodes&#39;</span> <span class="n">on</span> <span class="n">the</span> <span class="n">control</span><span class="o">-</span><span class="n">plane</span> <span class="n">to</span> <span class="n">see</span> <span class="n">this</span> <span class="n">node</span> <span class="n">join</span> <span class="n">the</span> <span class="n">cluster</span>
 </pre></div>
 </div>
+<ul class="simple">
+<li>如果初始化过程被中断可以使用下面命令来恢复</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubeadm</span> <span class="n">reset</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>下面是最后执行成功显示的结果，需要保存这个执行结果，以让 node
+节点加入集群</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run &quot;kubectl apply -f [podnetwork].yaml&quot; with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 172.16.100.9:6443 --token 2dyd69.hrfsjkkxs4stim7n \
+    --discovery-token-ca-cert-hash sha256:4e30c1f41aefb177b708a404ccb7e818e31647c7dbdd2d42f6c5c9894b6f41e7
+</pre></div>
+</div>
+<ul class="simple">
+<li>最好以普通用户的身份运行下面的命令</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 在当前用户家目录下创建.kube目录并配置访问集群的config 文件
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+</pre></div>
+</div>
+<ul class="simple">
+<li>部署 flannel 网络插件</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">coreos</span><span class="o">/</span><span class="n">flannel</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">Documentation</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">flannel</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>查看 kube-system 命名空间中运行的 pods</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">get</span> <span class="n">pods</span> <span class="o">-</span><span class="n">n</span> <span class="n">kube</span><span class="o">-</span><span class="n">system</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>查看 k8s 集群组件的状态</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">get</span> <span class="n">ComponentStatus</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>配置命令补全</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">bash</span><span class="o">-</span><span class="n">completion</span>
+<span class="n">source</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">bash</span><span class="o">-</span><span class="n">completion</span><span class="o">/</span><span class="n">bash_completion</span>
+<span class="n">source</span> <span class="o">&lt;</span><span class="p">(</span><span class="n">kubectl</span> <span class="n">completion</span> <span class="n">bash</span><span class="p">)</span>
+<span class="n">echo</span> <span class="s2">&quot;source &lt;(kubectl completion bash)&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bashrc</span>
+</pre></div>
+</div>
+<div class="section" id="join">
+<h3><a class="toc-backref" href="#id17">获得 join命令参数</a><a class="headerlink" href="#join" title="Permalink to this headline">¶</a></h3>
+<p><strong>在 master 节点上执行</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 只在 master 节点执行
+kubeadm token create --print-join-command
+
+
+可获取kubeadm join 命令及参数，如下所示
+
+# kubeadm token create 命令的输出
+kubeadm join apiserver.demo:6443 --token mpfjma.4vjjg8flqihor4vt     --discovery-token-ca-cert-hash sha256:6f7a8e40a810323672de5eee6f4d19aa2dbdb38411845a1bf5dd63485c43d303
+
+有效时间
+
+该 token 的有效时间为 2 个小时，2小时内，您可以使用此 token
+初始化任意数量的 worker 节点。
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="id4">
-<h2><a class="toc-backref" href="#id17">查看部署状态</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">查看部署状态</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># master查看node节点状态</span>
 <span class="n">kubectl</span> <span class="n">get</span> <span class="n">nodes</span>
 
@@ -567,9 +657,9 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 </div>
 </div>
 <div class="section" id="helm-helm">
-<h2><a class="toc-backref" href="#id18">Helm教程：如何安装和配置Helm</a><a class="headerlink" href="#helm-helm" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">Helm教程：如何安装和配置Helm</a><a class="headerlink" href="#helm-helm" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id5">
-<h3><a class="toc-backref" href="#id19">安装方式1</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">安装方式1</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>下载最新的helm 3安装脚本</p>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">fsSL</span> <span class="o">-</span><span class="n">o</span> <span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">scripts</span><span class="o">/</span><span class="n">get</span><span class="o">-</span><span class="n">helm</span><span class="o">-</span><span class="mi">3</span>
 </pre></div>
@@ -596,7 +686,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 </div>
 </div>
 <div class="section" id="id6">
-<h3><a class="toc-backref" href="#id20">安装方式2</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">安装方式2</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>使用一条命令安装helm</p>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">git</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">bash</span>
 </pre></div>
@@ -604,7 +694,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 </div>
 </div>
 <div class="section" id="id7">
-<h2><a class="toc-backref" href="#id21">参考文献</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id22">参考文献</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.cnblogs.com/yangxiaochu/p/10683951.html">kubeadm安装k8s
 1.13版本</a></p>
 <p><a class="reference external" href="https://blog.csdn.net/happyworld1/article/details/106383464/">ubuntu18.04 kubeadm 安装kubernetes

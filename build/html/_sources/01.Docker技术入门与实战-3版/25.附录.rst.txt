@@ -18,34 +18,34 @@
 
 ::
 
-   #!/usr/bin/env bash
-   #usage:xxx
-   #scripts_name:${NAME}.sh
-   # author：xiaojian
+    #!/usr/bin/env bash
+    #usage:xxx
+    #scripts_name:${NAME}.sh
+    # author：xiaojian
 
-   # 备份镜像列表
-   docker images |awk 'NR>1{print $1":"$2}'|sort > images.list
+    # 备份镜像列表
+    docker images |awk 'NR>1{print $1":"$2}'|sort > images.list
 
-   # 导出所有镜像为当前目录下文件
-   while read img; do
-       echo $img
-       file="${img//\//-}"
-       sudo docker save $img > $file.tar
-   done < images.list
+    # 导出所有镜像为当前目录下文件
+    while read img; do
+        echo $img
+        file="${img//\//-}"
+        sudo docker save $img > $file.tar
+    done < images.list
 
 将本地镜像导入为docker镜像
 
 ::
 
-   #!/usr/bin/env bash
-   #usage:xxx
-   #scripts_name:${NAME}.sh
-   # author：xiaojian
-   while read img; do
-       echo $img
-       file="${img//\//-}"
-       sudo docker load < $file.tar
-   done < images.list
+    #!/usr/bin/env bash
+    #usage:xxx
+    #scripts_name:${NAME}.sh
+    # author：xiaojian
+    while read img; do
+        echo $img
+        file="${img//\//-}"
+        sudo docker load < $file.tar
+    done < images.list
 
 2.如何批量清理临时镜像文件？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -54,7 +54,7 @@
 
 ::
 
-   docker rmi $(docker images -q -f dangling=true) 
+    docker rmi $(docker images -q -f dangling=true) 
 
 3.如何删除所有本地的镜像？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -63,7 +63,7 @@
 
 ::
 
-   dokcer rmi -f $(docker images -q)
+    dokcer rmi -f $(docker images -q)
 
 4.如何清理Docker系统中的无用数据
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -72,7 +72,7 @@
 
 ::
 
-   docker system prune --volumes -f
+    docker system prune --volumes -f
 
 5.如何查看镜像内的环境变量？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -81,7 +81,7 @@
 
 ::
 
-   docker run IMAGE env
+    docker run IMAGE env
 
 6.本地的镜像文件都存放在哪里？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -97,20 +97,93 @@
 
 ::
 
-   囗 尽量选取满足需求但较小的基础系统镜像，例如大部分时候可以选择debian:wheezy 或debian:jessie 镜像，仅有不足百兆大小
-   囗 清理编译生成文件、安装包的缓存等临时文件；
-   囗 安装各个软件时候要指定准确的版本号,并避免引人不需要的依赖；
-   囗 从安全角度考虑,应用要尽量使用系统的库和依赖；
-   囗 如果安装应用时候需要配置一些特殊的环境变量,在安装后要还原不需要保持的变量值；
-   囗 使用Dockerfile创建镜像时候要添加.dockerignore 文件或使用干净的工作目录；
-   囗 区分编译环境容器和运行时环境容器,使用多阶段镜像创建。
+    囗 尽量选取满足需求但较小的基础系统镜像，例如大部分时候可以选择debian:wheezy 或debian:jessie 镜像，仅有不足百兆大小
+    囗 清理编译生成文件、安装包的缓存等临时文件；
+    囗 安装各个软件时候要指定准确的版本号,并避免引人不需要的依赖；
+    囗 从安全角度考虑,应用要尽量使用系统的库和依赖；
+    囗 如果安装应用时候需要配置一些特殊的环境变量,在安装后要还原不需要保持的变量值；
+    囗 使用Dockerfile创建镜像时候要添加.dockerignore 文件或使用干净的工作目录；
+    囗 区分编译环境容器和运行时环境容器,使用多阶段镜像创建。
 
-8.碰到网络问题，无法pull镜像，命令行指定http_proxy无效，如何处理？
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+8.碰到网络问题，无法pull镜像，命令行指定http\_proxy无效，如何处理？
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
-   在Docker配置文件中添加export http_proxy="http://<PROXY_HOST>:<PROXY_PORT>"，之后重启Docker服务即可。
+    在Docker配置文件中添加export http_proxy="http://<PROXY_HOST>:<PROXY_PORT>"，之后重启Docker服务即可。
+
+9.批量将本地所有kubernetes镜像上传到阿里云
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``pull_all.sh``
+
+::
+
+    [root@k8s-master push_images_k8s]# cat pull_all.sh
+    #!/usr/bin/env bash
+    #usage:xxx
+    #scripts_name:${NAME}.sh
+    # author：xiaojian
+    PWD=$(pwd)
+    for image in `docker images|grep -v "REPOSITORY"|grep -v "<none>"|awk '{print $1":"$2}'` ; do
+        img=${image##*/}
+        bash ${PWD}/push_image.sh $image
+        #echo  "${PWD}/push_image.sh $image"
+    done
+
+``push_image.sh``
+
+::
+
+    [root@k8s-master push_images_k8s]# cat push_image.sh
+    #!/usr/bin/env bash
+    #usage:xxx
+    #scripts_name:${NAME}.sh
+    # author：xiaojian
+
+    #This script is used to upload many images to local or private repositories
+
+    # Usage: push_images image1 [image2...]
+
+    # 这里是阿里云镜像仓库地址
+    registry=registry.cn-hangzhou.aliyuncs.com/hu_k8s
+
+    echo_r() {
+        [ $# -ne 1 ] && return 0
+        echo -e "\033[31m$1\033[0m"
+    }
+
+    echo_g() {
+        [ $# -ne 1 ] && return 0
+        echo -e "\033[32m$1\033[0m"
+    }
+
+    echo_y() {
+        [ $# -ne 1 ] && return 0
+        echo -e "\033[33m$1\033[0m"
+    }
+    echo_b() {
+        [ $# -ne 1 ] && return 0
+        echo -e "\033[34m$1\033[0m"
+    }
+
+    usage() {
+        docker images
+        echo "Usage: $0 registry:tag1 [registry2:tag2...]"
+    }
+
+    [ $# -lt 1 ] && usage && exit
+    echo_b "The registry server is $registry"
+
+    for image in "$@" ; do
+        img=${image##*/}
+        echo_b "Uploading $img"
+        docker tag $image $registry/$img
+        docker push $registry/$img
+        docker rmi $registry/$img
+        sleep 1
+        echo_g "Done"
+    done
 
 容器相关
 ~~~~~~~~
@@ -127,25 +200,25 @@
 
 ::
 
-   可以使用 docker [container] stop $(docker ps -q) 命令
+    可以使用 docker [container] stop $(docker ps -q) 命令
 
 3.如何批量清理所有的容器，包括处于运行状态和停止状态的
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
-   可以使用 docker [container] rm -f $(docker ps -qa) 命令
+    可以使用 docker [container] rm -f $(docker ps -qa) 命令
 
 4.如何获取某个容器的PID信息
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
-   可以使用 docker [container] inspect --format '{{ .State.Pid }}' <CONTAINER ID or NAME> 命令。
+    可以使用 docker [container] inspect --format '{{ .State.Pid }}' <CONTAINER ID or NAME> 命令。
 
 5.如何获取某个容器的IP地址？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
-   可以使用 docker [container] inspect --format '{{ .NetworkSettings.IPAddress }}' <CONTAINER ID or NAME> 命令。
+    可以使用 docker [container] inspect --format '{{ .NetworkSettings.IPAddress }}' <CONTAINER ID or NAME> 命令。

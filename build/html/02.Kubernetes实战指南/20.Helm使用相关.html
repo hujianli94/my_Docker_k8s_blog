@@ -1,0 +1,438 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Helm相关 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="03.Docker经典实例" href="../03.Docker经典实例/index.html" />
+    <link rel="prev" title="Pod" href="05.Pod.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01.Docker技术入门与实战-3版/index.html">01.Docker技术入门与实战-第3版</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">02.Kubernetes实战指南</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.通过Kubeadm部署kubernetes.html">通过Kubeadm部署kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Kubespray部署k8s.html">Kubespray部署k8s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.Docker基础.html">Docker基础</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.Kubernetes基础.html">Kubernetes基础</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.Pod.html">Pod</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Helm相关</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#charts">查看Charts仓库信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">常见操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stable-redisns-redis">安装stable/redis在ns=redis中</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">helm包检查项目</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Helm安装和卸载</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">参考文献</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker经典实例/index.html">03.Docker经典实例</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">02.Kubernetes实战指南</a> &raquo;</li>
+        
+      <li>Helm相关</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/02.Kubernetes实战指南/20.Helm使用相关.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#helm" id="id5">Helm相关</a><ul>
+<li><a class="reference internal" href="#charts" id="id6">查看Charts仓库信息</a></li>
+<li><a class="reference internal" href="#id1" id="id7">常见操作</a></li>
+<li><a class="reference internal" href="#stable-redisns-redis" id="id8">安装stable/redis在ns=redis中</a></li>
+<li><a class="reference internal" href="#id2" id="id9">helm包检查项目</a></li>
+<li><a class="reference internal" href="#id3" id="id10">Helm安装和卸载</a></li>
+<li><a class="reference internal" href="#id4" id="id11">参考文献</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="helm">
+<h1><a class="toc-backref" href="#id5">Helm相关</a><a class="headerlink" href="#helm" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="charts">
+<h2><a class="toc-backref" href="#id6">查看Charts仓库信息</a><a class="headerlink" href="#charts" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm repo list</span>
+<span class="n">NAME</span>            <span class="n">URL</span>
+<span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>   <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>
+<span class="n">stable</span>          <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mirror</span><span class="o">.</span><span class="n">azure</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">charts</span>
+<span class="n">aliyun</span>          <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">oss</span><span class="o">-</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">charts</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2><a class="toc-backref" href="#id7">常见操作</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 新增国内仓库，并进行更新操作</span>
+<span class="n">helm</span> <span class="n">repo</span> <span class="n">add</span> <span class="n">stable</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mirror</span><span class="o">.</span><span class="n">azure</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">charts</span><span class="o">/</span>
+<span class="n">helm</span> <span class="n">update</span>
+<span class="n">helm</span> <span class="n">repo</span> <span class="nb">list</span>
+
+
+<span class="c1"># 列出stable仓库中维护的所有Charts的列表</span>
+<span class="n">helm</span> <span class="n">search</span> <span class="n">repo</span>
+
+<span class="c1"># 列出复合条件的Charts，过滤器查找</span>
+<span class="n">helm</span> <span class="n">search</span> <span class="n">repo</span> <span class="n">redis</span>
+<span class="n">helm</span> <span class="n">ls</span> <span class="o">--</span><span class="nb">all</span><span class="o">-</span><span class="n">namespaces</span>
+
+
+
+<span class="c1"># 查看Charts的详细信息</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm inspect chart stable/redis</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">appVersion</span><span class="p">:</span> <span class="mf">5.0</span><span class="o">.</span><span class="mi">7</span>
+<span class="n">deprecated</span><span class="p">:</span> <span class="n">true</span>
+<span class="n">description</span><span class="p">:</span> <span class="n">DEPRECATED</span> <span class="n">Open</span> <span class="n">source</span><span class="p">,</span> <span class="n">advanced</span> <span class="n">key</span><span class="o">-</span><span class="n">value</span> <span class="n">store</span><span class="o">.</span> <span class="n">It</span> <span class="ow">is</span> <span class="n">often</span> <span class="n">referred</span>
+  <span class="n">to</span> <span class="k">as</span> <span class="n">a</span> <span class="n">data</span> <span class="n">structure</span> <span class="n">server</span> <span class="n">since</span> <span class="n">keys</span> <span class="n">can</span> <span class="n">contain</span> <span class="n">strings</span><span class="p">,</span> <span class="n">hashes</span><span class="p">,</span> <span class="n">lists</span><span class="p">,</span> <span class="n">sets</span>
+  <span class="ow">and</span> <span class="nb">sorted</span> <span class="n">sets</span><span class="o">.</span>
+<span class="n">home</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">redis</span><span class="o">.</span><span class="n">io</span><span class="o">/</span>
+<span class="n">icon</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">bitnami</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">assets</span><span class="o">/</span><span class="n">stacks</span><span class="o">/</span><span class="n">redis</span><span class="o">/</span><span class="n">img</span><span class="o">/</span><span class="n">redis</span><span class="o">-</span><span class="n">stack</span><span class="o">-</span><span class="mi">220</span><span class="n">x234</span><span class="o">.</span><span class="n">png</span>
+<span class="n">keywords</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">redis</span>
+<span class="o">-</span> <span class="n">keyvalue</span>
+<span class="o">-</span> <span class="n">database</span>
+<span class="n">name</span><span class="p">:</span> <span class="n">redis</span>
+<span class="n">sources</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bitnami</span><span class="o">/</span><span class="n">bitnami</span><span class="o">-</span><span class="n">docker</span><span class="o">-</span><span class="n">redis</span>
+<span class="n">version</span><span class="p">:</span> <span class="mf">10.5</span><span class="o">.</span><span class="mi">7</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="stable-redisns-redis">
+<h2><a class="toc-backref" href="#id8">安装stable/redis在ns=redis中</a><a class="headerlink" href="#stable-redisns-redis" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">创建</span>
+<span class="n">helm</span> <span class="n">search</span> <span class="n">repo</span> <span class="n">redis</span>
+<span class="n">kubectl</span> <span class="n">create</span> <span class="n">namespace</span> <span class="n">redis</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="n">chart</span> <span class="n">stable</span><span class="o">/</span><span class="n">redis</span> <span class="o">-</span><span class="n">n</span> <span class="n">redis</span> <span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="n">chart</span> <span class="n">stable</span><span class="o">/</span><span class="n">redis</span> <span class="o">-</span><span class="n">n</span> <span class="n">redis</span>
+
+
+<span class="o">//</span><span class="n">查看创建的charts</span><span class="p">,</span><span class="n">查看所有ns</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm list --all-namespaces</span>
+<span class="n">NAME</span>            <span class="n">NAMESPACE</span>       <span class="n">REVISION</span>        <span class="n">UPDATED</span>                                 <span class="n">STATUS</span>          <span class="n">CHART</span>                   <span class="n">APP</span> <span class="n">VERSION</span>
+<span class="n">chart</span>           <span class="n">redis</span>           <span class="mi">1</span>               <span class="mi">2020</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">13</span> <span class="mi">15</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="mf">53.740004087</span> <span class="o">+</span><span class="mi">0800</span> <span class="n">CST</span> <span class="n">deployed</span>        <span class="n">redis</span><span class="o">-</span><span class="mf">10.5</span><span class="o">.</span><span class="mi">7</span>            <span class="mf">5.0</span><span class="o">.</span><span class="mi">7</span>
+
+<span class="o">//</span><span class="n">查看单个ns</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># helm list -n ci-gitee-10523</span>
+
+
+<span class="o">//</span><span class="n">删除命名空间中的chart</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm -n redis uninstall chart</span>
+<span class="n">release</span> <span class="s2">&quot;chart&quot;</span> <span class="n">uninstalled</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm list -A</span>
+<span class="n">NAME</span>            <span class="n">NAMESPACE</span>       <span class="n">REVISION</span>        <span class="n">UPDATED</span>                                 <span class="n">STATUS</span>          <span class="n">CHART</span>                   <span class="n">APP</span> <span class="n">VERSION</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 安装stable/redis
+
+//创建
+[root@ci-base home]# helm install redis stable/redis
+
+//查看
+[root@ci-base home]# helm list
+NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+redis   default         1               2020-11-13 15:24:01.368251708 +0800 CST deployed        redis-10.5.7    5.0.7
+
+//删除
+[root@ci-base home]# helm uninstall redis
+或者使用delete
+[root@ci-base home]# helm delete redis
+release &quot;redis&quot; uninstalled
+
+[root@ci-base home]# helm list
+
+
+# 回滚
+helm rollback
+//命令格式：
+helm rollback &lt;RELEASE&gt; [REVISION] [flags]
+[aiops@3 test]$ helm rollback helloworld 1
+
+
+# 升级
+helm upgrade
+
+//命令语法：
+helm uninstall RELEASE_NAME [flags]
+
+# 获取指定Release变更历史
+helm history
+
+//获取某个release历史的安装更新记录
+$ helm history helloworld
+
+
+# helm pull
+//从chart仓库中下载打包好的chart到本地存储
+[aiops@3 test]$ helm pull stable/mysql
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id9">helm包检查项目</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># helm包检查项目</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># helm list --all-namespaces</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get cm -n ci-gitee-10523</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get Deployment -n ci-gitee-10523</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get svc -n ci-gitee-10523</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get Ingress -n ci-gitee-10523</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get pod -n ci-gitee-10523</span>
+
+
+<span class="c1"># 查看资源信息</span>
+<span class="n">kubectl</span> <span class="n">describe</span> <span class="o">-</span><span class="n">n</span> <span class="n">dev</span> <span class="n">pod</span> <span class="n">cigiteebe</span><span class="o">-</span><span class="mi">7</span><span class="n">c5b7486c</span><span class="o">-</span><span class="n">pc22z</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id10">Helm安装和卸载</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># helm安装和卸载
+[root@ci-base home]# helm install myapp --debug ./mychart --set service.type=NodePort
+[root@ci-base home]# helm uninstall myapp
+
+
+[root@ci-base home]# helm uninstall chart
+[root@ci-base home]# helm list
+
+
+# 删除命名空间ci-gitee-11856中的chart
+helm uninstall -n ci-gitee-11856 ci-gitee-11856
+
+#删除命名空间dev中的chart
+helm uninstall -n dev dev
+
+
+正确姿势
+1、brew install helm
+2、helm repo add stable http://mirror.azure.cn/kubernetes/charts/
+3、helm repo update
+4、helm install stable/xxx
+
+
+
+helm install --name myapp --dry-run --debug ./mychart --set service.type=NodePort
+helm install --name myapp --debug ./mychart --set service.type=NodePort
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id11">参考文献</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://blog.csdn.net/weixin_36938307/article/details/105245770">https://blog.csdn.net/weixin_36938307/article/details/105245770</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../03.Docker经典实例/index.html" class="btn btn-neutral float-right" title="03.Docker经典实例" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="05.Pod.html" class="btn btn-neutral float-left" title="Pod" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

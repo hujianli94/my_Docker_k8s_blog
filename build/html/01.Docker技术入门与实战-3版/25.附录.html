@@ -109,14 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="06.Docker数据管理.html">Docker数据管理</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Docker使用网络.html">Docker使用网络</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.使用Dockerfile创建镜像.html">使用Dockerfile创建镜像</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">操作系统</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#ssh">为镜像添加SSH服务</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#web">Web服务与应用</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id25">数据库应用</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id55">分布式处理与大数据平台</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id73">编程开发</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id96">容器与云服务</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id113">容器实战思考</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">实战案例</a></li>
 <li class="toctree-l2"><a class="reference internal" href="10.Docker核心实现技术.html">Docker核心实现技术</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11.配置私有仓库.html">配置私有仓库</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12.安全防护与配置.html">安全防护与配置</a></li>
@@ -312,6 +305,75 @@ done &lt; images.list
 <div class="section" id="pull-http-proxy">
 <h4>8.碰到网络问题，无法pull镜像，命令行指定http_proxy无效，如何处理？<a class="headerlink" href="#pull-http-proxy" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>在Docker配置文件中添加export http_proxy=&quot;http://&lt;PROXY_HOST&gt;:&lt;PROXY_PORT&gt;&quot;，之后重启Docker服务即可。
+</pre></div>
+</div>
+</div>
+<div class="section" id="kubernetes">
+<h4>9.批量将本地所有kubernetes镜像上传到阿里云<a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">pull_all.sh</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@k8s-master push_images_k8s]# cat pull_all.sh
+#!/usr/bin/env bash
+#usage:xxx
+#scripts_name:${NAME}.sh
+# author：xiaojian
+PWD=$(pwd)
+for image in `docker images|grep -v &quot;REPOSITORY&quot;|grep -v &quot;&lt;none&gt;&quot;|awk &#39;{print $1&quot;:&quot;$2}&#39;` ; do
+    img=${image##*/}
+    bash ${PWD}/push_image.sh $image
+    #echo  &quot;${PWD}/push_image.sh $image&quot;
+done
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">push_image.sh</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@k8s-master push_images_k8s]# cat push_image.sh
+#!/usr/bin/env bash
+#usage:xxx
+#scripts_name:${NAME}.sh
+# author：xiaojian
+
+#This script is used to upload many images to local or private repositories
+
+# Usage: push_images image1 [image2...]
+
+# 这里是阿里云镜像仓库地址
+registry=registry.cn-hangzhou.aliyuncs.com/hu_k8s
+
+echo_r() {
+    [ $# -ne 1 ] &amp;&amp; return 0
+    echo -e &quot;\033[31m$1\033[0m&quot;
+}
+
+echo_g() {
+    [ $# -ne 1 ] &amp;&amp; return 0
+    echo -e &quot;\033[32m$1\033[0m&quot;
+}
+
+echo_y() {
+    [ $# -ne 1 ] &amp;&amp; return 0
+    echo -e &quot;\033[33m$1\033[0m&quot;
+}
+echo_b() {
+    [ $# -ne 1 ] &amp;&amp; return 0
+    echo -e &quot;\033[34m$1\033[0m&quot;
+}
+
+usage() {
+    docker images
+    echo &quot;Usage: $0 registry:tag1 [registry2:tag2...]&quot;
+}
+
+[ $# -lt 1 ] &amp;&amp; usage &amp;&amp; exit
+echo_b &quot;The registry server is $registry&quot;
+
+for image in &quot;$@&quot; ; do
+    img=${image##*/}
+    echo_b &quot;Uploading $img&quot;
+    docker tag $image $registry/$img
+    docker push $registry/$img
+    docker rmi $registry/$img
+    sleep 1
+    echo_g &quot;Done&quot;
+done
 </pre></div>
 </div>
 </div>
