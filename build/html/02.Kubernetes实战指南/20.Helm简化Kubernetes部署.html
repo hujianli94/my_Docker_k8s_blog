@@ -1,0 +1,876 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Helm简化kubernetes部署 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="03.Docker经典实例" href="../03.Docker经典实例/index.html" />
+    <link rel="prev" title="Kubernetes实战案例" href="07.kubernetes实战案例.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01.Docker技术入门与实战-3版/index.html">01.Docker技术入门与实战-第3版</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">02.Kubernetes实战指南</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.通过Kubeadm部署kubernetes.html">通过Kubeadm部署kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Kubespray部署k8s.html">Kubespray部署k8s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.Docker基础.html">Docker基础</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.Kubernetes基础.html">Kubernetes基础</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.Pod.html">Pod</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.kubernetes实战案例.html">Kubernetes实战案例</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Helm简化kubernetes部署</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#helm">Helm基础</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">安装</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">安装方式1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">安装方式2</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#charts">查看Charts仓库信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">常见操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stable-redisns-redis">安装stable/redis在ns=redis中</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">helm包检查项目</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Helm安装和卸载</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#helmdemo">使用Helm部署Demo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#chart">chart 的基本结构</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#helm-create">helm create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#helm-package">helm package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#helm-search">helm search</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#helm-inspect">helm inspect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Chart 模板示例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">编写一个简单的 Chart 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">常见命令</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">参考文献</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker经典实例/index.html">03.Docker经典实例</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">02.Kubernetes实战指南</a> &raquo;</li>
+        
+      <li>Helm简化kubernetes部署</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/02.Kubernetes实战指南/20.Helm简化Kubernetes部署.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#helmkubernetes" id="id12">Helm简化kubernetes部署</a><ul>
+<li><a class="reference internal" href="#helm" id="id13">Helm基础</a></li>
+<li><a class="reference internal" href="#id1" id="id14">安装</a><ul>
+<li><a class="reference internal" href="#id2" id="id15">安装方式1</a></li>
+<li><a class="reference internal" href="#id3" id="id16">安装方式2</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#charts" id="id17">查看Charts仓库信息</a></li>
+<li><a class="reference internal" href="#id4" id="id18">常见操作</a></li>
+<li><a class="reference internal" href="#stable-redisns-redis" id="id19">安装stable/redis在ns=redis中</a></li>
+<li><a class="reference internal" href="#id5" id="id20">helm包检查项目</a></li>
+<li><a class="reference internal" href="#id6" id="id21">Helm安装和卸载</a></li>
+<li><a class="reference internal" href="#helmdemo" id="id22">使用Helm部署Demo</a><ul>
+<li><a class="reference internal" href="#chart" id="id23">chart 的基本结构</a></li>
+<li><a class="reference internal" href="#helm-create" id="id24">helm create</a></li>
+<li><a class="reference internal" href="#helm-package" id="id25">helm package</a></li>
+<li><a class="reference internal" href="#helm-search" id="id26">helm search</a></li>
+<li><a class="reference internal" href="#helm-inspect" id="id27">helm inspect</a></li>
+<li><a class="reference internal" href="#id7" id="id28">Chart 模板示例</a></li>
+<li><a class="reference internal" href="#id9" id="id29">编写一个简单的 Chart 示例</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id10" id="id30">常见命令</a></li>
+<li><a class="reference internal" href="#id11" id="id31">参考文献</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="helmkubernetes">
+<h1><a class="toc-backref" href="#id12">Helm简化kubernetes部署</a><a class="headerlink" href="#helmkubernetes" title="Permalink to this headline">¶</a></h1>
+<p>Helm是Kubernetes生态系统中的一个软件包管理工具，有点类似于Linux操作系统里面的“apt-get”和“yum”。</p>
+<p>对Kubernetes集群进行部署应用时，我们将面临以下问题：</p>
+<ul class="simple">
+<li>如何管理、编辑和更新这些分散的Kubernetes应用配置文件。</li>
+<li>如何把一套相关的配置文件作为一个应用进行管理。</li>
+<li>如何分发和重用Kubernetes的应用配置。</li>
+</ul>
+<p>Helm的出现就是为了很好地解决上面这些问题。Helm
+Chart是用来封装Kubernetes原生应用程序的一系列YAML文件。我们可以在部署应用的时候自定义应用程序的一些Metadata，以便于应用程序的分发。</p>
+<p>对于应用发布者而言，可以通过Helm打包应用、管理应用依赖关系、管理应用版本并发布应用到软件仓库。</p>
+<p>对于使用者而言，使用Helm后不需要编写复杂的应用部署文件，可以以简单的方式在Kubernetes上查找、安装、升级、回滚、卸载应用程序。</p>
+<p>总之，Helm大大简化了应用管理的难度，其主要有以下优点：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>● 管理复杂应用。Charts能定义很复杂的应用，并且可重复使用应用程序部署定义。
+● 易于更新升级。
+● 易于共享。Charts无论是在私有服务器还是公共服务器上，都非常易于升级、共享和托管。
+● 轻松回滚。
+</pre></div>
+</div>
+<div class="section" id="helm">
+<h2><a class="toc-backref" href="#id13">Helm基础</a><a class="headerlink" href="#helm" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Helm</li>
+</ul>
+<p>Helm是一个命令行下的客户端工具，主要用于Kubernetes应用程序Chart的创建、打包、发布以及创建和管理本地和远程的Chart仓库。</p>
+<ul class="simple">
+<li>Tiller</li>
+</ul>
+<p>Tiller是Helm的服务端，部署在Kubernetes集群中。Tiller用于接收Helm的请求，并根据Chart生成Kubernetes的部署文件（Helm称为Release），然后提交给Kubernetes创建应用。Tiller还提供了Release的升级、删除、回滚等一系列功能。</p>
+<ul class="simple">
+<li>Chart</li>
+</ul>
+<p>Helm的软件包，采用TAR格式，类似于APT的DEB包或者YUM的RPM包，其包含了一组定义Kubernetes资源相关的YAML文件。</p>
+<ul class="simple">
+<li>Repository</li>
+</ul>
+<p>Helm的软件仓库，保存了一系列的Chart软件包，以供用户下载；并且提供了一个该Repository的Chart包清单文件，以供用户查询。Helm可以同时管理多个不同的Repository。</p>
+<ul class="simple">
+<li>Config</li>
+</ul>
+<p>应用程序实例化部署运行时的配置信息。</p>
+<ul class="simple">
+<li>Release</li>
+</ul>
+<p>使用helm
+install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到的Release和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。在同一个集群中，一个Chart可以使用不同的配置（Config）安装多次，每次安装都会创建一个Release。</p>
+</div>
+<div class="section" id="id1">
+<h2><a class="toc-backref" href="#id14">安装</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id15">安装方式1</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>下载最新的helm 3安装脚本</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">fsSL</span> <span class="o">-</span><span class="n">o</span> <span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">scripts</span><span class="o">/</span><span class="n">get</span><span class="o">-</span><span class="n">helm</span><span class="o">-</span><span class="mi">3</span>
+</pre></div>
+</div>
+<p>赋权并执行</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chmod</span> <span class="mi">700</span> <span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="o">&amp;&amp;</span> <span class="n">sh</span> <span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+<p>通过执行helm命令来验证helm安装。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span>
+</pre></div>
+</div>
+<p>增加一个公有稳定版的helm的repo仓库</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">repo</span> <span class="n">add</span> <span class="n">stable</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">oss</span><span class="o">-</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">charts</span>
+</pre></div>
+</div>
+<p>让我们安装稳定的nginx 图表并测试设置</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">install</span> <span class="n">nginx</span> <span class="n">stable</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">ingress</span>
+</pre></div>
+</div>
+<p>列出已安装的helm 图表</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">ls</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id16">安装方式2</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>使用一条命令安装helm</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">git</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">bash</span>
+</pre></div>
+</div>
+<p>如果安装包无法下载，可以复制脚本输出的下载链接手动下载，然后解压复制到bin目录，如下所示：</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">get</span><span class="o">.</span><span class="n">helm</span><span class="o">.</span><span class="n">sh</span><span class="o">/</span><span class="n">helm</span><span class="o">-</span><span class="n">v2</span><span class="o">.</span><span class="mf">16.6</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<span class="n">tar</span> <span class="n">zxvf</span> <span class="n">helm</span><span class="o">-</span><span class="n">v2</span><span class="o">.</span><span class="mf">16.6</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span>
+<span class="n">cp</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">/</span><span class="n">helm</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="charts">
+<h2><a class="toc-backref" href="#id17">查看Charts仓库信息</a><a class="headerlink" href="#charts" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm repo list</span>
+<span class="n">NAME</span>            <span class="n">URL</span>
+<span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>   <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>
+<span class="n">stable</span>          <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mirror</span><span class="o">.</span><span class="n">azure</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">charts</span>
+<span class="n">aliyun</span>          <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">oss</span><span class="o">-</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">charts</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id18">常见操作</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 新增国内仓库，并进行更新操作</span>
+<span class="n">helm</span> <span class="n">repo</span> <span class="n">add</span> <span class="n">stable</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mirror</span><span class="o">.</span><span class="n">azure</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">charts</span><span class="o">/</span>
+<span class="n">helm</span> <span class="n">update</span>
+<span class="n">helm</span> <span class="n">repo</span> <span class="nb">list</span>
+
+
+<span class="c1"># 列出stable仓库中维护的所有Charts的列表</span>
+<span class="n">helm</span> <span class="n">search</span> <span class="n">repo</span>
+
+<span class="c1"># 列出复合条件的Charts，过滤器查找</span>
+<span class="n">helm</span> <span class="n">search</span> <span class="n">repo</span> <span class="n">redis</span>
+<span class="n">helm</span> <span class="n">ls</span> <span class="o">--</span><span class="nb">all</span><span class="o">-</span><span class="n">namespaces</span>
+
+
+
+<span class="c1"># 查看Charts的详细信息</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm inspect chart stable/redis</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">appVersion</span><span class="p">:</span> <span class="mf">5.0</span><span class="o">.</span><span class="mi">7</span>
+<span class="n">deprecated</span><span class="p">:</span> <span class="n">true</span>
+<span class="n">description</span><span class="p">:</span> <span class="n">DEPRECATED</span> <span class="n">Open</span> <span class="n">source</span><span class="p">,</span> <span class="n">advanced</span> <span class="n">key</span><span class="o">-</span><span class="n">value</span> <span class="n">store</span><span class="o">.</span> <span class="n">It</span> <span class="ow">is</span> <span class="n">often</span> <span class="n">referred</span>
+  <span class="n">to</span> <span class="k">as</span> <span class="n">a</span> <span class="n">data</span> <span class="n">structure</span> <span class="n">server</span> <span class="n">since</span> <span class="n">keys</span> <span class="n">can</span> <span class="n">contain</span> <span class="n">strings</span><span class="p">,</span> <span class="n">hashes</span><span class="p">,</span> <span class="n">lists</span><span class="p">,</span> <span class="n">sets</span>
+  <span class="ow">and</span> <span class="nb">sorted</span> <span class="n">sets</span><span class="o">.</span>
+<span class="n">home</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">redis</span><span class="o">.</span><span class="n">io</span><span class="o">/</span>
+<span class="n">icon</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">bitnami</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">assets</span><span class="o">/</span><span class="n">stacks</span><span class="o">/</span><span class="n">redis</span><span class="o">/</span><span class="n">img</span><span class="o">/</span><span class="n">redis</span><span class="o">-</span><span class="n">stack</span><span class="o">-</span><span class="mi">220</span><span class="n">x234</span><span class="o">.</span><span class="n">png</span>
+<span class="n">keywords</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">redis</span>
+<span class="o">-</span> <span class="n">keyvalue</span>
+<span class="o">-</span> <span class="n">database</span>
+<span class="n">name</span><span class="p">:</span> <span class="n">redis</span>
+<span class="n">sources</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bitnami</span><span class="o">/</span><span class="n">bitnami</span><span class="o">-</span><span class="n">docker</span><span class="o">-</span><span class="n">redis</span>
+<span class="n">version</span><span class="p">:</span> <span class="mf">10.5</span><span class="o">.</span><span class="mi">7</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="stable-redisns-redis">
+<h2><a class="toc-backref" href="#id19">安装stable/redis在ns=redis中</a><a class="headerlink" href="#stable-redisns-redis" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">创建</span>
+<span class="n">helm</span> <span class="n">search</span> <span class="n">repo</span> <span class="n">redis</span>
+<span class="n">kubectl</span> <span class="n">create</span> <span class="n">namespace</span> <span class="n">redis</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="n">chart</span> <span class="n">stable</span><span class="o">/</span><span class="n">redis</span> <span class="o">-</span><span class="n">n</span> <span class="n">redis</span> <span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="n">chart</span> <span class="n">stable</span><span class="o">/</span><span class="n">redis</span> <span class="o">-</span><span class="n">n</span> <span class="n">redis</span>
+
+
+<span class="o">//</span><span class="n">查看创建的charts</span><span class="p">,</span><span class="n">查看所有ns</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm list --all-namespaces</span>
+<span class="n">NAME</span>            <span class="n">NAMESPACE</span>       <span class="n">REVISION</span>        <span class="n">UPDATED</span>                                 <span class="n">STATUS</span>          <span class="n">CHART</span>                   <span class="n">APP</span> <span class="n">VERSION</span>
+<span class="n">chart</span>           <span class="n">redis</span>           <span class="mi">1</span>               <span class="mi">2020</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">13</span> <span class="mi">15</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="mf">53.740004087</span> <span class="o">+</span><span class="mi">0800</span> <span class="n">CST</span> <span class="n">deployed</span>        <span class="n">redis</span><span class="o">-</span><span class="mf">10.5</span><span class="o">.</span><span class="mi">7</span>            <span class="mf">5.0</span><span class="o">.</span><span class="mi">7</span>
+
+<span class="o">//</span><span class="n">查看单个ns</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># helm list -n ci-gitee-10523</span>
+
+
+<span class="o">//</span><span class="n">删除命名空间中的chart</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm -n redis uninstall chart</span>
+<span class="n">release</span> <span class="s2">&quot;chart&quot;</span> <span class="n">uninstalled</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm list -A</span>
+<span class="n">NAME</span>            <span class="n">NAMESPACE</span>       <span class="n">REVISION</span>        <span class="n">UPDATED</span>                                 <span class="n">STATUS</span>          <span class="n">CHART</span>                   <span class="n">APP</span> <span class="n">VERSION</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 安装stable/redis
+
+//创建
+[root@ci-base home]# helm install redis stable/redis
+
+//查看
+[root@ci-base home]# helm list
+NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+redis   default         1               2020-11-13 15:24:01.368251708 +0800 CST deployed        redis-10.5.7    5.0.7
+
+//删除
+[root@ci-base home]# helm uninstall redis
+或者使用delete
+[root@ci-base home]# helm delete redis
+release &quot;redis&quot; uninstalled
+
+[root@ci-base home]# helm list
+
+
+# 回滚
+helm rollback
+//命令格式：
+helm rollback &lt;RELEASE&gt; [REVISION] [flags]
+[aiops@3 test]$ helm rollback helloworld 1
+
+
+# 升级
+helm upgrade
+
+//命令语法：
+helm uninstall RELEASE_NAME [flags]
+
+# 获取指定Release变更历史
+helm history
+
+//获取某个release历史的安装更新记录
+$ helm history helloworld
+
+
+# helm pull
+//从chart仓库中下载打包好的chart到本地存储
+[aiops@3 test]$ helm pull stable/mysql
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2><a class="toc-backref" href="#id20">helm包检查项目</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># helm包检查项目</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># helm list --all-namespaces</span>
+
+<span class="o">//</span> <span class="n">查看Config</span><span class="o">-</span><span class="n">Map</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get cm -n ci-gitee-10523</span>
+
+<span class="o">//</span> <span class="n">查看Deployment</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get Deployment -n ci-gitee-10523</span>
+
+<span class="o">//</span> <span class="n">查看service</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get svc -n ci-gitee-10523</span>
+
+<span class="o">//</span> <span class="n">查看ingress</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get Ingress -n ci-gitee-10523</span>
+
+<span class="o">//</span> <span class="n">查看pod</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get pod -n ci-gitee-10523</span>
+
+<span class="o">//</span> <span class="n">查看ReplicaSet</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get rs -lapp=demo</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get rs -lapp=demo --show-labels</span>
+<span class="n">NAME</span>                         <span class="n">DESIRED</span>   <span class="n">CURRENT</span>   <span class="n">READY</span>   <span class="n">AGE</span>   <span class="n">LABELS</span>
+<span class="n">demo</span><span class="o">-</span><span class="n">deployment</span><span class="o">-</span><span class="mi">68</span><span class="n">b59dd5b8</span>   <span class="mi">2</span>         <span class="mi">2</span>         <span class="mi">2</span>       <span class="mi">73</span><span class="n">m</span>   <span class="n">app</span><span class="o">=</span><span class="n">demo</span><span class="p">,</span><span class="n">pod</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="nb">hash</span><span class="o">=</span><span class="mi">68</span><span class="n">b59dd5b8</span>
+
+
+
+<span class="c1"># 查看资源信息</span>
+<span class="o">//</span> <span class="n">查看pod里面的容器</span>
+<span class="n">kubectl</span> <span class="n">describe</span> <span class="o">-</span><span class="n">n</span> <span class="n">dev</span> <span class="n">pod</span> <span class="n">cigiteebe</span><span class="o">-</span><span class="mi">7</span><span class="n">c5b7486c</span><span class="o">-</span><span class="n">pc22z</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h2><a class="toc-backref" href="#id21">Helm安装和卸载</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># helm安装和卸载
+[root@ci-base home]# helm install myapp --debug ./mychart --set service.type=NodePort
+[root@ci-base home]# helm uninstall myapp
+
+
+[root@ci-base home]# helm uninstall chart
+[root@ci-base home]# helm list
+
+
+# 删除命名空间ci-gitee-11856中的chart
+helm uninstall -n ci-gitee-11856 ci-gitee-11856
+
+#删除命名空间dev中的chart
+helm uninstall -n dev dev
+
+
+正确姿势
+1、brew install helm
+2、helm repo add stable http://mirror.azure.cn/kubernetes/charts/
+3、helm repo update
+4、helm install stable/xxx
+
+
+
+helm install --name myapp --dry-run --debug ./mychart --set service.type=NodePort
+helm install --name myapp --debug ./mychart --set service.type=NodePort
+</pre></div>
+</div>
+</div>
+<div class="section" id="helmdemo">
+<h2><a class="toc-backref" href="#id22">使用Helm部署Demo</a><a class="headerlink" href="#helmdemo" title="Permalink to this headline">¶</a></h2>
+<p>接下来我们基于以上认知和Demo配置来进行部署，流程如图</p>
+<div class="figure">
+<img alt="" src="../_images/k8s-helm0001.png" />
+</div>
+<div class="section" id="chart">
+<h3><a class="toc-backref" href="#id23">chart 的基本结构</a><a class="headerlink" href="#chart" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@ci-base helm]# helm create test
+Creating test
+
+[root@ci-base helm]# tree test/ -L 3
+test/
+├── charts
+├── Chart.yaml
+├── templates
+│   ├── deployment.yaml
+│   ├── _helpers.tpl
+│   ├── hpa.yaml
+│   ├── ingress.yaml
+│   ├── NOTES.txt
+│   ├── serviceaccount.yaml
+│   ├── service.yaml
+│   └── tests
+│       └── test-connection.yaml
+└── values.yaml
+</pre></div>
+</div>
+<ul class="simple">
+<li>charts 目录存放依赖的chart</li>
+<li>Chart.yaml 包含Chart的基本信息，包括chart版本，名称等</li>
+<li>templates 目录下存放应用一系列 k8s 资源的 yaml 模板</li>
+<li>_helpers.tpl
+此文件中定义一些可重用的模板片断，此文件中的定义在任何资源定义模板中可用</li>
+<li>NOTES.txt 介绍chart 部署后的帮助信息，如何使用chart等</li>
+<li>values.yaml 包含了必要的值定义（默认值）, 用于存储 templates
+目录中模板文件中用到变量的值</li>
+</ul>
+</div>
+<div class="section" id="helm-create">
+<h3><a class="toc-backref" href="#id24">helm create</a><a class="headerlink" href="#helm-create" title="Permalink to this headline">¶</a></h3>
+<p>创建一个 Chart 模板</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># helm create test</span>
+<span class="n">Creating</span> <span class="n">test</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="helm-package">
+<h3><a class="toc-backref" href="#id25">helm package</a><a class="headerlink" href="#helm-package" title="Permalink to this headline">¶</a></h3>
+<p>打包一个 Chart 模板</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># helm package test</span>
+<span class="n">Successfully</span> <span class="n">packaged</span> <span class="n">chart</span> <span class="ow">and</span> <span class="n">saved</span> <span class="n">it</span> <span class="n">to</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">k8s</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">test</span><span class="o">-</span><span class="mf">0.1</span><span class="o">.</span><span class="mf">0.</span><span class="n">tgz</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="helm-search">
+<h3><a class="toc-backref" href="#id26">helm search</a><a class="headerlink" href="#helm-search" title="Permalink to this headline">¶</a></h3>
+<p>查找可用的 Chart 模板</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># helm search hub nginx</span>
+<span class="n">URL</span>                                                     <span class="n">CHART</span> <span class="n">VERSION</span>   <span class="n">APP</span> <span class="n">VERSION</span>     <span class="n">DESCRIPTION</span>
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">hub</span><span class="o">.</span><span class="n">helm</span><span class="o">.</span><span class="n">sh</span><span class="o">/</span><span class="n">charts</span><span class="o">/</span><span class="n">wiremind</span><span class="o">/</span><span class="n">nginx</span>               <span class="mf">2.1</span><span class="o">.</span><span class="mi">1</span>                           <span class="n">An</span> <span class="n">NGINX</span> <span class="n">HTTP</span> <span class="n">server</span>
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">hub</span><span class="o">.</span><span class="n">helm</span><span class="o">.</span><span class="n">sh</span><span class="o">/</span><span class="n">charts</span><span class="o">/</span><span class="n">bitnami</span><span class="o">/</span><span class="n">nginx</span>                <span class="mf">8.2</span><span class="o">.</span><span class="mi">3</span>           <span class="mf">1.19</span><span class="o">.</span><span class="mi">6</span>          <span class="n">Chart</span> <span class="k">for</span> <span class="n">the</span> <span class="n">nginx</span> <span class="n">server</span>
+<span class="o">.........</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="helm-inspect">
+<h3><a class="toc-backref" href="#id27">helm inspect</a><a class="headerlink" href="#helm-inspect" title="Permalink to this headline">¶</a></h3>
+<p>查看指定 Chart 的基本信息</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># helm inspect chart test</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v2</span>
+<span class="n">appVersion</span><span class="p">:</span> <span class="mf">1.16</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">description</span><span class="p">:</span> <span class="n">A</span> <span class="n">Helm</span> <span class="n">chart</span> <span class="k">for</span> <span class="n">Kubernetes</span>
+<span class="n">name</span><span class="p">:</span> <span class="n">test</span>
+<span class="nb">type</span><span class="p">:</span> <span class="n">application</span>
+<span class="n">version</span><span class="p">:</span> <span class="mf">0.1</span><span class="o">.</span><span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id7">
+<h3><a class="toc-backref" href="#id28">Chart 模板示例</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h4>Chart 文件结构<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>wordpress
+├── charts
+├── Chart.yaml
+├── README.md
+├── requirements.lock
+├── requirements.yaml
+├── templates
+│   ├── deployment.yaml
+│   ├── externaldb-secrets.yaml
+│   ├── _helpers.tpl
+│   ├── ingress.yaml
+│   ├── NOTES.txt
+│   ├── pvc.yaml
+│   ├── secrets.yaml
+│   ├── svc.yaml
+│   └── tls-secrets.yaml
+└── values.yaml
+</pre></div>
+</div>
+<p>一个 wordpress chart 如上（去除部分 test 和 charts 依赖），
+基本结构由以下几个部分组成：</p>
+<ul class="simple">
+<li>charts 存放子Chart (Subchart) 的定义，Subchart 指的是当前 Chart
+依赖的 Chart ， 在 requirements.yaml 中定义</li>
+<li>Chart.yaml 包含 Chart 信息的 YAML 文件， 包括 Chart
+的版本、名称等，在 DCE Helm 插件中还包含 Chart 的 <strong>团队授权</strong> 信息
+和 <strong>是否公开</strong> 的信息</li>
+<li>README.md 可选：Chart 的介绍信息等（该文件对于一个大型 Chart
+来说十分重要）</li>
+<li>Requirements.yaml 可选：列举当前 Chart 的需要依赖的 Chart</li>
+<li>templates</li>
+<li>该目录下存放 Chart 所有的 K8s
+资源定义模板，通常不同的资源放在不同的文件中，DCE Helm
+插件中自定义模板的 K8s 资源统一放在 all_sources.yaml 文件中</li>
+<li>_helpers.tpl ，
+通常这个文件存放可重用的模板片段，该文件中的定义可以在 Chart
+其它资源定义模板中使用</li>
+<li>NOTES.txt，可选：一段简短使用说明的文本文件，用于安装 Release
+后提示用户使用</li>
+<li>values.yaml 当前 Chart 的默认配置的值</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id9">
+<h3><a class="toc-backref" href="#id29">编写一个简单的 Chart 示例</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>本节以构建一个名称为 nginx-test Chart 为示例，来描述一个 chart
+必要条件。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># helm create nginx-test</span>
+<span class="n">Creating</span> <span class="n">nginx</span><span class="o">-</span><span class="n">test</span>
+</pre></div>
+</div>
+<p>1、Chart.yaml 文件是 一个 chart 必要文件，
+该文件可以简单包括以下字段（具体字段请参考<a class="reference external" href="https://links.jianshu.com/go?to=https%3A%2F%2Fhelm.sh%2F">Helm官网</a>)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># cat nginx-test/Chart.yaml |grep -v &quot;^$&quot;|grep -v &quot;^#&quot;</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v2</span>
+<span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">test</span>
+<span class="n">description</span><span class="p">:</span> <span class="n">A</span> <span class="n">Helm</span> <span class="n">chart</span> <span class="k">for</span> <span class="n">Kubernetes</span>
+<span class="nb">type</span><span class="p">:</span> <span class="n">application</span>
+<span class="n">version</span><span class="p">:</span> <span class="mf">0.1</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">appVersion</span><span class="p">:</span> <span class="mf">1.16</span><span class="o">.</span><span class="mi">0</span>
+</pre></div>
+</div>
+<p>2、values.yaml 文件是 chart 的必要文件，以 nginx 为示例：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># cat nginx-test/values.yaml |grep -v &quot;^$&quot;|grep -v &quot;#&quot;</span>
+<span class="n">replicaCount</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">image</span><span class="p">:</span>
+  <span class="n">repository</span><span class="p">:</span> <span class="n">nginx</span>
+  <span class="n">pullPolicy</span><span class="p">:</span> <span class="n">IfNotPresent</span>
+  <span class="n">tag</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+<span class="n">imagePullSecrets</span><span class="p">:</span> <span class="p">[]</span>
+<span class="n">nameOverride</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+<span class="n">fullnameOverride</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+<span class="n">serviceAccount</span><span class="p">:</span>
+  <span class="n">create</span><span class="p">:</span> <span class="n">true</span>
+  <span class="n">annotations</span><span class="p">:</span> <span class="p">{}</span>
+  <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+<span class="n">podAnnotations</span><span class="p">:</span> <span class="p">{}</span>
+<span class="n">podSecurityContext</span><span class="p">:</span> <span class="p">{}</span>
+<span class="n">securityContext</span><span class="p">:</span> <span class="p">{}</span>
+<span class="n">service</span><span class="p">:</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">ClusterIP</span>
+  <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
+<span class="n">ingress</span><span class="p">:</span>
+  <span class="n">enabled</span><span class="p">:</span> <span class="n">false</span>
+  <span class="n">annotations</span><span class="p">:</span> <span class="p">{}</span>
+  <span class="n">hosts</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">host</span><span class="p">:</span> <span class="n">chart</span><span class="o">-</span><span class="n">example</span><span class="o">.</span><span class="n">local</span>
+      <span class="n">paths</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="n">tls</span><span class="p">:</span> <span class="p">[]</span>
+<span class="n">resources</span><span class="p">:</span> <span class="p">{}</span>
+<span class="n">autoscaling</span><span class="p">:</span>
+  <span class="n">enabled</span><span class="p">:</span> <span class="n">false</span>
+  <span class="n">minReplicas</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">maxReplicas</span><span class="p">:</span> <span class="mi">100</span>
+  <span class="n">targetCPUUtilizationPercentage</span><span class="p">:</span> <span class="mi">80</span>
+<span class="n">nodeSelector</span><span class="p">:</span> <span class="p">{}</span>
+<span class="n">tolerations</span><span class="p">:</span> <span class="p">[]</span>
+<span class="n">affinity</span><span class="p">:</span> <span class="p">{}</span>
+</pre></div>
+</div>
+<p>从示例中可以看出，values.yaml 中定义了一些当前chart 的一些默认值，用于
+templates 下的 K8s 资源 yaml 渲染时填充默认值。</p>
+<p>不过需要注意的是，<strong>如果使用 helm install 来部署一个 Release ,
+可以通过下面命令指定一份yaml 文件作为填充值</strong>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>helm install --values=myvals.yaml nginx
+
+注意：上面命令不要复制执行，执行会报错的。请根据实际情况执行！！！
+</pre></div>
+</div>
+<p>3、创建 templates 下的模板文件， 用于生成 Kubernetes 资源清单(manifests)
+如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cat nginx-test/templates/deployment.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span> <span class="n">include</span> <span class="s2">&quot;nginx-test.fullname&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+  <span class="n">labels</span><span class="p">:</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>上面定义了 一个 deployments.yaml 和 service.yaml 资源文件，里面使用 {{
+}} 符号的是 Go 模板语言的标准。其中可以通过：</p>
+<ul class="simple">
+<li>.Values 对象访问 values.yaml 文件的内容， 前面的dot(.)
+表示从顶层命名空间开始，找到 Values 对象(下同)</li>
+<li>.Release、.Chart 开头的预定义值可用于任何的模板中</li>
+<li>.Chart 对象用来访问 Chart.yaml 文件的内容</li>
+<li>.Release 对象是 Helm的内置对象之一， 使用 Helm 安装一个 release
+时，由 Tiller 分配 release 的名称</li>
+</ul>
+<p>4、命名模板(_helper.tpl) ：可以从上面看到有 {{ template
+“nginx-test.fullname” . }} 定义。该定义由 _helper.tpl
+文件定义的字段来实现，比如下面一个 _helper.tpl :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cat nginx-test/templates/_helpers.tpl</span>
+<span class="p">{{</span><span class="o">/*</span> <span class="n">vim</span><span class="p">:</span> <span class="nb">set</span> <span class="n">filetype</span><span class="o">=</span><span class="n">mustache</span><span class="p">:</span> <span class="o">*/</span><span class="p">}}</span>
+<span class="p">{{</span><span class="o">/*</span>
+<span class="n">Expand</span> <span class="n">the</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">chart</span><span class="o">.</span>
+<span class="o">*/</span><span class="p">}}</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>该模板定义了
+“nginx-test.name”、”nginx-test.fullname”、”nginx-test.chart”
+等可重用模板部分，当模板引擎读取该文件时，它存储对
+nginx-test.name等的引用， 直到调用 template “nginx-test.name”
+为止。然后把值渲染到模板中。</p>
+<p>注意 {{ template “nginx-test.chart” . }}
+后面有个dot(.)，这是因为一个已命名的模板（用于创建 define)
+被渲染时，它将接收由该 template
+调用传入的范围（scope)。没有范围传入，在模板中无法访问任何内容，因此在：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{{- define &quot;nginx-test.chart&quot; -}}
+这里面的 .Chart 将无法访问，导致在模板中无法看到内容，因为这里值为空
+{{- end -}}
+</pre></div>
+</div>
+<p>因此在模板中将 范围(scope) 传入即可正常使用：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cat nginx-test/templates/service.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span> <span class="n">include</span> <span class="s2">&quot;nginx-test.fullname&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>在末尾传递了 . 这样就可以使用 .Values 或者 .Chart 或其它范围(scope)</p>
+<p>5、Chart 依赖（requirements.yaml)：比如 WordPress Chart 依赖于 mariadb
+Chart， 下面是 WordPress 的依赖(requirements.yaml)：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dependencies</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">mariadb</span>
+  <span class="n">version</span><span class="p">:</span> <span class="mf">5.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span>
+  <span class="n">repository</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">-</span><span class="n">charts</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">googleapis</span><span class="o">.</span><span class="n">com</span><span class="o">/</span>
+  <span class="n">condition</span><span class="p">:</span> <span class="n">mariadb</span><span class="o">.</span><span class="n">enabled</span>
+  <span class="n">tags</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">wordpress</span><span class="o">-</span><span class="n">database</span>
+</pre></div>
+</div>
+<p>该文件列举当前 Chart 所有的 依赖（subchart)。有几个字段是必要的：</p>
+<ul class="simple">
+<li>name: 依赖 Chart 的名称（必要）</li>
+<li>version: 依赖 Chart 的版本号（必要）</li>
+<li>repository: 依赖 Chart 的存储库完整URL，必须通过 helm repo add 添加
+repository（存储库）到本地</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id10">
+<h2><a class="toc-backref" href="#id30">常见命令</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">//</span><span class="n">基于本地Chart目录部署</span>
+ <span class="c1">#  helm install -f values.yaml -n ci-gitee-nginx ci-gitee-nginx ./</span>
+
+<span class="o">//</span><span class="n">删除release</span>
+<span class="c1"># helm uninstall -n ci-gitee-nginx ci-gitee-nginx</span>
+<span class="c1"># helm delete -n ci-gitee-nginx ci-gitee-nginx</span>
+
+<span class="o">//</span> <span class="n">查看版本历史</span>
+<span class="c1"># helm history -n ci-gitee-nginx ci-gitee-nginx</span>
+
+<span class="o">//</span> <span class="n">下载Chart</span>
+<span class="c1">#helm fetch xinlin/k8sapp</span>
+
+ <span class="o">//</span><span class="n">基于本地Chart目录部署</span>
+<span class="c1"># helm install ./k8sapp</span>
+
+ <span class="o">//</span> <span class="n">打包</span>
+<span class="c1"># helm package nginx_text</span>
+
+ <span class="o">//</span> <span class="n">搜索</span>
+<span class="c1"># helm search k8sapp</span>
+
+<span class="o">//</span> <span class="n">启动本地仓库服务</span>
+<span class="c1"># helm serve</span>
+
+<span class="o">//</span> <span class="n">查看所有namespaces中部署的release</span>
+<span class="c1"># helm list --all-namespaces</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h2><a class="toc-backref" href="#id31">参考文献</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://blog.csdn.net/weixin_36938307/article/details/105245770">https://blog.csdn.net/weixin_36938307/article/details/105245770</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12752783.html">https://www.cnblogs.com/xiao987334176/p/12752783.html</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../03.Docker经典实例/index.html" class="btn btn-neutral float-right" title="03.Docker经典实例" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="07.kubernetes实战案例.html" class="btn btn-neutral float-left" title="Kubernetes实战案例" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

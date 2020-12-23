@@ -432,56 +432,208 @@ node加入集群
     # 如果有pod一直启动不起来，通过describe查看状态
     kubectl describe po/{具体的pod名字} -n kube-system
 
-Helm教程：如何安装和配置Helm
-----------------------------
+安装 Ingress Controller
+-----------------------
 
-安装方式1
-~~~~~~~~~
-
-下载最新的helm 3安装脚本
-
-.. code:: shell
-
-    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-
-赋权并执行
-
-.. code:: shell
-
-    chmod 700 get_helm.sh && sh get_helm.sh
-
-通过执行helm命令来验证helm安装。
+**安装**
 
 ::
 
-    helm
+    # 只在 master 节点执行
+    kubectl apply -f https://kuboard.cn/install-script/v1.19.x/nginx-ingress.yaml
 
-增加一个公有稳定版的helm的repo仓库
+**卸载**
 
-.. code:: shell
-
-    helm repo add stable https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
-
-让我们安装稳定的nginx 图表并测试设置
+只在您想选择其他 Ingress Controller 的情况下卸载
 
 ::
 
-    helm install nginx stable/nginx-ingress
+    # 只在 master 节点执行
+    kubectl delete -f https://kuboard.cn/install-script/v1.19.x/nginx-ingress.yaml
 
-列出已安装的helm 图表
+**定制化ingress**
 
 ::
 
-    helm ls
+    # 如果打算用于生产环境，请参考 https://github.com/nginxinc/kubernetes-ingress/blob/v1.5.5/docs/installation.md 并根据您自己的情况做进一步定制
 
-安装方式2
-~~~~~~~~~
+查看ingress运行状态
 
-使用一条命令安装helm
+::
 
-.. code:: shell
+    [root@k8s-master ~]# kubectl get pods --all-namespaces
+    NAMESPACE       NAME                                       READY   STATUS    RESTARTS   AGE
+    kube-system     calico-kube-controllers-6c89d944d5-th2k7   1/1     Running   0          3h25m
+    kube-system     calico-node-j4g9n                          0/1     Running   0          45m
+    kube-system     calico-node-qt6sk                          0/1     Running   0          3h25m
+    kube-system     coredns-59c898cd69-2tnvl                   1/1     Running   1          3h25m
+    kube-system     coredns-59c898cd69-cdxxq                   1/1     Running   0          3h25m
+    kube-system     etcd-k8s-master                            1/1     Running   0          3h25m
+    kube-system     kube-apiserver-k8s-master                  1/1     Running   1          3h25m
+    kube-system     kube-controller-manager-k8s-master         1/1     Running   6          3h25m
+    kube-system     kube-proxy-ptd7x                           1/1     Running   0          3h25m
+    kube-system     kube-proxy-t97cs                           1/1     Running   0          45m
+    kube-system     kube-scheduler-k8s-master                  1/1     Running   6          3h25m
+    nginx-ingress   nginx-ingress-fzntf                        1/1     Running   0          6m21s
 
-    curl -L https://git.io/get_helm.sh | bash
+    [root@k8s-master ~]# kubectl get pod -n nginx-ingress
+    NAME                  READY   STATUS    RESTARTS   AGE
+    nginx-ingress-fzntf   1/1     Running   0          6m37s
+
+安装Kubernetes Dashboard
+------------------------
+
+**安装**
+
+执行如下命令，以安装 Kubernetes Dashboard
+
+::
+
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta5/aio/deploy/recommended.yaml
+
+    // 可以直接下载
+    $ wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
+
+    如果访问不了该 yaml 文件，请使用下面的命令，效果是等价的
+
+    ::
+
+        kubectl apply -f https://kuboard.cn/install-script/k8s-dashboard/v2.0.0-beta5.yaml
+
+**访问**
+
+Kubernetes Dashboard 当前，只支持使用 Bearer Token登录。 由于 Kubernetes
+Dashboard 默认部署时，只配置了最低权限的 RBAC。因此，我们要创建一个名为
+``admin-user`` 的 ServiceAccount，再创建一个
+ClusterRolebinding，将其绑定到 Kubernetes 集群中默认初始化的
+``cluster-admin`` 这个 ClusterRole。
+
+执行如下命令可创建 ServiceAccount 和 ClusterRoleBinding
+
+::
+
+    kubectl apply -f https://kuboard.cn/install-script/k8s-dashboard/auth.yaml
+
+获取Bearer Token
+
+执行命令：
+
+::
+
+    kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+
+因为Service是ClusterIP类型，为了方便使用，我们可通过\ ``kubectl --namespace=kubernetes-dashboard edit service kubernetes-dashboard``\ 修改成NodePort类型
+
+::
+
+    spec:
+      clusterIP: 10.96.187.186
+      externalTrafficPolicy: Cluster
+      ports:
+      - nodePort: 31966
+        port: 443
+        protocol: TCP
+        targetPort: 8443
+      selector:
+        k8s-app: kubernetes-dashboard
+      sessionAffinity: None
+      type: NodePort        //修改这里
+
+::
+
+    [root@k8s-master ~]# kubectl get service -n kubernetes-dashboard
+    NAME                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)         AGE
+    dashboard-metrics-scraper   ClusterIP   10.96.205.156   <none>        8000/TCP        70m
+    kubernetes-dashboard        NodePort    10.96.187.186   <none>        443:31966/TCP   70m
+
+使用 Firefox 浏览器访问，并忽略 HTTPS 校验错误。
+
+.. figure:: ../_static/k8s-dashborad0001.png
+   :alt: 
+
+给匿名用户授权
+
+::
+
+    $ kubectl create clusterrolebinding test:anonymous --clusterrole=cluster-admin --user=system:anonymous
+
+安装Kuboard Kubernetes
+----------------------
+
+Kubernetes 容器编排已越来越被大家关注，然而使用 Kubernetes
+的门槛却依然很高，主要体现在这几个方面：
+
+-  集群的安装复杂，出错概率大
+-  Kubernetes相较于容器化，引入了许多新的概念，学习难度高
+-  需要手工编写 YAML 文件，难以在多环境下管理
+-  缺少好的实战案例可以参考
+
+Kuboard，是一款免费的 Kubernetes 图形化管理工具，Kuboard
+力图帮助用户快速在 Kubernetes 上落地微服务。
+
+参考文献：
+
+https://www.cnblogs.com/xiao987334176/p/12060855.html
+
+诊断分析
+--------
+
+1．查看日志
+~~~~~~~~~~~
+
+（1）使用journalctl查看服务日志
+
+::
+
+    [root@k8s-master manifests]# journalctl -u docker
+
+查看并追踪kubelet的日志：
+
+::
+
+    journalctl -u kubelet -f
+
+（2）使用“kubectl logs”查看容器日志
+
+::
+
+    kubectl logs -f etcd-k8s-master -n kube-system
+
+2．查看资源详情和事件
+~~~~~~~~~~~~~~~~~~~~~
+
+kubectl
+describe命令用于查看一个或多个资源的详细情况，包括相关资源和事件，语法如下：
+
+（1）查看节点
+
+::
+
+    kubectl describe nodes k8s-master
+
+查看所有节点：
+
+::
+
+    kubectl describe nodes
+
+查看指定节点以及事件：
+
+::
+
+    kubectl describe nodes k8s-node01 --show-events
+
+2）查看Pod查看指定Pod：
+
+::
+
+    kubectl describe pod calico-node-j4g9n -n kube-system
+
+查看指定文件描述的所有资源：
+
+::
+
+    kubectl describe -f teamcity.yml
 
 参考文献
 --------

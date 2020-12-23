@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>使用Ingress负载分发微服务 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../01.Docker技术入门与实战-3版/index.html">01.Docker技术入门与实战-第3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker经典实例/index.html">03.Docker经典实例</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>使用Ingress负载分发微服务</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/02.Kubernetes实战指南/06.使用Ingress负载分发微服务.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#ingress" id="id9">使用Ingress负载分发微服务</a><ul>
+<li><a class="reference internal" href="#id1" id="id10">1.简介</a></li>
+<li><a class="reference internal" href="#demo" id="id11">2.Demo示例</a><ul>
+<li><a class="reference internal" href="#id2" id="id12">2.1 准备Demo并完成部署</a></li>
+<li><a class="reference internal" href="#id3" id="id13">2.2 创建部署资源</a></li>
+<li><a class="reference internal" href="#id4" id="id14">2.3 创建服务资源</a></li>
+<li><a class="reference internal" href="#id5" id="id15">2.4 创建Ingress资源并配置转发规则</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6" id="id16">3.Ingress实战</a><ul>
+<li><a class="reference internal" href="#yaml" id="id17">3.1 应用yaml</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id8" id="id18">设置域名解析</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="ingress">
+<h1><a class="toc-backref" href="#id9">使用Ingress负载分发微服务</a><a class="headerlink" href="#ingress" title="Permalink to this headline">¶</a></h1>
+<p>NodePort Service存在太多缺陷，不适合生产环境。LoadBlancer
+Service则不太灵活，比如针对微服务架构，那么不同服务是否需要多个负载均衡服务呢？我们还有其他选择么？有，那就是Ingress。</p>
+<p>Ingress将集群外部的HTTP和HTTPS路由暴露给集群中的Service，相当于集群的入口，而入口规则由Ingress定义的规则来控制。</p>
+<p>在使用Ingress之前，我们需要有一个Ingress
+Controller（入口控制器），例如ingress-nginx。Ingress负责定义抽象的规则，而Ingress
+Controller负责具体实现。通常情况下，Ingress搭配负载均衡一起使用。接下来，结合一个简单的微服务Demo来使用Ingress进行负载分发。</p>
+<div class="section" id="id1">
+<h2><a class="toc-backref" href="#id10">1.简介</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>示意图如下：</p>
+<div class="figure">
+<img alt="" src="../_images/k8s_ingreess0001.png" />
+</div>
+</div>
+<div class="section" id="demo">
+<h2><a class="toc-backref" href="#id11">2.Demo示例</a><a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
+<p>为了便于大家理解，我们先做一个简单的规划。整体规划图如图</p>
+<div class="figure">
+<img alt="" src="../_images/k8s_ingress_demo001.png" />
+</div>
+<p>Demo规划的整体步骤如下所示：</p>
+<p>（1）开发两个应用，分别为apidemo1和apidemo2，并提供不同的接口服务。</p>
+<p>（2）将两个应用分别部署到k8s集群，并且分别创建不同的Service。</p>
+<p>（3）创建Ingress，配置不同的转发规则。</p>
+<p>（4）为了访问方便，我们需要配置域名映射。</p>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id12">2.1 准备Demo并完成部署</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>apidemo1</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>apidemo1的访问路径为https://{hostname}:{port}/api/demo1，输出JSON“[&quot;value1&quot;, &quot;value2&quot;]”。
+</pre></div>
+</div>
+<ul class="simple">
+<li>apidemo2</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>apidemo2的访问路径为https://{hostname}:{port}/api/demo2，输出JSON“[&quot;value3&quot;, &quot;value4&quot;]”。
+
+apidemo1和apidemo2均需支持80端口和443端口访问。
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id13">2.2 创建部署资源</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="../yaml_file/ingress_demo/demo1.yaml">demo1.yaml</a></p>
+<p><a class="reference external" href="../yaml_file/ingress_demo/demo2.yaml">demo2.yaml</a></p>
+</div>
+<div class="section" id="id4">
+<h3><a class="toc-backref" href="#id14">2.3 创建服务资源</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="../yaml_file/ingress_demo/apidemo1-svc.yaml">apidemo1-svc.yaml</a></p>
+<p><a class="reference external" href="../yaml_file/ingress_demo/apidemo2-svc.yaml">apidemo2-svc.yaml</a></p>
+</div>
+<div class="section" id="id5">
+<h3><a class="toc-backref" href="#id15">2.4 创建Ingress资源并配置转发规则</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>接下来我们需要创建Ingress并配置好转发规则达成如下目标：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>● 使用同一个IP访问多个API服务，这里对应的是“apidemo1”和“apidemo2”。
+● 通过地址http://demo.xin-lai.com/api/demo1访问应用“apidemo1”。
+● 通过地址http://demo.xin-lai.com/api/demo2访问应用“apidemo2”。
+</pre></div>
+</div>
+<p><a class="reference external" href="../yaml_file/ingress_demo/demo-ingress.yaml">demo-ingress.yaml</a></p>
+</div>
+</div>
+<div class="section" id="id6">
+<h2><a class="toc-backref" href="#id16">3.Ingress实战</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>Ingress 是 Kubernetes 的一种 API 对象，将集群内部的 Service 通过
+HTTP/HTTPS 方式暴露到集群外部，并通过规则定义 HTTP/HTTPS 的路由。Ingress
+具备如下特性：集群外部可访问的 URL、负载均衡、SSL
+Termination、按域名路由（name-based virtual hosting）。</p>
+<p>在 master 节点上执行</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">install</span><span class="o">-</span><span class="n">script</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mf">17.</span><span class="n">x</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">ingress</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p>配置域名解析</p>
+<p>将域名 *.demo.yourdomain.com 解析到 demo-worker-a-2 的 IP 地址 z.z.z.z
+（也可以是 demo-worker-a-1 的地址 y.y.y.y）</p>
+<p>验证配置</p>
+<p>在浏览器访问 a.demo.yourdomain.com，将得到 404 NotFound 错误页面</p>
+<div class="section" id="yaml">
+<h3><a class="toc-backref" href="#id17">3.1 应用yaml</a><a class="headerlink" href="#yaml" title="Permalink to this headline">¶</a></h3>
+<p>这里以flaskapp为例</p>
+<div class="section" id="namespace">
+<h4>3.1.1 创建namespace<a class="headerlink" href="#namespace" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="../yaml_file/ingress_flask/flask-namespace.yaml">flask-namespace.yaml</a></p>
+</div>
+<div class="section" id="deployment">
+<h4>3.1.2 创建deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="../yaml_file/ingress_flask/flask-app.yaml">flask-app.yaml</a></p>
+</div>
+<div class="section" id="id7">
+<h4>3.1.3 创建Ingress<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="../yaml_file/ingress_flask/flask-ingress.yaml">flask-ingress.yaml</a></p>
+<p>执行yaml</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">flask</span><span class="o">-</span><span class="n">app</span><span class="o">.</span><span class="n">yaml</span>
+<span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">flask</span><span class="o">-</span><span class="n">ingress</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p>查看pod</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">flask</span><span class="o">-</span><span class="n">app</span><span class="p">]</span><span class="c1"># kubectl get pod -o wide -n web-demo</span>
+<span class="n">NAME</span>                            <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>   <span class="n">IP</span>               <span class="n">NODE</span>     <span class="n">NOMINATED</span> <span class="n">NODE</span>   <span class="n">READINESS</span> <span class="n">GATES</span>
+<span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span><span class="o">-</span><span class="mi">5</span><span class="n">c8c9797c6</span><span class="o">-</span><span class="n">fch6w</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">39</span><span class="n">m</span>   <span class="mf">10.244</span><span class="o">.</span><span class="mf">228.107</span>   <span class="n">k8s</span><span class="o">-</span><span class="n">w1</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>查看svc</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">flask</span><span class="o">-</span><span class="n">app</span><span class="p">]</span><span class="c1"># kubectl get svc  -n web-demo</span>
+<span class="n">NAME</span>           <span class="n">TYPE</span>        <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>    <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>    <span class="n">AGE</span>
+<span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>   <span class="n">ClusterIP</span>   <span class="mf">10.99</span><span class="o">.</span><span class="mf">43.18</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">5000</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">39</span><span class="n">m</span>
+</pre></div>
+</div>
+<p>查看ingresses</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">flask</span><span class="o">-</span><span class="n">app</span><span class="p">]</span><span class="c1"># kubectl get ingresses.extensions -n web-demo</span>
+<span class="n">NAME</span>           <span class="n">CLASS</span>    <span class="n">HOSTS</span>                <span class="n">ADDRESS</span>   <span class="n">PORTS</span>   <span class="n">AGE</span>
+<span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>   <span class="n">flaskapp</span><span class="o">.</span><span class="n">baidu</span><span class="o">.</span><span class="n">com</span>             <span class="mi">80</span>      <span class="mi">36</span><span class="n">m</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="id8">
+<h2><a class="toc-backref" href="#id18">设置域名解析</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>如果没有dns，修改windows 10的hosts，添加一条记录</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.75</span> <span class="n">flaskapp</span><span class="o">.</span><span class="n">baidu</span><span class="o">.</span><span class="n">com</span>
+</pre></div>
+</div>
+<p>注意：解析到任意node节点都可以！</p>
+<p>访问页面</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">flaskapp</span><span class="o">.</span><span class="n">baidu</span><span class="o">.</span><span class="n">com</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>效果如下：</p>
+<div class="figure">
+<img alt="" src="../_images/k8s_flask_ingress0001.png" />
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

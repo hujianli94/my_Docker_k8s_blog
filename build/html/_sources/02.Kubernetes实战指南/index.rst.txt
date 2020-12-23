@@ -12,4 +12,6 @@
     03.Docker基础
     04.Kubernetes基础
     05.Pod
-    20.Helm使用相关
+    06.使用Ingress负载分发微服务
+    07.kubernetes实战案例
+    20.Helm简化Kubernetes部署

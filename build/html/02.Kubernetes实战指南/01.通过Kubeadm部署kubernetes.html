@@ -117,19 +117,23 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#id4">查看部署状态</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#helm-helm">Helm教程：如何安装和配置Helm</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id5">安装方式1</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">安装方式2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ingress-controller">安装 Ingress Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kubernetes-dashboard">安装Kubernetes Dashboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kuboard-kubernetes">安装Kuboard Kubernetes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">诊断分析</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id6">1．查看日志</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">2．查看资源详情和事件</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id7">参考文献</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">参考文献</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="02.Kubespray部署k8s.html">Kubespray部署k8s</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03.Docker基础.html">Docker基础</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04.Kubernetes基础.html">Kubernetes基础</a></li>
 <li class="toctree-l2"><a class="reference internal" href="05.Pod.html">Pod</a></li>
-<li class="toctree-l2"><a class="reference internal" href="20.Helm使用相关.html">Helm相关</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.kubernetes实战案例.html">Kubernetes实战案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.Helm简化Kubernetes部署.html">Helm简化kubernetes部署</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../03.Docker经典实例/index.html">03.Docker经典实例</a></li>
@@ -203,36 +207,39 @@
   <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#kubeadmkubernetes" id="id8">通过Kubeadm部署kubernetes</a><ul>
-<li><a class="reference internal" href="#id1" id="id9">基本环境配置</a></li>
-<li><a class="reference internal" href="#id2" id="id10">部署步骤</a><ul>
-<li><a class="reference internal" href="#id3" id="id11">准备工作</a></li>
-<li><a class="reference internal" href="#ipvs" id="id12">加载 ipvs 内核模块</a></li>
-<li><a class="reference internal" href="#docker" id="id13">安装docker</a></li>
-<li><a class="reference internal" href="#kubeadm-kubectl-kubelet" id="id14">安装kubeadm, kubectl, kubelet</a></li>
+<li><a class="reference internal" href="#kubeadmkubernetes" id="id9">通过Kubeadm部署kubernetes</a><ul>
+<li><a class="reference internal" href="#id1" id="id10">基本环境配置</a></li>
+<li><a class="reference internal" href="#id2" id="id11">部署步骤</a><ul>
+<li><a class="reference internal" href="#id3" id="id12">准备工作</a></li>
+<li><a class="reference internal" href="#ipvs" id="id13">加载 ipvs 内核模块</a></li>
+<li><a class="reference internal" href="#docker" id="id14">安装docker</a></li>
+<li><a class="reference internal" href="#kubeadm-kubectl-kubelet" id="id15">安装kubeadm, kubectl, kubelet</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#masterkubeadm" id="id15">Master初始化kubeadm</a></li>
-<li><a class="reference internal" href="#node" id="id16">node加入集群</a><ul>
-<li><a class="reference internal" href="#join" id="id17">获得 join命令参数</a></li>
+<li><a class="reference internal" href="#masterkubeadm" id="id16">Master初始化kubeadm</a></li>
+<li><a class="reference internal" href="#node" id="id17">node加入集群</a><ul>
+<li><a class="reference internal" href="#join" id="id18">获得 join命令参数</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id4" id="id18">查看部署状态</a></li>
-<li><a class="reference internal" href="#helm-helm" id="id19">Helm教程：如何安装和配置Helm</a><ul>
-<li><a class="reference internal" href="#id5" id="id20">安装方式1</a></li>
-<li><a class="reference internal" href="#id6" id="id21">安装方式2</a></li>
+<li><a class="reference internal" href="#id4" id="id19">查看部署状态</a></li>
+<li><a class="reference internal" href="#ingress-controller" id="id20">安装 Ingress Controller</a></li>
+<li><a class="reference internal" href="#kubernetes-dashboard" id="id21">安装Kubernetes Dashboard</a></li>
+<li><a class="reference internal" href="#kuboard-kubernetes" id="id22">安装Kuboard Kubernetes</a></li>
+<li><a class="reference internal" href="#id5" id="id23">诊断分析</a><ul>
+<li><a class="reference internal" href="#id6" id="id24">1．查看日志</a></li>
+<li><a class="reference internal" href="#id7" id="id25">2．查看资源详情和事件</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id7" id="id22">参考文献</a></li>
+<li><a class="reference internal" href="#id8" id="id26">参考文献</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="kubeadmkubernetes">
-<h1><a class="toc-backref" href="#id8">通过Kubeadm部署kubernetes</a><a class="headerlink" href="#kubeadmkubernetes" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id9">通过Kubeadm部署kubernetes</a><a class="headerlink" href="#kubeadmkubernetes" title="Permalink to this headline">¶</a></h1>
 <p>公司大部分线下测试环境均采用Kubeadm安装，这也是目前官方默认的安装方式，比二进制安装方式更加简单，可以让初学者快速上手并测试。目前GitHub上也有很多基于Ansible的自动化安装方式，但是为了更好地学习Kubernetes，还是建议体验一下Kubernetes的手动安装过程，以熟悉Kubernetes的各个组件。</p>
 <div class="section" id="id1">
-<h2><a class="toc-backref" href="#id9">基本环境配置</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">基本环境配置</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="31%" />
@@ -266,11 +273,11 @@
 </table>
 </div>
 <div class="section" id="id2">
-<h2><a class="toc-backref" href="#id10">部署步骤</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">部署步骤</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div>以下不做特殊说明默认所有机子都执行</div></blockquote>
 <div class="section" id="id3">
-<h3><a class="toc-backref" href="#id11">准备工作</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">准备工作</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>各节点通信采用主机名的方式，这种方式与IP地址相比较更具有扩展性。以下介绍具体的安装步骤。所有节点配置hosts，修改/etc/hosts如下：</p>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span># 更新系统和软件包
 yum update
@@ -353,7 +360,7 @@ sed -i &#39;/ swap / s/^\(.*\)$/#\1/g&#39; /etc/fstab
 </div>
 </div>
 <div class="section" id="ipvs">
-<h3><a class="toc-backref" href="#id12">加载 ipvs 内核模块</a><a class="headerlink" href="#ipvs" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">加载 ipvs 内核模块</a><a class="headerlink" href="#ipvs" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>安装 IPVS 模块</li>
 </ul>
@@ -400,7 +407,7 @@ sed -i &#39;/ swap / s/^\(.*\)$/#\1/g&#39; /etc/fstab
 </div>
 </div>
 <div class="section" id="docker">
-<h3><a class="toc-backref" href="#id13">安装docker</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">安装docker</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h3>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># master执行以下转到repo目录</span>
 <span class="n">cd</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span>
 
@@ -440,7 +447,7 @@ sed -i &#39;/ swap / s/^\(.*\)$/#\1/g&#39; /etc/fstab
 </div>
 </div>
 <div class="section" id="kubeadm-kubectl-kubelet">
-<h3><a class="toc-backref" href="#id14">安装kubeadm, kubectl, kubelet</a><a class="headerlink" href="#kubeadm-kubectl-kubelet" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">安装kubeadm, kubectl, kubelet</a><a class="headerlink" href="#kubeadm-kubectl-kubelet" title="Permalink to this headline">¶</a></h3>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span># master执行以下
 cat &gt;&gt; /etc/yum.repos.d/kubernetes.repo &lt;&lt;&#39;EOF&#39;
 [kubernetes]
@@ -532,7 +539,7 @@ chmod 755 images_pull_k8s.sh
 </div>
 </div>
 <div class="section" id="masterkubeadm">
-<h2><a class="toc-backref" href="#id15">Master初始化kubeadm</a><a class="headerlink" href="#masterkubeadm" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">Master初始化kubeadm</a><a class="headerlink" href="#masterkubeadm" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div>本小节的所有的操作，只在 Master 节点上进行</div></blockquote>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span># master执行init初始化
@@ -552,7 +559,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 </div>
 </div>
 <div class="section" id="node">
-<h2><a class="toc-backref" href="#id16">node加入集群</a><a class="headerlink" href="#node" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id17">node加入集群</a><a class="headerlink" href="#node" title="Permalink to this headline">¶</a></h2>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">node1</span> <span class="n">home</span><span class="p">]</span><span class="c1"># kubeadm join 172.16.60.236:6443 --token 950v9y.z3lz25askvjw33ou \</span>
 <span class="o">&gt;</span>     <span class="o">--</span><span class="n">discovery</span><span class="o">-</span><span class="n">token</span><span class="o">-</span><span class="n">ca</span><span class="o">-</span><span class="n">cert</span><span class="o">-</span><span class="nb">hash</span> <span class="n">sha256</span><span class="p">:</span><span class="n">e84f8923f43878b530c6d5879c258ccdd5caec1d02ee8d89d1d75b9bdf4d753e</span>
 <span class="o">......</span>
@@ -624,7 +631,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 </pre></div>
 </div>
 <div class="section" id="join">
-<h3><a class="toc-backref" href="#id17">获得 join命令参数</a><a class="headerlink" href="#join" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">获得 join命令参数</a><a class="headerlink" href="#join" title="Permalink to this headline">¶</a></h3>
 <p><strong>在 master 节点上执行</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 只在 master 节点执行
 kubeadm token create --print-join-command
@@ -644,7 +651,7 @@ kubeadm join apiserver.demo:6443 --token mpfjma.4vjjg8flqihor4vt     --discovery
 </div>
 </div>
 <div class="section" id="id4">
-<h2><a class="toc-backref" href="#id18">查看部署状态</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">查看部署状态</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># master查看node节点状态</span>
 <span class="n">kubectl</span> <span class="n">get</span> <span class="n">nodes</span>
 
@@ -656,45 +663,166 @@ kubeadm join apiserver.demo:6443 --token mpfjma.4vjjg8flqihor4vt     --discovery
 </pre></div>
 </div>
 </div>
-<div class="section" id="helm-helm">
-<h2><a class="toc-backref" href="#id19">Helm教程：如何安装和配置Helm</a><a class="headerlink" href="#helm-helm" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ingress-controller">
+<h2><a class="toc-backref" href="#id20">安装 Ingress Controller</a><a class="headerlink" href="#ingress-controller" title="Permalink to this headline">¶</a></h2>
+<p><strong>安装</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 只在 master 节点执行</span>
+<span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">install</span><span class="o">-</span><span class="n">script</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mf">19.</span><span class="n">x</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">ingress</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p><strong>卸载</strong></p>
+<p>只在您想选择其他 Ingress Controller 的情况下卸载</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 只在 master 节点执行</span>
+<span class="n">kubectl</span> <span class="n">delete</span> <span class="o">-</span><span class="n">f</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">install</span><span class="o">-</span><span class="n">script</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mf">19.</span><span class="n">x</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">ingress</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p><strong>定制化ingress</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 如果打算用于生产环境，请参考 https://github.com/nginxinc/kubernetes-ingress/blob/v1.5.5/docs/installation.md 并根据您自己的情况做进一步定制</span>
+</pre></div>
+</div>
+<p>查看ingress运行状态</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get pods --all-namespaces</span>
+<span class="n">NAMESPACE</span>       <span class="n">NAME</span>                                       <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">calico</span><span class="o">-</span><span class="n">kube</span><span class="o">-</span><span class="n">controllers</span><span class="o">-</span><span class="mi">6</span><span class="n">c89d944d5</span><span class="o">-</span><span class="n">th2k7</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">3</span><span class="n">h25m</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">j4g9n</span>                          <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">45</span><span class="n">m</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">qt6sk</span>                          <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">3</span><span class="n">h25m</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">coredns</span><span class="o">-</span><span class="mi">59</span><span class="n">c898cd69</span><span class="o">-</span><span class="mi">2</span><span class="n">tnvl</span>                   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">1</span>          <span class="mi">3</span><span class="n">h25m</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">coredns</span><span class="o">-</span><span class="mi">59</span><span class="n">c898cd69</span><span class="o">-</span><span class="n">cdxxq</span>                   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">3</span><span class="n">h25m</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">etcd</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">master</span>                            <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">3</span><span class="n">h25m</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">kube</span><span class="o">-</span><span class="n">apiserver</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">master</span>                  <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">1</span>          <span class="mi">3</span><span class="n">h25m</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">kube</span><span class="o">-</span><span class="n">controller</span><span class="o">-</span><span class="n">manager</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">master</span>         <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">6</span>          <span class="mi">3</span><span class="n">h25m</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">kube</span><span class="o">-</span><span class="n">proxy</span><span class="o">-</span><span class="n">ptd7x</span>                           <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">3</span><span class="n">h25m</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">kube</span><span class="o">-</span><span class="n">proxy</span><span class="o">-</span><span class="n">t97cs</span>                           <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">45</span><span class="n">m</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span>     <span class="n">kube</span><span class="o">-</span><span class="n">scheduler</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">master</span>                  <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">6</span>          <span class="mi">3</span><span class="n">h25m</span>
+<span class="n">nginx</span><span class="o">-</span><span class="n">ingress</span>   <span class="n">nginx</span><span class="o">-</span><span class="n">ingress</span><span class="o">-</span><span class="n">fzntf</span>                        <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">6</span><span class="n">m21s</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get pod -n nginx-ingress</span>
+<span class="n">NAME</span>                  <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">nginx</span><span class="o">-</span><span class="n">ingress</span><span class="o">-</span><span class="n">fzntf</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">6</span><span class="n">m37s</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="kubernetes-dashboard">
+<h2><a class="toc-backref" href="#id21">安装Kubernetes Dashboard</a><a class="headerlink" href="#kubernetes-dashboard" title="Permalink to this headline">¶</a></h2>
+<p><strong>安装</strong></p>
+<p>执行如下命令，以安装 Kubernetes Dashboard</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta5/aio/deploy/recommended.yaml
+
+// 可以直接下载
+$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
+
+如果访问不了该 yaml 文件，请使用下面的命令，效果是等价的
+
+::
+
+    kubectl apply -f https://kuboard.cn/install-script/k8s-dashboard/v2.0.0-beta5.yaml
+</pre></div>
+</div>
+<p><strong>访问</strong></p>
+<p>Kubernetes Dashboard 当前，只支持使用 Bearer Token登录。 由于 Kubernetes
+Dashboard 默认部署时，只配置了最低权限的 RBAC。因此，我们要创建一个名为
+<code class="docutils literal notranslate"><span class="pre">admin-user</span></code> 的 ServiceAccount，再创建一个
+ClusterRolebinding，将其绑定到 Kubernetes 集群中默认初始化的
+<code class="docutils literal notranslate"><span class="pre">cluster-admin</span></code> 这个 ClusterRole。</p>
+<p>执行如下命令可创建 ServiceAccount 和 ClusterRoleBinding</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">install</span><span class="o">-</span><span class="n">script</span><span class="o">/</span><span class="n">k8s</span><span class="o">-</span><span class="n">dashboard</span><span class="o">/</span><span class="n">auth</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p>获取Bearer Token</p>
+<p>执行命令：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk &#39;{print $1}&#39;)
+</pre></div>
+</div>
+<p>因为Service是ClusterIP类型，为了方便使用，我们可通过<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">--namespace=kubernetes-dashboard</span> <span class="pre">edit</span> <span class="pre">service</span> <span class="pre">kubernetes-dashboard</span></code>修改成NodePort类型</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">spec</span><span class="p">:</span>
+  <span class="n">clusterIP</span><span class="p">:</span> <span class="mf">10.96</span><span class="o">.</span><span class="mf">187.186</span>
+  <span class="n">externalTrafficPolicy</span><span class="p">:</span> <span class="n">Cluster</span>
+  <span class="n">ports</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">nodePort</span><span class="p">:</span> <span class="mi">31966</span>
+    <span class="n">port</span><span class="p">:</span> <span class="mi">443</span>
+    <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+    <span class="n">targetPort</span><span class="p">:</span> <span class="mi">8443</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">-</span><span class="n">app</span><span class="p">:</span> <span class="n">kubernetes</span><span class="o">-</span><span class="n">dashboard</span>
+  <span class="n">sessionAffinity</span><span class="p">:</span> <span class="kc">None</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">NodePort</span>        <span class="o">//</span><span class="n">修改这里</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get service -n kubernetes-dashboard</span>
+<span class="n">NAME</span>                        <span class="n">TYPE</span>        <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>      <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>         <span class="n">AGE</span>
+<span class="n">dashboard</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">scraper</span>   <span class="n">ClusterIP</span>   <span class="mf">10.96</span><span class="o">.</span><span class="mf">205.156</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">8000</span><span class="o">/</span><span class="n">TCP</span>        <span class="mi">70</span><span class="n">m</span>
+<span class="n">kubernetes</span><span class="o">-</span><span class="n">dashboard</span>        <span class="n">NodePort</span>    <span class="mf">10.96</span><span class="o">.</span><span class="mf">187.186</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">443</span><span class="p">:</span><span class="mi">31966</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">70</span><span class="n">m</span>
+</pre></div>
+</div>
+<p>使用 Firefox 浏览器访问，并忽略 HTTPS 校验错误。</p>
+<div class="figure">
+<img alt="" src="../_images/k8s-dashborad0001.png" />
+</div>
+<p>给匿名用户授权</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create clusterrolebinding test:anonymous --clusterrole=cluster-admin --user=system:anonymous
+</pre></div>
+</div>
+</div>
+<div class="section" id="kuboard-kubernetes">
+<h2><a class="toc-backref" href="#id22">安装Kuboard Kubernetes</a><a class="headerlink" href="#kuboard-kubernetes" title="Permalink to this headline">¶</a></h2>
+<p>Kubernetes 容器编排已越来越被大家关注，然而使用 Kubernetes
+的门槛却依然很高，主要体现在这几个方面：</p>
+<ul class="simple">
+<li>集群的安装复杂，出错概率大</li>
+<li>Kubernetes相较于容器化，引入了许多新的概念，学习难度高</li>
+<li>需要手工编写 YAML 文件，难以在多环境下管理</li>
+<li>缺少好的实战案例可以参考</li>
+</ul>
+<p>Kuboard，是一款免费的 Kubernetes 图形化管理工具，Kuboard
+力图帮助用户快速在 Kubernetes 上落地微服务。</p>
+<p>参考文献：</p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12060855.html">https://www.cnblogs.com/xiao987334176/p/12060855.html</a></p>
+</div>
 <div class="section" id="id5">
-<h3><a class="toc-backref" href="#id20">安装方式1</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<p>下载最新的helm 3安装脚本</p>
-<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">fsSL</span> <span class="o">-</span><span class="n">o</span> <span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">scripts</span><span class="o">/</span><span class="n">get</span><span class="o">-</span><span class="n">helm</span><span class="o">-</span><span class="mi">3</span>
-</pre></div>
-</div>
-<p>赋权并执行</p>
-<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chmod</span> <span class="mi">700</span> <span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="o">&amp;&amp;</span> <span class="n">sh</span> <span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span>
-</pre></div>
-</div>
-<p>通过执行helm命令来验证helm安装。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span>
-</pre></div>
-</div>
-<p>增加一个公有稳定版的helm的repo仓库</p>
-<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">repo</span> <span class="n">add</span> <span class="n">stable</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">oss</span><span class="o">-</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">charts</span>
-</pre></div>
-</div>
-<p>让我们安装稳定的nginx 图表并测试设置</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">install</span> <span class="n">nginx</span> <span class="n">stable</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">ingress</span>
-</pre></div>
-</div>
-<p>列出已安装的helm 图表</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">ls</span>
-</pre></div>
-</div>
-</div>
+<h2><a class="toc-backref" href="#id23">诊断分析</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id6">
-<h3><a class="toc-backref" href="#id21">安装方式2</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<p>使用一条命令安装helm</p>
-<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">git</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">bash</span>
+<h3><a class="toc-backref" href="#id24">1．查看日志</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>（1）使用journalctl查看服务日志</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master</span> <span class="n">manifests</span><span class="p">]</span><span class="c1"># journalctl -u docker</span>
 </pre></div>
 </div>
+<p>查看并追踪kubelet的日志：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">journalctl</span> <span class="o">-</span><span class="n">u</span> <span class="n">kubelet</span> <span class="o">-</span><span class="n">f</span>
+</pre></div>
+</div>
+<p>（2）使用“kubectl logs”查看容器日志</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">logs</span> <span class="o">-</span><span class="n">f</span> <span class="n">etcd</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">master</span> <span class="o">-</span><span class="n">n</span> <span class="n">kube</span><span class="o">-</span><span class="n">system</span>
+</pre></div>
 </div>
 </div>
 <div class="section" id="id7">
-<h2><a class="toc-backref" href="#id22">参考文献</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<h3><a class="toc-backref" href="#id25">2．查看资源详情和事件</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>kubectl
+describe命令用于查看一个或多个资源的详细情况，包括相关资源和事件，语法如下：</p>
+<p>（1）查看节点</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">describe</span> <span class="n">nodes</span> <span class="n">k8s</span><span class="o">-</span><span class="n">master</span>
+</pre></div>
+</div>
+<p>查看所有节点：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">describe</span> <span class="n">nodes</span>
+</pre></div>
+</div>
+<p>查看指定节点以及事件：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">describe</span> <span class="n">nodes</span> <span class="n">k8s</span><span class="o">-</span><span class="n">node01</span> <span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">events</span>
+</pre></div>
+</div>
+<p>2）查看Pod查看指定Pod：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">describe</span> <span class="n">pod</span> <span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">j4g9n</span> <span class="o">-</span><span class="n">n</span> <span class="n">kube</span><span class="o">-</span><span class="n">system</span>
+</pre></div>
+</div>
+<p>查看指定文件描述的所有资源：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">describe</span> <span class="o">-</span><span class="n">f</span> <span class="n">teamcity</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id8">
+<h2><a class="toc-backref" href="#id26">参考文献</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.cnblogs.com/yangxiaochu/p/10683951.html">kubeadm安装k8s
 1.13版本</a></p>
 <p><a class="reference external" href="https://blog.csdn.net/happyworld1/article/details/106383464/">ubuntu18.04 kubeadm 安装kubernetes

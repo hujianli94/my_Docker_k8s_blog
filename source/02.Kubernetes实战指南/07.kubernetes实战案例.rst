@@ -1,0 +1,101 @@
+.. contents::
+   :depth: 3
+..
+
+Kubernetes实战案例
+==================
+
+kubernetes mysql 持久化实战
+---------------------------
+
+安装nfs服务器，将nfs服务器的\ ``/data/mysql_nfs``\ 路径进行共享。
+
+这里nfs服务器地址为：\ ``192.168.1.40``
+
+1. 创建mysql的namespaces
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+``mysql-namespaces.yaml``
+
+`mysql-namespaces.yaml <../yaml_file/mysql5.7/namespace.yaml>`__
+
+2. 创建pv
+~~~~~~~~~
+
+``mysql-pv.yaml``
+
+`mysql-pv.yaml <../yaml_file/mysql5.7/mysql-pv.yaml>`__
+
+3. 创建pvc
+~~~~~~~~~~
+
+``mysql-pvc.yaml``
+
+`mysql-pvc.yaml <../yaml_file/mysql5.7/mysql-pvc.yaml>`__
+
+4. 创建ConfigMap
+~~~~~~~~~~~~~~~~
+
+``mysql-cm.yaml``
+
+`mysql-cm.yaml <../yaml_file/mysql5.7/mysql-cm.yaml>`__
+
+5. 创建mysql deployment
+~~~~~~~~~~~~~~~~~~~~~~~
+
+``mysql-deployment.yaml``
+
+`mysql-deployment.yaml <../yaml_file/mysql5.7/deployment-mysql.yaml>`__
+
+    注意nfs服务器上需要开启rpcbind服务
+
+::
+
+    systemctl enable rpcbind
+    systemctl start rpcbind
+    systemctl start nfs-server
+
+依次创建命令
+
+::
+
+    kubectl create -f mysql-namespaces.yaml
+    kubectl create -f mysql-pv.yaml
+    kubectl create -f mysql-pvc.yaml
+    kubectl create -f mysql-cm.yaml
+    kubectl create -f mysql-deployment.yaml
+
+查看结果
+
+::
+
+    [root@ci-base k8s-example]# kubectl get ns
+    NAME                   STATUS   AGE
+    mysql                  Active   17s
+
+
+    [root@ci-base k8s-example]# kubectl get pv -n mysql
+    NAME         CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+    mysql-data   2Gi        RWX            Recycle          Available           nfs                     17s
+
+    [root@ci-base k8s-example]# kubectl get pvc -n mysql
+
+    NAME         STATUS   VOLUME       CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+    mysql-data   Bound    mysql-data   2Gi        RWX            nfs            8s
+
+    [root@ci-base k8s-example]# kubectl get cm -n mysql
+    NAME               DATA   AGE
+    mysql-config-sre   1      14s
+
+    [root@ci-base k8s-example]# kubectl get pod,svc -n mysql
+    NAME                         READY   STATUS    RESTARTS   AGE
+    pod/mysql-565b7cd487-hw5lc   1/1     Running   0          8m20s
+
+    NAME            TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+    service/mysql   NodePort   10.98.67.121   <none>        3306:30006/TCP   8m11s
+
+6. 测试mysql连接是否正常
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: ../_static/k8s_mysql0001.png
+   :alt:

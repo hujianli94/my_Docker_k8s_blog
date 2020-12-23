@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    k8s.eip.work/displayName: flaskapp
+    k8s.eip.work/ingress: 'false'
+    k8s.eip.work/service: ClusterIP
+    k8s.eip.work/workload: svc-flaskapp
+  labels:
+    k8s.eip.work/layer: svc
+    k8s.eip.work/name: svc-flaskapp
+  name: svc-flaskapp
+  namespace: web-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.eip.work/layer: svc
+      k8s.eip.work/name: svc-flaskapp
+  template:
+    metadata:
+      labels:
+        k8s.eip.work/layer: svc
+        k8s.eip.work/name: svc-flaskapp
+    spec:
+      containers:
+        -
+          image: jcdemo/flaskapp
+          imagePullPolicy: Always
+          name: flaskapp
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    k8s.eip.work/displayName: flaskapp
+    k8s.eip.work/workload: svc-flaskapp
+  labels:
+    k8s.eip.work/layer: svc
+    k8s.eip.work/name: svc-flaskapp
+  name: svc-flaskapp
+  namespace: web-demo
+spec:
+  ports:
+    - name: wjaz2a
+      nodePort: 0
+      port: 5000
+      protocol: TCP
+      targetPort: 5000
+  selector:
+    k8s.eip.work/layer: svc
+    k8s.eip.work/name: svc-flaskapp
+  type: ClusterIP
