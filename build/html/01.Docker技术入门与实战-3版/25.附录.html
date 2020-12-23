@@ -377,6 +377,39 @@ done
 </pre></div>
 </div>
 </div>
+<div class="section" id="repository">
+<h4>10 批量删除指定 repository 所有镜像工具<a class="headerlink" href="#repository" title="Permalink to this headline">¶</a></h4>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>#!/bin/sh
+# Writed by yijian on 2020/8/31
+# 批量删除指定 repository 所有镜像工具
+# 运行时需要指定一个参数：
+# 1）参数1：必选参数，repository 名，即“docker images”的第一列值
+
+function usage()
+{
+  echo &quot;Remove all images with the given repository.&quot;
+  echo &quot;Usage: `basename $0` repository&quot;
+  echo &quot;Example1: `basename $0` \&quot;&lt;none&gt;\&quot;&quot;
+  echo &quot;Example2: `basename $0` \&quot;redis\&quot;&quot;
+}
+
+# 参数检查
+if test $# -ne 1; then
+  usage
+  exit 1
+fi
+
+repository=&quot;$1&quot;
+images=(`docker images|awk -v repository=$repository &#39;{ if ($1==repository) print $3 }&#39;`)
+for ((i=0; i&lt;${#images[@]}; ++i))
+do
+  image=&quot;${images[$i]}&quot;
+  echo &quot;[$i] docker rmi \&quot;$image\&quot;&quot;
+  docker rmi &quot;$image&quot;
+done
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="id9">
 <h3><a class="toc-backref" href="#id15">容器相关</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
