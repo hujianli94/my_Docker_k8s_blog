@@ -59,6 +59,21 @@ Helm的软件仓库，保存了一系列的Chart软件包，以供用户下载�
 使用helm
 install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到的Release和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。在同一个集群中，一个Chart可以使用不同的配置（Config）安装多次，每次安装都会创建一个Release。
 
+Helm 3 v3 变化
+--------------
+
+2019 年 11 月 13 日， Helm 团队发布 Helm v3 的第一个稳定版本。
+该版本主要变化如下： 架构变化：
+
+.. figure:: ../_static/k8s-helmv30001.png
+   :alt: 
+
+1. 最明显的变化是 Tiller 的删除
+2. Release 名称可以在不同命名空间重用
+3. 支持将 Chart 推送至 Docker 镜像仓库中
+4. 使用 JSONSchema 验证 chart values
+5. 其他
+
 安装
 ----
 
@@ -104,6 +119,8 @@ install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到�
 安装方式2
 ~~~~~~~~~
 
+安装helm-v3
+
 使用一条命令安装helm
 
 ::
@@ -114,9 +131,10 @@ install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到�
 
 .. code:: shell
 
-    wget https://get.helm.sh/helm-v2.16.6-linux-amd64.tar.gz
-    tar zxvf helm-v2.16.6-linux-amd64.tar.gz -C /usr/src/
-    cp /usr/src/linux-amd64/helm /usr/local/bin/
+    # Helm 客户端下载地址：https://github.com/helm/helm/releases解压移动到/usr/bin/目录即可。
+    wget https://get.helm.sh/helm-vv3.2.1-linux-amd64.tar.gz
+    tar zxvf helm-v3.2.1-linux-amd64.tar.gz
+    mv linux-amd64/helm /usr/bin/
 
 查看Charts仓库信息
 ------------------
@@ -134,11 +152,25 @@ install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到�
 
 ::
 
-    # 新增国内仓库，并进行更新操作
-    helm repo add stable http://mirror.azure.cn/kubernetes/charts/
-    helm update
-    helm repo list
+    4.2  配置国内 t chart  仓库
 
+     微软仓库（http://mirror.azure.cn/kubernetes/charts/）这个仓库推荐，基本
+    上官网有的 chart 这里都有。
+     阿里云仓库（https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts ）
+     官方仓库（https://hub.kubeapps.com/charts/incubator）官方 chart 仓库，国内有点不好使。
+
+
+    #添加存储库
+    helm repo add stable http://mirror.azure.cn/kubernetes/charts
+    helm repo add aliyun https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
+    helm repo update
+
+    #查看配置的存储库
+    helm repo list
+    helm search repo stable
+
+    #删除存储库：
+    helm repo remove aliyun
 
     # 列出stable仓库中维护的所有Charts的列表
     helm search repo
