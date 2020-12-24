@@ -120,7 +120,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#yaml">3.1 应用yaml</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id8">设置域名解析</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ingress-http-7">4. Ingress：HTTP 7层路由机制</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id9">4.1 应用yaml</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="07.kubernetes实战案例.html">Kubernetes实战案例</a></li>
@@ -198,26 +201,29 @@
   <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#ingress" id="id9">使用Ingress负载分发微服务</a><ul>
-<li><a class="reference internal" href="#id1" id="id10">1.简介</a></li>
-<li><a class="reference internal" href="#demo" id="id11">2.Demo示例</a><ul>
-<li><a class="reference internal" href="#id2" id="id12">2.1 准备Demo并完成部署</a></li>
-<li><a class="reference internal" href="#id3" id="id13">2.2 创建部署资源</a></li>
-<li><a class="reference internal" href="#id4" id="id14">2.3 创建服务资源</a></li>
-<li><a class="reference internal" href="#id5" id="id15">2.4 创建Ingress资源并配置转发规则</a></li>
+<li><a class="reference internal" href="#ingress" id="id11">使用Ingress负载分发微服务</a><ul>
+<li><a class="reference internal" href="#id1" id="id12">1.简介</a></li>
+<li><a class="reference internal" href="#demo" id="id13">2.Demo示例</a><ul>
+<li><a class="reference internal" href="#id2" id="id14">2.1 准备Demo并完成部署</a></li>
+<li><a class="reference internal" href="#id3" id="id15">2.2 创建部署资源</a></li>
+<li><a class="reference internal" href="#id4" id="id16">2.3 创建服务资源</a></li>
+<li><a class="reference internal" href="#id5" id="id17">2.4 创建Ingress资源并配置转发规则</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6" id="id16">3.Ingress实战</a><ul>
-<li><a class="reference internal" href="#yaml" id="id17">3.1 应用yaml</a></li>
+<li><a class="reference internal" href="#id6" id="id18">3.Ingress实战</a><ul>
+<li><a class="reference internal" href="#yaml" id="id19">3.1 应用yaml</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id8" id="id18">设置域名解析</a></li>
+<li><a class="reference internal" href="#ingress-http-7" id="id20">4. Ingress：HTTP 7层路由机制</a><ul>
+<li><a class="reference internal" href="#id9" id="id21">4.1 应用yaml</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="ingress">
-<h1><a class="toc-backref" href="#id9">使用Ingress负载分发微服务</a><a class="headerlink" href="#ingress" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id11">使用Ingress负载分发微服务</a><a class="headerlink" href="#ingress" title="Permalink to this headline">¶</a></h1>
 <p>NodePort Service存在太多缺陷，不适合生产环境。LoadBlancer
 Service则不太灵活，比如针对微服务架构，那么不同服务是否需要多个负载均衡服务呢？我们还有其他选择么？有，那就是Ingress。</p>
 <p>Ingress将集群外部的HTTP和HTTPS路由暴露给集群中的Service，相当于集群的入口，而入口规则由Ingress定义的规则来控制。</p>
@@ -225,14 +231,14 @@ Service则不太灵活，比如针对微服务架构，那么不同服务是否�
 Controller（入口控制器），例如ingress-nginx。Ingress负责定义抽象的规则，而Ingress
 Controller负责具体实现。通常情况下，Ingress搭配负载均衡一起使用。接下来，结合一个简单的微服务Demo来使用Ingress进行负载分发。</p>
 <div class="section" id="id1">
-<h2><a class="toc-backref" href="#id10">1.简介</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">1.简介</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>示意图如下：</p>
 <div class="figure">
 <img alt="" src="../_images/k8s_ingreess0001.png" />
 </div>
 </div>
 <div class="section" id="demo">
-<h2><a class="toc-backref" href="#id11">2.Demo示例</a><a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">2.Demo示例</a><a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
 <p>为了便于大家理解，我们先做一个简单的规划。整体规划图如图</p>
 <div class="figure">
 <img alt="" src="../_images/k8s_ingress_demo001.png" />
@@ -243,45 +249,225 @@ Controller负责具体实现。通常情况下，Ingress搭配负载均衡一起
 <p>（3）创建Ingress，配置不同的转发规则。</p>
 <p>（4）为了访问方便，我们需要配置域名映射。</p>
 <div class="section" id="id2">
-<h3><a class="toc-backref" href="#id12">2.1 准备Demo并完成部署</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">2.1 准备Demo并完成部署</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>apidemo1</li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>apidemo1的访问路径为https://{hostname}:{port}/api/demo1，输出JSON“[&quot;value1&quot;, &quot;value2&quot;]”。
+
+如下方式访问：
+nodeIP:31010/api/demo1
 </pre></div>
 </div>
 <ul class="simple">
 <li>apidemo2</li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>apidemo2的访问路径为https://{hostname}:{port}/api/demo2，输出JSON“[&quot;value3&quot;, &quot;value4&quot;]”。
+如下方式访问：
+nodeIP:31011/api/demo2
 
 apidemo1和apidemo2均需支持80端口和443端口访问。
 </pre></div>
 </div>
 </div>
 <div class="section" id="id3">
-<h3><a class="toc-backref" href="#id13">2.2 创建部署资源</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://github.com/hujianli94/k8s-yaml-example/blob/master/ingress_demo/apidemo1-svc.yaml">demo1.yaml</a></p>
-<p><a class="reference external" href="https://github.com/hujianli94/k8s-yaml-example/blob/master/ingress_demo/apidemo2-svc.yaml">demo2.yaml</a></p>
-</div>
-<div class="section" id="id4">
-<h3><a class="toc-backref" href="#id14">2.3 创建服务资源</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://github.com/hujianli94/k8s-yaml-example/blob/master/ingress_demo/apidemo1-svc.yaml">apidemo1-svc.yaml</a></p>
-<p><a class="reference external" href="https://github.com/hujianli94/k8s-yaml-example/blob/master/ingress_demo/apidemo2-svc.yaml">apidemo2-svc.yaml</a></p>
-</div>
-<div class="section" id="id5">
-<h3><a class="toc-backref" href="#id15">2.4 创建Ingress资源并配置转发规则</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<p>接下来我们需要创建Ingress并配置好转发规则达成如下目标：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>● 使用同一个IP访问多个API服务，这里对应的是“apidemo1”和“apidemo2”。
-● 通过地址http://demo.xin-lai.com/api/demo1访问应用“apidemo1”。
-● 通过地址http://demo.xin-lai.com/api/demo2访问应用“apidemo2”。
+<h3><a class="toc-backref" href="#id15">2.2 创建部署资源</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">demo1-deploy.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span> <span class="c1">#api版本</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span> <span class="c1">#使用部署对象</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">labels</span><span class="p">:</span> <span class="c1">#标签列表</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">apidemo1</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">apidemo1</span> <span class="c1">#部署名称</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">demo</span><span class="o">-</span><span class="n">ingress</span><span class="o">-</span><span class="n">test01</span> <span class="c1">#命名空间</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">replicas</span><span class="p">:</span> <span class="mi">1</span> <span class="c1">#副本数</span>
+  <span class="n">selector</span><span class="p">:</span> <span class="c1">#选择器</span>
+    <span class="n">matchLabels</span><span class="p">:</span>
+      <span class="n">app</span><span class="p">:</span> <span class="n">apidemo1</span>
+  <span class="n">template</span><span class="p">:</span> <span class="c1">#Pod模板</span>
+    <span class="n">metadata</span><span class="p">:</span>
+      <span class="n">labels</span><span class="p">:</span>
+        <span class="n">app</span><span class="p">:</span> <span class="n">apidemo1</span>
+    <span class="n">spec</span><span class="p">:</span>
+      <span class="n">containers</span><span class="p">:</span> <span class="c1">#容器列表</span>
+      <span class="o">-</span> <span class="n">env</span><span class="p">:</span> <span class="c1">#环境变量设置</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">PATH</span>
+          <span class="n">value</span><span class="p">:</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="p">:</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="nb">bin</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">ASPNETCORE_URLS</span>
+          <span class="n">value</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//+</span><span class="p">:</span><span class="mi">80</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">DOTNET_RUNNING_IN_CONTAINER</span>
+          <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">ASPNETCORE_VERSION</span>
+          <span class="n">value</span><span class="p">:</span> <span class="mf">2.2</span><span class="o">.</span><span class="mi">6</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">ccr</span><span class="o">.</span><span class="n">ccs</span><span class="o">.</span><span class="n">tencentyun</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">magicodes</span><span class="o">/</span><span class="n">apidemo1</span><span class="p">:</span><span class="n">latest</span> <span class="c1">#镜像地址</span>
+        <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">Always</span> <span class="c1">#镜像拉取策略，Always表示总是拉取最新镜像，IfNotPresent表示如果本地存在则不拉取，Never则表示只使用本地镜像</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">apidemo1</span>  <span class="c1">#容器名称</span>
+        <span class="n">resources</span><span class="p">:</span>  <span class="c1">#资源限制</span>
+          <span class="n">limits</span><span class="p">:</span> <span class="c1">#最高限制</span>
+            <span class="n">cpu</span><span class="p">:</span> <span class="mi">500</span><span class="n">m</span>
+            <span class="n">memory</span><span class="p">:</span> <span class="mi">256</span><span class="n">Mi</span>
+          <span class="n">requests</span><span class="p">:</span> <span class="c1">#预分配</span>
+            <span class="n">cpu</span><span class="p">:</span> <span class="mi">250</span><span class="n">m</span>
+            <span class="n">memory</span><span class="p">:</span> <span class="mi">64</span><span class="n">Mi</span>
+        <span class="n">workingDir</span><span class="p">:</span> <span class="o">/</span><span class="n">app</span>  <span class="c1">#工作目录</span>
+      <span class="n">dnsPolicy</span><span class="p">:</span> <span class="n">ClusterFirst</span> <span class="c1">#DNS策略</span>
+      <span class="n">restartPolicy</span><span class="p">:</span> <span class="n">Always</span> <span class="c1">#重启策略</span>
+      <span class="n">terminationGracePeriodSeconds</span><span class="p">:</span> <span class="mi">30</span> <span class="c1">#删除需要时间</span>
+
+<span class="o">---</span>
+
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span> <span class="c1">#资源类型</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">apidemo1</span>  <span class="c1">#服务名称</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">demo</span><span class="o">-</span><span class="n">ingress</span><span class="o">-</span><span class="n">test01</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">ports</span><span class="p">:</span> <span class="c1">#端口列表</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">tcp</span><span class="o">-</span><span class="mi">80</span><span class="o">-</span><span class="mi">80</span>
+    <span class="n">nodePort</span><span class="p">:</span> <span class="mi">31010</span> <span class="c1">#节点端口</span>
+    <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>  <span class="c1">#当前端口</span>
+    <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span> <span class="c1">#协议</span>
+    <span class="n">targetPort</span><span class="p">:</span> <span class="mi">80</span>  <span class="c1">#目标端口</span>
+  <span class="n">selector</span><span class="p">:</span> <span class="c1">#标签选择器</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">apidemo1</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">NodePort</span>  <span class="c1">#NodePort 类型的Service</span>
 </pre></div>
 </div>
-<p><a class="reference external" href="https://github.com/hujianli94/k8s-yaml-example/blob/master/ingress_demo/demo-ingress.yaml">demo-ingress.yaml</a></p>
+</div>
+<div class="section" id="id4">
+<h3><a class="toc-backref" href="#id16">2.3 创建服务资源</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">demo2-deploy.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span> <span class="c1">#api版本</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span> <span class="c1">#使用部署对象</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">labels</span><span class="p">:</span> <span class="c1">#标签列表</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">apidemo2</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">apidemo2</span> <span class="c1">#部署名称</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">demo</span><span class="o">-</span><span class="n">ingress</span><span class="o">-</span><span class="n">test01</span> <span class="c1">#命名空间</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">replicas</span><span class="p">:</span> <span class="mi">1</span> <span class="c1">#副本数</span>
+  <span class="n">selector</span><span class="p">:</span> <span class="c1">#选择器</span>
+    <span class="n">matchLabels</span><span class="p">:</span>
+      <span class="n">app</span><span class="p">:</span> <span class="n">apidemo2</span>
+  <span class="n">template</span><span class="p">:</span> <span class="c1">#Pod模板</span>
+    <span class="n">metadata</span><span class="p">:</span>
+      <span class="n">labels</span><span class="p">:</span>
+        <span class="n">app</span><span class="p">:</span> <span class="n">apidemo2</span>
+    <span class="n">spec</span><span class="p">:</span>
+      <span class="n">containers</span><span class="p">:</span> <span class="c1">#容器列表</span>
+      <span class="o">-</span> <span class="n">env</span><span class="p">:</span> <span class="c1">#环境变量设置</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">PATH</span>
+          <span class="n">value</span><span class="p">:</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="p">:</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="nb">bin</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">ASPNETCORE_URLS</span>
+          <span class="n">value</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//+</span><span class="p">:</span><span class="mi">80</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">DOTNET_RUNNING_IN_CONTAINER</span>
+          <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">ASPNETCORE_VERSION</span>
+          <span class="n">value</span><span class="p">:</span> <span class="mf">2.2</span><span class="o">.</span><span class="mi">6</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">ccr</span><span class="o">.</span><span class="n">ccs</span><span class="o">.</span><span class="n">tencentyun</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">magicodes</span><span class="o">/</span><span class="n">apidemo2</span><span class="p">:</span><span class="n">latest</span> <span class="c1">#镜像地址</span>
+        <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">Always</span> <span class="c1">#镜像拉取策略，Always表示总是拉取最新镜像，IfNotPresent表示如果本地存在则不拉取，Never则表示只使用本地镜像</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">apidemo2</span>  <span class="c1">#容器名称</span>
+        <span class="n">resources</span><span class="p">:</span>  <span class="c1">#资源限制</span>
+          <span class="n">limits</span><span class="p">:</span> <span class="c1">#最高限制</span>
+            <span class="n">cpu</span><span class="p">:</span> <span class="mi">500</span><span class="n">m</span>
+            <span class="n">memory</span><span class="p">:</span> <span class="mi">256</span><span class="n">Mi</span>
+          <span class="n">requests</span><span class="p">:</span> <span class="c1">#预分配</span>
+            <span class="n">cpu</span><span class="p">:</span> <span class="mi">250</span><span class="n">m</span>
+            <span class="n">memory</span><span class="p">:</span> <span class="mi">64</span><span class="n">Mi</span>
+        <span class="n">workingDir</span><span class="p">:</span> <span class="o">/</span><span class="n">app</span>  <span class="c1">#工作目录</span>
+      <span class="n">dnsPolicy</span><span class="p">:</span> <span class="n">ClusterFirst</span> <span class="c1">#DNS策略</span>
+      <span class="n">restartPolicy</span><span class="p">:</span> <span class="n">Always</span> <span class="c1">#重启策略</span>
+      <span class="n">terminationGracePeriodSeconds</span><span class="p">:</span> <span class="mi">30</span> <span class="c1">#删除需要时间</span>
+<span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span> <span class="c1">#资源类型</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">apidemo2</span>  <span class="c1">#服务名称</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">demo</span><span class="o">-</span><span class="n">ingress</span><span class="o">-</span><span class="n">test01</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">ports</span><span class="p">:</span> <span class="c1">#端口列表</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">tcp</span><span class="o">-</span><span class="mi">80</span><span class="o">-</span><span class="mi">80</span>
+    <span class="n">nodePort</span><span class="p">:</span> <span class="mi">31011</span> <span class="c1">#节点端口</span>
+    <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>  <span class="c1">#当前端口</span>
+    <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span> <span class="c1">#协议</span>
+    <span class="n">targetPort</span><span class="p">:</span> <span class="mi">80</span>  <span class="c1">#目标端口</span>
+  <span class="n">selector</span><span class="p">:</span> <span class="c1">#标签选择器</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">apidemo2</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">NodePort</span>  <span class="c1">#NodePort 类型的Service</span>
+</pre></div>
+</div>
+<p><strong>检查创建的资源信息</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">ingress</span><span class="o">-</span><span class="n">demo1</span><span class="p">]</span><span class="c1"># kubectl get ingress -n demo-ingress-test01</span>
+<span class="n">NAME</span>   <span class="n">CLASS</span>    <span class="n">HOSTS</span>                                       <span class="n">ADDRESS</span>   <span class="n">PORTS</span>   <span class="n">AGE</span>
+<span class="n">demo</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>   <span class="n">demo</span><span class="o">.</span><span class="n">hu</span><span class="o">-</span><span class="n">uiapi123</span><span class="o">.</span><span class="n">com</span><span class="p">,</span><span class="n">demo</span><span class="o">.</span><span class="n">hu</span><span class="o">-</span><span class="n">uiapi123</span><span class="o">.</span><span class="n">com</span>             <span class="mi">80</span>      <span class="mi">32</span><span class="n">s</span>
+
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">ingress</span><span class="o">-</span><span class="n">demo1</span><span class="p">]</span><span class="c1"># kubectl get pods,svc -n demo-ingress-test01</span>
+<span class="n">NAME</span>                            <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">pod</span><span class="o">/</span><span class="n">apidemo1</span><span class="o">-</span><span class="mi">5</span><span class="n">d5d799856</span><span class="o">-</span><span class="n">nr7mn</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">30</span><span class="n">m</span>
+<span class="n">pod</span><span class="o">/</span><span class="n">apidemo2</span><span class="o">-</span><span class="mi">58</span><span class="n">b784fb9c</span><span class="o">-</span><span class="n">dz2lc</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">27</span><span class="n">m</span>
+
+<span class="n">NAME</span>               <span class="n">TYPE</span>       <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>      <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>        <span class="n">AGE</span>
+<span class="n">service</span><span class="o">/</span><span class="n">apidemo1</span>   <span class="n">NodePort</span>   <span class="mf">10.102</span><span class="o">.</span><span class="mf">61.7</span>     <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">80</span><span class="p">:</span><span class="mi">31010</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">30</span><span class="n">m</span>
+<span class="n">service</span><span class="o">/</span><span class="n">apidemo2</span>   <span class="n">NodePort</span>   <span class="mf">10.111</span><span class="o">.</span><span class="mf">218.86</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">80</span><span class="p">:</span><span class="mi">31011</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">26</span><span class="n">m</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3><a class="toc-backref" href="#id17">2.4 创建Ingress资源并配置转发规则</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>接下来我们需要创建Ingress并配置好转发规则达成如下目标：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>● 使用同一个IP访问多个API服务，这里对应的是“apidemo1”和“apidemo2”。
+● 通过地址http://demo.hu-uiapi123.com:31010/api/demo1访问应用“apidemo1”。
+● 通过地址http://demo.hu-uiapi123.com:31011/api/demo2访问应用“apidemo2”。
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ingress-demo.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># create ingree</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">networking</span><span class="o">.</span><span class="n">k8s</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">v1beta1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Ingress</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">.</span><span class="n">class</span><span class="p">:</span> <span class="n">qcloud</span> <span class="c1">#注释,不同的Ingress控制器支持不同的注释</span>
+    <span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">.</span><span class="n">http</span><span class="o">-</span><span class="n">rules</span><span class="p">:</span> <span class="s1">&#39;[{&quot;host&quot;:&quot;demo.hu-uiapi123.com&quot;,&quot;path&quot;:&quot;/api/demo1&quot;,&quot;backend&quot;:{&quot;serviceName&quot;:&quot;apidemo1&quot;,&quot;servicePort&quot;:80}},{&quot;host&quot;:&quot;demo.hu-uiapi123.com&quot;,&quot;path&quot;:&quot;/api/demo2&quot;,&quot;backend&quot;:{&quot;serviceName&quot;:&quot;apidemo2&quot;,&quot;servicePort&quot;:80}}]&#39;</span> <span class="c1">#HTTP转发规则</span>
+    <span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">.</span><span class="n">https</span><span class="o">-</span><span class="n">rules</span><span class="p">:</span> <span class="s2">&quot;null&quot;</span>
+    <span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">.</span><span class="n">rule</span><span class="o">-</span><span class="n">mix</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">demo</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">demo</span><span class="o">-</span><span class="n">ingress</span><span class="o">-</span><span class="n">test01</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">rules</span><span class="p">:</span> <span class="c1">#规则列表</span>
+  <span class="o">-</span> <span class="n">host</span><span class="p">:</span> <span class="n">demo</span><span class="o">.</span><span class="n">hu</span><span class="o">-</span><span class="n">uiapi123</span><span class="o">.</span><span class="n">com</span> <span class="c1">#主机名，可选。如不填写，则使用IP地址。</span>
+    <span class="n">http</span><span class="p">:</span> <span class="c1">#HTTP规则</span>
+      <span class="n">paths</span><span class="p">:</span> <span class="c1">#路径列表</span>
+      <span class="o">-</span> <span class="n">backend</span><span class="p">:</span> <span class="c1">#后端配置</span>
+          <span class="n">serviceName</span><span class="p">:</span> <span class="n">apidemo1</span> <span class="c1">#后端服务名称</span>
+          <span class="n">servicePort</span><span class="p">:</span> <span class="mi">80</span> <span class="c1">#服务端口</span>
+        <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">demo1</span> <span class="c1">#路径，同一个域名路径需不同</span>
+  <span class="o">-</span> <span class="n">host</span><span class="p">:</span> <span class="n">demo</span><span class="o">.</span><span class="n">hu</span><span class="o">-</span><span class="n">uiapi123</span><span class="o">.</span><span class="n">com</span> <span class="c1">#主机名，可选。如不填写，则使用IP地址。</span>
+    <span class="n">http</span><span class="p">:</span>
+      <span class="n">paths</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">backend</span><span class="p">:</span>
+          <span class="n">serviceName</span><span class="p">:</span> <span class="n">apidemo2</span> <span class="c1">#后端服务名称</span>
+          <span class="n">servicePort</span><span class="p">:</span> <span class="mi">80</span> <span class="c1">#服务端口</span>
+        <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">demo2</span>  <span class="c1">#路径，同一个域名路径需不同</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">ingress</span><span class="o">-</span><span class="n">demo1</span><span class="p">]</span><span class="c1"># kubectl get ingress -n demo-ingress-test01</span>
+<span class="n">NAME</span>   <span class="n">CLASS</span>    <span class="n">HOSTS</span>                                       <span class="n">ADDRESS</span>   <span class="n">PORTS</span>   <span class="n">AGE</span>
+<span class="n">demo</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>   <span class="n">demo</span><span class="o">.</span><span class="n">hu</span><span class="o">-</span><span class="n">uiapi123</span><span class="o">.</span><span class="n">com</span><span class="p">,</span><span class="n">demo</span><span class="o">.</span><span class="n">hu</span><span class="o">-</span><span class="n">uiapi123</span><span class="o">.</span><span class="n">com</span>             <span class="mi">80</span>      <span class="mi">32</span><span class="n">s</span>
+</pre></div>
+</div>
+<div class="figure">
+<img alt="" src="../_images/ingress_demo01.png" />
+</div>
+<div class="figure">
+<img alt="" src="../_images/ingress-demo02.png" />
+</div>
 </div>
 </div>
 <div class="section" id="id6">
-<h2><a class="toc-backref" href="#id16">3.Ingress实战</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">3.Ingress实战</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>Ingress 是 Kubernetes 的一种 API 对象，将集群内部的 Service 通过
 HTTP/HTTPS 方式暴露到集群外部，并通过规则定义 HTTP/HTTPS 的路由。Ingress
 具备如下特性：集群外部可访问的 URL、负载均衡、SSL
@@ -296,19 +482,100 @@ Termination、按域名路由（name-based virtual hosting）。</p>
 <p>验证配置</p>
 <p>在浏览器访问 a.demo.yourdomain.com，将得到 404 NotFound 错误页面</p>
 <div class="section" id="yaml">
-<h3><a class="toc-backref" href="#id17">3.1 应用yaml</a><a class="headerlink" href="#yaml" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">3.1 应用yaml</a><a class="headerlink" href="#yaml" title="Permalink to this headline">¶</a></h3>
 <p>这里以flaskapp为例</p>
 <div class="section" id="namespace">
 <h4>3.1.1 创建namespace<a class="headerlink" href="#namespace" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://github.com/hujianli94/k8s-yaml-example/blob/master/flask-app-ingress/flask-namespace.yaml">flask-namespace.yaml</a></p>
+<p><code class="docutils literal notranslate"><span class="pre">flask-namespace.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Namespace</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">web</span><span class="o">-</span><span class="n">demo</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="deployment">
 <h4>3.1.2 创建deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://github.com/hujianli94/k8s-yaml-example/blob/master/flask-app-ingress/flask-app.yaml">flask-app.yaml</a></p>
+<p><code class="docutils literal notranslate"><span class="pre">flask-app.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">displayName</span><span class="p">:</span> <span class="n">flaskapp</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">ingress</span><span class="p">:</span> <span class="s1">&#39;false&#39;</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">service</span><span class="p">:</span> <span class="n">ClusterIP</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">workload</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">svc</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">web</span><span class="o">-</span><span class="n">demo</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">replicas</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">matchLabels</span><span class="p">:</span>
+      <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">svc</span>
+      <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+  <span class="n">template</span><span class="p">:</span>
+    <span class="n">metadata</span><span class="p">:</span>
+      <span class="n">labels</span><span class="p">:</span>
+        <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">svc</span>
+        <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+    <span class="n">spec</span><span class="p">:</span>
+      <span class="n">containers</span><span class="p">:</span>
+        <span class="o">-</span>
+          <span class="n">image</span><span class="p">:</span> <span class="n">jcdemo</span><span class="o">/</span><span class="n">flaskapp</span>
+          <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">Always</span>
+          <span class="n">name</span><span class="p">:</span> <span class="n">flaskapp</span>
+      <span class="n">restartPolicy</span><span class="p">:</span> <span class="n">Always</span>
+
+<span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">displayName</span><span class="p">:</span> <span class="n">flaskapp</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">workload</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">svc</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">web</span><span class="o">-</span><span class="n">demo</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">wjaz2a</span>
+      <span class="n">nodePort</span><span class="p">:</span> <span class="mi">0</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">5000</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">5000</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">svc</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">eip</span><span class="o">.</span><span class="n">work</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">ClusterIP</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="id7">
 <h4>3.1.3 创建Ingress<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://github.com/hujianli94/k8s-yaml-example/blob/master/flask-app-ingress/flask-ingress.yaml">flask-ingress.yaml</a></p>
+<p><code class="docutils literal notranslate"><span class="pre">flask-ingress.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">networking</span><span class="o">.</span><span class="n">k8s</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">v1beta1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Ingress</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">web</span><span class="o">-</span><span class="n">demo</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">.</span><span class="n">class</span><span class="p">:</span> <span class="s2">&quot;Deployment-nginx&quot;</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">rules</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">host</span><span class="p">:</span> <span class="n">flaskapp</span><span class="o">.</span><span class="n">baidu</span><span class="o">.</span><span class="n">com</span>
+    <span class="n">http</span><span class="p">:</span>
+      <span class="n">paths</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">backend</span><span class="p">:</span>
+          <span class="n">serviceName</span><span class="p">:</span> <span class="n">svc</span><span class="o">-</span><span class="n">flaskapp</span>
+          <span class="n">servicePort</span><span class="p">:</span> <span class="mi">5000</span>
+</pre></div>
+</div>
 <p>执行yaml</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">flask</span><span class="o">-</span><span class="n">app</span><span class="o">.</span><span class="n">yaml</span>
 <span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">flask</span><span class="o">-</span><span class="n">ingress</span><span class="o">.</span><span class="n">yaml</span>
@@ -333,10 +600,8 @@ Termination、按域名路由（name-based virtual hosting）。</p>
 </pre></div>
 </div>
 </div>
-</div>
-</div>
 <div class="section" id="id8">
-<h2><a class="toc-backref" href="#id18">设置域名解析</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<h4>3.1.4 设置域名解析<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 <p>如果没有dns，修改windows 10的hosts，添加一条记录</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.75</span> <span class="n">flaskapp</span><span class="o">.</span><span class="n">baidu</span><span class="o">.</span><span class="n">com</span>
 </pre></div>
@@ -349,6 +614,239 @@ Termination、按域名路由（name-based virtual hosting）。</p>
 <p>效果如下：</p>
 <div class="figure">
 <img alt="" src="../_images/k8s_flask_ingress0001.png" />
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="ingress-http-7">
+<h2><a class="toc-backref" href="#id20">4. Ingress：HTTP 7层路由机制</a><a class="headerlink" href="#ingress-http-7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h3><a class="toc-backref" href="#id21">4.1 应用yaml</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="nginx-deployment">
+<h4>4.1.1 nginx 的deployment<a class="headerlink" href="#nginx-deployment" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">nginx-deployment.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">nginx</span>
+
+  <span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">ingress</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">test</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">progressDeadlineSeconds</span><span class="p">:</span> <span class="mi">600</span>
+  <span class="n">replicas</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">revisionHistoryLimit</span><span class="p">:</span> <span class="mi">10</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">matchLabels</span><span class="p">:</span>
+      <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+      <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="n">strategy</span><span class="p">:</span>
+    <span class="n">rollingUpdate</span><span class="p">:</span>
+      <span class="n">maxSurge</span><span class="p">:</span> <span class="mi">25</span><span class="o">%</span>
+      <span class="n">maxUnavailable</span><span class="p">:</span> <span class="mi">25</span><span class="o">%</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">RollingUpdate</span>
+  <span class="n">template</span><span class="p">:</span>
+    <span class="n">metadata</span><span class="p">:</span>
+      <span class="n">labels</span><span class="p">:</span>
+        <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+        <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">nginx</span>
+    <span class="n">spec</span><span class="p">:</span>
+      <span class="n">containers</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">image</span><span class="p">:</span> <span class="n">nginx</span>
+          <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">Always</span>
+          <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span>
+          <span class="n">terminationMessagePath</span><span class="p">:</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">termination</span><span class="o">-</span><span class="n">log</span>
+          <span class="n">terminationMessagePolicy</span><span class="p">:</span> <span class="n">File</span>
+      <span class="n">dnsPolicy</span><span class="p">:</span> <span class="n">ClusterFirst</span>
+      <span class="n">restartPolicy</span><span class="p">:</span> <span class="n">Always</span>
+      <span class="n">schedulerName</span><span class="p">:</span> <span class="n">default</span><span class="o">-</span><span class="n">scheduler</span>
+      <span class="n">terminationGracePeriodSeconds</span><span class="p">:</span> <span class="mi">30</span>
+
+
+<span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">workload</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">ingress</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">test</span>
+
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">m84rkz</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">8088</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">80</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="n">sessionAffinity</span><span class="p">:</span> <span class="kc">None</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">ClusterIP</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="httpdeployment">
+<h4>4.1.2 http的deployment<a class="headerlink" href="#httpdeployment" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">http-deployment.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
+<span class="n">metadata</span><span class="p">:</span>
+
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">httpd</span>
+
+  <span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">httpd</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">ingress</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">test</span>
+
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">progressDeadlineSeconds</span><span class="p">:</span> <span class="mi">600</span>
+  <span class="n">replicas</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">revisionHistoryLimit</span><span class="p">:</span> <span class="mi">10</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">matchLabels</span><span class="p">:</span>
+      <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+      <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">httpd</span>
+  <span class="n">strategy</span><span class="p">:</span>
+    <span class="n">rollingUpdate</span><span class="p">:</span>
+      <span class="n">maxSurge</span><span class="p">:</span> <span class="mi">25</span><span class="o">%</span>
+      <span class="n">maxUnavailable</span><span class="p">:</span> <span class="mi">25</span><span class="o">%</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">RollingUpdate</span>
+  <span class="n">template</span><span class="p">:</span>
+    <span class="n">metadata</span><span class="p">:</span>
+      <span class="n">labels</span><span class="p">:</span>
+        <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+        <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">httpd</span>
+    <span class="n">spec</span><span class="p">:</span>
+      <span class="n">containers</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">image</span><span class="p">:</span> <span class="n">httpd</span>
+          <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">Always</span>
+          <span class="n">name</span><span class="p">:</span> <span class="n">httpd</span>
+      <span class="n">dnsPolicy</span><span class="p">:</span> <span class="n">ClusterFirst</span>
+      <span class="n">restartPolicy</span><span class="p">:</span> <span class="n">Always</span>
+      <span class="n">schedulerName</span><span class="p">:</span> <span class="n">default</span><span class="o">-</span><span class="n">scheduler</span>
+      <span class="n">terminationGracePeriodSeconds</span><span class="p">:</span> <span class="mi">30</span>
+
+
+<span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">workload</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">httpd</span>
+
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">httpd</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">httpd</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">ingress</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">test</span>
+
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">h2tji5</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">8089</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">80</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">httpd</span>
+  <span class="n">sessionAffinity</span><span class="p">:</span> <span class="kc">None</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">ClusterIP</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="podsevice">
+<h4>4.1.3 检查pod和sevice状态<a class="headerlink" href="#podsevice" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// 应用yaml文件，生成deployment
+[root@ci-base ingress-demo2]# kubectl create -f http-deployment.yaml nginx-deployment.yaml
+
+
+[root@ci-base ingress-demo2]# kubectl get deployment -n ingress-web-test
+NAME          READY   UP-TO-DATE   AVAILABLE   AGE
+cloud-httpd   1/1     1            1           8m23s
+cloud-nginx   1/1     1            1           5m13s
+[root@ci-base ingress-demo2]# kubectl get pod,svc -n ingress-web-test
+NAME                               READY   STATUS    RESTARTS   AGE
+pod/cloud-httpd-6f74985dd7-fn2nk   1/1     Running   0          9m14s
+pod/cloud-nginx-76cdc4498c-spzsh   1/1     Running   0          5m38s
+
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/cloud-httpd   ClusterIP   10.107.170.205   &lt;none&gt;        8089/TCP   8m48s
+service/cloud-nginx   ClusterIP   10.103.8.159     &lt;none&gt;        8088/TCP   5m38s
+</pre></div>
+</div>
+</div>
+<div class="section" id="nodenginxhttpserver-clusterip">
+<h4>4.1.4 node上访问nginx和http的server（ClusterIP）<a class="headerlink" href="#nodenginxhttpserver-clusterip" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@k8s-w1 ~]# curl 10.107.170.205:8089
+&lt;html&gt;&lt;body&gt;&lt;h1&gt;It works!&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+[root@k8s-w1 ~]# curl 10.103.8.159:8088
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="id10">
+<h4>4.1.5 创建ingress规则<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">ingress.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">networking</span><span class="o">.</span><span class="n">k8s</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">v1beta1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Ingress</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">ingress</span><span class="o">-</span><span class="n">httpd</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">ingress</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">test</span>
+
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">rules</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">host</span><span class="p">:</span> <span class="n">nginx</span><span class="o">.</span><span class="n">linux</span><span class="o">.</span><span class="n">com</span>     <span class="c1">#测试域名</span>
+      <span class="n">http</span><span class="p">:</span>
+        <span class="n">paths</span><span class="p">:</span>
+          <span class="o">-</span> <span class="n">backend</span><span class="p">:</span>
+              <span class="n">serviceName</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">nginx</span>
+              <span class="n">servicePort</span><span class="p">:</span> <span class="mi">8088</span>
+
+    <span class="o">-</span> <span class="n">host</span><span class="p">:</span> <span class="n">httpd</span><span class="o">.</span><span class="n">linux</span><span class="o">.</span><span class="n">com</span>     <span class="c1">#测试域名</span>
+      <span class="n">http</span><span class="p">:</span>
+        <span class="n">paths</span><span class="p">:</span>
+          <span class="o">-</span> <span class="n">backend</span><span class="p">:</span>
+              <span class="n">serviceName</span><span class="p">:</span> <span class="n">cloud</span><span class="o">-</span><span class="n">httpd</span>
+              <span class="n">servicePort</span><span class="p">:</span> <span class="mi">8089</span>
+</pre></div>
+</div>
+<p>应用ingress规则</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">ingress</span><span class="o">-</span><span class="n">demo2</span><span class="p">]</span><span class="c1"># kubectl create -f ingress-web.yaml</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">ingress</span><span class="o">-</span><span class="n">demo2</span><span class="p">]</span><span class="c1"># kubectl get ingress -n ingress-web-test</span>
+<span class="n">NAME</span>            <span class="n">CLASS</span>    <span class="n">HOSTS</span>                             <span class="n">ADDRESS</span>   <span class="n">PORTS</span>   <span class="n">AGE</span>
+<span class="n">ingress</span><span class="o">-</span><span class="n">httpd</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>   <span class="n">nginx</span><span class="o">.</span><span class="n">linux</span><span class="o">.</span><span class="n">com</span><span class="p">,</span><span class="n">httpd</span><span class="o">.</span><span class="n">linux</span><span class="o">.</span><span class="n">com</span>             <span class="mi">80</span>      <span class="mi">2</span><span class="n">m4s</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dns">
+<h4>4.1.6 模拟dns解析<a class="headerlink" href="#dns" title="Permalink to this headline">¶</a></h4>
+<p>修改主机hosts文件</p>
+<blockquote>
+<div>192.168.1.75 为node节点的IP信息</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.75</span> <span class="n">nginx</span><span class="o">.</span><span class="n">linux</span><span class="o">.</span><span class="n">com</span>
+<span class="mf">192.168</span><span class="o">.</span><span class="mf">1.75</span> <span class="n">httpd</span><span class="o">.</span><span class="n">linux</span><span class="o">.</span><span class="n">com</span>
+</pre></div>
+</div>
+<p>查看解析结果</p>
+<div class="figure">
+<img alt="" src="../_images/ingress_nginxtest001.png" />
+</div>
+<div class="figure">
+<img alt="" src="../_images/ingress_http-test001.png" />
+</div>
+</div>
 </div>
 </div>
 </div>
