@@ -23,3 +23,4 @@
     14.Docker快速部署Jenkins-CICD环境
     15.部署Docker-Harbor仓库
     16.基于Docker搭建prometheus+Grafana
+    17.consul服务注册

@@ -12,6 +12,8 @@
     03.Docker基础
     04.Kubernetes基础
     05.Pod
-    06.使用Ingress负载分发微服务
-    07.kubernetes实战案例
+    06.Serveice
+    07.Ingress
+    08.Kubernetest数据管理
+    09.kubernetes实战案例
     20.Helm简化Kubernetes部署

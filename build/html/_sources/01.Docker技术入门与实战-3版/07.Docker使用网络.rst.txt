@@ -5,38 +5,73 @@
 Docker使用网络
 ==============
 
-none 和 host 网络的适用场景
----------------------------
+单主机Docker网络通信
+--------------------
 
-.. code:: shell
+我们在使用docker
+run创建docker容器时，可以用--net选项指定容器的网络模式。Docker有以下4中网络模式：
 
-    # Docker 安装时会自动在 host 上创建3个网络，我们可用 docker network ls 命令查看：
+1. host模式：使用--net=host指定，不支持多主机
+2. container模式：使用--net=container：NAME\_or\_ID指定，不支持多主机
+3. none模式：使用--net=none指定，不支持多主机
+4. bridge模式：使用--net=bridge指定，不支持多主机，默认模式
 
-    [root@iZ2ze38chylj63vuj6fqiaZ cpu]# docker network ls
-    NETWORK ID          NAME                DRIVER              SCOPE
-    a7970a7f8d60        bridge              bridge              local
-    9e048f97c426        host                host                local
-    c1b997986027        none                null                local
+host模式
+~~~~~~~~
 
-    #none 网络
-    none 网络就是什么都没有的网络。挂在这个网络下的容器除了 lo，没有其他任何网卡。容器创建时，可以通过 --network=none 指定使用 none 网络。
-    ###应用场景。
-    封闭意味着隔离，一些对安全性要求高并且不需要联网的应用可以使用 none 网络。
-    比如某个容器的唯一用途是生成随机密码，就可以放到 none 网络中避免密码被窃取。
-    当然大部分容器是需要网络的。
+容器不会虚拟直接的网卡、配置直接的IP等，使用宿主机的IP和端口。
 
-    #host 网络
-    连接到 host 网络的容器共享 Docker host 的网络栈，容器的网络配置与 host 完全一样。可以通过 --network=host 指定使用 host 网络,容器有完整的权限操纵主机的网络配置，出于安全考虑，不推荐使用这种模式。
-    ### 应用场景
-    直接使用 Docker host 的网络最大的好处就是性能，如果容器对网络传输效率有较高要求，则可以选择 host 网络。当然不便之处就是牺牲一些灵活性，比如要考虑端口冲突问题，Docker host 上已经使用的端口就不能再用了。
+在容器中执行ifconfig命令查看网络环境时，显示的都是宿主机的信息。
 
+Host模式下的网络空间与宿主机相同，文件系统、进程列表等和宿主机隔离。
 
-    #container模式
-    这个模式表示与另一个运行中的容器共享一个Network Namespace，共享意味着拥有相同的网络视图。
-    ...... 待补充
+``host模式``
 
+.. figure:: ../_static/docker-host0001.png
+   :alt: 
 
-    # 
+::
+
+    # docker run -tid --net=host --name dockerhost1 ubantu
+
+    # docker run -tid --net=host --name dockerhost2 ubantu
+    # docker exec -it dockerhost1 /bin/bash
+    # docker exec -it dockerhost2 /bin/bash
+    # ifconfig -a
+    # route -n
+
+Container模式
+~~~~~~~~~~~~~
+
+Container模式是一种特殊的网络模式，该模式下的容器使用其他容器的网络命名空间，隔离性处于bridge模式与Host模式之间。
+
+Container模式的容器可以通过localhost来与同一网络命名空间下的其他容器通信，传输效率高，可以节约一定数量的网络资源，但没有改变容器与外界的通信方式。
+
+Kubernetes下的Pod中的容器与其他容器都以Container模式共享这个基础设施容器的网络命名空间，互相以localhost访问，构成一个统一的整体。
+
+.. figure:: ../_static/docker-contain0001.png
+   :alt: 
+
+None模式
+~~~~~~~~
+
+None模式docker容器拥有自己的Network
+Namespace空间，但并不为Docker容器进行网络配置，也就是说Docker容器没有网卡、IP、路由等信息，需要用户为Docker容器添加网卡、配置IP。
+
+.. figure:: ../_static/docker-none0001.png
+   :alt: 
+
+Bridge模式
+~~~~~~~~~~
+
+Bridge模式是Docker默认的网络模式，也是开发常使用的网络模式，这种模式下，docker为容器创建独立的网络栈，保证容器内的进程使用独立的网络环境，实现容器之间、容器与宿主机之间的网络栈隔离。
+
+通过宿主机的Docker0网桥，容器可以与宿主机乃至外界进行网络通信。
+
+.. figure:: ../_static/docker-bridge0001.png
+   :alt: 
+
+常见的就是使用NAT，将宿主机的端口流量转发到容器端口上，这样外界就可以与容器中的进程进行通信了。
 
 外部访问网络
 ------------

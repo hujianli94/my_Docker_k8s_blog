@@ -146,6 +146,30 @@ Hub上两个热门镜像nginx和Go的Dockerfile的例子，通过这两个例子
     WORKDIR $GOPATH
     COPY go-wrapper /usr/local/bin/
 
+示例,基于centos7镜像再构建
+
+::
+
+    FROM centos:7
+    MAINTAINER www.humingzhe.com
+    RUN yum install -y gcc gcc-c++ make openssl-devel pcre-devel && yum clean all
+    ADD nginx-1.12.1.tar.gz /tmp
+
+    RUN cd /tmp/nginx-1.12.1 && \
+        ./configure --prefix=/usr/local/nginx && \
+        make -j 2 && \
+        make install && \
+        rm -rf /tmp/nginx-1.12.1* && \
+        cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+        echo 'Asia/Shanghai' >/etc/timezone
+
+    COPY nginx.conf /usr/local/nginx/conf 
+    COPY vhost/ /usr/local/nginx/conf 
+
+    WORKDIR /usr/local/nginx
+    EXPOSE 80
+    CMD ["./sbin/nginx", "-g", "daemon off;"]
+
 Dockerfile指令说明
 ------------------
 
@@ -681,3 +705,8 @@ Hub官方仓库中提供了大量的优秀镜像和对应的Dockefile，可以�
     ·调整合理的指令顺序：在开启cache的情况下，内容不变的指令尽量放在前面，这样可以尽量复用；
 
     ·减少外部源的干扰：如果确实要从外部引入数据，需要指定持久的地址，并带版本信息等，让他人可以复用而不出错。
+
+参考文献
+--------
+
+https://www.cnblogs.com/zhuochong/p/10062884.html

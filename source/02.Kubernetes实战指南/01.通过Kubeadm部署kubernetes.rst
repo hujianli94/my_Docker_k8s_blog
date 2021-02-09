@@ -315,13 +315,26 @@ Master初始化kubeadm
     --pod-network-cidr="10.244.0.0/16" \
     --ignore-preflight-errors="NumCPU"
 
-    # 后续步骤
+    # 在当前用户家目录下创建.kube目录并配置访问集群的config 文件
     mkdir -p $HOME/.kube
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
     # 应用网络插件flannle
     [root@k8s-master home]# kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+    # 查看 kube-system 命名空间中运行的 pods
+    kubectl get pods -n kube-system
+
+    # 查看 k8s 集群组件的状态
+    kubectl get ComponentStatus
+
+
+    # 配置命令补全
+    yum install -y bash-completion
+    source /usr/share/bash-completion/bash_completion
+    source <(kubectl completion bash)
+    echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 node加入集群
 ------------
@@ -360,42 +373,6 @@ node加入集群
 
     kubeadm join 172.16.100.9:6443 --token 2dyd69.hrfsjkkxs4stim7n \
         --discovery-token-ca-cert-hash sha256:4e30c1f41aefb177b708a404ccb7e818e31647c7dbdd2d42f6c5c9894b6f41e7
-
--  最好以普通用户的身份运行下面的命令
-
-::
-
-    # 在当前用户家目录下创建.kube目录并配置访问集群的config 文件
-    mkdir -p $HOME/.kube
-    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-    sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
--  部署 flannel 网络插件
-
-::
-
-    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-
--  查看 kube-system 命名空间中运行的 pods
-
-::
-
-    kubectl get pods -n kube-system
-
--  查看 k8s 集群组件的状态
-
-::
-
-    kubectl get ComponentStatus
-
--  配置命令补全
-
-::
-
-    yum install -y bash-completion
-    source /usr/share/bash-completion/bash_completion
-    source <(kubectl completion bash)
-    echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 获得 join命令参数
 ~~~~~~~~~~~~~~~~~
@@ -575,6 +552,114 @@ Kuboard，是一款免费的 Kubernetes 图形化管理工具，Kuboard
 
 https://www.cnblogs.com/xiao987334176/p/12060855.html
 
+kubectl管理工具
+---------------
+
+kubectl管理工具远程连接集群
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Kubectl客户端工具的主要功能是管理Kubernetes集群中的资源，使用kuberctl工具可以对资源进行创建、删除和更改等操作。
+
+查看master上的kube-api server地址
+
+::
+
+    [root@k8s-m2 ~]# cat /etc/kubernetes/manifests/kube-apiserver.yaml |grep server
+        kubeadm.kubernetes.io/kube-apiserver.advertise-address.endpoint: 192.168.1.73:8443
+        component: kube-apiserver
+      name: kube-apiserver
+        - kube-apiserver
+        - --etcd-certfile=/etc/kubernetes/pki/apiserver-etcd-client.crt
+        - --etcd-keyfile=/etc/kubernetes/pki/apiserver-etcd-client.key
+        - --etcd-servers=https://127.0.0.1:2379
+        - --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt
+        - --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key
+        - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt
+        - --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
+        image: hub.gitee.cc/google_containers/kube-apiserver:v1.18.2
+        name: kube-apiserver
+
+查看api-server的另一种方式
+
+::
+
+    # APISERVER=$(kubectl config view |grep server|cut -f 2- -d ":" | tr -d " ")
+    # echo $APISERVER
+
+    参考文献：
+
+    https://my.oschina.net/u/1464083/blog/3065433
+
+参考文献中写了，需要生成admin.pem等证书文件最后合并成一个config文件，在此我使用之前生成的config文件。直接从master上拷贝过去。
+
+::
+
+    [root@ci-base ~]# scp .kube/config root@192.168.1.40:~/ 
+
+在客户端节点上进行如下操作：
+
+::
+
+    [root@jenkins ~]# mkdir /root/.kube/
+    [root@jenkins ~]# mv config /root/.kube/
+    [root@jenkins ~]# ll /root/.kube/config
+    -rw------- 1 root root 5459 Dec 29 03:35 /root/.kube/config
+
+    [root@jenkins ~]# kubectl get nodes
+    NAME     STATUS   ROLES    AGE   VERSION
+    k8s-m1   Ready    master   63d   v1.18.2
+    k8s-m2   Ready    master   63d   v1.18.2
+    k8s-m3   Ready    master   63d   v1.18.2
+    k8s-n1   Ready    <none>   63d   v1.19.3
+    k8s-n2   Ready    <none>   63d   v1.19.3
+    k8s-w1   Ready    <none>   63d   v1.18.2
+    k8s-w2   Ready    <none>   63d   v1.18.2
+    k8s-w3   Ready    <none>   63d   v1.18.2
+    k8s-w4   Ready    <none>   63d   v1.18.2
+    k8s-w5   Ready    <none>   63d   v1.18.2
+    k8s-w6   Ready    <none>   63d   v1.18.2
+    k8s-w7   Ready    <none>   63d   v1.18.2
+
+上面节点的介绍：
+
+::
+
+    k8s-m1、k8s-m2、k8s-m3                 #master节点，使用keepalived vip进行热备
+    k8s-n1、k8s-n2                         #node节点，对外映射发布服务，安装了ingress插件
+    k8s-w1~w7                             #worker节点，运行容器和存储镜像
+
+在kuberct基础上安装helm
+~~~~~~~~~~~~~~~~~~~~~~~
+
+直接拷贝heml二进制文件到远程机器上
+
+::
+
+    [root@ci-base bin]# scp helm root@192.168.1.40:/usr/local/bin/
+    root@192.168.1.40's password:
+    helm                                                                                                            100%   39MB   8.4MB/s   00:04
+
+或者下载方式
+
+.. code:: shell
+
+    curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+    # 或者
+    wget https://get.helm.sh/helm-v3.4.0-linux-amd64.tar.gz
+    tar -xf helm-v3.4.0-linux-amd64.tar.gz
+    mv linux-amd64/helm/usr/bin/
+
+::
+
+    [root@jenkins ~]# helm version
+    version.BuildInfo{Version:"v3.2.1", GitCommit:"fe51cd1e31e6a202cba7dead9552a6d418ded79a", GitTreeState:"clean", GoVersion:"go1.13.10"}
+
+参考文献：
+
+Kubernetes 远程工具连接k8s集群
+
+https://www.cnblogs.com/xiangsikai/p/11412864.html
+
 诊断分析
 --------
 
@@ -634,6 +719,23 @@ describe命令用于查看一个或多个资源的详细情况，包括相关资
 ::
 
     kubectl describe -f teamcity.yml
+
+可以使用describe命令查看资源事件的类型，类型可以是deploy、rs和po。
+
+::
+
+    kubectl describe po/nginx-2131232
+    kubectl describe deploy/nginx
+    kubectl describe rs/nginx-2131232
+    kubectl describe svc
+    kubectl describe svc nginx-service
+
+Kubernetes v1.19.0 高可用安装部署
+---------------------------------
+
+参考文献：
+
+https://www.cloudcared.cn/3126.html
 
 参考文献
 --------
