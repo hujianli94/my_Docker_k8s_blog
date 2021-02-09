@@ -411,7 +411,7 @@ Docker Stack命令
 
 Docker栈的命令，它一共包含五个子命令，
 
-.. code:: shell
+::
 
     [root@swarm1 docker_swarm]# docker stack --help
 
@@ -444,7 +444,7 @@ Docker栈的命令，它一共包含五个子命令，
 在Swarm中部署服务(nginx为例)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: shell
+::
 
     ## 查看docker网络
     [root@ftnode-172-16-72-19 compose]# docker network ls
@@ -455,755 +455,194 @@ Docker栈的命令，它一共包含五个子命令，
     4oal2fahquva        ingress                 overlay             swarm
     bbfafab744b8        none                    null                local
 
-1) 创建网络在部署服务 \`\`\`shell # 创建网络 [root@ftnode-172-16-72-19
-   compose]# docker network create -d overlay nginx\_net
-   weqsqoenuhr1qt6o30odfp83n
-
-部署服务
-========
-
-[root@ftnode-172-16-72-19 compose]# docker network ls \| grep nginx\_net
-weqsqoenuhr1 nginx\_net overlay swarm
-
-在manager-node节点上使用上面这个覆盖网络创建nginx服务：
-=======================================================
-
-其中，--replicas 参数指定服务由几个实例组成。
-=============================================
-
-注意：不需要提前在节点上下载nginx镜像，这个命令执行后会自动下载这个容器镜像（比如此处创建tomcat容器，就将下面命令中的镜像改为tomcat镜像）。
-===========================================================================================================================================
-
-[root@172-16-72-19 compose]# docker service create --name hu\_nginx
---replicas 3 nginx xmmwyaw2dkovyk1iy42n0zi68 overall progress: 3 out of
-3 tasks 1/3: running
-[==================================================>] 2/3: running
-[==================================================>] 3/3: running
-[==================================================>]
-
-使用 docker service ls 查看正在运行服务的列表
-=============================================
-
-| [root@172-16-72-19 compose]# docker service ls ID NAME MODE REPLICAS
-  IMAGE PORTS xmmwyaw2dkov hu\_nginx replicated 3/3 nginx:latest
-| \`\`\`
-
-2) 查询Swarm中服务的信息 \`\`\`shell -pretty
-   使命令输出格式化为可读的格式，不加 --pretty 可以输出更详细的信息
-
-[root@172-16-72-19 compose]# docker service inspect --pretty hu\_nginx
-
-ID: xmmwyaw2dkovyk1iy42n0zi68 Name: hu\_nginx Service Mode: Replicated
-Replicas: 3 Placement: UpdateConfig: Parallelism: 1 On failure: pause
-Monitoring Period: 5s Max failure ratio: 0 Update order: stop-first
-RollbackConfig: Parallelism: 1 On failure: pause Monitoring Period: 5s
-Max failure ratio: 0 Rollback order: stop-first ContainerSpec: Image:
-nginx:latest@sha256:b2d89d0a210398b4d1120b3e3a7672c16a4ba09c2c4a0395f18b9f7999b768f2
-Init: false Resources: Endpoint Mode: vip
-
-查询到哪个节点正在运行该服务。如下该容器被调度到manager-node节点上启动了，然后访问http://192.168.31.43即可访问这个容器应用（如果调度到其他节点，访问也是如此）
-==============================================================================================================================================================
-
-| [root@172-16-72-19 compose]# docker service ps hu\_nginx ID NAME IMAGE
-  NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6 hu\_nginx.1
-  nginx:latest ftnode-172-16-72-8 Running Running 2 minutes ago
-| jcqgq8fjsi6m hu\_nginx.2 nginx:latest 172-16-72-19 Running Running 2
-  minutes ago
-| d4vsmgnk7n0e hu\_nginx.3 nginx:latest ftnode-172-16-72-20 Running
-  Running 2 minutes ago
-| 温馨提示：如果上面命令执行后，上面的 STATE 字段中刚开始的服务状态为
-  Preparing，需要等一会才能变为 Running
-  状态，其中最费时间的应该是下载镜像的过程
+1) 创建网络在部署服务
 
 ::
 
-    3) 在Swarm中动态扩展服务(scale)
+    # 创建网络
+    [root@ftnode-172-16-72-19 compose]# docker network create -d overlay nginx_net
+    weqsqoenuhr1qt6o30odfp83n
 
-当然，如果只是通过service启动容器，swarm也算不上什么新鲜东西了。Service还提供了复制（类似kubernetes里的副本）功能。可以通过
-docker service scale 命令来设置服务中容器的副本数
-比如将上面的my\_nginx容器动态扩展到4个
+    # 部署服务
+    [root@ftnode-172-16-72-19 compose]# docker network ls | grep nginx_net
+    weqsqoenuhr1        nginx_net           overlay             swarm
 
-| [root@172-16-72-19 compose]# docker service scale hu\_nginx=4
-  hu\_nginx scaled to 4 overall progress: 4 out of 4 tasks 1/4: running
-  [==================================================>] 2/4: running
-  [==================================================>] 3/4: running
-  [==================================================>] 4/4: running
-  [==================================================>] verify: Service
-  converged [root@172-16-72-19 compose]# docker service ps hu\_nginx ID
-  NAME IMAGE NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6
-  hu\_nginx.1 nginx:latest ftnode-172-16-72-8 Running Running 4 minutes
-  ago
-| jcqgq8fjsi6m hu\_nginx.2 nginx:latest 172-16-72-19 Running Running 4
-  minutes ago
-| d4vsmgnk7n0e hu\_nginx.3 nginx:latest ftnode-172-16-72-20 Running
-  Running 4 minutes ago
-| trc0i8rdim8g hu\_nginx.4 nginx:latest 172-16-72-19 Running Running 14
-  seconds ago
+    #在manager-node节点上使用上面这个覆盖网络创建nginx服务：
+    #其中，--replicas 参数指定服务由几个实例组成。
+    #注意：不需要提前在节点上下载nginx镜像，这个命令执行后会自动下载这个容器镜像（比如此处创建tomcat容器，就将下面命令中的镜像改为tomcat镜像）。
+    [root@172-16-72-19 compose]# docker service create --name hu_nginx --replicas 3 nginx
+    xmmwyaw2dkovyk1iy42n0zi68
+    overall progress: 3 out of 3 tasks 
+    1/3: running   [==================================================>] 
+    2/3: running   [==================================================>] 
+    3/3: running   [==================================================>] 
 
-[root@172-16-72-19 compose]# docker ps CONTAINER ID IMAGE COMMAND
-CREATED STATUS PORTS NAMES b292c2181ef6 nginx:latest "nginx -g 'daemon
-of…" About a minute ago Up About a minute 80/tcp
-hu\_nginx.4.trc0i8rdim8g3i841gnc3b3wy 60cad56c7845 nginx:latest "nginx
--g 'daemon of…" 5 minutes ago Up 5 minutes 80/tcp
-hu\_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw
+    # 使用 docker service ls 查看正在运行服务的列表
+    [root@172-16-72-19 compose]# docker service ls
+    ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+    xmmwyaw2dkov        hu_nginx            replicated          3/3                 nginx:latest   
 
-这4个副本的hu\_nginx容器分别运行在这三个节点上，登陆这三个节点，就会发现已经存在运行着的hu\_nginx容器
-
-172-16-72-19 上运行着2个nginx服务。
-
-将容器在集群中减少为2个。
-=========================
-
-[root@172-16-72-19 compose]# docker service scale hu\_nginx=2 hu\_nginx
-scaled to 2 overall progress: 2 out of 2 tasks 1/2: running
-[==================================================>] 2/2: running
-[==================================================>] verify: Service
-converged
+2) 查询Swarm中服务的信息
 
 ::
 
+    -pretty 使命令输出格式化为可读的格式，不加 --pretty 可以输出更详细的信息
 
-    4) 模拟宕机node节点
+    [root@172-16-72-19 compose]# docker service inspect --pretty hu_nginx
 
-    docker容器会自动迁移
+    ID:     xmmwyaw2dkovyk1iy42n0zi68
+    Name:       hu_nginx
+    Service Mode:   Replicated
+     Replicas:  3
+    Placement:
+    UpdateConfig:
+     Parallelism:   1
+     On failure:    pause
+     Monitoring Period: 5s
+     Max failure ratio: 0
+     Update order:      stop-first
+    RollbackConfig:
+     Parallelism:   1
+     On failure:    pause
+     Monitoring Period: 5s
+     Max failure ratio: 0
+     Rollback order:    stop-first
+    ContainerSpec:
+     Image:     nginx:latest@sha256:b2d89d0a210398b4d1120b3e3a7672c16a4ba09c2c4a0395f18b9f7999b768f2
+     Init:      false
+    Resources:
+    Endpoint Mode:  vip
 
-先保证每个节点上启动一个docker
-==============================
 
-| [root@172-16-72-19 compose]# docker service ps hu\_nginx ID NAME IMAGE
-  NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6 hu\_nginx.1
-  nginx:latest ftnode-172-16-72-8 Running Running 10 minutes ago
-| jcqgq8fjsi6m hu\_nginx.2 nginx:latest 172-16-72-19 Running Running 9
-  minutes ago
-| ruq4sr0s5xx0 hu\_nginx.3 nginx:latest ftnode-172-16-72-20 Running
-  Running 27 seconds ago
 
-在node 20这台机器上，模拟宕机
-=============================
+    # 查询到哪个节点正在运行该服务。如下该容器被调度到manager-node节点上启动了，然后访问http://192.168.31.43即可访问这个容器应用（如果调度到其他节点，访问也是如此）
+    [root@172-16-72-19 compose]# docker service ps hu_nginx
+    ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE           ERROR               PORTS
+    p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 2 minutes ago                       
+    jcqgq8fjsi6m        hu_nginx.2          nginx:latest        172-16-72-19          Running             Running 2 minutes ago                       
+    d4vsmgnk7n0e        hu_nginx.3          nginx:latest        ftnode-172-16-72-20   Running             Running 2 minutes ago       
+    温馨提示：如果上面命令执行后，上面的 STATE 字段中刚开始的服务状态为 Preparing，需要等一会才能变为 Running 状态，其中最费时间的应该是下载镜像的过程
 
-[root@ftnode-172-16-72-20 centos]# systemctl stop docker
-
-[root@172-16-72-19 compose]# docker node ls ID HOSTNAME STATUS
-AVAILABILITY MANAGER STATUS ENGINE VERSION 3d1iieyvw8q7q2u2i95schbkn \*
-172-16-72-19 Ready Active Leader 19.03.5 kdp5b8ja34x52a4v2xc5byhrd
-ftnode-172-16-72-8 Ready Active 19.03.5 3pqduino59ug7ujhokzph874t
-ftnode-172-16-72-20 Down Active 19.03.5
-
-过一会儿查看docker容器的列表，发现容器已经迁移到19上了。
-========================================================
-
-| [root@172-16-72-19 compose]# docker service ps hu\_nginx ID NAME IMAGE
-  NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6 hu\_nginx.1
-  nginx:latest ftnode-172-16-72-8 Running Running 11 minutes ago
-| jcqgq8fjsi6m hu\_nginx.2 nginx:latest 172-16-72-19 Running Running 11
-  minutes ago
-| mijhlis5ap3z hu\_nginx.3 nginx:latest 172-16-72-19 Running Running 28
-  seconds ago
-| ruq4sr0s5xx0 \_ hu\_nginx.3 nginx:latest ftnode-172-16-72-20 Shutdown
-  Running 47 seconds ago
-
-[root@172-16-72-19 compose]# docker ps -a CONTAINER ID IMAGE COMMAND
-CREATED STATUS PORTS NAMES 91376bb956b3 nginx:latest "nginx -g 'daemon
-of…" 3 minutes ago Up 3 minutes 80/tcp
-hu\_nginx.3.mijhlis5ap3zzscieunqxk2h8 60cad56c7845 nginx:latest "nginx
--g 'daemon of…" 13 minutes ago Up 13 minutes 80/tcp
-hu\_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw
-
-将转移过来的docker容器关闭，模拟容器故障。因为设置了--replicas 3 nginx,所以集群无论如何都要保证3个容器在运行
-============================================================================================================
-
-[root@172-16-72-19 compose]# docker ps CONTAINER ID IMAGE COMMAND
-CREATED STATUS PORTS NAMES 91376bb956b3 nginx:latest "nginx -g 'daemon
-of…" 5 minutes ago Up 5 minutes 80/tcp
-hu\_nginx.3.mijhlis5ap3zzscieunqxk2h8 60cad56c7845 nginx:latest "nginx
--g 'daemon of…" 16 minutes ago Up 16 minutes 80/tcp
-hu\_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw [root@172-16-72-19 compose]#
-docker stop 91376bb956b3 91376bb956b3
+3) 在Swarm中动态扩展服务(scale)
 
 ::
 
+    当然，如果只是通过service启动容器，swarm也算不上什么新鲜东西了。Service还提供了复制（类似kubernetes里的副本）功能。可以通过 docker service scale 命令来设置服务中容器的副本数
+    比如将上面的my_nginx容器动态扩展到4个
 
-    可以看到，当docker容器出现故障时，集群会自动再次拉起一个容器，保证有3个容器运行。图上是从自身node上拉起了一个docker容器。
+    [root@172-16-72-19 compose]# docker service scale hu_nginx=4
+    hu_nginx scaled to 4
+    overall progress: 4 out of 4 tasks 
+    1/4: running   [==================================================>] 
+    2/4: running   [==================================================>] 
+    3/4: running   [==================================================>] 
+    4/4: running   [==================================================>] 
+    verify: Service converged 
+    [root@172-16-72-19 compose]# docker service ps hu_nginx
+    ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE            ERROR               PORTS
+    p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 4 minutes ago                        
+    jcqgq8fjsi6m        hu_nginx.2          nginx:latest        172-16-72-19          Running             Running 4 minutes ago                        
+    d4vsmgnk7n0e        hu_nginx.3          nginx:latest        ftnode-172-16-72-20   Running             Running 4 minutes ago                        
+    trc0i8rdim8g        hu_nginx.4          nginx:latest        172-16-72-19          Running             Running 14 seconds ago  
 
-    结论：即在swarm cluster集群中启动的容器，在worker node节点上删除或停用后，该容器会自动转移到其他的worker node节点上
+    [root@172-16-72-19 compose]# docker ps
+    CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS               NAMES
+    b292c2181ef6        nginx:latest        "nginx -g 'daemon of…"   About a minute ago   Up About a minute   80/tcp              hu_nginx.4.trc0i8rdim8g3i841gnc3b3wy
+    60cad56c7845        nginx:latest        "nginx -g 'daemon of…"   5 minutes ago        Up 5 minutes        80/tcp              hu_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw
 
+    这4个副本的hu_nginx容器分别运行在这三个节点上，登陆这三个节点，就会发现已经存在运行着的hu_nginx容器
 
-    5) Swarm 动态缩容服务(scale)
+    172-16-72-19 上运行着2个nginx服务。
 
-| 同理，swarm还可以缩容，同样是使用scale命令
-  如下，将hu\_nginx容器变为1个 [root@172-16-72-19 compose]# docker
-  service scale hu\_nginx=1 hu\_nginx scaled to 1 overall progress: 1
-  out of 1 tasks 1/1:
-| verify: Service converged [root@172-16-72-19 compose]# docker service
-  ls ID NAME MODE REPLICAS IMAGE PORTS xmmwyaw2dkov hu\_nginx replicated
-  1/1 nginx:latest
+    # 将容器在集群中减少为2个。
+    [root@172-16-72-19 compose]# docker service scale hu_nginx=2
+    hu_nginx scaled to 2
+    overall progress: 2 out of 2 tasks 
+    1/2: running   [==================================================>] 
+    2/2: running   [==================================================>] 
+    verify: Service converged 
 
-| [root@172-16-72-19 compose]# docker service ps hu\_nginx ID NAME IMAGE
-  NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6 hu\_nginx.1
-  nginx:latest ftnode-172-16-72-8 Running Running 23 minutes ago
-| mijhlis5ap3z hu\_nginx.3 nginx:latest 172-16-72-19 Shutdown Complete 5
-  minutes ago
-| ruq4sr0s5xx0 \_ hu\_nginx.3 nginx:latest ftnode-172-16-72-20 Shutdown
-  Running 11 minutes ago
+4) 模拟宕机node节点
 
-通过docker service ps my\_nginx 可以看到node节点上已经为Shutdown状态了
-======================================================================
-
-登录node节点，使用docker ps -a 查看，会发现容器被stop而非rm
-===========================================================
-
-[root@172-16-72-19 compose]# docker ps -a CONTAINER ID IMAGE COMMAND
-CREATED STATUS PORTS NAMES 91376bb956b3 nginx:latest "nginx -g 'daemon
-of…" 13 minutes ago Exited (0) 7 minutes ago
-hu\_nginx.3.mijhlis5ap3zzscieunqxk2h8
-
-::
-
-
-
-    6) 除了上面使用scale进行容器的扩容或缩容之外，还可以使用docker service update 命令。 
-    可对 服务的启动 参数 进行 更新/修改。
-
-[root@172-16-72-19 compose]# docker service update --replicas 3
-hu\_nginx
-
-[root@172-16-72-19 compose]# docker service ls ID NAME MODE REPLICAS
-IMAGE PORTS xmmwyaw2dkov hu\_nginx replicated 3/3 nginx:latest
-
-| [root@172-16-72-19 compose]# docker service ps hu\_nginx ID NAME IMAGE
-  NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6 hu\_nginx.1
-  nginx:latest ftnode-172-16-72-8 Running Running 26 minutes ago
-| zeh83i6cf2p0 hu\_nginx.2 nginx:latest ftnode-172-16-72-20 Running
-  Running about a minute ago
-| zy686nu1eu9q hu\_nginx.3 nginx:latest 172-16-72-19 Running Running
-  about a minute ago
-| mijhlis5ap3z \_ hu\_nginx.3 nginx:latest 172-16-72-19 Shutdown
-  Complete 9 minutes ago
-| ruq4sr0s5xx0 \_ hu\_nginx.3 nginx:latest ftnode-172-16-72-20 Shutdown
-  Shutdown 2 minutes ago
-
-docker service update 命令，也可用于直接 升级 镜像等
-====================================================
-
-docker service update --image nginx:new hu\_nginx
+docker容器会自动迁移
 
 ::
 
-
-    ### Swarm中使用Volume(挂在目录，mount命令)
-    1) 查看volume的帮助信息
-
-[root@172-16-72-19 compose]# docker volume --help
-
-Usage: docker volume COMMAND
-
-Manage volumes
-
-Commands: create Create a volume inspect Display detailed information on
-one or more volumes ls List volumes prune Remove all unused local
-volumes rm Remove one or more volumes
-
-::
+    # 先保证每个节点上启动一个docker
+    [root@172-16-72-19 compose]# docker service ps hu_nginx
+    ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE            ERROR               PORTS
+    p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 10 minutes ago                       
+    jcqgq8fjsi6m        hu_nginx.2          nginx:latest        172-16-72-19          Running             Running 9 minutes ago                        
+    ruq4sr0s5xx0        hu_nginx.3          nginx:latest        ftnode-172-16-72-20   Running             Running 27 seconds ago 
 
 
-    2) 创建一个volume
+    # 在node 20这台机器上，模拟宕机
+    [root@ftnode-172-16-72-20 centos]# systemctl stop docker
 
-[root@172-16-72-19 compose]# docker volume create --name testvolume
-testvolume
 
-查看创建的volume
-================
+    [root@172-16-72-19 compose]# docker node ls
+    ID                            HOSTNAME              STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+    3d1iieyvw8q7q2u2i95schbkn *   172-16-72-19          Ready               Active              Leader              19.03.5
+    kdp5b8ja34x52a4v2xc5byhrd     ftnode-172-16-72-8    Ready               Active                                  19.03.5
+    3pqduino59ug7ujhokzph874t     ftnode-172-16-72-20   Down                Active                                  19.03.5
 
-[root@172-16-72-19 compose]# docker volume ls DRIVER VOLUME NAME local
-testvolume
 
-查看volume详情
-==============
+    # 过一会儿查看docker容器的列表，发现容器已经迁移到19上了。
+    [root@172-16-72-19 compose]# docker service ps hu_nginx
+    ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE            ERROR               PORTS
+    p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 11 minutes ago                       
+    jcqgq8fjsi6m        hu_nginx.2          nginx:latest        172-16-72-19          Running             Running 11 minutes ago                       
+    mijhlis5ap3z        hu_nginx.3          nginx:latest        172-16-72-19          Running             Running 28 seconds ago                       
+    ruq4sr0s5xx0         \_ hu_nginx.3      nginx:latest        ftnode-172-16-72-20   Shutdown            Running 47 seconds ago 
 
-[root@172-16-72-19 compose]# docker volume inspect testvolume [ {
-"CreatedAt": "2020-01-09T09:39:44Z", "Driver": "local", "Labels": {},
-"Mountpoint": "/var/lib/docker/volumes/testvolume/\_data", "Name":
-"testvolume", "Options": {}, "Scope": "local" }]
+    [root@172-16-72-19 compose]# docker ps -a
+    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+    91376bb956b3        nginx:latest        "nginx -g 'daemon of…"   3 minutes ago       Up 3 minutes        80/tcp              hu_nginx.3.mijhlis5ap3zzscieunqxk2h8
+    60cad56c7845        nginx:latest        "nginx -g 'daemon of…"   13 minutes ago      Up 13 minutes       80/tcp              hu_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw
 
-::
 
-    3) 创建新的服务并挂载testvolume(nginx为例)
+    # 将转移过来的docker容器关闭，模拟容器故障。因为设置了--replicas 3 nginx,所以集群无论如何都要保证3个容器在运行
+    [root@172-16-72-19 compose]# docker ps
+    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+    91376bb956b3        nginx:latest        "nginx -g 'daemon of…"   5 minutes ago       Up 5 minutes        80/tcp              hu_nginx.3.mijhlis5ap3zzscieunqxk2h8
+    60cad56c7845        nginx:latest        "nginx -g 'daemon of…"   16 minutes ago      Up 16 minutes       80/tcp              hu_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw
+    [root@172-16-72-19 compose]# docker stop 91376bb956b3 
+    91376bb956b3
 
-先删除之前跑的3副本容器
-=======================
+可以看到，当docker容器出现故障时，集群会自动再次拉起一个容器，保证有3个容器运行。图上是从自身node上拉起了一个docker容器。
 
-| [root@172-16-72-19 compose]# docker service ls ID NAME MODE REPLICAS
-  IMAGE PORTS xmmwyaw2dkov hu\_nginx replicated 3/3 nginx:latest
-| [root@172-16-72-19 compose]# docker service rm xmmwy xmmwy
-  [root@172-16-72-19 compose]# docker service ls ID NAME MODE REPLICAS
-  IMAGE PORTS
+结论：即在swarm cluster集群中启动的容器，在worker
+node节点上删除或停用后，该容器会自动转移到其他的worker node节点上
 
-创建3副本容器并进行挂载
-=======================
-
-[root@172-16-72-19 compose]# docker service create --replicas 3 --mount
-type=volume,src=testvolume,dst=/hujianli --name test\_nginx nginx
-nqy9j9mtit56ed15fb6f0pjae overall progress: 3 out of 3 tasks 1/3:
-running [==================================================>] 2/3:
-running [==================================================>] 3/3:
-running [==================================================>] verify:
-Service converged
-
-温馨提示：
-参数src写成source也可以；dst表示容器内的路径，也可以写成target
-
-检查挂载是否成功
-================
-
-| [root@172-16-72-19 compose]# docker service ls ID NAME MODE REPLICAS
-  IMAGE PORTS nqy9j9mtit56 test\_nginx replicated 3/3 nginx:latest
-| [root@172-16-72-19 compose]# docker service ps test\_nginx ID NAME
-  IMAGE NODE DESIRED STATE CURRENT STATE ERROR PORTS xz31es7jrjoj
-  test\_nginx.1 nginx:latest 172-16-72-19 Running Running about a minute
-  ago
-| 6z6s3u2jvl6f test\_nginx.2 nginx:latest ftnode-172-16-72-20 Running
-  Running about a minute ago
-| jltbd6arwp2m test\_nginx.3 nginx:latest ftnode-172-16-72-8 Running
-  Running about a minute ago
-
-[root@172-16-72-19 compose]# cd
-/var/lib/docker/volumes/testvolume/\_data [root@172-16-72-19 \_data]#
-echo "test file hujianli" > hujianli.txt
-
-[root@172-16-72-19 \_data]# docker ps CONTAINER ID IMAGE COMMAND CREATED
-STATUS PORTS NAMES 4eb46d033292 nginx:latest "nginx -g 'daemon of…" 2
-minutes ago Up 2 minutes 80/tcp test\_nginx.1.xz31es7jrjojtma24ssq873r4
-
-[root@172-16-72-19 \_data]# docker exec -it 4eb46d033292 /bin/bash
-root@4eb46d033292:/# cd /hujianli/ root@4eb46d033292:/hujianli# echo
-"hujianli99" > test01.txt
-
-[root@172-16-72-19 \_data]# cd /var/lib/docker/volumes/testvolume/\_data
-[root@172-16-72-19 \_data]# ls test01.txt
+5) Swarm 动态缩容服务(scale)
 
 ::
 
-    在其他节点上操作也一样，容器/hujianli目录中创建的数据，很快就在宿主机的/var/lib/docker/volumes/testvolume/_data中产生
-
-还有一种挂载方式简单说一下吧，上面的会了下面的肯定简单
-======================================================
-
-命令格式： docker service create --mount
-type=bind,target=/container\_data/,source=/host\_data/
-其中，参数target表示容器里面的路径，source表示本地硬盘路径
-
-示例创建并挂载并使用网络
-========================
-
-[root@manager43 ~]# docker service create --replicas 1 --mount
-type=bind,target=/usr/share/nginx/html/,source=/opt/web/ --network
-nginx\_net --name zjz\_nginx -p 8880:80 nginx
-
-::
-
-
-
-    ## 多服务Swarm集群部署,结合compose和swarm进行多服务的编排
-
-
-    温馨提示：
-    我们这里要部署的服务有三个(nginx服务，visualizer服务，portainer服务) 都是集群 GUI 管理服务
-    docker service部署的是单个服务，我们可以使用docker stack进行多服务编排部署
-
-    1) 编写docker-compose.yml文件
-
-[root@172-16-72-19 ~]# mkdir testswarm [root@172-16-72-19 ~]# cd
-testswarm/ [root@172-16-72-19 testswarm]# cat docker-compose.yml
-version: "3" services: nginx: image: nginx ports: - 80:80 deploy:
-replicas: 3
-
-visualizer: image: dockersamples/visualizer ports: - "8080:8080"
-volumes: - "/var/run/docker.sock:/var/run/docker.sock" deploy: replicas:
-1 placement: constraints: [node.role == manager]
-
-portainer: image: portainer/portainer ports: - "9000:9000" volumes: -
-"/var/run/docker.sock:/var/run/docker.sock" deploy: replicas: 1
-placement: constraints: [node.role == manager]
-
-::
-
-    2) 通过这个yml文件部署服务
-
-docker stack deploy -c docker-compse.yml test\_hu\_teacher
-==========================================================
-
-通过上面的执行过程可以看出这样创建会默认创建一个网络并使用它，名字都是我们给的名字的前缀加上服务名
-==================================================================================================
-
-查看创建服务
-============
-
-docker service ls
-=================
-
-docker service ps hu\_nginx
-===========================
-
-在docker-swarm主节点上
-======================
-
-docker ps
-=========
-
-CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 54dd270f6ec0
-portainer/portainer:latest "/portainer" About a minute ago Up About a
-minute 9000/tcp hu\_portainer.1.ko8mf0xqnswu ww1e7x2q0vqv6d14c0ea76beb
-dockersamples/visualizer:latest "npm start" About a minute ago Up About
-a minute (healthy) 8080/tcp hu\_visualizer.1.wpyvb3rpgty
-mecyhqogtco7mz3f64f7b8a501 nginx:latest "nginx -g 'daemon of…" About a
-minute ago Up About a minute 80/tcp hu\_nginx.1.hv6lp4cek2xi7
-
-::
-
-
-    查看各个node上的nginx运行状态
-
-
-
-    dockersamples/visualizer镜像为docker-swarm的一个图形化监控
-
-
-
-
-    portainer/portainer镜像为一个docker-swarm的dashboard视图插件。
-
-Portainer是一个全面的Docker
-UI监控管理工具，很重要的一点是它极其轻量-只有4MB大小，
-Portainer可以作为Docker引擎或Swarm集群上的轻量级Docker容器运行，因此，部署Portainer只需要在Docker集群上运行一个命令。
-
-::
-
-    1.安装
-
-[root@swarm3 centos]# docker run -d -p 9000:9000 -v
-/var/run/docker.sock:/var/run/docker.sock portainer/portainer
-03128711108e5c292996bf81b3a70fe791bbf8c217769ae1229ed49035d304b2
-
-[root@swarm3 centos]# docker ps CONTAINER ID IMAGE COMMAND CREATED
-STATUS PORTS NAMES 03128711108e portainer/portainer "/portainer" 21
-seconds ago Up 19 seconds 0.0.0.0:9000->9000/tcp quirky\_kilby
-
-::
-
-
-
-
-
-
-    2. 集群管理。
-
-    可以使用Portainer管理Swarm。如图：
-
-
-| docker service create
-| --name portainer
-| --publish 9000:9000
-| --constraint 'node.role == manager'
-| --mount type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock  
-  portainer/portainer   -H unix:///var/run/docker.sock \`\`\`
-
-写成yml文件如下 ``docker_dashboard.yml``
-
-.. code:: yaml
-
-    version: "3.3"
-    services:
-      visualizer:
-        image: visualizer:latest
-        ports:
-          - "8888:8080"
-        volumes:
-          - "/var/run/docker.sock:/var/run/docker.sock"
-        deploy:
-          replicas: 1
-          restart_policy:
-            condition: on-failure
-          placement:
-            constraints: [node.role == manager]
-            
-      portainer:
-        image: portainer/portainer:latest
-        ports:
-          - "9000:9000"
-        volumes:
-          - "/var/run/docker.sock:/var/run/docker.sock"
-        deploy:
-          replicas: 1
-          restart_policy:
-            condition: on-failure
-          placement:
-            constraints: [node.role == manager]
-
-更多内容可以查看文档： ``https://portainer.readthedocs.io/en/stable/。``
-
-Docker Swarm容器网络
---------------------
-
-::
-
-    在Docker版本1.12之后swarm模式原生支持覆盖网络(overlay networks)，可以先创建一个覆盖网络，然后启动容器的时候启用这个覆盖网络，
-    这样只要是这个覆盖网络内的容器，不管在不在同一个宿主机上都能相互通信，即跨主机通信！不同覆盖网络内的容器组之间是相互隔离的（相互ping不通）。
-
-::
-
-    swarm模式的覆盖网络包括以下功能：
-    1）可以附加多个服务到同一个网络。
-    2）默认情况下，service discovery为每个swarm服务分配一个虚拟IP地址(vip)和DNS名称，使得在同一个网络中容器之间可以使用服务名称为互相连接。
-    3）可以配置使用DNS轮循而不使用VIP
-    4）为了可以使用swarm的覆盖网络，在启用swarm模式之间你需要在swarm节点之间开放以下端口：
-    5）TCP/UDP端口7946 – 用于容器网络发现
-    6）UDP端口4789 – 用于容器覆盖网络
-
-实例如下：
-
-::
-
-    -----------在Swarm集群中创建overlay网络------------
-    [root@ftnode-172-16-72-33 compose]# docker network create --driver overlay --opt encrypted --subnet 10.10.19.0/24 ngx_net
-    msuzadb6hvic8o9e36qh7aytv
-
-
-    参数解释：
-    –opt encrypted  默认情况下swarm中的节点通信是加密的。在不同节点的容器之间，可选的–opt encrypted参数能在它们的vxlan流量启用附加的加密层。
-    --subnet 命令行参数指定overlay网络使用的子网网段。当不指定一个子网时，swarm管理器自动选择一个子网并分配给网络。
-
-::
-
-    [root@ftnode-172-16-72-33 compose]# docker network ls
-    NETWORK ID          NAME                 DRIVER              SCOPE
-    911b0ca1cdad        bridge               bridge              local
-    298198eac100        host                 host                local
-    m1f1ol7my6na        ingress              overlay             swarm
-    msuzadb6hvic        ngx_net              overlay             swarm
-    4c386b2ab5a4        none                 null                local
-
-
-
-    由上可知，Swarm当中拥有2套覆盖网络。其中"ngx_net"网络正是我们在部署容器时所创建的成果。而"ingress"覆盖网络则为默认提供。
-    Swarm 管理节点会利用 ingress 负载均衡以将服务公布至集群之外。
-
-    在将服务连接到这个创建的网络之前，网络覆盖到manager节点。上面输出的SCOPE为 swarm 表示将服务部署到Swarm时可以使用此网络。
-    在将服务连接到这个网络后，Swarm只将该网络扩展到特定的worker节点，这个worker节点被swarm调度器分配了运行服务的任务。
-    在那些没有运行该服务任务的worker节点上，网络并不扩展到该节点。
-
-::
-
-    ------------------将服务连接到overlay网络-------------------
-    [root@ftnode-172-16-72-33 compose]# docker service create --replicas 5 --network ngx_net --name my-test -p 80:80 nginx
-
-    上面名为"my-test"的服务启动了5个task，用于运行每个任务的容器都可以彼此通过overlay网络进行通信。Swarm集群将网络扩展到所有任务处于Running状态的节点上。
-    [root@ftnode-172-16-72-33 compose]# docker service ls
-    ID                  NAME                    MODE                REPLICAS            IMAGE                             PORTS
-    avwxcnqlhk00        dockerDash_portainer    replicated          1/1                 portainer/portainer:latest        *:9000->9000/tcp
-    u0ac86xtwuzv        dockerDash_visualizer   replicated          1/1                 dockersamples/visualizer:latest   *:8888->8080/tcp
-    k3s60su238ew        my-test                 replicated          5/5                 nginx:latest                      *:80->80/tcp
-
-
-    [root@ftnode-172-16-72-33 compose]# docker service ps my-test
-    ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE                ERROR               PORTS
-    blbx8rli94zk        my-test.1           nginx:latest        ftnode-172-16-72-25   Running             Running about a minute ago                       
-    rhysofjopd0a        my-test.2           nginx:latest        ftnode-172-16-72-8    Running             Running about a minute ago                       
-    hciq9egonmyb        my-test.3           nginx:latest        ftnode-172-16-72-25   Running             Running about a minute ago                       
-    x82yxcgf3q1q        my-test.4           nginx:latest        ftnode-172-16-72-8    Running             Running about a minute ago                       
-    1xf22izkrt77        my-test.5           nginx:latest        ftnode-172-16-72-33   Running             Running about a minute ago     
-
-
-    可见三个节点都有处于running状态的任务，所以my-network网络扩展到三个节点上。
-
-可以查询某个节点上关于my-network的详细信息：
-
-::
-
-    [root@ftnode-172-16-72-33 compose]# docker network inspect ngx_net
-    [
-        {
-            "Name": "ngx_net",
-            "Id": "msuzadb6hvic8o9e36qh7aytv",
-            "Created": "2020-01-16T07:24:49.655207772Z",
-            "Scope": "swarm",
-            "Driver": "overlay",
-            "EnableIPv6": false,
-            "IPAM": {
-                "Driver": "default",
-                "Options": null,
-                "Config": [
-                    {
-                        "Subnet": "10.10.19.0/24",
-                        "Gateway": "10.10.19.1"
-                        
-                        
-               "Containers": {
-                "bab59d1a0f2a3a601e668215d951f167242034764b7f56e6a46a996407a7699e": {
-                    "Name": "my-test.5.1xf22izkrt77jpb2moezw2glv",                          // 一个nginx容器
-                    "EndpointID": "8bc30f61f473f00d9c353ad9df6a9f652bc63ba2878552595e3ae9fef6ddea83",
-                    "MacAddress": "02:42:0a:0a:13:10",
-                    "IPv4Address": "10.10.19.16/24",
-                    "IPv6Address": ""
-                },
-                "lb-ngx_net": {
-                    "Name": "ngx_net-endpoint",
-                    "EndpointID": "c9344bbe01090c8863688237cdd7883bbc2122e89e83f56b962e1bf1056d6174",
-                    "MacAddress": "02:42:0a:0a:13:13",
-                    "IPv4Address": "10.10.19.19/24",
-                    "IPv6Address": ""
-                }
-
-    ........
-
-            "Labels": {},
-            "Peers": [
-                {
-                    "Name": "a107f3e4d4c0",
-                    "IP": "172.16.72.33"
-                },
-                {
-                    "Name": "f124e6f5eb08",
-                    "IP": "172.16.72.25"
-                },
-                {
-                    "Name": "58ee4e31bfd5",
-                    "IP": "172.16.72.8"
-                }
-            ]
-
-看出在manager-node节点上，名为my-test的服务有一个名为\ ``my-test.5.1xf22izkrt77jpb2moezw2glv``\ 的task连接到\ ``ngx_net-endpoint``\ 网络上。
-（另外两个节点node1和node2同样可以用上面命令查看）
-
-节点1
-
-::
-
-    [root@ftnode-172-16-72-25 ~]# docker network inspect ngx_net
-    [
-        {
-            "Name": "ngx_net",
-            "Id": "msuzadb6hvic8o9e36qh7aytv",
-            "Created": "2020-01-16T07:24:49.68266179Z",
-            "Scope": "swarm",
-            "Driver": "overlay",
-            "EnableIPv6": false,
-            "IPAM": {
-                "Driver": "default",
-                "Options": null,
-                "Config": [
-                    {
-                        "Subnet": "10.10.19.0/24",
-                        "Gateway": "10.10.19.1"
-                    }
-                ]
-            },
-            "Internal": false,
-            "Attachable": false,
-            "Ingress": false,
-            "ConfigFrom": {
-                "Network": ""
-            },
-            "ConfigOnly": false,
-            "Containers": {
-                "18008243fc3fc830d784690cf3f32a57298397b385d125fcbbcbf57b08561073": {
-                    "Name": "my-test.1.blbx8rli94zk1v061xlmmv1y2",                              // 看这里，看这里1个nginx容器
-                    "EndpointID": "6dc3b0b426e54b465b625f8ddb5f4c387d2c7f07617350f7988bb58be01da2a0",
-                    "MacAddress": "02:42:0a:0a:13:0c",
-                    "IPv4Address": "10.10.19.12/24",
-                    "IPv6Address": ""
-                },
-                "5bcf6b7b3b878475c391f29175e709da66fc3826f6e410414bd6e7e8520e2dee": {
-                    "Name": "my-test.3.hciq9egonmybqaux4ifk43hih",                             // 看这里，看这里 1个nginx容器
-                    "EndpointID": "30d435f996f9f7e39bb99e090426eed3f03f60d08c881cc421f21de36adf33e9",
-                    "MacAddress": "02:42:0a:0a:13:0e",
-                    "IPv4Address": "10.10.19.14/24",
-                    "IPv6Address": ""
-                },
-                "lb-ngx_net": {
-                    "Name": "ngx_net-endpoint",
-                    "EndpointID": "9baf2b624ec64dbd17d8c71b5bdd5a2a52a7dd37f6b1571e8a9ae919d3eed8a1",
-                    "MacAddress": "02:42:0a:0a:13:12",
-                    "IPv4Address": "10.10.19.18/24",
-                    "IPv6Address": ""
-                }
-            },
-            "Options": {
-                "com.docker.network.driver.overlay.vxlanid_list": "4110",
-                "encrypted": ""
-            },
-
-node2
-
-::
-
-
-    [root@ftnode-172-16-72-8 centos]# docker network inspect ngx_net
-    [
-        {
-            "Name": "ngx_net",
-            "Id": "msuzadb6hvic8o9e36qh7aytv",
-            "Created": "2020-01-16T07:24:49.673215127Z",
-            "Scope": "swarm",
-            "Driver": "overlay",
-            "EnableIPv6": false,
-            "IPAM": {
-                "Driver": "default",
-                "Options": null,
-                "Config": [
-                    {
-                        "Subnet": "10.10.19.0/24",
-                        "Gateway": "10.10.19.1"
-                    }
-                ]
-            },
-            "Internal": false,
-            "Attachable": false,
-            "Ingress": false,
-            "ConfigFrom": {
-                "Network": ""
-            },
-            "ConfigOnly": false,
-            "Containers": {
-                "454448ed89ae25f1f7cb8e6342e5e1425ac1c3e41d962db956d3b451460bba12": {
-                    "Name": "my-test.2.rhysofjopd0ac00iecer8e4z3",                      // 这里 1个nginx容器
-                    "EndpointID": "35f86ef1159b2eed48e1d60fb475fbaaef96b36130d3273560e2fd35c80c223c",
-                    "MacAddress": "02:42:0a:0a:13:0d",
-                    "IPv4Address": "10.10.19.13/24",
-                    "IPv6Address": ""
-                },
-                "eeb9b22bfc28ad137fa256ae6464069496ca1fa32139876c6a234315c3fdc999": {
-                    "Name": "my-test.4.x82yxcgf3q1qhnk6wpnkyhyl3",                      // 这里1个nginx容器
-                    "EndpointID": "609f226209809307bc303832fea972b7245184747eb19b8c2fa30f4ac9806c82",
-                    "MacAddress": "02:42:0a:0a:13:0f",
-                    "IPv4Address": "10.10.19.15/24",
-                    "IPv6Address": ""
-                },
-                "lb-ngx_net": {
-                    "Name": "ngx_net-endpoint",
-                    "EndpointID": "83094df12dd081141e95c80a2b25addd4457b963fce0cf407ed66704f314f6c9",
-                    "MacAddress": "02:42:0a:0a:13:11",
-                    "IPv4Address": "10.10.19.17/24",
-                    "IPv6Address": ""
-                }
-            },
-            "Options": {
-                "com.docker.network.driver.overlay.vxlanid_list": "4110",
-                "encrypted": ""
-            },
-    ......
-
-::
-
-    ----------------------------使用swarm模式的服务发现--------------------------
-    默认情况下，当创建了一个服务并连接到某个网络后，swarm会为该服务分配一个VIP。此VIP根据服务名映射到DNS。在网络上的容器共享该服务的DNS映射，
-    所以网络上的任意容器可以通过服务名访问服务。
-
-    在同一overlay网络中，不用通过端口映射来使某个服务可以被其它服务访问。Swarm内部的负载均衡器自动将请求发送到服务的VIP上，然后分发到所有的
-    active的task上。
-
-    如下示例：
-    在同一个网络中添加了一个centos服务，此服务可以通过名称my-test访问前面创建的nginx服务：
-    [root@manager-node ~]# docker service create --name my-centos --network ngx_net centos      
+    同理，swarm还可以缩容，同样是使用scale命令
+    如下，将hu_nginx容器变为1个
+    [root@172-16-72-19 compose]# docker service scale hu_nginx=1
+    hu_nginx scaled to 1
+    overall progress: 1 out of 1 tasks 
+    1/1:   
+    verify: Service converged 
+    [root@172-16-72-19 compose]# docker service ls
+    ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+    xmmwyaw2dkov        hu_nginx            replicated          1/1                 nginx:latest 
+
+
+    [root@172-16-72-19 compose]# docker service ps hu_nginx
+    ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE            ERROR               PORTS
+    p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 23 minutes ago                       
+    mijhlis5ap3z        hu_nginx.3          nginx:latest        172-16-72-19          Shutdown            Complete 5 minutes ago                       
+    ruq4sr0s5xx0         \_ hu_nginx.3      nginx:latest        ftnode-172-16-72-20   Shutdown            Running 11 minutes ago  
+
+    # 通过docker service ps my_nginx 可以看到node节点上已经为Shutdown状态了
+
+
+    # 登录node节点，使用docker ps -a 查看，会发现容器被stop而非rm
+    [root@172-16-72-19 compose]# docker ps -a
+    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS               NAMES
+    91376bb956b3        nginx:latest        "nginx -g 'daemon of…"   13 minutes ago      Exited (0) 7 minutes ago                       hu_nginx.3.mijhlis5ap3zzscieunqxk2h8
 
 Docker Swarm volume 数据持久化
 ------------------------------
