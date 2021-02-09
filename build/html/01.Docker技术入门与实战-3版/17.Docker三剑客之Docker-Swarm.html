@@ -109,20 +109,13 @@
 <li class="toctree-l2"><a class="reference internal" href="06.Docker数据管理.html">Docker数据管理</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Docker使用网络.html">Docker使用网络</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.使用Dockerfile创建镜像.html">使用Dockerfile创建镜像</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">操作系统</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#ssh">为镜像添加SSH服务</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#web">Web服务与应用</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id25">数据库应用</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id55">分布式处理与大数据平台</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id73">编程开发</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id96">容器与云服务</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html#id113">容器实战思考</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.实战案例.html">实战案例</a></li>
 <li class="toctree-l2"><a class="reference internal" href="10.Docker核心实现技术.html">Docker核心实现技术</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11.配置私有仓库.html">配置私有仓库</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12.安全防护与配置.html">安全防护与配置</a></li>
 <li class="toctree-l2"><a class="reference internal" href="13.高级网络功能.html">高级网络功能</a></li>
 <li class="toctree-l2"><a class="reference internal" href="14.libnetwork插件化网络功能.html">libnetwork插件化网络功能</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15.Etcd——高可用的键值数据库.html">Etcd——高可用的键值数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.Etcd高可用的键值数据库.html">Etcd高可用的键值数据库</a></li>
 <li class="toctree-l2"><a class="reference internal" href="16.Docker三剑客之Docker-Compose.html">Docker三剑客之Docker-Compose</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Docker三剑客之Docker-Swarm</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#docker-swarm">Docker-swarm</a></li>
@@ -143,25 +136,53 @@
 <li class="toctree-l4"><a class="reference internal" href="#id12">7,使用集群服务</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id13">5.更新集群</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id14">6.离开集群</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id16">使用服务命令</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id15">使用服务命令</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#docker-stack">Docker Stack命令</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#swarm-nginx">在Swarm中部署服务(nginx为例)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#swarmvolume-mount">Swarm中使用Volume(挂在目录，mount命令)</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#swarm-composeswarm">多服务Swarm集群部署,结合compose和swarm进行多服务的编排</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id17">Docker Swarm容器网络</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id16">部署服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#manager-nodenginx">在manager-node节点上使用上面这个覆盖网络创建nginx服务：</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#replicas">其中，–replicas 参数指定服务由几个实例组成。</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nginx-tomcat-tomcat">注意：不需要提前在节点上下载nginx镜像，这个命令执行后会自动下载这个容器镜像（比如此处创建tomcat容器，就将下面命令中的镜像改为tomcat镜像）。</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-service-ls">使用 docker service ls 查看正在运行服务的列表</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#manager-node-http-192-168-31-43">查询到哪个节点正在运行该服务。如下该容器被调度到manager-node节点上启动了，然后访问http://192.168.31.43即可访问这个容器应用（如果调度到其他节点，访问也是如此）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id17">将容器在集群中减少为2个。</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker">先保证每个节点上启动一个docker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#node-20">在node 20这台机器上，模拟宕机</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-19">过一会儿查看docker容器的列表，发现容器已经迁移到19上了。</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-replicas-3-nginx-3">将转移过来的docker容器关闭，模拟容器故障。因为设置了–replicas 3 nginx,所以集群无论如何都要保证3个容器在运行</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-service-ps-my-nginx-nodeshutdown">通过docker service ps my_nginx 可以看到node节点上已经为Shutdown状态了</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#node-docker-ps-a-stoprm">登录node节点，使用docker ps -a 查看，会发现容器被stop而非rm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-service-update">docker service update 命令，也可用于直接 升级 镜像等</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#volume">查看创建的volume</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id18">查看volume详情</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id19">先删除之前跑的3副本容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id20">创建3副本容器并进行挂载</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id21">检查挂载是否成功</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id22">还有一种挂载方式简单说一下吧，上面的会了下面的肯定简单</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id23">示例创建并挂载并使用网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-stack-deploy-c-docker-compse-yml-test-hu-teacher">docker stack deploy -c docker-compse.yml test_hu_teacher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id24">通过上面的执行过程可以看出这样创建会默认创建一个网络并使用它，名字都是我们给的名字的前缀加上服务名</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id25">查看创建服务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id26">docker service ls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-service-ps-hu-nginx">docker service ps hu_nginx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id27">在docker-swarm主节点上</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-ps">docker ps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id28">Docker Swarm容器网络</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#docker-swarm-volume">Docker Swarm volume 数据持久化</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#docker-compose">Docker Compose 配置文件详解</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id18">本章小结</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id29">本章小结</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="18.Docker三剑客之Docker-Machine.html">Docker三剑客之Docker-Machine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="19.搭建一个Web应用栈.html">搭建一个Web应用栈</a></li>
 <li class="toctree-l2"><a class="reference internal" href="20.Docker高级网络实战.html">Docker高级网络实战</a></li>
 <li class="toctree-l2"><a class="reference internal" href="21.服务发现.html">服务发现</a></li>
-<li class="toctree-l2"><a class="reference internal" href="22.Mesos——优秀的集群资源调度平台.html">Mesos——优秀的集群资源调度平台</a></li>
-<li class="toctree-l2"><a class="reference internal" href="23.Kubernetes——生产级容器集群平台.html">Kubernetes——生产级容器集群平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22.Mesos-优秀的集群资源调度平台.html">Mesos—优秀的集群资源调度平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="23.Kubernetes-生产级容器集群平台.html">Kubernetes-生产级容器集群平台</a></li>
 <li class="toctree-l2"><a class="reference internal" href="24.其他相关项目.html">其他相关项目</a></li>
 <li class="toctree-l2"><a class="reference internal" href="25.附录.html">附录</a></li>
 </ul>
@@ -238,47 +259,77 @@
   <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#dockerdocker-swarm" id="id19">Docker三剑客之Docker-Swarm</a><ul>
-<li><a class="reference internal" href="#docker-swarm" id="id20">Docker-swarm</a></li>
-<li><a class="reference internal" href="#id1" id="id21">基本概念</a><ul>
-<li><a class="reference internal" href="#swarm" id="id22">1.Swarm 集群</a></li>
-<li><a class="reference internal" href="#id2" id="id23">2.节点</a></li>
-<li><a class="reference internal" href="#id3" id="id24">3.服务</a></li>
-<li><a class="reference internal" href="#id4" id="id25">4 .任务</a></li>
-<li><a class="reference internal" href="#id5" id="id26">5.服务的外部访问</a></li>
+<li><a class="reference internal" href="#dockerdocker-swarm" id="id30">Docker三剑客之Docker-Swarm</a><ul>
+<li><a class="reference internal" href="#docker-swarm" id="id31">Docker-swarm</a></li>
+<li><a class="reference internal" href="#id1" id="id32">基本概念</a><ul>
+<li><a class="reference internal" href="#swarm" id="id33">1.Swarm 集群</a></li>
+<li><a class="reference internal" href="#id2" id="id34">2.节点</a></li>
+<li><a class="reference internal" href="#id3" id="id35">3.服务</a></li>
+<li><a class="reference internal" href="#id4" id="id36">4 .任务</a></li>
+<li><a class="reference internal" href="#id5" id="id37">5.服务的外部访问</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6" id="id27">使用Swarm</a><ul>
-<li><a class="reference internal" href="#id7" id="id28">1.创建集群</a></li>
-<li><a class="reference internal" href="#id8" id="id29">2.查看集群信息</a></li>
-<li><a class="reference internal" href="#id9" id="id30">3.加入集群</a></li>
-<li><a class="reference internal" href="#id10" id="id31">4.管理添加节点的口令</a></li>
-<li><a class="reference internal" href="#id11" id="id32">6.离开集群</a></li>
-<li><a class="reference internal" href="#id12" id="id33">7,使用集群服务</a></li>
-<li><a class="reference internal" href="#id13" id="id34">5.更新集群</a></li>
-<li><a class="reference internal" href="#id14" id="id35">6.离开集群</a></li>
-<li><a class="reference internal" href="#id16" id="id36">使用服务命令</a></li>
-<li><a class="reference internal" href="#docker-stack" id="id37">Docker Stack命令</a></li>
-<li><a class="reference internal" href="#swarm-nginx" id="id38">在Swarm中部署服务(nginx为例)</a></li>
-<li><a class="reference internal" href="#swarmvolume-mount" id="id39">Swarm中使用Volume(挂在目录，mount命令)</a></li>
+<li><a class="reference internal" href="#id6" id="id38">使用Swarm</a><ul>
+<li><a class="reference internal" href="#id7" id="id39">1.创建集群</a></li>
+<li><a class="reference internal" href="#id8" id="id40">2.查看集群信息</a></li>
+<li><a class="reference internal" href="#id9" id="id41">3.加入集群</a></li>
+<li><a class="reference internal" href="#id10" id="id42">4.管理添加节点的口令</a></li>
+<li><a class="reference internal" href="#id11" id="id43">6.离开集群</a></li>
+<li><a class="reference internal" href="#id12" id="id44">7,使用集群服务</a></li>
+<li><a class="reference internal" href="#id13" id="id45">5.更新集群</a></li>
+<li><a class="reference internal" href="#id14" id="id46">6.离开集群</a></li>
+<li><a class="reference internal" href="#id15" id="id47">使用服务命令</a></li>
+<li><a class="reference internal" href="#docker-stack" id="id48">Docker Stack命令</a></li>
+<li><a class="reference internal" href="#swarm-nginx" id="id49">在Swarm中部署服务(nginx为例)</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#swarm-composeswarm" id="id40">多服务Swarm集群部署,结合compose和swarm进行多服务的编排</a></li>
-<li><a class="reference internal" href="#id17" id="id41">Docker Swarm容器网络</a></li>
-<li><a class="reference internal" href="#docker-swarm-volume" id="id42">Docker Swarm volume 数据持久化</a></li>
-<li><a class="reference internal" href="#docker-compose" id="id43">Docker Compose 配置文件详解</a></li>
-<li><a class="reference internal" href="#id18" id="id44">本章小结</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id16" id="id50">部署服务</a></li>
+<li><a class="reference internal" href="#manager-nodenginx" id="id51">在manager-node节点上使用上面这个覆盖网络创建nginx服务：</a></li>
+<li><a class="reference internal" href="#replicas" id="id52">其中，–replicas 参数指定服务由几个实例组成。</a></li>
+<li><a class="reference internal" href="#nginx-tomcat-tomcat" id="id53">注意：不需要提前在节点上下载nginx镜像，这个命令执行后会自动下载这个容器镜像（比如此处创建tomcat容器，就将下面命令中的镜像改为tomcat镜像）。</a></li>
+<li><a class="reference internal" href="#docker-service-ls" id="id54">使用 docker service ls 查看正在运行服务的列表</a></li>
+<li><a class="reference internal" href="#manager-node-http-192-168-31-43" id="id55">查询到哪个节点正在运行该服务。如下该容器被调度到manager-node节点上启动了，然后访问http://192.168.31.43即可访问这个容器应用（如果调度到其他节点，访问也是如此）</a></li>
+<li><a class="reference internal" href="#id17" id="id56">将容器在集群中减少为2个。</a></li>
+<li><a class="reference internal" href="#docker" id="id57">先保证每个节点上启动一个docker</a></li>
+<li><a class="reference internal" href="#node-20" id="id58">在node 20这台机器上，模拟宕机</a></li>
+<li><a class="reference internal" href="#docker-19" id="id59">过一会儿查看docker容器的列表，发现容器已经迁移到19上了。</a></li>
+<li><a class="reference internal" href="#docker-replicas-3-nginx-3" id="id60">将转移过来的docker容器关闭，模拟容器故障。因为设置了–replicas 3 nginx,所以集群无论如何都要保证3个容器在运行</a></li>
+<li><a class="reference internal" href="#docker-service-ps-my-nginx-nodeshutdown" id="id61">通过docker service ps my_nginx 可以看到node节点上已经为Shutdown状态了</a></li>
+<li><a class="reference internal" href="#node-docker-ps-a-stoprm" id="id62">登录node节点，使用docker ps -a 查看，会发现容器被stop而非rm</a></li>
+<li><a class="reference internal" href="#docker-service-update" id="id63">docker service update 命令，也可用于直接 升级 镜像等</a></li>
+<li><a class="reference internal" href="#volume" id="id64">查看创建的volume</a></li>
+<li><a class="reference internal" href="#id18" id="id65">查看volume详情</a></li>
+<li><a class="reference internal" href="#id19" id="id66">先删除之前跑的3副本容器</a></li>
+<li><a class="reference internal" href="#id20" id="id67">创建3副本容器并进行挂载</a></li>
+<li><a class="reference internal" href="#id21" id="id68">检查挂载是否成功</a></li>
+<li><a class="reference internal" href="#id22" id="id69">还有一种挂载方式简单说一下吧，上面的会了下面的肯定简单</a></li>
+<li><a class="reference internal" href="#id23" id="id70">示例创建并挂载并使用网络</a></li>
+<li><a class="reference internal" href="#docker-stack-deploy-c-docker-compse-yml-test-hu-teacher" id="id71">docker stack deploy -c docker-compse.yml test_hu_teacher</a></li>
+<li><a class="reference internal" href="#id24" id="id72">通过上面的执行过程可以看出这样创建会默认创建一个网络并使用它，名字都是我们给的名字的前缀加上服务名</a></li>
+<li><a class="reference internal" href="#id25" id="id73">查看创建服务</a></li>
+<li><a class="reference internal" href="#id26" id="id74">docker service ls</a></li>
+<li><a class="reference internal" href="#docker-service-ps-hu-nginx" id="id75">docker service ps hu_nginx</a></li>
+<li><a class="reference internal" href="#id27" id="id76">在docker-swarm主节点上</a></li>
+<li><a class="reference internal" href="#docker-ps" id="id77">docker ps</a><ul>
+<li><a class="reference internal" href="#id28" id="id78">Docker Swarm容器网络</a></li>
+<li><a class="reference internal" href="#docker-swarm-volume" id="id79">Docker Swarm volume 数据持久化</a></li>
+<li><a class="reference internal" href="#docker-compose" id="id80">Docker Compose 配置文件详解</a></li>
+<li><a class="reference internal" href="#id29" id="id81">本章小结</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="dockerdocker-swarm">
-<h1><a class="toc-backref" href="#id19">Docker三剑客之Docker-Swarm</a><a class="headerlink" href="#dockerdocker-swarm" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id30">Docker三剑客之Docker-Swarm</a><a class="headerlink" href="#dockerdocker-swarm" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="docker-swarm">
-<h2><a class="toc-backref" href="#id20">Docker-swarm</a><a class="headerlink" href="#docker-swarm" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id31">Docker-swarm</a><a class="headerlink" href="#docker-swarm" title="Permalink to this headline">¶</a></h2>
 <p>Docker
 Swarm是Docker官方编排(Orchestration)项目之一,负责对Docker集群进行管理。</p>
-<p><img alt="image0" src="../_images/docker_swarm001.png" /></p>
+<div class="figure">
+<img alt="" src="../_images/docker_swarm001.png" />
+</div>
 <p>作为容器集群管理器,swarm
 最大的优势之一就是原生支持API,给用户使用带来极大的便利。
 各种基于标准API的工具比如Compose、Docker SDK、各种管理软件，</p>
@@ -287,12 +338,14 @@ Swarm是Docker官方编排(Orchestration)项目之一,负责对Docker集群进�
 <p>Swarm采用了经典的“主从”结构，通过Raft协议来在多个管理节点（Manager）中实现共识,
 工作节点(Worker)上运行agent接受管理节点的统一管理和任务分配。</p>
 <p>用户提交服务请求只需要发给管理节点即可，管理节点会安装调度策略在机器中分配节点来运行服务相关的任务。</p>
-<p><img alt="image1" src="../_images/docker_swarm002.png" /></p>
+<div class="figure">
+<img alt="" src="../_images/docker_swarm002.png" />
+</div>
 </div>
 <div class="section" id="id1">
-<h2><a class="toc-backref" href="#id21">基本概念</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id32">基本概念</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="swarm">
-<h3><a class="toc-backref" href="#id22">1.Swarm 集群</a><a class="headerlink" href="#swarm" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id33">1.Swarm 集群</a><a class="headerlink" href="#swarm" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Swarm 集群（ Cluster ） 为一组被统一管理起来的Docker 主机。集群是Swarm 所管理的
 对象。这些主机通过Docker 引擎的模式相互沟通,其中部分主机可能作为管理节点
 （ manager) 响应外部的管理请求,其他主机作为工作节点（ worker) 来实际运行Docker 容器。
@@ -304,7 +357,7 @@ Swarm是Docker官方编排(Orchestration)项目之一,负责对Docker集群进�
 </div>
 </div>
 <div class="section" id="id2">
-<h3><a class="toc-backref" href="#id23">2.节点</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id34">2.节点</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>节点（ Node ） 是Swarm 集群的最小资源单位。每个节点实际上都是一台Docker 主机。
 Swarm 集群中节点分为两种：
 
@@ -320,7 +373,7 @@ Swarm 集群中节点分为两种：
 </div>
 </div>
 <div class="section" id="id3">
-<h3><a class="toc-backref" href="#id24">3.服务</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id35">3.服务</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>服务（ Service ） 是Docker 支持复杂多容器协作场景的利器。
 一个服务可以由若干个任务组成， 每个任务为某个具体的应用。服务还包括对应的存储、网络、端口映射、副本个数、访问配置、升级配置等附加参数。
 
@@ -338,7 +391,7 @@ Swarm 集群中服务类型也分为两种（ 可以通过-mode 指定） ：
 </div>
 </div>
 <div class="section" id="id4">
-<h3><a class="toc-backref" href="#id25">4 .任务</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id36">4 .任务</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>任务是swarm 集群中最小的调度单位， 即一个指定的应用容器。例如仅仅运行前端业务的前端容器。
 
 任务从生命周期上将可能处于创建（ NEW) 、等待（ PENDING) 、分配（ ASSIGNED) 、接受（ ACCEPTED) 、准备（ PREPARING ） 、开始（ STARTING) 、运行
@@ -350,7 +403,7 @@ swarm 集群中的管理节点会按照调度要求将任务分配到工作节�
 </div>
 </div>
 <div class="section" id="id5">
-<h3><a class="toc-backref" href="#id26">5.服务的外部访问</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id37">5.服务的外部访问</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>swarm 集群中的服务要被集群外部访问， 必须要能允许任务的响应端口映射出来。
 swarm 中支持人口负载均衡（ ingress load balancing ） 的映射模式。
 
@@ -363,7 +416,7 @@ swarm 中支持人口负载均衡（ ingress load balancing ） 的映射模式�
 </div>
 </div>
 <div class="section" id="id6">
-<h2><a class="toc-backref" href="#id27">使用Swarm</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id38">使用Swarm</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>用户在安装Docker 1.12或更新的版本后，即可直接尝试Swarm模式的相关功能。假定分别准备两个Linux主机，作为管理节点（实际上也同时具备工作节点功能）和工作节点。
 
 Swarm集群的主要操作，包括：
@@ -377,7 +430,7 @@ Swarm集群的主要操作，包括：
 </pre></div>
 </div>
 <div class="section" id="id7">
-<h3><a class="toc-backref" href="#id28">1.创建集群</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id39">1.创建集群</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">20</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker swarm init --advertise-addr 172.16.72.20</span>
 <span class="n">Swarm</span> <span class="n">initialized</span><span class="p">:</span> <span class="n">current</span> <span class="n">node</span> <span class="p">(</span><span class="n">qtbcvtilbdk1yry0y3ji0jejm</span><span class="p">)</span> <span class="ow">is</span> <span class="n">now</span> <span class="n">a</span> <span class="n">manager</span><span class="o">.</span>
 
@@ -391,7 +444,7 @@ Swarm集群的主要操作，包括：
 <p>swarm初始化，集群初始化子命令的相关选项：<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">swarm</span> <span class="pre">init</span></code></p>
 </div>
 <div class="section" id="id8">
-<h3><a class="toc-backref" href="#id29">2.查看集群信息</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id40">2.查看集群信息</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">20</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker info</span>
 <span class="o">.....</span>
 <span class="n">Swarm</span><span class="p">:</span> <span class="n">active</span>
@@ -450,7 +503,7 @@ Swarm集群的主要操作，包括：
 </div>
 </div>
 <div class="section" id="id9">
-<h3><a class="toc-backref" href="#id30">3.加入集群</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id41">3.加入集群</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">15</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker swarm join --token SWMTKN-1-34puzsk7pznuagjojdvj6zbzq10px8h4h43vcl4l3v5zxbm79q-2jd79domv5d1e16hz0uurs8k5 172.16.72.20:2377</span>
 <span class="n">This</span> <span class="n">node</span> <span class="n">joined</span> <span class="n">a</span> <span class="n">swarm</span> <span class="k">as</span> <span class="n">a</span> <span class="n">worker</span><span class="o">.</span>
 
@@ -461,7 +514,7 @@ Swarm集群的主要操作，包括：
 <p>加入集群的子命令：<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">swarm</span> <span class="pre">join</span></code>包含是个子选项</p>
 </div>
 <div class="section" id="id10">
-<h3><a class="toc-backref" href="#id31">4.管理添加节点的口令</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id42">4.管理添加节点的口令</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm1</span> <span class="n">docker_swarm</span><span class="p">]</span><span class="c1"># docker swarm join-token --rotate manager</span>
 <span class="n">Successfully</span> <span class="n">rotated</span> <span class="n">manager</span> <span class="n">join</span> <span class="n">token</span><span class="o">.</span>
 
@@ -510,14 +563,14 @@ kdp5b8ja34x52a4v2xc5byhrd     ftnode-172-16-72-8    Ready               Active  
 </div>
 </div>
 <div class="section" id="id11">
-<h3><a class="toc-backref" href="#id32">6.离开集群</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id43">6.离开集群</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm2</span> <span class="o">~</span><span class="p">]</span><span class="c1"># docker swarm leave</span>
 <span class="n">Node</span> <span class="n">left</span> <span class="n">the</span> <span class="n">swarm</span><span class="o">.</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="id12">
-<h3><a class="toc-backref" href="#id33">7,使用集群服务</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id44">7,使用集群服务</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <p>使用swarm 提供的服务实际上有两种方法，</p>
 <p>· 一种是使用Docker 原来的客户端命令， 只要指定使用Swarm manager
 服务的监听地址即可。 例如,manager服务监听的地址为:2377则可以通过指定-H
@@ -526,7 +579,9 @@ kdp5b8ja34x52a4v2xc5byhrd     ftnode-172-16-72-8    Ready               Active  
 <p>· 另外一种方法， 也是推荐的做法， 是使用新的docker service 命令，
 可以获得包括多主机网络等更高级的特性支持。</p>
 <p>service命令及说明</p>
-<p><img alt="image2" src="../_images/docker_swarm_server01.png" /></p>
+<div class="figure">
+<img alt="" src="../_images/docker_swarm_server01.png" />
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(1)快速创建一个应用服务，2副本
 
 [root@172-16-72-20 centos]# docker service create --replicas 2 --name ping_app debian:jessie ping docker.com
@@ -613,7 +668,7 @@ Swarm通过路由机制支持服务对外映射到指定端口，该端口可以
 </div>
 </div>
 <div class="section" id="id13">
-<h3><a class="toc-backref" href="#id34">5.更新集群</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id45">5.更新集群</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>用户可以使用docker s warm update [OPT 工ONS] 命令来更新一个集群， 主要包
 括如下配置信息：
     囗   -autolock: 启动或关闭自动锁定；
@@ -627,16 +682,16 @@ Swarm通过路由机制支持服务对外映射到指定端口，该端口可以
 </div>
 </div>
 <div class="section" id="id14">
-<span id="id15"></span><h3><a class="toc-backref" href="#id35">6.离开集群</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id46">6.离开集群</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>节点可以在任何时候通过swarm leave 命令离开一个集群。命令格式为docker swarm leave [OPTIONS) ,支持 -f, --force 意味着强制离开集群。
 </pre></div>
 </div>
 </div>
-<div class="section" id="id16">
-<h3><a class="toc-backref" href="#id36">使用服务命令</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id15">
+<h3><a class="toc-backref" href="#id47">使用服务命令</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="docker-stack">
-<h3><a class="toc-backref" href="#id37">Docker Stack命令</a><a class="headerlink" href="#docker-stack" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id48">Docker Stack命令</a><a class="headerlink" href="#docker-stack" title="Permalink to this headline">¶</a></h3>
 <p>Docker栈的命令，它一共包含五个子命令，</p>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm1</span> <span class="n">docker_swarm</span><span class="p">]</span><span class="c1"># docker stack --help</span>
 
@@ -665,7 +720,7 @@ Swarm通过路由机制支持服务对外映射到指定端口，该端口可以
 </div>
 </div>
 <div class="section" id="swarm-nginx">
-<h3><a class="toc-backref" href="#id38">在Swarm中部署服务(nginx为例)</a><a class="headerlink" href="#swarm-nginx" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id49">在Swarm中部署服务(nginx为例)</a><a class="headerlink" href="#swarm-nginx" title="Permalink to this headline">¶</a></h3>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 查看docker网络</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker network ls</span>
 <span class="n">NETWORK</span> <span class="n">ID</span>          <span class="n">NAME</span>                    <span class="n">DRIVER</span>              <span class="n">SCOPE</span>
@@ -677,429 +732,404 @@ Swarm通过路由机制支持服务对外映射到指定端口，该端口可以
 </pre></div>
 </div>
 <ol class="arabic simple">
-<li>创建网络在部署服务</li>
+<li>创建网络在部署服务 ```shell # 创建网络 [<a class="reference external" href="mailto:root&#37;&#52;&#48;ftnode-172-16-72-19">root<span>&#64;</span>ftnode-172-16-72-19</a>
+compose]# docker network create -d overlay nginx_net
+weqsqoenuhr1qt6o30odfp83n</li>
 </ol>
-<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 创建网络</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker network create -d overlay nginx_net</span>
-<span class="n">weqsqoenuhr1qt6o30odfp83n</span>
-
-<span class="c1"># 部署服务</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker network ls | grep nginx_net</span>
-<span class="n">weqsqoenuhr1</span>        <span class="n">nginx_net</span>           <span class="n">overlay</span>             <span class="n">swarm</span>
-
-<span class="c1">#在manager-node节点上使用上面这个覆盖网络创建nginx服务：</span>
-<span class="c1">#其中，--replicas 参数指定服务由几个实例组成。</span>
-<span class="c1">#注意：不需要提前在节点上下载nginx镜像，这个命令执行后会自动下载这个容器镜像（比如此处创建tomcat容器，就将下面命令中的镜像改为tomcat镜像）。</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker service create --name hu_nginx --replicas 3 nginx</span>
-<span class="n">xmmwyaw2dkovyk1iy42n0zi68</span>
-<span class="n">overall</span> <span class="n">progress</span><span class="p">:</span> <span class="mi">3</span> <span class="n">out</span> <span class="n">of</span> <span class="mi">3</span> <span class="n">tasks</span>
-<span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">:</span> <span class="n">running</span>   <span class="p">[</span><span class="o">==================================================&gt;</span><span class="p">]</span>
-<span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">:</span> <span class="n">running</span>   <span class="p">[</span><span class="o">==================================================&gt;</span><span class="p">]</span>
-<span class="mi">3</span><span class="o">/</span><span class="mi">3</span><span class="p">:</span> <span class="n">running</span>   <span class="p">[</span><span class="o">==================================================&gt;</span><span class="p">]</span>
-
-<span class="c1"># 使用 docker service ls 查看正在运行服务的列表</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker service ls</span>
-<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">MODE</span>                <span class="n">REPLICAS</span>            <span class="n">IMAGE</span>               <span class="n">PORTS</span>
-<span class="n">xmmwyaw2dkov</span>        <span class="n">hu_nginx</span>            <span class="n">replicated</span>          <span class="mi">3</span><span class="o">/</span><span class="mi">3</span>                 <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>
-</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id16">
+<h1><a class="toc-backref" href="#id50">部署服务</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h1>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;ftnode-172-16-72-19">root<span>&#64;</span>ftnode-172-16-72-19</a> compose]# docker network ls | grep nginx_net
+weqsqoenuhr1 nginx_net overlay swarm</p>
+</div>
+<div class="section" id="manager-nodenginx">
+<h1><a class="toc-backref" href="#id51">在manager-node节点上使用上面这个覆盖网络创建nginx服务：</a><a class="headerlink" href="#manager-nodenginx" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="replicas">
+<h1><a class="toc-backref" href="#id52">其中，–replicas 参数指定服务由几个实例组成。</a><a class="headerlink" href="#replicas" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="nginx-tomcat-tomcat">
+<h1><a class="toc-backref" href="#id53">注意：不需要提前在节点上下载nginx镜像，这个命令执行后会自动下载这个容器镜像（比如此处创建tomcat容器，就将下面命令中的镜像改为tomcat镜像）。</a><a class="headerlink" href="#nginx-tomcat-tomcat" title="Permalink to this headline">¶</a></h1>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service create –name hu_nginx
+–replicas 3 nginx xmmwyaw2dkovyk1iy42n0zi68 overall progress: 3 out of
+3 tasks 1/3: running
+[==================================================&gt;] 2/3: running
+[==================================================&gt;] 3/3: running
+[==================================================&gt;]</p>
+</div>
+<div class="section" id="docker-service-ls">
+<h1><a class="toc-backref" href="#id54">使用 docker service ls 查看正在运行服务的列表</a><a class="headerlink" href="#docker-service-ls" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ls ID NAME MODE REPLICAS
+IMAGE PORTS xmmwyaw2dkov hu_nginx replicated 3/3 nginx:latest</div>
+<div class="line">```</div>
 </div>
 <ol class="arabic simple" start="2">
-<li>查询Swarm中服务的信息</li>
+<li>查询Swarm中服务的信息 ```shell -pretty
+使命令输出格式化为可读的格式，不加 –pretty 可以输出更详细的信息</li>
 </ol>
-<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>-pretty 使命令输出格式化为可读的格式，不加 --pretty 可以输出更详细的信息
-
-[root@172-16-72-19 compose]# docker service inspect --pretty hu_nginx
-
-ID:     xmmwyaw2dkovyk1iy42n0zi68
-Name:       hu_nginx
-Service Mode:   Replicated
- Replicas:  3
-Placement:
-UpdateConfig:
- Parallelism:   1
- On failure:    pause
- Monitoring Period: 5s
- Max failure ratio: 0
- Update order:      stop-first
-RollbackConfig:
- Parallelism:   1
- On failure:    pause
- Monitoring Period: 5s
- Max failure ratio: 0
- Rollback order:    stop-first
-ContainerSpec:
- Image:     nginx:latest@sha256:b2d89d0a210398b4d1120b3e3a7672c16a4ba09c2c4a0395f18b9f7999b768f2
- Init:      false
-Resources:
-Endpoint Mode:  vip
-
-
-
-# 查询到哪个节点正在运行该服务。如下该容器被调度到manager-node节点上启动了，然后访问http://192.168.31.43即可访问这个容器应用（如果调度到其他节点，访问也是如此）
-[root@172-16-72-19 compose]# docker service ps hu_nginx
-ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE           ERROR               PORTS
-p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 2 minutes ago
-jcqgq8fjsi6m        hu_nginx.2          nginx:latest        172-16-72-19          Running             Running 2 minutes ago
-d4vsmgnk7n0e        hu_nginx.3          nginx:latest        ftnode-172-16-72-20   Running             Running 2 minutes ago
-温馨提示：如果上面命令执行后，上面的 STATE 字段中刚开始的服务状态为 Preparing，需要等一会才能变为 Running 状态，其中最费时间的应该是下载镜像的过程
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service inspect –pretty hu_nginx</p>
+<p>ID: xmmwyaw2dkovyk1iy42n0zi68 Name: hu_nginx Service Mode: Replicated
+Replicas: 3 Placement: UpdateConfig: Parallelism: 1 On failure: pause
+Monitoring Period: 5s Max failure ratio: 0 Update order: stop-first
+RollbackConfig: Parallelism: 1 On failure: pause Monitoring Period: 5s
+Max failure ratio: 0 Rollback order: stop-first ContainerSpec: Image:
+nginx:latest&#64;sha256:b2d89d0a210398b4d1120b3e3a7672c16a4ba09c2c4a0395f18b9f7999b768f2
+Init: false Resources: Endpoint Mode: vip</p>
+</div>
+<div class="section" id="manager-node-http-192-168-31-43">
+<h1><a class="toc-backref" href="#id55">查询到哪个节点正在运行该服务。如下该容器被调度到manager-node节点上启动了，然后访问http://192.168.31.43即可访问这个容器应用（如果调度到其他节点，访问也是如此）</a><a class="headerlink" href="#manager-node-http-192-168-31-43" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ps hu_nginx ID NAME IMAGE
+NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6 hu_nginx.1
+nginx:latest ftnode-172-16-72-8 Running Running 2 minutes ago</div>
+<div class="line">jcqgq8fjsi6m hu_nginx.2 nginx:latest 172-16-72-19 Running Running 2
+minutes ago</div>
+<div class="line">d4vsmgnk7n0e hu_nginx.3 nginx:latest ftnode-172-16-72-20 Running
+Running 2 minutes ago</div>
+<div class="line">温馨提示：如果上面命令执行后，上面的 STATE 字段中刚开始的服务状态为
+Preparing，需要等一会才能变为 Running
+状态，其中最费时间的应该是下载镜像的过程</div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">3</span><span class="p">)</span> <span class="n">在Swarm中动态扩展服务</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="3">
-<li>在Swarm中动态扩展服务(scale)</li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>当然，如果只是通过service启动容器，swarm也算不上什么新鲜东西了。Service还提供了复制（类似kubernetes里的副本）功能。可以通过 docker service scale 命令来设置服务中容器的副本数
-比如将上面的my_nginx容器动态扩展到4个
-
-[root@172-16-72-19 compose]# docker service scale hu_nginx=4
-hu_nginx scaled to 4
-overall progress: 4 out of 4 tasks
-1/4: running   [==================================================&gt;]
-2/4: running   [==================================================&gt;]
-3/4: running   [==================================================&gt;]
-4/4: running   [==================================================&gt;]
-verify: Service converged
-[root@172-16-72-19 compose]# docker service ps hu_nginx
-ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE            ERROR               PORTS
-p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 4 minutes ago
-jcqgq8fjsi6m        hu_nginx.2          nginx:latest        172-16-72-19          Running             Running 4 minutes ago
-d4vsmgnk7n0e        hu_nginx.3          nginx:latest        ftnode-172-16-72-20   Running             Running 4 minutes ago
-trc0i8rdim8g        hu_nginx.4          nginx:latest        172-16-72-19          Running             Running 14 seconds ago
-
-[root@172-16-72-19 compose]# docker ps
-CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS               NAMES
-b292c2181ef6        nginx:latest        &quot;nginx -g &#39;daemon of…&quot;   About a minute ago   Up About a minute   80/tcp              hu_nginx.4.trc0i8rdim8g3i841gnc3b3wy
-60cad56c7845        nginx:latest        &quot;nginx -g &#39;daemon of…&quot;   5 minutes ago        Up 5 minutes        80/tcp              hu_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw
-
-这4个副本的hu_nginx容器分别运行在这三个节点上，登陆这三个节点，就会发现已经存在运行着的hu_nginx容器
-
-172-16-72-19 上运行着2个nginx服务。
-
-# 将容器在集群中减少为2个。
-[root@172-16-72-19 compose]# docker service scale hu_nginx=2
-hu_nginx scaled to 2
-overall progress: 2 out of 2 tasks
-1/2: running   [==================================================&gt;]
-2/2: running   [==================================================&gt;]
-verify: Service converged
-</pre></div>
+<p>当然，如果只是通过service启动容器，swarm也算不上什么新鲜东西了。Service还提供了复制（类似kubernetes里的副本）功能。可以通过
+docker service scale 命令来设置服务中容器的副本数
+比如将上面的my_nginx容器动态扩展到4个</p>
+<div class="line-block">
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service scale hu_nginx=4
+hu_nginx scaled to 4 overall progress: 4 out of 4 tasks 1/4: running
+[==================================================&gt;] 2/4: running
+[==================================================&gt;] 3/4: running
+[==================================================&gt;] 4/4: running
+[==================================================&gt;] verify: Service
+converged [<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ps hu_nginx ID
+NAME IMAGE NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6
+hu_nginx.1 nginx:latest ftnode-172-16-72-8 Running Running 4 minutes
+ago</div>
+<div class="line">jcqgq8fjsi6m hu_nginx.2 nginx:latest 172-16-72-19 Running Running 4
+minutes ago</div>
+<div class="line">d4vsmgnk7n0e hu_nginx.3 nginx:latest ftnode-172-16-72-20 Running
+Running 4 minutes ago</div>
+<div class="line">trc0i8rdim8g hu_nginx.4 nginx:latest 172-16-72-19 Running Running 14
+seconds ago</div>
 </div>
-<ol class="arabic simple" start="4">
-<li>模拟宕机node节点</li>
-</ol>
-<p>docker容器会自动迁移</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 先保证每个节点上启动一个docker</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker service ps hu_nginx</span>
-<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">IMAGE</span>               <span class="n">NODE</span>                  <span class="n">DESIRED</span> <span class="n">STATE</span>       <span class="n">CURRENT</span> <span class="n">STATE</span>            <span class="n">ERROR</span>               <span class="n">PORTS</span>
-<span class="n">p08tcvzbhlt6</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">1</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">8</span>    <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">10</span> <span class="n">minutes</span> <span class="n">ago</span>
-<span class="n">jcqgq8fjsi6m</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">2</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span>          <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">9</span> <span class="n">minutes</span> <span class="n">ago</span>
-<span class="n">ruq4sr0s5xx0</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">3</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">20</span>   <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">27</span> <span class="n">seconds</span> <span class="n">ago</span>
-
-
-<span class="c1"># 在node 20这台机器上，模拟宕机</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">20</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># systemctl stop docker</span>
-
-
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker node ls</span>
-<span class="n">ID</span>                            <span class="n">HOSTNAME</span>              <span class="n">STATUS</span>              <span class="n">AVAILABILITY</span>        <span class="n">MANAGER</span> <span class="n">STATUS</span>      <span class="n">ENGINE</span> <span class="n">VERSION</span>
-<span class="mi">3</span><span class="n">d1iieyvw8q7q2u2i95schbkn</span> <span class="o">*</span>   <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span>          <span class="n">Ready</span>               <span class="n">Active</span>              <span class="n">Leader</span>              <span class="mf">19.03</span><span class="o">.</span><span class="mi">5</span>
-<span class="n">kdp5b8ja34x52a4v2xc5byhrd</span>     <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">8</span>    <span class="n">Ready</span>               <span class="n">Active</span>                                  <span class="mf">19.03</span><span class="o">.</span><span class="mi">5</span>
-<span class="mi">3</span><span class="n">pqduino59ug7ujhokzph874t</span>     <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">20</span>   <span class="n">Down</span>                <span class="n">Active</span>                                  <span class="mf">19.03</span><span class="o">.</span><span class="mi">5</span>
-
-
-<span class="c1"># 过一会儿查看docker容器的列表，发现容器已经迁移到19上了。</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker service ps hu_nginx</span>
-<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">IMAGE</span>               <span class="n">NODE</span>                  <span class="n">DESIRED</span> <span class="n">STATE</span>       <span class="n">CURRENT</span> <span class="n">STATE</span>            <span class="n">ERROR</span>               <span class="n">PORTS</span>
-<span class="n">p08tcvzbhlt6</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">1</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">8</span>    <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">11</span> <span class="n">minutes</span> <span class="n">ago</span>
-<span class="n">jcqgq8fjsi6m</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">2</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span>          <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">11</span> <span class="n">minutes</span> <span class="n">ago</span>
-<span class="n">mijhlis5ap3z</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">3</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span>          <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">28</span> <span class="n">seconds</span> <span class="n">ago</span>
-<span class="n">ruq4sr0s5xx0</span>         \<span class="n">_</span> <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">3</span>      <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">20</span>   <span class="n">Shutdown</span>            <span class="n">Running</span> <span class="mi">47</span> <span class="n">seconds</span> <span class="n">ago</span>
-
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker ps -a</span>
-<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>                  <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>               <span class="n">NAMES</span>
-<span class="mi">91376</span><span class="n">bb956b3</span>        <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="s2">&quot;nginx -g &#39;daemon of…&quot;</span>   <span class="mi">3</span> <span class="n">minutes</span> <span class="n">ago</span>       <span class="n">Up</span> <span class="mi">3</span> <span class="n">minutes</span>        <span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>              <span class="n">hu_nginx</span><span class="o">.</span><span class="mf">3.</span><span class="n">mijhlis5ap3zzscieunqxk2h8</span>
-<span class="mi">60</span><span class="n">cad56c7845</span>        <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="s2">&quot;nginx -g &#39;daemon of…&quot;</span>   <span class="mi">13</span> <span class="n">minutes</span> <span class="n">ago</span>      <span class="n">Up</span> <span class="mi">13</span> <span class="n">minutes</span>       <span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>              <span class="n">hu_nginx</span><span class="o">.</span><span class="mf">2.</span><span class="n">jcqgq8fjsi6mmltj3ozc65rgw</span>
-
-
-<span class="c1"># 将转移过来的docker容器关闭，模拟容器故障。因为设置了--replicas 3 nginx,所以集群无论如何都要保证3个容器在运行</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker ps</span>
-<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>               <span class="n">COMMAND</span>                  <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>               <span class="n">NAMES</span>
-<span class="mi">91376</span><span class="n">bb956b3</span>        <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="s2">&quot;nginx -g &#39;daemon of…&quot;</span>   <span class="mi">5</span> <span class="n">minutes</span> <span class="n">ago</span>       <span class="n">Up</span> <span class="mi">5</span> <span class="n">minutes</span>        <span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>              <span class="n">hu_nginx</span><span class="o">.</span><span class="mf">3.</span><span class="n">mijhlis5ap3zzscieunqxk2h8</span>
-<span class="mi">60</span><span class="n">cad56c7845</span>        <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="s2">&quot;nginx -g &#39;daemon of…&quot;</span>   <span class="mi">16</span> <span class="n">minutes</span> <span class="n">ago</span>      <span class="n">Up</span> <span class="mi">16</span> <span class="n">minutes</span>       <span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>              <span class="n">hu_nginx</span><span class="o">.</span><span class="mf">2.</span><span class="n">jcqgq8fjsi6mmltj3ozc65rgw</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker stop 91376bb956b3</span>
-<span class="mi">91376</span><span class="n">bb956b3</span>
-</pre></div>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker ps CONTAINER ID IMAGE COMMAND
+CREATED STATUS PORTS NAMES b292c2181ef6 nginx:latest “nginx -g ‘daemon
+of…” About a minute ago Up About a minute 80/tcp
+hu_nginx.4.trc0i8rdim8g3i841gnc3b3wy 60cad56c7845 nginx:latest “nginx
+-g ‘daemon of…” 5 minutes ago Up 5 minutes 80/tcp
+hu_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw</p>
+<p>这4个副本的hu_nginx容器分别运行在这三个节点上，登陆这三个节点，就会发现已经存在运行着的hu_nginx容器</p>
+<p>172-16-72-19 上运行着2个nginx服务。</p>
 </div>
-<p>可以看到，当docker容器出现故障时，集群会自动再次拉起一个容器，保证有3个容器运行。图上是从自身node上拉起了一个docker容器。</p>
-<p>结论：即在swarm cluster集群中启动的容器，在worker
-node节点上删除或停用后，该容器会自动转移到其他的worker node节点上</p>
-<ol class="arabic simple" start="5">
-<li>Swarm 动态缩容服务(scale)</li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>同理，swarm还可以缩容，同样是使用scale命令
-如下，将hu_nginx容器变为1个
-[root@172-16-72-19 compose]# docker service scale hu_nginx=1
-hu_nginx scaled to 1
-overall progress: 1 out of 1 tasks
-1/1:
-verify: Service converged
-[root@172-16-72-19 compose]# docker service ls
-ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
-xmmwyaw2dkov        hu_nginx            replicated          1/1                 nginx:latest
+<div class="section" id="id17">
+<h1><a class="toc-backref" href="#id56">将容器在集群中减少为2个。</a><a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h1>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service scale hu_nginx=2 hu_nginx
+scaled to 2 overall progress: 2 out of 2 tasks 1/2: running
+[==================================================&gt;] 2/2: running
+[==================================================&gt;] verify: Service
+converged</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">4</span><span class="p">)</span> <span class="n">模拟宕机node节点</span>
 
-
-[root@172-16-72-19 compose]# docker service ps hu_nginx
-ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE            ERROR               PORTS
-p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 23 minutes ago
-mijhlis5ap3z        hu_nginx.3          nginx:latest        172-16-72-19          Shutdown            Complete 5 minutes ago
-ruq4sr0s5xx0         \_ hu_nginx.3      nginx:latest        ftnode-172-16-72-20   Shutdown            Running 11 minutes ago
-
-# 通过docker service ps my_nginx 可以看到node节点上已经为Shutdown状态了
-
-
-# 登录node节点，使用docker ps -a 查看，会发现容器被stop而非rm
-[root@172-16-72-19 compose]# docker ps -a
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS               NAMES
-91376bb956b3        nginx:latest        &quot;nginx -g &#39;daemon of…&quot;   13 minutes ago      Exited (0) 7 minutes ago                       hu_nginx.3.mijhlis5ap3zzscieunqxk2h8
-</pre></div>
-</div>
-<ol class="arabic simple" start="6">
-<li>除了上面使用scale进行容器的扩容或缩容之外，还可以使用docker service
-update 命令。 可对 服务的启动 参数 进行 更新/修改。</li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker service update --replicas 3 hu_nginx</span>
-
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker service ls</span>
-<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">MODE</span>                <span class="n">REPLICAS</span>            <span class="n">IMAGE</span>               <span class="n">PORTS</span>
-<span class="n">xmmwyaw2dkov</span>        <span class="n">hu_nginx</span>            <span class="n">replicated</span>          <span class="mi">3</span><span class="o">/</span><span class="mi">3</span>                 <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>
-
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker service ps hu_nginx</span>
-<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">IMAGE</span>               <span class="n">NODE</span>                  <span class="n">DESIRED</span> <span class="n">STATE</span>       <span class="n">CURRENT</span> <span class="n">STATE</span>                <span class="n">ERROR</span>               <span class="n">PORTS</span>
-<span class="n">p08tcvzbhlt6</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">1</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">8</span>    <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">26</span> <span class="n">minutes</span> <span class="n">ago</span>
-<span class="n">zeh83i6cf2p0</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">2</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">20</span>   <span class="n">Running</span>             <span class="n">Running</span> <span class="n">about</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">ago</span>
-<span class="n">zy686nu1eu9q</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">3</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span>          <span class="n">Running</span>             <span class="n">Running</span> <span class="n">about</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">ago</span>
-<span class="n">mijhlis5ap3z</span>         \<span class="n">_</span> <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">3</span>      <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span>          <span class="n">Shutdown</span>            <span class="n">Complete</span> <span class="mi">9</span> <span class="n">minutes</span> <span class="n">ago</span>
-<span class="n">ruq4sr0s5xx0</span>         \<span class="n">_</span> <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">3</span>      <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">20</span>   <span class="n">Shutdown</span>            <span class="n">Shutdown</span> <span class="mi">2</span> <span class="n">minutes</span> <span class="n">ago</span>
-
-
-<span class="c1"># docker service update 命令，也可用于直接 升级 镜像等</span>
-<span class="n">docker</span> <span class="n">service</span> <span class="n">update</span> <span class="o">--</span><span class="n">image</span> <span class="n">nginx</span><span class="p">:</span><span class="n">new</span> <span class="n">hu_nginx</span>
+<span class="n">docker容器会自动迁移</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="swarmvolume-mount">
-<h3><a class="toc-backref" href="#id39">Swarm中使用Volume(挂在目录，mount命令)</a><a class="headerlink" href="#swarmvolume-mount" title="Permalink to this headline">¶</a></h3>
-<ol class="arabic simple">
-<li>查看volume的帮助信息</li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker volume --help</span>
+<div class="section" id="docker">
+<h1><a class="toc-backref" href="#id57">先保证每个节点上启动一个docker</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ps hu_nginx ID NAME IMAGE
+NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6 hu_nginx.1
+nginx:latest ftnode-172-16-72-8 Running Running 10 minutes ago</div>
+<div class="line">jcqgq8fjsi6m hu_nginx.2 nginx:latest 172-16-72-19 Running Running 9
+minutes ago</div>
+<div class="line">ruq4sr0s5xx0 hu_nginx.3 nginx:latest ftnode-172-16-72-20 Running
+Running 27 seconds ago</div>
+</div>
+</div>
+<div class="section" id="node-20">
+<h1><a class="toc-backref" href="#id58">在node 20这台机器上，模拟宕机</a><a class="headerlink" href="#node-20" title="Permalink to this headline">¶</a></h1>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;ftnode-172-16-72-20">root<span>&#64;</span>ftnode-172-16-72-20</a> centos]# systemctl stop docker</p>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker node ls ID HOSTNAME STATUS
+AVAILABILITY MANAGER STATUS ENGINE VERSION 3d1iieyvw8q7q2u2i95schbkn *
+172-16-72-19 Ready Active Leader 19.03.5 kdp5b8ja34x52a4v2xc5byhrd
+ftnode-172-16-72-8 Ready Active 19.03.5 3pqduino59ug7ujhokzph874t
+ftnode-172-16-72-20 Down Active 19.03.5</p>
+</div>
+<div class="section" id="docker-19">
+<h1><a class="toc-backref" href="#id59">过一会儿查看docker容器的列表，发现容器已经迁移到19上了。</a><a class="headerlink" href="#docker-19" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ps hu_nginx ID NAME IMAGE
+NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6 hu_nginx.1
+nginx:latest ftnode-172-16-72-8 Running Running 11 minutes ago</div>
+<div class="line">jcqgq8fjsi6m hu_nginx.2 nginx:latest 172-16-72-19 Running Running 11
+minutes ago</div>
+<div class="line">mijhlis5ap3z hu_nginx.3 nginx:latest 172-16-72-19 Running Running 28
+seconds ago</div>
+<div class="line">ruq4sr0s5xx0 _ hu_nginx.3 nginx:latest ftnode-172-16-72-20 Shutdown
+Running 47 seconds ago</div>
+</div>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker ps -a CONTAINER ID IMAGE COMMAND
+CREATED STATUS PORTS NAMES 91376bb956b3 nginx:latest “nginx -g ‘daemon
+of…” 3 minutes ago Up 3 minutes 80/tcp
+hu_nginx.3.mijhlis5ap3zzscieunqxk2h8 60cad56c7845 nginx:latest “nginx
+-g ‘daemon of…” 13 minutes ago Up 13 minutes 80/tcp
+hu_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw</p>
+</div>
+<div class="section" id="docker-replicas-3-nginx-3">
+<h1><a class="toc-backref" href="#id60">将转移过来的docker容器关闭，模拟容器故障。因为设置了–replicas 3 nginx,所以集群无论如何都要保证3个容器在运行</a><a class="headerlink" href="#docker-replicas-3-nginx-3" title="Permalink to this headline">¶</a></h1>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker ps CONTAINER ID IMAGE COMMAND
+CREATED STATUS PORTS NAMES 91376bb956b3 nginx:latest “nginx -g ‘daemon
+of…” 5 minutes ago Up 5 minutes 80/tcp
+hu_nginx.3.mijhlis5ap3zzscieunqxk2h8 60cad56c7845 nginx:latest “nginx
+-g ‘daemon of…” 16 minutes ago Up 16 minutes 80/tcp
+hu_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw [root&#64;172-16-72-19 compose]#
+docker stop 91376bb956b3 91376bb956b3</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>可以看到，当docker容器出现故障时，集群会自动再次拉起一个容器，保证有3个容器运行。图上是从自身node上拉起了一个docker容器。
 
-<span class="n">Usage</span><span class="p">:</span>  <span class="n">docker</span> <span class="n">volume</span> <span class="n">COMMAND</span>
+结论：即在swarm cluster集群中启动的容器，在worker node节点上删除或停用后，该容器会自动转移到其他的worker node节点上
 
-<span class="n">Manage</span> <span class="n">volumes</span>
 
-<span class="n">Commands</span><span class="p">:</span>
-  <span class="n">create</span>      <span class="n">Create</span> <span class="n">a</span> <span class="n">volume</span>
-  <span class="n">inspect</span>     <span class="n">Display</span> <span class="n">detailed</span> <span class="n">information</span> <span class="n">on</span> <span class="n">one</span> <span class="ow">or</span> <span class="n">more</span> <span class="n">volumes</span>
-  <span class="n">ls</span>          <span class="n">List</span> <span class="n">volumes</span>
-  <span class="n">prune</span>       <span class="n">Remove</span> <span class="nb">all</span> <span class="n">unused</span> <span class="n">local</span> <span class="n">volumes</span>
-  <span class="n">rm</span>          <span class="n">Remove</span> <span class="n">one</span> <span class="ow">or</span> <span class="n">more</span> <span class="n">volumes</span>
+5) Swarm 动态缩容服务(scale)
 </pre></div>
 </div>
-<ol class="arabic simple" start="2">
-<li>创建一个volume</li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker volume create --name testvolume</span>
-<span class="n">testvolume</span>
-
-<span class="c1"># 查看创建的volume</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker volume ls</span>
-<span class="n">DRIVER</span>              <span class="n">VOLUME</span> <span class="n">NAME</span>
-<span class="n">local</span>               <span class="n">testvolume</span>
-
-<span class="c1"># 查看volume详情</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">compose</span><span class="p">]</span><span class="c1"># docker volume inspect testvolume</span>
-<span class="p">[</span>
-    <span class="p">{</span>
-        <span class="s2">&quot;CreatedAt&quot;</span><span class="p">:</span> <span class="s2">&quot;2020-01-09T09:39:44Z&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Driver&quot;</span><span class="p">:</span> <span class="s2">&quot;local&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Labels&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;Mountpoint&quot;</span><span class="p">:</span> <span class="s2">&quot;/var/lib/docker/volumes/testvolume/_data&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;testvolume&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Options&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;Scope&quot;</span><span class="p">:</span> <span class="s2">&quot;local&quot;</span>
-    <span class="p">}</span>
-<span class="p">]</span>
+<div class="line-block">
+<div class="line">同理，swarm还可以缩容，同样是使用scale命令
+如下，将hu_nginx容器变为1个 [<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker
+service scale hu_nginx=1 hu_nginx scaled to 1 overall progress: 1
+out of 1 tasks 1/1:</div>
+<div class="line">verify: Service converged [<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service
+ls ID NAME MODE REPLICAS IMAGE PORTS xmmwyaw2dkov hu_nginx replicated
+1/1 nginx:latest</div>
+</div>
+<div class="line-block">
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ps hu_nginx ID NAME IMAGE
+NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6 hu_nginx.1
+nginx:latest ftnode-172-16-72-8 Running Running 23 minutes ago</div>
+<div class="line">mijhlis5ap3z hu_nginx.3 nginx:latest 172-16-72-19 Shutdown Complete 5
+minutes ago</div>
+<div class="line">ruq4sr0s5xx0 _ hu_nginx.3 nginx:latest ftnode-172-16-72-20 Shutdown
+Running 11 minutes ago</div>
+</div>
+</div>
+<div class="section" id="docker-service-ps-my-nginx-nodeshutdown">
+<h1><a class="toc-backref" href="#id61">通过docker service ps my_nginx 可以看到node节点上已经为Shutdown状态了</a><a class="headerlink" href="#docker-service-ps-my-nginx-nodeshutdown" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="node-docker-ps-a-stoprm">
+<h1><a class="toc-backref" href="#id62">登录node节点，使用docker ps -a 查看，会发现容器被stop而非rm</a><a class="headerlink" href="#node-docker-ps-a-stoprm" title="Permalink to this headline">¶</a></h1>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker ps -a CONTAINER ID IMAGE COMMAND
+CREATED STATUS PORTS NAMES 91376bb956b3 nginx:latest “nginx -g ‘daemon
+of…” 13 minutes ago Exited (0) 7 minutes ago
+hu_nginx.3.mijhlis5ap3zzscieunqxk2h8</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>6) 除了上面使用scale进行容器的扩容或缩容之外，还可以使用docker service update 命令。
+可对 服务的启动 参数 进行 更新/修改。
 </pre></div>
 </div>
-<ol class="arabic simple" start="3">
-<li>创建新的服务并挂载testvolume(nginx为例)</li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 先删除之前跑的3副本容器
-[root@172-16-72-19 compose]# docker service ls
-ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
-xmmwyaw2dkov        hu_nginx            replicated          3/3                 nginx:latest
-[root@172-16-72-19 compose]# docker service rm xmmwy
-xmmwy
-[root@172-16-72-19 compose]# docker service ls
-ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service update –replicas 3
+hu_nginx</p>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ls ID NAME MODE REPLICAS
+IMAGE PORTS xmmwyaw2dkov hu_nginx replicated 3/3 nginx:latest</p>
+<div class="line-block">
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ps hu_nginx ID NAME IMAGE
+NODE DESIRED STATE CURRENT STATE ERROR PORTS p08tcvzbhlt6 hu_nginx.1
+nginx:latest ftnode-172-16-72-8 Running Running 26 minutes ago</div>
+<div class="line">zeh83i6cf2p0 hu_nginx.2 nginx:latest ftnode-172-16-72-20 Running
+Running about a minute ago</div>
+<div class="line">zy686nu1eu9q hu_nginx.3 nginx:latest 172-16-72-19 Running Running
+about a minute ago</div>
+<div class="line">mijhlis5ap3z _ hu_nginx.3 nginx:latest 172-16-72-19 Shutdown
+Complete 9 minutes ago</div>
+<div class="line">ruq4sr0s5xx0 _ hu_nginx.3 nginx:latest ftnode-172-16-72-20 Shutdown
+Shutdown 2 minutes ago</div>
+</div>
+</div>
+<div class="section" id="docker-service-update">
+<h1><a class="toc-backref" href="#id63">docker service update 命令，也可用于直接 升级 镜像等</a><a class="headerlink" href="#docker-service-update" title="Permalink to this headline">¶</a></h1>
+<p>docker service update –image nginx:new hu_nginx</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">### Swarm中使用Volume(挂在目录，mount命令)</span>
+<span class="mi">1</span><span class="p">)</span> <span class="n">查看volume的帮助信息</span>
+</pre></div>
+</div>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker volume –help</p>
+<p>Usage: docker volume COMMAND</p>
+<p>Manage volumes</p>
+<p>Commands: create Create a volume inspect Display detailed information on
+one or more volumes ls List volumes prune Remove all unused local
+volumes rm Remove one or more volumes</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2</span><span class="p">)</span> <span class="n">创建一个volume</span>
+</pre></div>
+</div>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker volume create –name testvolume
+testvolume</p>
+</div>
+<div class="section" id="volume">
+<h1><a class="toc-backref" href="#id64">查看创建的volume</a><a class="headerlink" href="#volume" title="Permalink to this headline">¶</a></h1>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker volume ls DRIVER VOLUME NAME local
+testvolume</p>
+</div>
+<div class="section" id="id18">
+<h1><a class="toc-backref" href="#id65">查看volume详情</a><a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h1>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker volume inspect testvolume [ {
+“CreatedAt”: “2020-01-09T09:39:44Z”, “Driver”: “local”, “Labels”: {},
+“Mountpoint”: “/var/lib/docker/volumes/testvolume/_data”, “Name”:
+“testvolume”, “Options”: {}, “Scope”: “local” }]</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">3</span><span class="p">)</span> <span class="n">创建新的服务并挂载testvolume</span><span class="p">(</span><span class="n">nginx为例</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id19">
+<h1><a class="toc-backref" href="#id66">先删除之前跑的3副本容器</a><a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ls ID NAME MODE REPLICAS
+IMAGE PORTS xmmwyaw2dkov hu_nginx replicated 3/3 nginx:latest</div>
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service rm xmmwy xmmwy
+[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ls ID NAME MODE REPLICAS
+IMAGE PORTS</div>
+</div>
+</div>
+<div class="section" id="id20">
+<h1><a class="toc-backref" href="#id67">创建3副本容器并进行挂载</a><a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h1>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service create –replicas 3 –mount
+type=volume,src=testvolume,dst=/hujianli –name test_nginx nginx
+nqy9j9mtit56ed15fb6f0pjae overall progress: 3 out of 3 tasks 1/3:
+running [==================================================&gt;] 2/3:
+running [==================================================&gt;] 3/3:
+running [==================================================&gt;] verify:
+Service converged</p>
+<p>温馨提示：
+参数src写成source也可以；dst表示容器内的路径，也可以写成target</p>
+</div>
+<div class="section" id="id21">
+<h1><a class="toc-backref" href="#id68">检查挂载是否成功</a><a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ls ID NAME MODE REPLICAS
+IMAGE PORTS nqy9j9mtit56 test_nginx replicated 3/3 nginx:latest</div>
+<div class="line">[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# docker service ps test_nginx ID NAME
+IMAGE NODE DESIRED STATE CURRENT STATE ERROR PORTS xz31es7jrjoj
+test_nginx.1 nginx:latest 172-16-72-19 Running Running about a minute
+ago</div>
+<div class="line">6z6s3u2jvl6f test_nginx.2 nginx:latest ftnode-172-16-72-20 Running
+Running about a minute ago</div>
+<div class="line">jltbd6arwp2m test_nginx.3 nginx:latest ftnode-172-16-72-8 Running
+Running about a minute ago</div>
+</div>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> compose]# cd
+/var/lib/docker/volumes/testvolume/_data [<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> _data]#
+echo “test file hujianli” &gt; hujianli.txt</p>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> _data]# docker ps CONTAINER ID IMAGE COMMAND CREATED
+STATUS PORTS NAMES 4eb46d033292 nginx:latest “nginx -g ‘daemon of…” 2
+minutes ago Up 2 minutes 80/tcp test_nginx.1.xz31es7jrjojtma24ssq873r4</p>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> _data]# docker exec -it 4eb46d033292 /bin/bash
+<a class="reference external" href="mailto:root&#37;&#52;&#48;4eb46d033292">root<span>&#64;</span>4eb46d033292</a>:/# cd /hujianli/ <a class="reference external" href="mailto:root&#37;&#52;&#48;4eb46d033292">root<span>&#64;</span>4eb46d033292</a>:/hujianli# echo
+“hujianli99” &gt; test01.txt</p>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> _data]# cd /var/lib/docker/volumes/testvolume/_data
+[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> _data]# ls test01.txt</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>在其他节点上操作也一样，容器/hujianli目录中创建的数据，很快就在宿主机的/var/lib/docker/volumes/testvolume/_data中产生
+</pre></div>
+</div>
+</div>
+<div class="section" id="id22">
+<h1><a class="toc-backref" href="#id69">还有一种挂载方式简单说一下吧，上面的会了下面的肯定简单</a><a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h1>
+<p>命令格式： docker service create –mount
+type=bind,target=/container_data/,source=/host_data/
+其中，参数target表示容器里面的路径，source表示本地硬盘路径</p>
+</div>
+<div class="section" id="id23">
+<h1><a class="toc-backref" href="#id70">示例创建并挂载并使用网络</a><a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h1>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;manager43">root<span>&#64;</span>manager43</a> ~]# docker service create –replicas 1 –mount
+type=bind,target=/usr/share/nginx/html/,source=/opt/web/ –network
+nginx_net –name zjz_nginx -p 8880:80 nginx</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>## 多服务Swarm集群部署,结合compose和swarm进行多服务的编排
 
-
-# 创建3副本容器并进行挂载
-[root@172-16-72-19 compose]# docker service create --replicas 3 --mount type=volume,src=testvolume,dst=/hujianli --name test_nginx nginx
-nqy9j9mtit56ed15fb6f0pjae
-overall progress: 3 out of 3 tasks
-1/3: running   [==================================================&gt;]
-2/3: running   [==================================================&gt;]
-3/3: running   [==================================================&gt;]
-verify: Service converged
 
 温馨提示：
-参数src写成source也可以；dst表示容器内的路径，也可以写成target
+我们这里要部署的服务有三个(nginx服务，visualizer服务，portainer服务) 都是集群 GUI 管理服务
+docker service部署的是单个服务，我们可以使用docker stack进行多服务编排部署
 
-# 检查挂载是否成功
-[root@172-16-72-19 compose]# docker service ls
-ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
-nqy9j9mtit56        test_nginx          replicated          3/3                 nginx:latest
-[root@172-16-72-19 compose]# docker service ps test_nginx
-ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE                ERROR               PORTS
-xz31es7jrjoj        test_nginx.1        nginx:latest        172-16-72-19          Running             Running about a minute ago
-6z6s3u2jvl6f        test_nginx.2        nginx:latest        ftnode-172-16-72-20   Running             Running about a minute ago
-jltbd6arwp2m        test_nginx.3        nginx:latest        ftnode-172-16-72-8    Running             Running about a minute ago
-
-[root@172-16-72-19 compose]# cd /var/lib/docker/volumes/testvolume/_data
-[root@172-16-72-19 _data]# echo &quot;test file hujianli&quot; &gt; hujianli.txt
-
-[root@172-16-72-19 _data]# docker ps
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
-4eb46d033292        nginx:latest        &quot;nginx -g &#39;daemon of…&quot;   2 minutes ago       Up 2 minutes        80/tcp              test_nginx.1.xz31es7jrjojtma24ssq873r4
-
-[root@172-16-72-19 _data]# docker exec -it 4eb46d033292 /bin/bash
-root@4eb46d033292:/# cd /hujianli/
-root@4eb46d033292:/hujianli# echo &quot;hujianli99&quot; &gt; test01.txt
-
-[root@172-16-72-19 _data]# cd /var/lib/docker/volumes/testvolume/_data
-[root@172-16-72-19 _data]# ls
-test01.txt
+1) 编写docker-compose.yml文件
 </pre></div>
 </div>
-<p>在其他节点上操作也一样，容器/hujianli目录中创建的数据，很快就在宿主机的/var/lib/docker/volumes/testvolume/_data中产生</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 还有一种挂载方式简单说一下吧，上面的会了下面的肯定简单
-命令格式：
-docker service create --mount type=bind,target=/container_data/,source=/host_data/
-其中，参数target表示容器里面的路径，source表示本地硬盘路径
-
-
-# 示例创建并挂载并使用网络
-[root@manager43 ~]# docker service create --replicas 1 --mount type=bind,target=/usr/share/nginx/html/,source=/opt/web/ --network nginx_net --name zjz_nginx -p 8880:80 nginx
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> ~]# mkdir testswarm [<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> ~]# cd
+testswarm/ [<a class="reference external" href="mailto:root&#37;&#52;&#48;172-16-72-19">root<span>&#64;</span>172-16-72-19</a> testswarm]# cat docker-compose.yml
+version: “3” services: nginx: image: nginx ports: - 80:80 deploy:
+replicas: 3</p>
+<p>visualizer: image: dockersamples/visualizer ports: - “8080:8080”
+volumes: - “/var/run/docker.sock:/var/run/docker.sock” deploy: replicas:
+1 placement: constraints: [node.role == manager]</p>
+<p>portainer: image: portainer/portainer ports: - “9000:9000” volumes: -
+“/var/run/docker.sock:/var/run/docker.sock” deploy: replicas: 1
+placement: constraints: [node.role == manager]</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2</span><span class="p">)</span> <span class="n">通过这个yml文件部署服务</span>
 </pre></div>
 </div>
 </div>
+<div class="section" id="docker-stack-deploy-c-docker-compse-yml-test-hu-teacher">
+<h1><a class="toc-backref" href="#id71">docker stack deploy -c docker-compse.yml test_hu_teacher</a><a class="headerlink" href="#docker-stack-deploy-c-docker-compse-yml-test-hu-teacher" title="Permalink to this headline">¶</a></h1>
 </div>
-<div class="section" id="swarm-composeswarm">
-<h2><a class="toc-backref" href="#id40">多服务Swarm集群部署,结合compose和swarm进行多服务的编排</a><a class="headerlink" href="#swarm-composeswarm" title="Permalink to this headline">¶</a></h2>
-<p>温馨提示：
-我们这里要部署的服务有三个(nginx服务，visualizer服务，portainer服务)
-都是集群 GUI 管理服务 docker service部署的是单个服务，我们可以使用docker
-stack进行多服务编排部署</p>
-<ol class="arabic simple">
-<li>编写docker-compose.yml文件</li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="o">~</span><span class="p">]</span><span class="c1"># mkdir testswarm</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="o">~</span><span class="p">]</span><span class="c1"># cd testswarm/</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">testswarm</span><span class="p">]</span><span class="c1"># cat docker-compose.yml</span>
-<span class="n">version</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span>
-<span class="n">services</span><span class="p">:</span>
-  <span class="n">nginx</span><span class="p">:</span>
-    <span class="n">image</span><span class="p">:</span> <span class="n">nginx</span>
-    <span class="n">ports</span><span class="p">:</span>
-      <span class="o">-</span> <span class="mi">80</span><span class="p">:</span><span class="mi">80</span>
-    <span class="n">deploy</span><span class="p">:</span>
-      <span class="n">replicas</span><span class="p">:</span> <span class="mi">3</span>
+<div class="section" id="id24">
+<h1><a class="toc-backref" href="#id72">通过上面的执行过程可以看出这样创建会默认创建一个网络并使用它，名字都是我们给的名字的前缀加上服务名</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="id25">
+<h1><a class="toc-backref" href="#id73">查看创建服务</a><a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="id26">
+<h1><a class="toc-backref" href="#id74">docker service ls</a><a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="docker-service-ps-hu-nginx">
+<h1><a class="toc-backref" href="#id75">docker service ps hu_nginx</a><a class="headerlink" href="#docker-service-ps-hu-nginx" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="id27">
+<h1><a class="toc-backref" href="#id76">在docker-swarm主节点上</a><a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="docker-ps">
+<h1><a class="toc-backref" href="#id77">docker ps</a><a class="headerlink" href="#docker-ps" title="Permalink to this headline">¶</a></h1>
+<p>CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 54dd270f6ec0
+portainer/portainer:latest “/portainer” About a minute ago Up About a
+minute 9000/tcp hu_portainer.1.ko8mf0xqnswu ww1e7x2q0vqv6d14c0ea76beb
+dockersamples/visualizer:latest “npm start” About a minute ago Up About
+a minute (healthy) 8080/tcp hu_visualizer.1.wpyvb3rpgty
+mecyhqogtco7mz3f64f7b8a501 nginx:latest “nginx -g ‘daemon of…” About a
+minute ago Up About a minute 80/tcp hu_nginx.1.hv6lp4cek2xi7</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>查看各个node上的nginx运行状态
 
-  <span class="n">visualizer</span><span class="p">:</span>
-    <span class="n">image</span><span class="p">:</span> <span class="n">dockersamples</span><span class="o">/</span><span class="n">visualizer</span>
-    <span class="n">ports</span><span class="p">:</span>
-      <span class="o">-</span> <span class="s2">&quot;8080:8080&quot;</span>
-    <span class="n">volumes</span><span class="p">:</span>
-      <span class="o">-</span> <span class="s2">&quot;/var/run/docker.sock:/var/run/docker.sock&quot;</span>
-    <span class="n">deploy</span><span class="p">:</span>
-      <span class="n">replicas</span><span class="p">:</span> <span class="mi">1</span>
-      <span class="n">placement</span><span class="p">:</span>
-        <span class="n">constraints</span><span class="p">:</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">manager</span><span class="p">]</span>
 
-  <span class="n">portainer</span><span class="p">:</span>
-    <span class="n">image</span><span class="p">:</span> <span class="n">portainer</span><span class="o">/</span><span class="n">portainer</span>
-    <span class="n">ports</span><span class="p">:</span>
-      <span class="o">-</span> <span class="s2">&quot;9000:9000&quot;</span>
-    <span class="n">volumes</span><span class="p">:</span>
-      <span class="o">-</span> <span class="s2">&quot;/var/run/docker.sock:/var/run/docker.sock&quot;</span>
-    <span class="n">deploy</span><span class="p">:</span>
-      <span class="n">replicas</span><span class="p">:</span> <span class="mi">1</span>
-      <span class="n">placement</span><span class="p">:</span>
-        <span class="n">constraints</span><span class="p">:</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">manager</span><span class="p">]</span>
+
+dockersamples/visualizer镜像为docker-swarm的一个图形化监控
+
+
+
+
+portainer/portainer镜像为一个docker-swarm的dashboard视图插件。
 </pre></div>
 </div>
-<ol class="arabic simple" start="2">
-<li>通过这个yml文件部署服务</li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">19</span> <span class="n">testswarm</span><span class="p">]</span><span class="c1"># docker stack deploy -c docker-compse.yml test_hu_teacher</span>
-<span class="n">Creating</span> <span class="n">service</span> <span class="n">deploy_deamon_nginx</span>
-<span class="n">Creating</span> <span class="n">service</span> <span class="n">deploy_deamon_visualizer</span>
-<span class="n">Creating</span> <span class="n">service</span> <span class="n">deploy_deamon_portainer</span>
-
-<span class="c1"># 通过上面的执行过程可以看出这样创建会默认创建一个网络并使用它，名字都是我们给的名字的前缀加上服务名</span>
-
-<span class="c1"># 查看创建服务</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">33</span> <span class="n">testswarn</span><span class="p">]</span><span class="c1"># docker service ls</span>
-<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">MODE</span>                <span class="n">REPLICAS</span>            <span class="n">IMAGE</span>                             <span class="n">PORTS</span>
-<span class="n">kgypqhiparm1</span>        <span class="n">hu_nginx</span>            <span class="n">replicated</span>          <span class="mi">3</span><span class="o">/</span><span class="mi">3</span>                 <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>                      <span class="o">*</span><span class="p">:</span><span class="mi">80</span><span class="o">-&gt;</span><span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>
-<span class="n">i45lkttikrit</span>        <span class="n">hu_portainer</span>        <span class="n">replicated</span>          <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>                 <span class="n">portainer</span><span class="o">/</span><span class="n">portainer</span><span class="p">:</span><span class="n">latest</span>        <span class="o">*</span><span class="p">:</span><span class="mi">9000</span><span class="o">-&gt;</span><span class="mi">9000</span><span class="o">/</span><span class="n">tcp</span>
-<span class="mi">6</span><span class="n">lu5zlzteo70</span>        <span class="n">hu_visualizer</span>       <span class="n">replicated</span>          <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>                 <span class="n">dockersamples</span><span class="o">/</span><span class="n">visualizer</span><span class="p">:</span><span class="n">latest</span>   <span class="o">*</span><span class="p">:</span><span class="mi">8080</span><span class="o">-&gt;</span><span class="mi">8080</span><span class="o">/</span><span class="n">tcp</span>
-
-
-<span class="p">[</span><span class="n">root</span><span class="nd">@ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">33</span> <span class="n">testswarn</span><span class="p">]</span><span class="c1"># docker service ps hu_nginx</span>
-<span class="n">ID</span>                  <span class="n">NAME</span>                <span class="n">IMAGE</span>               <span class="n">NODE</span>                  <span class="n">DESIRED</span> <span class="n">STATE</span>       <span class="n">CURRENT</span> <span class="n">STATE</span>            <span class="n">ERROR</span>               <span class="n">PORTS</span>
-<span class="n">hv6lp4cek2xi</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">1</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">33</span>   <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">58</span> <span class="n">seconds</span> <span class="n">ago</span>
-<span class="n">j4ldfe91b0ri</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">2</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">8</span>    <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">58</span> <span class="n">seconds</span> <span class="n">ago</span>
-<span class="n">xn8uygt6rgm4</span>        <span class="n">hu_nginx</span><span class="o">.</span><span class="mi">3</span>          <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>        <span class="n">ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">25</span>   <span class="n">Running</span>             <span class="n">Running</span> <span class="mi">58</span> <span class="n">seconds</span> <span class="n">ago</span>              <span class="n">Running</span> <span class="mi">14</span> <span class="n">minutes</span> <span class="n">ago</span>
-
-
-<span class="c1"># 在docker-swarm主节点上</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@ftnode</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="mi">72</span><span class="o">-</span><span class="mi">33</span> <span class="n">testswarn</span><span class="p">]</span><span class="c1"># docker ps</span>
-<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>                             <span class="n">COMMAND</span>                  <span class="n">CREATED</span>              <span class="n">STATUS</span>                        <span class="n">PORTS</span>               <span class="n">NAMES</span>
-<span class="mi">54</span><span class="n">dd270f6ec0</span>        <span class="n">portainer</span><span class="o">/</span><span class="n">portainer</span><span class="p">:</span><span class="n">latest</span>        <span class="s2">&quot;/portainer&quot;</span>             <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">ago</span>   <span class="n">Up</span> <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span>             <span class="mi">9000</span><span class="o">/</span><span class="n">tcp</span>            <span class="n">hu_portainer</span><span class="o">.</span><span class="mf">1.</span><span class="n">ko8mf0xqnswu</span>
-<span class="n">ww1e7x2q0vqv6d14c0ea76beb</span>        <span class="n">dockersamples</span><span class="o">/</span><span class="n">visualizer</span><span class="p">:</span><span class="n">latest</span>   <span class="s2">&quot;npm start&quot;</span>              <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">ago</span>   <span class="n">Up</span> <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span> <span class="p">(</span><span class="n">healthy</span><span class="p">)</span>   <span class="mi">8080</span><span class="o">/</span><span class="n">tcp</span>            <span class="n">hu_visualizer</span><span class="o">.</span><span class="mf">1.</span><span class="n">wpyvb3rpgty</span>
-<span class="n">mecyhqogtco7mz3f64f7b8a501</span>        <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>                      <span class="s2">&quot;nginx -g &#39;daemon of…&quot;</span>   <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">ago</span>   <span class="n">Up</span> <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span>             <span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>              <span class="n">hu_nginx</span><span class="o">.</span><span class="mf">1.</span><span class="n">hv6lp4cek2xi7</span>
+<p>Portainer是一个全面的Docker
+UI监控管理工具，很重要的一点是它极其轻量-只有4MB大小，
+Portainer可以作为Docker引擎或Swarm集群上的轻量级Docker容器运行，因此，部署Portainer只需要在Docker集群上运行一个命令。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span><span class="n">安装</span>
 </pre></div>
 </div>
-<p>查看各个node上的nginx运行状态</p>
-<p>dockersamples/visualizer镜像为docker-swarm的一个图形化监控</p>
-<p>portainer/portainer镜像为一个docker-swarm的dashboard视图插件。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Portainer是一个全面的Docker UI监控管理工具，很重要的一点是它极其轻量-只有4MB大小，
-Portainer可以作为Docker引擎或Swarm集群上的轻量级Docker容器运行，因此，部署Portainer只需要在Docker集群上运行一个命令。
-</pre></div>
-</div>
-<p>1.安装</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer</span>
-<span class="mf">03128711108e5</span><span class="n">c292996bf81b3a70fe791bbf8c217769ae1229ed49035d304b2</span>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;swarm3">root<span>&#64;</span>swarm3</a> centos]# docker run -d -p 9000:9000 -v
+/var/run/docker.sock:/var/run/docker.sock portainer/portainer
+03128711108e5c292996bf81b3a70fe791bbf8c217769ae1229ed49035d304b2</p>
+<p>[<a class="reference external" href="mailto:root&#37;&#52;&#48;swarm3">root<span>&#64;</span>swarm3</a> centos]# docker ps CONTAINER ID IMAGE COMMAND CREATED
+STATUS PORTS NAMES 03128711108e portainer/portainer “/portainer” 21
+seconds ago Up 19 seconds 0.0.0.0:9000-&gt;9000/tcp quirky_kilby</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>2. 集群管理。
 
-<span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># docker ps</span>
-<span class="n">CONTAINER</span> <span class="n">ID</span>        <span class="n">IMAGE</span>                 <span class="n">COMMAND</span>             <span class="n">CREATED</span>             <span class="n">STATUS</span>              <span class="n">PORTS</span>                    <span class="n">NAMES</span>
-<span class="mi">03128711108</span><span class="n">e</span>        <span class="n">portainer</span><span class="o">/</span><span class="n">portainer</span>   <span class="s2">&quot;/portainer&quot;</span>        <span class="mi">21</span> <span class="n">seconds</span> <span class="n">ago</span>      <span class="n">Up</span> <span class="mi">19</span> <span class="n">seconds</span>       <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">9000</span><span class="o">-&gt;</span><span class="mi">9000</span><span class="o">/</span><span class="n">tcp</span>   <span class="n">quirky_kilby</span>
+可以使用Portainer管理Swarm。如图：
 </pre></div>
 </div>
-<ol class="arabic simple" start="2">
-<li>集群管理。</li>
-</ol>
-<p>可以使用Portainer管理Swarm。如图：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">service</span> <span class="n">create</span> \
-<span class="o">--</span><span class="n">name</span> <span class="n">portainer</span> \
-<span class="o">--</span><span class="n">publish</span> <span class="mi">9000</span><span class="p">:</span><span class="mi">9000</span> \
-<span class="o">--</span><span class="n">constraint</span> <span class="s1">&#39;node.role == manager&#39;</span> \
-<span class="o">--</span><span class="n">mount</span> <span class="nb">type</span><span class="o">=</span><span class="n">bind</span><span class="p">,</span><span class="n">src</span><span class="o">=//</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">docker</span><span class="o">.</span><span class="n">sock</span><span class="p">,</span><span class="n">dst</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">docker</span><span class="o">.</span><span class="n">sock</span> \
-<span class="n">portainer</span><span class="o">/</span><span class="n">portainer</span> \
-<span class="o">-</span><span class="n">H</span> <span class="n">unix</span><span class="p">:</span><span class="o">///</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">docker</span><span class="o">.</span><span class="n">sock</span>
-</pre></div>
+<div class="line-block">
+<div class="line">docker service create</div>
+<div class="line">–name portainer</div>
+<div class="line">–publish 9000:9000</div>
+<div class="line">–constraint ‘node.role == manager’</div>
+<div class="line">–mount type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock
+portainer/portainer &nbsp; -H unix:///var/run/docker.sock ```</div>
 </div>
 <p>写成yml文件如下 <code class="docutils literal notranslate"><span class="pre">docker_dashboard.yml</span></code></p>
 <div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s2">&quot;3.3&quot;</span>
@@ -1132,9 +1162,8 @@ Portainer可以作为Docker引擎或Swarm集群上的轻量级Docker容器运行
 </pre></div>
 </div>
 <p>更多内容可以查看文档： <code class="docutils literal notranslate"><span class="pre">https://portainer.readthedocs.io/en/stable/。</span></code></p>
-</div>
-<div class="section" id="id17">
-<h2><a class="toc-backref" href="#id41">Docker Swarm容器网络</a><a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id28">
+<h2><a class="toc-backref" href="#id78">Docker Swarm容器网络</a><a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>在Docker版本1.12之后swarm模式原生支持覆盖网络(overlay networks)，可以先创建一个覆盖网络，然后启动容器的时候启用这个覆盖网络，
 这样只要是这个覆盖网络内的容器，不管在不在同一个宿主机上都能相互通信，即跨主机通信！不同覆盖网络内的容器组之间是相互隔离的（相互ping不通）。
 </pre></div>
@@ -1383,19 +1412,19 @@ active的task上。
 </div>
 </div>
 <div class="section" id="docker-swarm-volume">
-<h2><a class="toc-backref" href="#id42">Docker Swarm volume 数据持久化</a><a class="headerlink" href="#docker-swarm-volume" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id79">Docker Swarm volume 数据持久化</a><a class="headerlink" href="#docker-swarm-volume" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/9938670.html">https://www.cnblogs.com/xiangsikai/p/9938670.html</a></p>
 </div>
 <div class="section" id="docker-compose">
-<h2><a class="toc-backref" href="#id43">Docker Compose 配置文件详解</a><a class="headerlink" href="#docker-compose" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id80">Docker Compose 配置文件详解</a><a class="headerlink" href="#docker-compose" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.jianshu.com/p/748416621013">https://www.jianshu.com/p/748416621013</a></p>
 <p><a class="reference external" href="https://blog.csdn.net/qq_36148847/article/details/79427878">https://blog.csdn.net/qq_36148847/article/details/79427878</a></p>
 <p>参考文献:</p>
 <p><a class="reference external" href="https://www.cnblogs.com/vinsent/p/11691562.html">https://www.cnblogs.com/vinsent/p/11691562.html</a></p>
 <p><a class="reference external" href="https://www.cnblogs.com/zhujingzhi/p/9792432.html">https://www.cnblogs.com/zhujingzhi/p/9792432.html</a></p>
 </div>
-<div class="section" id="id18">
-<h2><a class="toc-backref" href="#id44">本章小结</a><a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id29">
+<h2><a class="toc-backref" href="#id81">本章小结</a><a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h2>
 <p>本章介绍了Docker
 Swarm的安装、使用和主要功能。通过使用Swarm，用户可以将若干Docker主机节点组成的集群当作一个大的虚拟Docker主机使用。并且，原先基于单机的Docker应用，可以无缝地迁移到Swarm上来。通过使用服务，Swarm集群可以支持多个应用构建的复杂业务，并很容易对其进行升级等操作。</p>
 <p>在生产环境中，Swarm的管理节点要考虑高可用性和安全保护，一方面多个管理节点应该分配到不同的容灾区域，另一方面服务节点应该配合数字证书等手段限制访问。</p>

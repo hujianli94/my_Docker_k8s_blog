@@ -1,9 +1,13 @@
+.. role:: math(raw)
+   :format: html latex
+..
+
 .. contents::
    :depth: 3
 ..
 
-Etcd——高可用的键值数据库
-========================
+Etcd高可用的键值数据库
+======================
 
 Etcd是CoreOS团队（同时发起了CoreoS、Rocket等热门项目）发起的一个开源分布式键值仓库项目，可以用于分布式系统中的配置信息管理和服务发现（service
 discovery），目前已经被广泛应用到大量开源项目中，包括Kubernetes、CloudFoundry、CoreOS
@@ -17,7 +21,8 @@ Etcd简介
 Etcd是CoreOS团队于2013年6月发起的开源项目，它的目标是构建一个高可用的分布式键值（key-value）仓库，遵循Apache
 v2许可，基于Go语言实现。
 
-|image0|
+.. figure:: ../_static/docker_etcd00001.png
+   :alt: 
 
 接触过分布式系统的读者应该知道，分布式系统中最基本的问题之一就是实现信息的共识，在此基础上才能实现对服务配置信息的管理、服务的发现、更新、同步，等等。而要解决这些问题，往往需要利用一套能保证一致性的分布式数据库系统，比如经典的Apache
 ZooKeeper项目
@@ -73,7 +78,7 @@ Etcd基于Go语言实现，因此，用户可以从项目主页：\ https://gith
 
 .. code:: shell
 
-   $ curl -L https://github.com/coreos/etcd/releases/download/v3.3.1/etcd-v3.3.1-linux-amd64.tar.gz | tar xzvf
+    $ curl -L https://github.com/coreos/etcd/releases/download/v3.3.1/etcd-v3.3.1-linux-amd64.tar.gz | tar xzvf
 
 --------------
 
@@ -83,9 +88,9 @@ Etcd基于Go语言实现，因此，用户可以从项目主页：\ https://gith
 
 .. code:: shell
 
-   $ cd etcd-v3.3.1-linux-amd64
-   $ ls
-   Documentation  etcd  etcdctl  README-etcdctl.md  README.md  READMEv2-etcdctl.md
+    $ cd etcd-v3.3.1-linux-amd64
+    $ ls
+    Documentation  etcd  etcdctl  README-etcdctl.md  README.md  READMEv2-etcdctl.md
 
 --------------
 
@@ -101,7 +106,7 @@ Etcd基于Go语言实现，因此，用户可以从项目主页：\ https://gith
 
 .. code:: shell
 
-   $ sudo cp etcd* /usr/local/bin/
+    $ sudo cp etcd* /usr/local/bin/
 
 --------------
 
@@ -117,11 +122,11 @@ Etcd安装到此完成。
 
 .. code:: shell
 
-   $ etcd --version
-   etcd Version: 3.3.1
-   Git SHA: 28f3f26c0
-   Go Version: go1.9.4
-   Go OS/Arch: linux/amd64
+    $ etcd --version
+    etcd Version: 3.3.1
+    Git SHA: 28f3f26c0
+    Go Version: go1.9.4
+    Go OS/Arch: linux/amd64
 
 --------------
 
@@ -133,17 +138,17 @@ Etcd安装到此完成。
 
 .. code:: shell
 
-   $ etcd
-   13:20:36.559979 I | etcdmain: etcd Version: 3.3.1
-   13:20:36.560467 I | etcdmain: Git SHA: 28f3f26c0
-   13:20:36.560687 I | etcdmain: Go Version: go1.9.4
-   13:20:36.560890 I | etcdmain: Go OS/Arch: linux/amd64
-   13:20:36.561118 I | etcdmain: setting maximum number of CPUs to 1, total number of available CPUs is 1
-   13:20:36.561414 W | etcdmain: no data-dir provided, using default data-dir ./default.etcd
-   13:20:36.562055 I | embed: listening for peers on http://localhost:2380
-   13:20:36.562414 I | embed: listening for client requests on localhost:2379
-   13:20:36.572548 I | etcdserver: name = default
-   ...
+    $ etcd
+    13:20:36.559979 I | etcdmain: etcd Version: 3.3.1
+    13:20:36.560467 I | etcdmain: Git SHA: 28f3f26c0
+    13:20:36.560687 I | etcdmain: Go Version: go1.9.4
+    13:20:36.560890 I | etcdmain: Go OS/Arch: linux/amd64
+    13:20:36.561118 I | etcdmain: setting maximum number of CPUs to 1, total number of available CPUs is 1
+    13:20:36.561414 W | etcdmain: no data-dir provided, using default data-dir ./default.etcd
+    13:20:36.562055 I | embed: listening for peers on http://localhost:2380
+    13:20:36.562414 I | embed: listening for client requests on localhost:2379
+    13:20:36.572548 I | etcdserver: name = default
+    ...
 
 --------------
 
@@ -153,8 +158,8 @@ Etcd安装到此完成。
 
 .. code:: shell
 
-   $ curl -L http://127.0.0.1:2379/health
-   {"health": "true"}
+    $ curl -L http://127.0.0.1:2379/health
+    {"health": "true"}
 
 --------------
 
@@ -165,23 +170,23 @@ API调用）：
 
 .. code:: shell
 
-   $ etcdctl cluster-health
-   member ce2a822cea30bfca is healthy: got healthy result from http://localhost:2379
-   cluster is healthy
+    $ etcdctl cluster-health
+    member ce2a822cea30bfca is healthy: got healthy result from http://localhost:2379
+    cluster is healthy
 
 --------------
 
-通过etcdctl设置和获取键值也十分方便，例如设置键值对testkey：“hello
-world”：
+通过etcdctl设置和获取键值也十分方便，例如设置键值对testkey："hello
+world"：
 
 --------------
 
 .. code:: shell
 
-   $ etcdctl set testkey "hello world"
-   hello world
-   $ etcdctl get testkey
-   hello world
+    $ etcdctl set testkey "hello world"
+    hello world
+    $ etcdctl get testkey
+    hello world
 
 --------------
 
@@ -193,10 +198,10 @@ world”：
 
 .. code:: shell
 
-   $ curl -L -X PUT http://localhost:2379/v2/keys/testkey -d value="hello world"
-   {"action":"set","node":{"key":"/testkey","value":"hello world","modifiedIndex":5, "createdIndex":5},"prevNode":{"key":"/testkey","value":"hello world","modifiedIndex":4,"createdIndex":4}}
-   $ curl -L http://localhost:2379/v2/keys/testkey
-   {"action":"get","node":{"key":"/testkey","value":"hello world","modifiedIndex":5, "createdIndex":5}}
+    $ curl -L -X PUT http://localhost:2379/v2/keys/testkey -d value="hello world"
+    {"action":"set","node":{"key":"/testkey","value":"hello world","modifiedIndex":5, "createdIndex":5},"prevNode":{"key":"/testkey","value":"hello world","modifiedIndex":4,"createdIndex":4}}
+    $ curl -L http://localhost:2379/v2/keys/testkey
+    {"action":"get","node":{"key":"/testkey","value":"hello world","modifiedIndex":5, "createdIndex":5}}
 
 --------------
 
@@ -211,11 +216,11 @@ world”：
 
 .. code:: shell
 
-   $ docker run \
-       -p 2379:2379 \
-       -p 2380:2380 \
-       -v /etc/ssl/certs/:/etc/ssl/certs/
-       quay.io/coreos/etcd:v3.3.1
+    $ docker run \
+        -p 2379:2379 \
+        -p 2380:2380 \
+        -v /etc/ssl/certs/:/etc/ssl/certs/
+        quay.io/coreos/etcd:v3.3.1
 
 --------------
 
@@ -223,13 +228,13 @@ world”：
 
 作为数据库，最重要的自然是数据存放位置。Etcd默认创建的本地数据目录为\ :math:`{name}.etcd，其中`\ {name}为节点别名。默认情况下本地数据路径为default.etcd。
 
-用户也可以通过–data-dir选项来指定本地数据存放的位置，下面命令指定Etcd节点别名为test，数据存放目录为test.etcd：
+用户也可以通过--data-dir选项来指定本地数据存放的位置，下面命令指定Etcd节点别名为test，数据存放目录为test.etcd：
 
 --------------
 
 ::
 
-   $ etcd --name "test" --data-dir test.etcd
+    $ etcd --name "test" --data-dir test.etcd
 
 --------------
 
@@ -239,25 +244,25 @@ world”：
 
 ::
 
-   $ tree test.etcd
-   test.etcd
-   └── member
-       ├── snap
-       │   └── db
-       └── wal
-           ├── 0000000000000000-0000000000000000.wal
-           └── 0.tmp
-   3 directories, 3 files
+    $ tree test.etcd
+    test.etcd
+    └── member
+        ├── snap
+        │   └── db
+        └── wal
+            ├── 0000000000000000-0000000000000000.wal
+            └── 0.tmp
+    3 directories, 3 files
 
 --------------
 
-其中，snap目录下将定期记录节点的状态快照信息，wal目录下则记录数据库的操作日志信息（可以通过–wal-dir参数来指定存放到特定目录）。
+其中，snap目录下将定期记录节点的状态快照信息，wal目录下则记录数据库的操作日志信息（可以通过--wal-dir参数来指定存放到特定目录）。
 
 4.服务启动参数
 
 Etcd服务启动的时候支持一些参数，用户可以通过这些参数来调整服务和集群的行为。
 
-另外，参数可以通过环境变量形式传入，命名全部为大写并且加ETCD_前缀，例如ETCD_NAME=‘etcd-cluster’。主要参数包括：通用参数、节点参数、集群参数、代理参数、安全参数。
+另外，参数可以通过环境变量形式传入，命名全部为大写并且加ETCD\_前缀，例如ETCD\_NAME='etcd-cluster'。主要参数包括：通用参数、节点参数、集群参数、代理参数、安全参数。
 
 （1）通用参数
 
@@ -265,7 +270,8 @@ Etcd服务启动的时候支持一些参数，用户可以通过这些参数来�
 
 表22-1　Etcd通用参数
 
-|image2|
+.. figure:: ../_static/docker_etcd00002.png
+   :alt: 
 
 （2）节点参数
 
@@ -273,7 +279,8 @@ Etcd服务启动的时候支持一些参数，用户可以通过这些参数来�
 
 表22-2　Etcd节点参数
 
-|image3|
+.. figure:: ../_static/docker_etcd00003.png
+   :alt: 
 
 （3）集群参数
 
@@ -281,9 +288,11 @@ Etcd服务启动的时候支持一些参数，用户可以通过这些参数来�
 
 表22-3　Etcd集群参数
 
-|image4|
+.. figure:: ../_static/docker_etcd00004.png
+   :alt: 
 
-|image5|
+.. figure:: ../_static/docker_etcd00005.png
+   :alt: 
 
 （4）代理参数
 
@@ -291,7 +300,8 @@ Etcd服务启动的时候支持一些参数，用户可以通过这些参数来�
 
 表22-4　Etcd代理参数
 
-|image6|
+.. figure:: ../_static/docker_etcd00006.png
+   :alt: 
 
 （5）安全参数
 
@@ -299,7 +309,8 @@ Etcd服务启动的时候支持一些参数，用户可以通过这些参数来�
 
 表22-5　Etcd安全参数
 
-|image7|
+.. figure:: ../_static/docker_etcd00007.png
+   :alt: 
 
 使用客户端命令
 --------------
@@ -317,7 +328,7 @@ etcdctl的命令格式为：
 
 ::
 
-   $ etcdctl [ 全局选项] 命令 [ 命令选项] [ 命令参数]
+    $ etcdctl [ 全局选项] 命令 [ 命令选项] [ 命令参数]
 
 --------------
 
@@ -325,7 +336,8 @@ etcdctl的命令格式为：
 
 表22-6　etcdctl命令全局选项参数
 
-|image8|
+.. figure:: ../_static/docker_etcd_quanju00001.png
+   :alt: 
 
 支持的命令大体上分为：数据类操作和非数据类操作。
 
@@ -335,13 +347,15 @@ Etcd作为一个分布式数据库，与ZooKeeper类似，采用了类似文件�
 
 表22-7　Etcd数据类操作命令
 
-|image9|
+.. figure:: ../_static/docker_caozuo01.png
+   :alt: 
 
 非数据类操作命令见表22-8，主要是Etcd提供的系统配置、权限管理等。
 
 表22-8　Etcd非数据类操作命令
 
-|image10|
+.. figure:: ../_static/docker_nodata00002.png
+   :alt: 
 
 下面分别来看各个操作的主要用法和功能。
 
@@ -364,8 +378,8 @@ CRUD即Create，Read，Update，Delete，是符合REST风格的一套API操作�
 
 .. code:: shell
 
-   $ etcdctl set /testdir/testkey "Hello world"
-   Hello world
+    $ etcdctl set /testdir/testkey "Hello world"
+    Hello world
 
 --------------
 
@@ -380,7 +394,7 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 ``注意``
 
-–ttl选项十分有用。在分布式环境中，系统往往是不可靠的，在基于Etcd设计分布式锁的时候，可以通过超时时间避免出现发生死锁的情况。
+--ttl选项十分有用。在分布式环境中，系统往往是不可靠的，在基于Etcd设计分布式锁的时候，可以通过超时时间避免出现发生死锁的情况。
 
 2.get
 
@@ -390,10 +404,10 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl set testkey hello
-   hello
-   $ etcdctl update testkey world
-   world
+    $ etcdctl set testkey hello
+    hello
+    $ etcdctl update testkey world
+    world
 
 --------------
 
@@ -403,8 +417,8 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl get testkey2
-   Error: 100: Key not found (/testkey2) [1]
+    $ etcdctl get testkey2
+    Error: 100: Key not found (/testkey2) [1]
 
 --------------
 
@@ -422,10 +436,10 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl set testkey hello
-   hello
-   $ etcdctl update testkey world
-   world
+    $ etcdctl set testkey hello
+    hello
+    $ etcdctl update testkey world
+    world
 
 --------------
 
@@ -435,8 +449,8 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl update testkey2 world
-   Error:  100: Key not found (/testkey2) [1]
+    $ etcdctl update testkey2 world
+    Error:  100: Key not found (/testkey2) [1]
 
 --------------
 
@@ -450,8 +464,8 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl mk /testdir/testkey "Hello world"
-   Hello world
+    $ etcdctl mk /testdir/testkey "Hello world"
+    Hello world
 
 --------------
 
@@ -461,10 +475,10 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl set testkey "Hello world"
-   Hello world
-   $ ./etcdctl mk testkey "Hello world"
-   Error:  105: Key already exists (/testkey) [2]
+    $ etcdctl set testkey "Hello world"
+    Hello world
+    $ ./etcdctl mk testkey "Hello world"
+    Error:  105: Key already exists (/testkey) [2]
 
 --------------
 
@@ -472,7 +486,7 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 ·-in-order：创建按顺序的键值；
 
-·-ttl’0’：超时时间（单位为秒），默认值为0，意味着永不超时。
+·-ttl'0'：超时时间（单位为秒），默认值为0，意味着永不超时。
 
 5.rm
 
@@ -482,7 +496,7 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl rm testkey
+    $ etcdctl rm testkey
 
 --------------
 
@@ -492,8 +506,8 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl rm testkey2
-   Error: 100: Key not found (/testkey2) [8]
+    $ etcdctl rm testkey2
+    Error: 100: Key not found (/testkey2) [8]
 
 --------------
 
@@ -501,10 +515,10 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 ::
 
-   ·-dir：如果键是个空目录或者是键值对则删除；
-   ·-recursive，-r：删除目录和所有子键；
-   ·-with-value value：检查现有的值是否匹配；
-   ·-with-index value：检查现有的index是否匹配，默认值为0。
+    ·-dir：如果键是个空目录或者是键值对则删除；
+    ·-recursive，-r：删除目录和所有子键；
+    ·-with-value value：检查现有的值是否匹配；
+    ·-with-index value：检查现有的index是否匹配，默认值为0。
 
 6.watch
 
@@ -516,8 +530,8 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl watch testkey
-   Hello world
+    $ etcdctl watch testkey
+    Hello world
 
 --------------
 
@@ -525,9 +539,9 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   ·-forever，-f：一直监测，直到用户按CTRL+C退出；
-   ·-after-index value：在指定index之前一直监测，默认为0；
-   ·-recursive，-r：返回所有的键值和子键值。
+    ·-forever，-f：一直监测，直到用户按CTRL+C退出；
+    ·-after-index value：在指定index之前一直监测，默认为0；
+    ·-recursive，-r：返回所有的键值和子键值。
 
 7.exec-watch
 
@@ -539,14 +553,14 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl exec-watch testkey -- sh -c 'ls'
-   default.etcd
-   Documentation
-   etcd
-   etcdctl
-   etcd-migrate
-   README-etcdctl.md
-   README.md
+    $ etcdctl exec-watch testkey -- sh -c 'ls'
+    default.etcd
+    Documentation
+    etcd
+    etcdctl
+    etcd-migrate
+    README-etcdctl.md
+    README.md
 
 --------------
 
@@ -554,8 +568,8 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 ::
 
-   ·-after-index value：在指定index之前一直监测，默认为0；
-   ·-recursive，-r：返回所有的键值和子键值。
+    ·-after-index value：在指定index之前一直监测，默认为0；
+    ·-recursive，-r：返回所有的键值和子键值。
 
 8.ls
 
@@ -565,15 +579,15 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl set testkey 'hi'
-   hi
-   $ etcdctl set dir/test 'hello'
-   hello
-   $ etcdctl ls
-   /testkey
-   /dir
-   $ etcdctl ls dir
-   /dir/test
+    $ etcdctl set testkey 'hi'
+    hi
+    $ etcdctl set dir/test 'hello'
+    hello
+    $ etcdctl ls
+    /testkey
+    /dir
+    $ etcdctl ls dir
+    /dir/test
 
 --------------
 
@@ -581,10 +595,10 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 ::
 
-   ·-sort：将输出结果排序；
-   ·-recursive，-r：如果目录下有子目录，则递归输出其中的内容；
-   ·-p：对于输出为目录，在最后添加/进行区分；
-   ·-quorum，-q：需要从大多数节点返回结果。
+    ·-sort：将输出结果排序；
+    ·-recursive，-r：如果目录下有子目录，则递归输出其中的内容；
+    ·-p：对于输出为目录，在最后添加/进行区分；
+    ·-quorum，-q：需要从大多数节点返回结果。
 
 9.mkdir
 
@@ -594,7 +608,7 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl mkdir testdir
+    $ etcdctl mkdir testdir
 
 --------------
 
@@ -604,9 +618,9 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 .. code:: shell
 
-   $ etcdctl mkdir testdir
-   $ etcdctl mkdir testdir
-   Error:  105: Key already exists (/testdir) [7]
+    $ etcdctl mkdir testdir
+    $ etcdctl mkdir testdir
+    Error:  105: Key already exists (/testdir) [7]
 
 --------------
 
@@ -621,10 +635,10 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
 
 .. code:: shell
 
-   $ etcdctl set /dir/testkey hi
-   hi
-   $ etcdctl rmdir /dir
-   Error:  108: Directory not empty (/dir) [13]
+    $ etcdctl set /dir/testkey hi
+    hi
+    $ etcdctl rmdir /dir
+    Error:  108: Directory not empty (/dir) [13]
 
 --------------
 
@@ -636,10 +650,10 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
 
 .. code:: shell
 
-   $ etcdctl setdir /test/test
-   $ etcdctl ls --recursive
-   /test
-   /test/test
+    $ etcdctl setdir /test/test
+    $ etcdctl ls --recursive
+    /test
+    /test/test
 
 --------------
 
@@ -654,8 +668,8 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
 
 .. code:: shell
 
-   $ etcdctl mkdir /test/test --ttl 100
-   $ etcdctl updatedir /test/test --ttl 200
+    $ etcdctl mkdir /test/test --ttl 100
+    $ etcdctl updatedir /test/test --ttl 200
 
 --------------
 
@@ -675,11 +689,11 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
 
 .. code:: shell
 
-   ·-data-dir value：要进行备份的Etcd的数据存放目录；
-   ·-wal-dir value：要进行备份的Etcd wal数据路径；
-   ·-backup-dir value：备份数据到指定路径；
-   ·-backup-wal-dir value：备份wal数据到指定路径；
-   ·-with-v3：备份v3版本数据。
+    ·-data-dir value：要进行备份的Etcd的数据存放目录；
+    ·-wal-dir value：要进行备份的Etcd wal数据路径；
+    ·-backup-dir value：备份数据到指定路径；
+    ·-backup-wal-dir value：备份wal数据到指定路径；
+    ·-with-v3：备份v3版本数据。
 
 例如，备份默认配置的信息到当前路径下的tmp子目录：
 
@@ -687,7 +701,7 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
 
 ::
 
-   $ etcdctl backup --data-dir default.etcd --backup-dir tmp
+    $ etcdctl backup --data-dir default.etcd --backup-dir tmp
 
 --------------
 
@@ -697,8 +711,8 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
 
 ::
 
-   $ ls tmp/member
-   snap wal
+    $ ls tmp/member
+    snap wal
 
 --------------
 
@@ -717,9 +731,9 @@ ahead log）信息。
 
 ::
 
-   $ etcdctl cluster-health
-   member ce2a822cea30bfca is healthy: got healthy result from http://localhost:2379
-   cluster is healthy
+    $ etcdctl cluster-health
+    member ce2a822cea30bfca is healthy: got healthy result from http://localhost:2379
+    cluster is healthy
 
 --------------
 
@@ -733,8 +747,8 @@ ahead log）信息。
 
 ::
 
-   $ etcdctl member list
-   ce2a822cea30bfca: name=default peerURLs=http://localhost:2380,http://local-host:7001 clientURLs=http://localhost:2379,http://localhost:4001
+    $ etcdctl member list
+    ce2a822cea30bfca: name=default peerURLs=http://localhost:2380,http://local-host:7001 clientURLs=http://localhost:2379,http://localhost:4001
 
 --------------
 
@@ -762,8 +776,8 @@ ahead log）信息。
 
 .. code:: shell
 
-   $ etcdctl user add root
-   New password:
+    $ etcdctl user add root
+    New password:
 
 --------------
 
@@ -773,8 +787,8 @@ ahead log）信息。
 
 .. code:: shell
 
-   $ etcdctl user add testuser
-   New password:
+    $ etcdctl user add testuser
+    New password:
 
 --------------
 
@@ -784,7 +798,7 @@ ahead log）信息。
 
 .. code:: shell
 
-   $ etcdctl user grant testuser -roles testrole
+    $ etcdctl user grant testuser -roles testrole
 
 --------------
 
@@ -794,12 +808,12 @@ ahead log）信息。
 
 ::
 
-   ·add：添加一个角色；
-   ·get：查询角色细节；
-   ·list：列出所有用户角色；
-   ·remove：删除用户角色；
-   ·grant：添加路径到角色控制，可以为read、write或者readwrite；
-   ·revoke：删除某路径的用户角色信息。
+    ·add：添加一个角色；
+    ·get：查询角色细节；
+    ·list：列出所有用户角色；
+    ·remove：删除用户角色；
+    ·grant：添加路径到角色控制，可以为read、write或者readwrite；
+    ·revoke：删除某路径的用户角色信息。
 
 默认带有root、guest两种角色，前者为全局最高权限，后者为不带验证情况下的用户。例如：
 
@@ -807,8 +821,8 @@ ahead log）信息。
 
 .. code:: shell
 
-   $ etcdctl role add testrole
-   $ etcdctl role grant testrole -path '/key/*' -read
+    $ etcdctl role add testrole
+    $ etcdctl role grant testrole -path '/key/*' -read
 
 --------------
 
@@ -820,7 +834,7 @@ ahead log）信息。
 
 .. code:: shell
 
-   $ etcdctl auth enable
+    $ etcdctl auth enable
 
 Etcd集群管理
 ------------
@@ -845,15 +859,15 @@ Etcd支持两种模式来构建集群：静态配置和动态发现。
 
 顾名思义，静态配置就是提取写好集群中的有关信息。例如，假设读者想要用三个节点来构建一个集群，地址分别为：
 
-+-------+----------+
-| 节点  | 地址     |
-+=======+==========+
-| Node1 | 10.0.0.1 |
-+-------+----------+
-| Node2 | 10.0.0.2 |
-+-------+----------+
-| Node3 | 10.0.0.3 |
-+-------+----------+
++---------+------------+
+| 节点    | 地址       |
++=========+============+
+| Node1   | 10.0.0.1   |
++---------+------------+
+| Node2   | 10.0.0.2   |
++---------+------------+
+| Node3   | 10.0.0.3   |
++---------+------------+
 
 首先在各个节点上将地址和别名信息添加到/etc/hosts：
 
@@ -861,9 +875,9 @@ Etcd支持两种模式来构建集群：静态配置和动态发现。
 
 .. code:: shell
 
-   10.0.0.1 Node1
-   10.0.0.2 Node2
-   10.0.0.3 Node3
+    10.0.0.1 Node1
+    10.0.0.2 Node2
+    10.0.0.3 Node3
 
 --------------
 
@@ -875,14 +889,14 @@ Etcd支持两种模式来构建集群：静态配置和动态发现。
 
 .. code:: shell
 
-   $ etcd --name n1 \
-       --initial-cluster-token cluster1 \
-       --initial-cluster-state new \
-       --listen-client-urls http://Node1:2379,http://localhost:2379 \
-       --listen-peer-urls http://Node1:2380 \
-       --advertise-client-urls http://Node1:2379 \
-       --initial-advertise-peer-urls http://Node1:2380 \
-       --initial-cluster n1=http://Node1:2380,n2=http://Node2:2380,n3=http://Node3:2380
+    $ etcd --name n1 \
+        --initial-cluster-token cluster1 \
+        --initial-cluster-state new \
+        --listen-client-urls http://Node1:2379,http://localhost:2379 \
+        --listen-peer-urls http://Node1:2380 \
+        --advertise-client-urls http://Node1:2379 \
+        --initial-advertise-peer-urls http://Node1:2380 \
+        --initial-cluster n1=http://Node1:2380,n2=http://Node2:2380,n3=http://Node3:2380
 
 --------------
 
@@ -892,14 +906,14 @@ Etcd支持两种模式来构建集群：静态配置和动态发现。
 
 .. code:: shell
 
-   $ etcd --name n2 \
-       --initial-cluster-token cluster1 \
-       --initial-cluster-state new \
-       --listen-client-urls http://Node2:2379,http://localhost:2379 \
-       --listen-peer-urls http://Node2:2380 \
-       --advertise-client-urls http://Node2:2379 \
-       --initial-advertise-peer-urls http://Node2:2380 \
-       --initial-cluster n1=http://Node1:2380,n2=http://Node2:2380,n3=http://Node3:2380
+    $ etcd --name n2 \
+        --initial-cluster-token cluster1 \
+        --initial-cluster-state new \
+        --listen-client-urls http://Node2:2379,http://localhost:2379 \
+        --listen-peer-urls http://Node2:2380 \
+        --advertise-client-urls http://Node2:2379 \
+        --initial-advertise-peer-urls http://Node2:2380 \
+        --initial-cluster n1=http://Node1:2380,n2=http://Node2:2380,n3=http://Node3:2380
 
 --------------
 
@@ -909,14 +923,14 @@ Etcd支持两种模式来构建集群：静态配置和动态发现。
 
 .. code:: shell
 
-   $ etcd --name n3 \
-       --initial-cluster-token cluster1 \
-       --initial-cluster-state new \
-       --listen-client-urls http://Node3:2379,http://localhost:2379 \
-       --listen-peer-urls http://Node3:2380 \
-       --advertise-client-urls http://Node3:2379 \
-       --initial-advertise-peer-urls http://Node3:2380 \
-       --initial-cluster n1=http://Node1:2380,n2=http://Node2:2380,n3=http://Node3:2380
+    $ etcd --name n3 \
+        --initial-cluster-token cluster1 \
+        --initial-cluster-state new \
+        --listen-client-urls http://Node3:2379,http://localhost:2379 \
+        --listen-peer-urls http://Node3:2380 \
+        --advertise-client-urls http://Node3:2379 \
+        --initial-advertise-peer-urls http://Node3:2380 \
+        --initial-cluster n1=http://Node1:2380,n2=http://Node2:2380,n3=http://Node3:2380
 
 --------------
 
@@ -926,9 +940,9 @@ Etcd支持两种模式来构建集群：静态配置和动态发现。
 
 .. code:: shell
 
-   $ etcdctl member list 228428dce5a59f3b: name=n3 peerURLs=http://Node3:2380 client-URLs=http://Node3:2379
-   5051932762b33d8e: name=n1 peerURLs=http://Node1:2380 clientURLs=http://Node1:2379
-   8ee612d82821a4e7: name=n2 peerURLs=http://Node2:2380 clientURLs=http://Node2:2379
+    $ etcdctl member list 228428dce5a59f3b: name=n3 peerURLs=http://Node3:2380 client-URLs=http://Node3:2379
+    5051932762b33d8e: name=n1 peerURLs=http://Node1:2380 clientURLs=http://Node1:2379
+    8ee612d82821a4e7: name=n2 peerURLs=http://Node2:2380 clientURLs=http://Node2:2379
 
 2.动态发现
 ^^^^^^^^^^
@@ -946,8 +960,8 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 ::
 
-   $ curl https://discovery.etcd.io/new?size=3
-   https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
+    $ curl https://discovery.etcd.io/new?size=3
+    https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
 
 --------------
 
@@ -959,14 +973,14 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 ::
 
-   $ etcd --name n1 \
-       --initial-cluster-token cluster1 \
-       --initial-cluster-state new \
-       --listen-client-urls http://Node1:2379,http://localhost:2379 \
-       --listen-peer-urls http://Node1:2380 \
-       --advertise-client-urls http://Node1:2379 \
-       --initial-advertise-peer-urls http://Node1:2380 \
-       --discovery https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
+    $ etcd --name n1 \
+        --initial-cluster-token cluster1 \
+        --initial-cluster-state new \
+        --listen-client-urls http://Node1:2379,http://localhost:2379 \
+        --listen-peer-urls http://Node1:2380 \
+        --advertise-client-urls http://Node1:2379 \
+        --initial-advertise-peer-urls http://Node1:2380 \
+        --discovery https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
 
 --------------
 
@@ -976,14 +990,14 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 ::
 
-   $ etcd --name n2 \
-       --initial-cluster-token cluster1 \
-       --initial-cluster-state new \
-       --listen-client-urls http://Node2:2379,http://localhost:2379 \
-       --listen-peer-urls http://Node2:2380 \
-       --advertise-client-urls http://Node2:2379 \
-       --initial-advertise-peer-urls http://Node2:2380 \
-       --discovery https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
+    $ etcd --name n2 \
+        --initial-cluster-token cluster1 \
+        --initial-cluster-state new \
+        --listen-client-urls http://Node2:2379,http://localhost:2379 \
+        --listen-peer-urls http://Node2:2380 \
+        --advertise-client-urls http://Node2:2379 \
+        --initial-advertise-peer-urls http://Node2:2380 \
+        --discovery https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
 
 --------------
 
@@ -993,14 +1007,14 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 ::
 
-   $ etcd --name n3 \
-       --initial-cluster-token cluster1 \
-       --initial-cluster-state new \
-       --listen-client-urls http://Node3:2379,http://localhost:2379 \
-       --listen-peer-urls http://Node3:2380 \
-       --advertise-client-urls http://Node3:2379 \
-       --initial-advertise-peer-urls http://Node3:2380 \
-       --discovery https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
+    $ etcd --name n3 \
+        --initial-cluster-token cluster1 \
+        --initial-cluster-state new \
+        --listen-client-urls http://Node3:2379,http://localhost:2379 \
+        --listen-peer-urls http://Node3:2380 \
+        --advertise-client-urls http://Node3:2379 \
+        --initial-advertise-peer-urls http://Node3:2380 \
+        --discovery https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
 
 --------------
 
@@ -1032,8 +1046,8 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 ::
 
-   $ sudo aptitude install ntp
-   $ sudo service ntp restart
+    $ sudo aptitude install ntp
+    $ sudo service ntp restart
 
 --------------
 
@@ -1054,7 +1068,7 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 ::
 
-   $ etcd -heartbeat-interval=200 -election-timeout=2000
+    $ etcd -heartbeat-interval=200 -election-timeout=2000
 
 --------------
 
@@ -1064,7 +1078,7 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 ::
 
-   $ ETCD_HEARTBEAT_INTERVAL=100 ETCD_ELECTION_TIMEOUT=500 etcd
+    $ ETCD_HEARTBEAT_INTERVAL=100 ETCD_ELECTION_TIMEOUT=500 etcd
 
 --------------
 
@@ -1080,7 +1094,7 @@ Etcd会定期将数据的修改存储为snapshot，默认情况下每10
 
 ::
 
-   $ etcd -snapshot-count=2000
+    $ etcd -snapshot-count=2000
 
 --------------
 
@@ -1090,7 +1104,7 @@ Etcd会定期将数据的修改存储为snapshot，默认情况下每10
 
 ::
 
-   ETCD_SNAPSHOT_COUNT=2000 etcd
+    ETCD_SNAPSHOT_COUNT=2000 etcd
 
 --------------
 
@@ -1128,14 +1142,4 @@ Etcd提供了-strict-reconfig-check选项，确保当集群状态不稳定时候
 
 通过实践案例，可以看出Etcd的功能十分类似于ZooKeeper，但作为后起之秀，它在REST接口支持、访问权限管理、大量数据存储方面表现更为优秀。同时，提供了多种语言（目前包括Python、Go、Java等）实现的客户端支持。基于Etcd，用户可以很容易实现集群中的配置管理和服务发现等复杂功能。类似的项目还包括Consul等。
 
-.. |image0| image:: ../_static/docker_etcd00001.png
 .. |img| image:: http://reader.epubee.com/books/mobile/5e/5ed586449ceaa3f619488a147cd76a01/Image00003.jpg
-.. |image2| image:: ../_static/docker_etcd00002.png
-.. |image3| image:: ../_static/docker_etcd00003.png
-.. |image4| image:: ../_static/docker_etcd00004.png
-.. |image5| image:: ../_static/docker_etcd00005.png
-.. |image6| image:: ../_static/docker_etcd00006.png
-.. |image7| image:: ../_static/docker_etcd00007.png
-.. |image8| image:: ../_static/docker_etcd_quanju00001.png
-.. |image9| image:: ../_static/docker_caozuo01.png
-.. |image10| image:: ../_static/docker_nodata00002.png
