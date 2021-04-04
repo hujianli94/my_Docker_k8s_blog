@@ -1,0 +1,314 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>04.Prometheus监控运维实战 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Prometheus基本概念及部署" href="01.Prometheus基本概念及部署.html" />
+    <link rel="prev" title="consul服务注册" href="../03.Docker经典实例/17.consul服务注册.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01.Docker技术入门与实战-3版/index.html">01.Docker技术入门与实战-第3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes实战指南/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker经典实例/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">04.Prometheus监控运维实战</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="01.Prometheus基本概念及部署.html">Prometheus基本概念及部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Prometheus技术基础.html">Prometheus技术基础</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.服务发现.html">服务发现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.PromQL.html">PromQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.告警处理.html">告警处理</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>04.Prometheus监控运维实战</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/04.Prometheus监控运维实战/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="prometheus">
+<h1>04.Prometheus监控运维实战<a class="headerlink" href="#prometheus" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="01.Prometheus基本概念及部署.html">Prometheus基本概念及部署</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="01.Prometheus基本概念及部署.html#id1">1 Prometheus架构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01.Prometheus基本概念及部署.html#id2">2.1 使用二进制文件快速部署</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="01.Prometheus基本概念及部署.html#id3">2.1.1 添加Prometheus为系统服务开机启动</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01.Prometheus基本概念及部署.html#id4">2.1.2 热加载更新配置</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="01.Prometheus基本概念及部署.html#docker">3.使用Docker快速安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01.Prometheus基本概念及部署.html#prometheus-web-ui">4.Prometheus Web UI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="01.Prometheus基本概念及部署.html#id5">4 Prometheus相关概念</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01.Prometheus基本概念及部署.html#jobsinstances">4.1 Jobs和Instances</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="01.Prometheus基本概念及部署.html#id6">5.Prometheus核心组件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01.Prometheus基本概念及部署.html#id7">本章小结</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="02.Prometheus技术基础.html">Prometheus技术基础</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="02.Prometheus技术基础.html#exporter">1.Exporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Prometheus技术基础.html#id1">2.Exporter类型</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="02.Prometheus技术基础.html#id2">2.1 文本数据格式</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="02.Prometheus技术基础.html#id3">2.2 获取Exporter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="02.Prometheus技术基础.html#id4">2.2.1 测试主机列表及其软件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02.Prometheus技术基础.html#id5">2.2.2 软件下载清单</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02.Prometheus技术基础.html#id6">2.2.3 主机监控</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02.Prometheus技术基础.html#id7">2.2.4 数据库监控</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02.Prometheus技术基础.html#nginx">2.2.5 Nginx监控</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02.Prometheus技术基础.html#id8">2.2.6 Prometheus之黑盒监控</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02.Prometheus技术基础.html#docker">2.2.7 Docker监控</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="02.Prometheus技术基础.html#id9">本章小结</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="03.服务发现.html">服务发现</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="03.服务发现.html#id2">1.基于文件的服务发现</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="03.服务发现.html#json">1.添加JSON格式文件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="03.服务发现.html#yaml">2.YAML格式文件</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="03.服务发现.html#consul">2.基于Consul的服务发现</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="03.服务发现.html#id3">2.1 Consul体验应用信息</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="03.服务发现.html#dns">3.基于DNS的服务发现</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="03.服务发现.html#dnssrv">3.1 自建DNS服务SRV记录设置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="03.服务发现.html#dna-a">3.2 DNA A记录</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="03.服务发现.html#id7">4.小结</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="04.PromQL.html">PromQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05.告警处理.html">告警处理</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="05.告警处理.html#alertmanager">1.Alertmanager部署</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="05.告警处理.html#id2">1.1 1.告警分组</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05.告警处理.html#id3">1.1.2 告警抑制</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05.告警处理.html#id4">1.1.3 告警静默</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05.告警处理.html#id5">1.1.4 使用二进制文件方式安装</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05.告警处理.html#docker">1.1.5 使用Docker安装</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="05.告警处理.html#id6">2. Alertmanager配置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="05.告警处理.html#global">2.1 global</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05.告警处理.html#templates">2.2 templates</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="01.Prometheus基本概念及部署.html" class="btn btn-neutral float-right" title="Prometheus基本概念及部署" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../03.Docker经典实例/17.consul服务注册.html" class="btn btn-neutral float-left" title="consul服务注册" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
-# auther; 18793
+# auther: 18793
 # Date：2019/12/5 17:14
 # filename: md_to_rst_tool.py
 import os

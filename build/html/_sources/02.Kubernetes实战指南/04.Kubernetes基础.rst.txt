@@ -1,3 +1,7 @@
+.. role:: math(raw)
+   :format: html latex
+..
+
 .. contents::
    :depth: 3
 ..
@@ -131,18 +135,291 @@ kubernetes常用资源对象
     k8s-node2    Ready    <none>   45h   v1.18.3
     k8s-node3    Ready    <none>   45h   v1.18.3
 
-安装Kubernetes的扩展插件
-------------------------
+kubectl命令与资源管理
+---------------------
 
-安装Cluster DNS
-~~~~~~~~~~~~~~~
+Kubernetes
+API是管理各种资源对象的唯一入口，它提供了一个RESTful风格的CRUD（Create、Read、Update和Delete）接口用于查询和修改集群状态，并将结果存储在集群状态存储系统etcd中。事实上，API
+Server也是用于更新etcd中资源对象状态的唯一途径，Kubernetes的其他所有组件和客户端都要通过它完成查询或修改操作。
+
+.. figure:: ../_static/kubectl_0001.png
+   :alt: 
+
+1.资源管理的操作
+~~~~~~~~~~~~~~~~
+
+Kubernetes API资源管理的操作可简单归结为增、删、改、查这4种，
+
+kubectl提供了一系列子命令用于执行此类任务，例如create、delete、patch、apply、replace、edit、get等。
+
+1.1 kubectl命令常用操作示例
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1.1.1 创建资源对象
+''''''''''''''''''
+
+::
+
+    // 新增
+    [root@ci-base k8s_yaml]# kubectl create namespace dev
+    namespace/dev created
+
+    [root@ci-base k8s_yaml]# kubectl create deployment demoapp --image="ikubernetes/demoapp:v1.0" -n dev
+    deployment.apps/demoapp created
+
+    [root@ci-base k8s_yaml]# kubectl create service clusterip demoapp --tcp=80 -n dev
+    service/demoapp created
+
+    // 查询
+    [root@ci-base example01]# kubectl get deployment -n dev
+
+    [root@ci-base example01]# kubectl get pod -n dev
+
+    [root@ci-base example01]# kubectl get svc -n dev
+
+    // 删除
+    kubectl delete deployment demoapp -n dev
+    kubectl delete svc demoapp -n dev
+    kubectl delete ns dev
+
+将资源导出为命令配置文件
+
+::
+
+    // 打印资源对象的详细信息
+    kubectl get pod metrics-server-7477b75789-xlx4b -n kube-system  -o yaml
+
+    // 导出资源对象的详细信息
+    kubectl get ns dev -o yaml > dev-ns.yaml
+    kubectl get pod -n dev -o yaml > demo-pod.yaml
+    kubectl get service -n dev -o yaml > demo-svc.yaml
+
+使用命令式对象配置文件方式创建部署
+
+::
+
+    [root@ci-base example01]# ll
+    total 16
+    -rw-r--r-- 1 root root 5349 Apr  2 10:47 demo-pod.yaml
+    -rw-r--r-- 1 root root 1189 Apr  2 10:47 demo-svc.yaml
+
+
+    [root@ci-base example01]# kubectl create ns dev
+
+    [root@ci-base example01]# kubectl create -f demo-pod.yaml
+
+    [root@ci-base example01]# kubectl create -f demo-svc.yaml
+
+    // 删除所有资源
+    kubectl delete -f example01/
+
+    [root@ci-base example01]# kubectl create ns dev
+
+    [root@ci-base k8s_yaml]# kubectl apply -f example01/
+    pod/demoapp-6c5d545684-bn5t8 created
+    service/demoapp created
+
+    [root@ci-base k8s_yaml]# kubectl delete ns dev
+
+1.1.2 查看资源对象
+''''''''''''''''''
+
+::
+
+    [root@ci-base k8s_yaml]# kubectl get ns
+
+    [root@ci-base k8s_yaml]# kubectl get pod,svc -o wide
+
+    //下面的命令能够取出kube-system名称空间中带有k8s-app=kube-dns标签的Pod对象的资源名称。
+    [root@ci-base k8s_yaml]# kubectl get pods -l k8s-app -n kube-system
+
+kubectl
+describe命令还能显示当前对象相关的其他资源对象，如Event或Controller等。
+
+::
+
+    kubectl describe pod metrics-server-7477b75789-xlx4b -n kube-system
+
+打印容器中的日志信息
+
+::
+
+    [root@ci-base example01]# kubectl logs pod/demoapp -n dev
+     * Running on http://0.0.0.0:80/ (Press CTRL+C to quit)
+
+1.1.3 使用yaml文件
+''''''''''''''''''
+
+使用和查看命令如下
+
+::
+
+    [root@ci-base example01]# kubectl apply -f .
+    deployment.apps/demoapp created
+    service/demoapp created
+
+    [root@ci-base example01]# kubectl get pod,svc,ep -n dev
+    .....
+
+yaml文件如下
+
+``demo-deployment.yaml``
+
+::
+
+    ---
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      labels:
+        k8s.kuboard.cn/layer: web
+        k8s.kuboard.cn/name: demoapp
+      name: demoapp
+      namespace: dev
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          k8s.kuboard.cn/layer: web
+          k8s.kuboard.cn/name: demoapp
+
+      template:
+        metadata:
+          labels:
+            k8s.kuboard.cn/layer: web
+            k8s.kuboard.cn/name: demoapp
+        spec:
+          containers:
+            - image: 'ikubernetes/demoapp:v1.0'
+              imagePullPolicy: Always
+              name: demoapp-pod
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+
+``demo-svc.yaml``
+
+::
+
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        k8s.kuboard.cn/layer: web
+        k8s.kuboard.cn/name: demoapp
+
+      name: demoapp
+      namespace: dev
+
+    spec:
+      externalTrafficPolicy: Cluster
+      ports:
+        - name: dijebj
+          nodePort: 30001
+          port: 8080
+          protocol: TCP
+          targetPort: 80
+      selector:
+        k8s.kuboard.cn/layer: web
+        k8s.kuboard.cn/name: demoapp
+      type: NodePort
+
+1.1.4 在容器中执行命令
+''''''''''''''''''''''
+
+::
+
+    [root@ci-base example01]# kubectl exec -it demoapp-5f8989b6c5-hpq9w sh -n dev
+    [root@demoapp-5f8989b6c5-hpq9w /]#
+
+1.1.5 删除资源
+''''''''''''''
+
+::
+
+    kubectl delete svc demoapp -n dev
+    kubectl delete deployment demoapp -n dev
+    kubectl delete ns dev
+
+    // 删除命名空间中的所有pod对象
+    kubectl delete pods --all -n dev
+
+    //强制删除pod对象
+     kubectl delete pods demoapp --force --grace-period=0
+
+需要特别说明的是，对于受控于控制器的对象来说，仅删除受控对象自身，其控制器可能会重建出类似的对象，例如Deployment控制器下的Pod对象被删除时即会被重建。
+
+2. kubectl插件
+~~~~~~~~~~~~~~
+
+kubectl插件是指能够由kubectl调用的外部独立应用程序，这类应用程序都以kubectl-\ :math:`plugin_name格式命名，表现为kubectl的名字是`\ plugin\_name的子命令。例如，应用程序/usr/bin/kubectl-whoami就是whoami插件，我们可以使用kubectl
+whoami的格式来运行它。因此，可为kubectl插件添加新的可用子命令，丰富kubectl的功能。
+
+Kubernetes SIG
+CLI社区还提供了一个插件管理器——Krew，它能够帮助用户打包、分发、查找、安装和管理kubectl插件，
+
+项目地址为https://krew.sigs.k8s.io/。Krew以跨平台的方式打包和分发插件，因此单一打包格式即能适配主流的系统平台（Linux、Windows或macOS等）。为了便于插件分发，Krew还维护有一个插件索引，以方便用户发现主流的可用插件。
+
+Krew自身也表现为kubectl的一个插件，需要以手动方式独立安装。下面的脚本（krew-install.sh）能自动完成Krew插件的安装，该脚本仅适用于类UNIX系统平台，并以bash解释器运行，其他平台上的部署方式请参考Krew项目的官方文档。
+
+``krew-install.sh``
+
+::
+
+    #!/bin/bash
+    set -x; cd "$(mktemp -d)"
+
+    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.{tar.gz,yaml}" 
+    tar zxvf krew.tar.gz 
+    KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64"
+
+    "$KREW" install --manifest=krew.yaml --archive=krew.tar.gz
+    "$KREW" update
+
+编辑$HOME/.bash\_profile文件，将export一行命令添加其中，并重启当前shell解释器。
+
+::
+
+
+    [root@k8smaster1 krew]# echo 'export PATH="${PATH}:${HOME}/.krew/bin"' >> $HOME/.bash_profile
+    [root@k8smaster1 krew]# source $HOME/.bash_profile
+    [root@k8smaster1 krew]# exec $SHELL
+
+设定完成后，kubectl
+krew子命令便能执行Krew插件管理器的相关功能，例如查找和安装所需要的插件，它拥有help、list、search、info、install、upgrade和uninstall等二级子命令。
+
+下面的命令搜索Krew索引中包含字符串who的插件。
+
+::
+
+    [root@k8smaster1 krew]# kubectl krew update
+    Updated the local copy of plugin index.
+
+    [root@k8smaster1 krew]# kubectl krew search who
+    NAME          DESCRIPTION                                         INSTALLED
+    view-webhook  Visualize your webhook configurations               no
+    who-can       Shows who has RBAC permissions to access Kubern...  no
+    whoami        Show the subject that's currently authenticated...  no
+
+    // 安装whoami插件
+    kubectl krew install whoami 
+    kubectl krew install ns ctx rbac-view
+    // 使用插件
+    kubectl whoami
+
+Krew索引中的各插件几乎都从更便捷、更丰富或更完整等角度进一步完善了kubectl功能。例如status能够以更加简便、直观的方式返回资源的简要状态，ctx以更便捷的方式完成kubeconfig中的context切换等。
+
+3. Kubernetes的扩展插件
+~~~~~~~~~~~~~~~~~~~~~~~
+
+**安装Cluster DNS**
 
 参考文献：
 
 https://www.cnblogs.com/xiangsikai/p/11413970.html
 
-示例应用Guestbook
------------------
+kubectl部署应用 示例1
+---------------------
 
 本章要演示的示例应用是一个名叫Guestbook的应用，Guestbook是一个典型的Web应用。Guestbook的部署运行结构如图所示。
 
@@ -573,8 +850,8 @@ Service的定义文件frontend-service.yaml，设置spec.type为NodePort：
     service "redis-slave" deleted 
     service "frontend" deleted 
 
-使用kubectl部署应用 示例2
--------------------------
+kubectl部署应用 示例2
+---------------------
 
 部署一个简单的Demo网站
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -589,15 +866,24 @@ Service的定义文件frontend-service.yaml，设置spec.type为NodePort：
 ::
 
     [root@k8s-master pod_deamon]# cat deployment-demo.yaml
-    apiVersion: apps/v1 #API对象版本，可通过“kubectl api-versions”命令查看
-    kind: Deployment #资源类型，区分大小写，可通过“kubectl api-resources”命令查看，这里使用Deployment对象
-    metadata: #标准的元数据
-      name: demo-deployment  #当前Deployment对象名称，同一个命名空间下必须唯一
-    spec: #部署规范（目标），Deployment控制器会根据此模板调整当前Pod到最终的期望状态
-      replicas: 2  # Pod数量，这里指运行5个Pod
-      selector: #选择器，其定义了Deployment控制器如何找到要管理的Pod
-        matchLabels:  #匹配标签
-          app: demo   #待匹配的标签键值对
+    #API对象版本，可通过“kubectl api-versions”命令查看
+    apiVersion: apps/v1 
+    #资源类型，区分大小写，可通过“kubectl api-resources”命令查看，这里使用Deployment对象
+    kind: Deployment
+    #标准的元数据
+    metadata:
+       #当前Deployment对象名称，同一个命名空间下必须唯一
+      name: demo-deployment  
+    #部署规范（目标），Deployment控制器会根据此模板调整当前Pod到最终的期望状态
+    spec:
+    # Pod数量，这里指运行2个Pod
+      replicas: 2
+      #选择器，其定义了Deployment控制器如何找到要管理的Pod
+      selector:
+        #匹配标签
+        matchLabels:
+         #待匹配的标签键值对
+          app: demo
       template:   # Pod模板定义
         metadata: #标准的元数据
           labels: #Pod标签
@@ -783,3 +1069,237 @@ Service的定义文件frontend-service.yaml，设置spec.type为NodePort：
       type: LoadBalancer #服务类型，这里为负载均衡服务类型
 
 如上述定义所示，我们创建了Service，设置集群IP为“10.3.255.28”、负载均衡IP（loadBalancerIP）为“106.52.99.55”、节点端口为“31504”。Service定义好了以后对负载均衡服务进行配置：配置一个TCP监听器.
+
+kubectl部署应用 示例3
+---------------------
+
+使用示例镜像ikubernetes/demoapp:v1.0演示容器应用编排的基础操作：应用部署、访问、查看，服务暴露和应用扩缩容等。
+
+Kubernetes之上应用程序的基础管理操作由如下几个部分组成:
+
+1）通过合用的控制器类的资源（例如Deployment或ReplicationController）创建并管控Pod对象以运行特定的应用程序：
+
+-  无状态（stateless）应用的部署和控制通常使用Deployment控制器
+-  有状态应用则需要使用StatefulSet控制器或扩展的Operator。
+
+2）为Pod对象创建Service对象，以便向客户端提供固定的访问端点，并能够借助KubeDNS进行服务发现。
+
+3）随时按需获取各资源对象的简要或详细信息，以了解其运行状态。
+
+4）如有需要，对支持扩缩容的应用按需进行扩容或缩容；
+
+5）应用程序的镜像出现新版本时，对其执行更新操作，若相应的控制器支持，修改指定的控制器资源中Pod模板的容器镜像为指定的新版本即可自动触发更新过程。
+
+下面示例仅演示的部分功能，即应用部署、访问、查看，以及服务暴露。
+
+应用编排
+~~~~~~~~
+
+1. 创建Deployment控制器对象
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+下面的命令会创建一个名为demoapp的Deployment控制器对象，它使用镜像ikubernetes/demoapp:v1.0创建Pod对象，但仅用于测试，运行后即退出。
+
+::
+
+    [root@ci-base ~]# kubectl create deployment demoapp --image="ikubernetes/demoapp:v1.0" --dry-run=client
+    deployment.apps/demoapp created (dry run)
+
+确认测试命令无误后，可在移除--dry-run选项后再次执行命令以完成资源对象的
+
+::
+
+    [root@ci-base ~]# kubectl create deployment demoapp --image="ikubernetes/demoapp:v1.0"
+    deployment.apps/demoapp created
+
+该命令创建的Deployment/demoapp对象会借助指定的镜像生成一个Pod，并自动为其添加app=demoapp标签，
+
+而控制器对象自身也将使用该标签作为标签选择器。镜像ikubernetes/demoapp:v1.0中定义的容器主进程为默认监听于80端口的Web应用程序demoapp。
+
+2.打印资源对象的相关信息
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+    [root@ci-base ~]# kubectl get deployments/demoapp
+    NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+    demoapp   1/1     1            1           84s
+
+Deployment/demoapp创建的唯一Pod对象运行正常与否、该对象被调度至哪个节点运行，以及当前是否就绪等也是用户在创建完成后应该关注的重点信息。由控制器创建的Pod对象的名称通常是以其隶属的ReplicaSet对象的名称为前缀，以随机字符为后缀，例如下面命令以app=demoapp为标签选择器打印筛选出的Pod对象的相关信息。
+
+::
+
+    [root@ci-base ~]# kubectl get pods -l app=demoapp -o wide
+    NAME                       READY   STATUS    RESTARTS   AGE     IP             NODE    NOMINATED NODE   READINESS GATES
+    demoapp-6c5d545684-59mx6   1/1     Running   0          2m35s   10.244.38.30   k8-w8   <none>           <none>
+
+接下来，我们可在集群中任意一个节点上使用curl命令
+
+::
+
+    [root@ci-base ~]# POD_IP=$(kubectl get pods -l app=demoapp -o jsonpath={.items[0].status.podIP})
+    [root@ci-base ~]# echo $POD_IP
+    10.244.38.30
+    [root@k8s-w1 ~]# curl 10.244.38.30
+    iKubernetes demoapp v1.0 !! ClientIP: 10.244.228.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+
+3.部署Service对象
+^^^^^^^^^^^^^^^^^
+
+Service对象就是一组Pod的逻辑组合，它通过称为ClusterIP的地址和服务端口接收客户端请求，并将这些请求代理至使用标签选择器来过滤一个符合条件的Pod对象。
+
+::
+
+    [root@ci-base ~]# kubectl create service nodeport demoapp --tcp=80
+    service/demoapp created
+
+nodeport是指Service对象的类型，它会在集群中各节点上随机选择一个节点端口（hostPort）为该Service对象接入集群外部的访问流量，集群内部流量则由Service资源通过ClusterIP直接接入。
+
+::
+
+    [root@ci-base ~]# kubectl get pod,svc,ep
+    NAME                           READY   STATUS    RESTARTS   AGE
+    pod/demoapp-6c5d545684-59mx6   1/1     Running   0          9m19s
+
+    NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+    service/demoapp      NodePort    10.100.89.254   <none>        80:32140/TCP   2m41s
+    service/kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP        57d
+
+    NAME                   ENDPOINTS                                               AGE
+    endpoints/demoapp      10.244.38.30:80                                         2m41s
+    endpoints/kubernetes   192.168.1.72:8443,192.168.1.73:8443,192.168.1.74:8443   57d
+
+在节点之间可以使用
+
+::
+
+    [root@k8s-w1 ~]# curl 10.244.38.30
+    iKubernetes demoapp v1.0 !! ClientIP: 10.244.228.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+    [root@k8s-w1 ~]# curl 10.100.89.254
+    iKubernetes demoapp v1.0 !! ClientIP: 10.244.228.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+
+节点外使用
+
+::
+
+    nodeIP:32140进行访问
+
+4.扩容与缩容
+^^^^^^^^^^^^
+
+kubectl
+scale命令就是专用于变动控制器应用规模的命令，它支持对Deployment、ReplicaSet、StatefulSet等类型资源对象的扩容和缩容操作。
+
+::
+
+    [root@ci-base ~]# kubectl scale deployment/demoapp --replicas=3
+    deployment.apps/demoapp scaled
+
+    [root@ci-base ~]# kubectl get pods -l app=demoapp
+    NAME                       READY   STATUS    RESTARTS   AGE
+    demoapp-6c5d545684-59mx6   1/1     Running   0          12m
+    demoapp-6c5d545684-6thgq   1/1     Running   0          52s
+    demoapp-6c5d545684-8m8w7   1/1     Running   0          52s
+
+::
+
+    [root@ci-base ~]# kubectl describe deployment/demoapp
+    Name:                   demoapp
+    Namespace:              default
+    CreationTimestamp:      Sun, 04 Apr 2021 17:32:03 +0800
+    Labels:                 app=demoapp
+    Annotations:            deployment.kubernetes.io/revision: 1
+    Selector:               app=demoapp
+    Replicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable
+    ......
+      ----           ------  ------
+      Progressing    True    NewReplicaSetAvailable
+      Available      True    MinimumReplicasAvailable
+    OldReplicaSets:  <none>
+    NewReplicaSet:   demoapp-6c5d545684 (3/3 replicas created)
+    Events:
+      Type    Reason             Age    From                   Message
+      ----    ------             ----   ----                   -------
+      Normal  ScalingReplicaSet  14m    deployment-controller  Scaled up replica set demoapp-6c5d545684 to 1
+      Normal  ScalingReplicaSet  2m14s  deployment-controller  Scaled up replica set demoapp-6c5d545684 to 3
+
+由命令结果可以看出，其Pod副本数量的各项指标都已经转换为新的目标数量，而其事件信息中也有相应事件显示其扩增操作已成功完成。
+
+Service对象demoapp的标签选择器动态纳入的新Pod副本也将成为该Service对象可用的代理后端，所有流量会被调度至其后端的所有Pod对象之上。每个能够接收流量的后端称为一个端点，它通常表现为相应主机或容器上可接收特定流量的访问入口（套接字），如下面命令结果中的Endpoints字段所示
+
+::
+
+    [root@ci-base ~]# kubectl describe svc/demoapp
+    Name:                     demoapp
+    Namespace:                default
+    Labels:                   app=demoapp
+    Annotations:              <none>
+    Selector:                 app=demoapp
+    Type:                     NodePort
+    IP:                       10.100.89.254
+    Port:                     80  80/TCP
+    TargetPort:               80/TCP
+    NodePort:                 80  32140/TCP
+    Endpoints:                10.244.14.22:80,10.244.228.68:80,10.244.38.30:80
+    Session Affinity:         None
+    External Traffic Policy:  Cluster
+    Events:                   <none>
+
+    [root@ci-base ~]# kubectl get endpoints
+    NAME         ENDPOINTS                                               AGE
+    demoapp      10.244.14.22:80,10.244.228.68:80,10.244.38.30:80        9m29s
+    kubernetes   192.168.1.72:8443,192.168.1.73:8443,192.168.1.74:8443   57d
+
+我们可以通过任何客户端对Service/demoapp的服务发起访问请求进行测试，这次我们在集群外的主机172.29.0.1上通过NodePort对该服务发起持续访问，以测试Service对象的流量调度机制是否能够正常工作。
+
+::
+
+    18793@DESKTOP-PMJTNGI ~
+    $ while true;do curl http://192.168.1.75:32140;sleep 0.5;done
+    iKubernetes demoapp v1.0 !! ClientIP: 10.244.215.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+    iKubernetes demoapp v1.0 !! ClientIP: 10.244.215.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+    iKubernetes demoapp v1.0 !! ClientIP: 10.244.215.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+
+应用规模缩容的方式和扩容相似，只不过是将Pod副本的数量调至比原来小的数字。例如，将demoapp的Pod副本缩减至2个，可以使用类似如下命令进行。
+
+::
+
+    [root@ci-base ~]# kubectl scale deployment/demoapp --replicas=2
+
+5.修改与删除对象
+^^^^^^^^^^^^^^^^
+
+下面的命令能够删除service/demoapp资源对象：
+
+::
+
+    [root@ci-base ~]# kubectl delete service/demoapp
+    service "demoapp" deleted
+
+有时候需要清空某一类型下的所有对象，此时只需要将上面命令对象名称换成--all选项便能实现。例如，删除dafault名称空间中所有的Deployment控制器：
+
+::
+
+    [root@ci-base ~]# kubectl delete deployment --all
+    deployment.apps "demoapp" deleted
+
+需要注意的是，受控于控制器的Pod对象在删除后会被重建，因而删除此类对象需要直接删除其控制器对象。默认情况下，删除Deployment一类的工作负载型控制器资源会级联删除相关的所有Pod对象，若要禁用该功能，需要在删除命令中使用--cascade=false选项。
+
+小结
+----
+
+::
+
+    ▪kubeadm是由Kubernetes原生提供的集群部署工具，支持高可用控制平面；kubeadminit可快速拉起一个控制平面，而kubeadm join则用于将节点加入集群之中。
+
+
+    ▪Pod是运行容器化应用及调度的原子单元，同一个Pod中可同时运行多个容器，这些容器共享Mount、UTS及Network等Linux内核名称空间，并能够访问同一组存储卷。
+
+
+    ▪Deployment是最常用的无状态应用控制器，它支持应用的扩缩容、滚动更新等操作，为容器化应用赋予了极具弹性的功能。
+
+
+    ▪Service为弹性变动且存在生命周期的Pod对象提供了一个固定的访问接口，用于服务发现和服务访问。
+
+
+    ▪kubectl是Kubernetes API Server最常用的客户端程序之一，它功能强大、特性丰富，几乎能完成除了安装部署之外的所有管理操作。

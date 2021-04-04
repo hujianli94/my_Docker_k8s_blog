@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>告警处理 &mdash; 运维开发修炼之路</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> 小健_Docker_K8s_Blog
+          
+
+          
+            
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../01.Docker技术入门与实战-3版/index.html">01.Docker技术入门与实战-第3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes实战指南/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker经典实例/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">04.Prometheus监控运维实战</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>告警处理</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/04.Prometheus监控运维实战/05.告警处理.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#id1" id="id7">告警处理</a><ul>
+<li><a class="reference internal" href="#alertmanager" id="id8">1.Alertmanager部署</a><ul>
+<li><a class="reference internal" href="#id2" id="id9">1.1 1.告警分组</a></li>
+<li><a class="reference internal" href="#id3" id="id10">1.1.2 告警抑制</a></li>
+<li><a class="reference internal" href="#id4" id="id11">1.1.3 告警静默</a></li>
+<li><a class="reference internal" href="#id5" id="id12">1.1.4 使用二进制文件方式安装</a></li>
+<li><a class="reference internal" href="#docker" id="id13">1.1.5 使用Docker安装</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6" id="id14">2. Alertmanager配置</a><ul>
+<li><a class="reference internal" href="#global" id="id15">2.1 global</a></li>
+<li><a class="reference internal" href="#templates" id="id16">2.2 templates</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h1><a class="toc-backref" href="#id7">告警处理</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>告警是整个监控系统中重要的组成部分，在Prometheus监控体系中，指标的采集存储与告警是分开的。告警规则是在Prometheus
+server端定义的，告警规则被触发后，才会将信息发送给独立组件Alertmanager上，经过对告警的处理后，最终通过接收器（如Email）通知用户。</p>
+<p>我们在使用Prometheus进行告警时，首要的问题是，什么时候应该发出告警？一个好的告警是在正确的时刻、因正确的理由、踏着正确的节奏发送，并在其中放入真实有用的信息。我们发出告警的时刻一定是重要的系统或服务出现异常，导致最终用户体验不佳或无法正常使用服务，并需要人工检查。要针对最终用户的潜在痛点进行告警，才能使告警的数量保持较小，从而防止对系统或服务进行过度监控。保持小而重要的告警数量，是告警的一个关键原则，也就是说告警应该是重要的、可操作的和真实的。在实际工作中，要减少管理员在半夜接到痛苦的误报。</p>
+<div class="section" id="alertmanager">
+<h2><a class="toc-backref" href="#id8">1.Alertmanager部署</a><a class="headerlink" href="#alertmanager" title="Permalink to this headline">¶</a></h2>
+<p>在Prometheus生态架构中，告警是由独立的两部分组成。</p>
+<p>其中Prometheus server与Alertmanager是相互分离的两个组件。</p>
+<p>我们使用Prometheus
+server采集各类监控指标，然后基于PromQL对这些指标定义阈值告警规则（Rules）。Prometheus
+server对告警规则周期性地进行计算，如果满足告警触发条件，便生成一条告警信息，并将其推送到Alertmanager组件。收到告警信息后，Alertmanager会处理告警，进行分组（grouping）并将它们路由（routing）到正确的接收器（receiver），如Email、PagerDuty和HipChat等，最终把异常事件的通知发送给接收者。</p>
+<div class="figure">
+<img alt="" src="../_images/prometheus_gaojing01.png" />
+</div>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id9">1.1 1.告警分组</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>分组机制（Grouping）是指，AlertManager将同类型的告警进行分组，合并多条告警到一个通知中。在实际环境中，特别是云计算环境中的业务线之间密集耦合时，若出现多台设备宕机，可能会导致成百上千个告警被触发。在这种情况下使用分组机制，可以将这些被触发的告警合并为一个告警进行通知，从而避免瞬间突发性地接收大量的告警通知，使得管理员无法对问题进行快速定位。例如，在一个Kubernetes集群中，运行着重量级规模数量的实例，即便是集群中持续一小段时间的网络延时或间歇式断开，也会引起大量应用程序无法连接数据库的故障。如果我们在Prometheus告警规则中配置为每一个服务实例都发送告警，那么最后的结果就是大量的告警被发送到Alertmanager中心。其实，作为集群管理员，可能希望在一个通知中就能快速查看是哪些服务实例被本次故障影响了。此时，对服务所在集群或者告警名称进行分组打包配置，将这些告警紧凑在一起成为一个“大”的通知时，管理员就不会受到告警的频繁“轰炸”。告警分组、告警时间和告警接收器均是通过Alertmanager的配置文件来完成配置的。</p>
+</div>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id10">1.1.2 告警抑制</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>Alertmanager的抑制机制（Inhibition）是指，当某告警已经发出，停止重复发送由此告警引发的其他异常或故障的告警机制。在生产环境中，例如IDC托管机柜中，若每个机柜接入层仅仅是单台交换机，那么该机柜接入交换机故障会造成机柜中服务器非UP状态告警；再有服务器上部署的应用不可访问也会触发告警。此时，可以配置Alertmanager忽略由交换机故障造成的机柜所有服务器及其应用不可访问而产生的告警。在我们的灾备体系中，当原集群故障宕机业务彻底无法访问时，会把用户流量切换到灾备集群中，这样为故障集群及其提供的各个微服务状态发送告警就失去了意义，此时，Alertmanager的抑制机制在一定程度上避免了管理员收到过多的触发告警通知。抑制机制也是通过Alertmanager的配置文件进行设置的。</p>
+</div>
+<div class="section" id="id4">
+<h3><a class="toc-backref" href="#id11">1.1.3 告警静默</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>告警静默（Silences）提供了一个简单的机制，可以根据标签快速对告警进行静默处理。对传入的告警进行匹配检查，如果接收到的告警符合静默的配置，Alertmanager则不会发送告警通知。管理员可以直接在Alertmanager的Web界面中临时屏蔽指定的告警通知。</p>
+</div>
+<div class="section" id="id5">
+<h3><a class="toc-backref" href="#id12">1.1.4 使用二进制文件方式安装</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>因为Alertmanager也是基于Go语言编写而成，因此可以直接使用官方提供的二级制文件安装包，解压缩后快速安装。</p>
+<p>在官方网站下载页面https://prometheus.io/download/中找到Alertmanager下载列表，在这里可以下载各平台的二进制文件最新版本。</p>
+<p>也可以直接在官方的Prometheus
+GitHub下载页面https://github.com/prometheus/alertmanager/releases中选择个人要使用的指定版本对应的平台的二进制文件。</p>
+<p>1）官网下载Alertmanager完成后，获取软件包的哈希值</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">app</span><span class="p">]</span><span class="c1"># sha256sum alertmanager-0.16.2.linux-amd64.tar.gz</span>
+<span class="mi">73708254747162731737</span><span class="n">c4ac367ba52e68117a0d7e4580fbbd4bb5ca919909e7</span>  <span class="n">alertmanager</span><span class="o">-</span><span class="mf">0.16</span><span class="o">.</span><span class="mf">2.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+<p>2）解压缩软件包到指定的安装目录。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@localhost app]# tar zxvf alertmanager-0.16.2.linux-amd64.tar.gz -C /data/
+alertmanager-0.16.2.linux-amd64/
+alertmanager-0.16.2.linux-amd64/LICENSE
+alertmanager-0.16.2.linux-amd64/alertmanager.yml
+alertmanager-0.16.2.linux-amd64/alertmanager
+alertmanager-0.16.2.linux-amd64/amtool
+alertmanager-0.16.2.linux-amd64/NOTI
+
+[root@localhost app]# cd /data/
+[root@localhost data]# chown -R root:root alertmanager-0.16.2.linux-amd64/
+[root@localhost data]# ln -sv alertmanager-0.16.2.linux-amd64 alertmanager
+‘alertmanager’ -&gt; ‘alertmanager-0.16.2.linux-amd64’
+</pre></div>
+</div>
+<p>3）添加Prometheus为系统服务开机启动。</p>
+<p>可以通过<code class="docutils literal notranslate"><span class="pre">nohup</span> <span class="pre">./alertmanager</span> <span class="pre">&amp;</span></code>使其在后台运行,</p>
+<p>为了方便使用，可将alertmanager添加为系统服务且开机自启动，操作如下：</p>
+<p>vim /usr/lib/systemd/system/alertmanager.service</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
+<span class="n">Description</span><span class="o">=</span><span class="n">Prometheus</span> <span class="n">Alertmanager</span> <span class="n">Service</span> <span class="n">daemon</span>
+<span class="n">After</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">target</span>
+
+<span class="p">[</span><span class="n">Service</span><span class="p">]</span>
+<span class="n">Type</span><span class="o">=</span><span class="n">simple</span>
+<span class="n">User</span><span class="o">=</span><span class="n">root</span>
+<span class="n">Group</span><span class="o">=</span><span class="n">root</span>
+<span class="n">ExecStart</span><span class="o">=/</span><span class="n">data</span><span class="o">/</span><span class="n">alertmanager</span><span class="o">/</span><span class="n">alertmanager</span> \
+          <span class="o">--</span><span class="n">config</span><span class="o">.</span><span class="n">file</span> <span class="s2">&quot;/data/alertmanager/alertmanager.yml&quot;</span> \
+          <span class="o">--</span><span class="n">storage</span><span class="o">.</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/data/alertmanager/data/&quot;</span> \
+          <span class="o">--</span><span class="n">data</span><span class="o">.</span><span class="n">retention</span><span class="o">=</span><span class="mi">120</span><span class="n">h</span> \
+          <span class="o">--</span><span class="n">web</span><span class="o">.</span><span class="n">external</span><span class="o">-</span><span class="n">url</span> <span class="s2">&quot;http://192.168.1.37:9093&quot;</span> \
+
+          <span class="o">--</span><span class="n">web</span><span class="o">.</span><span class="n">listen</span><span class="o">-</span><span class="n">address</span><span class="o">=</span><span class="s2">&quot;:9093&quot;</span>
+<span class="n">Restart</span><span class="o">=</span><span class="n">on</span><span class="o">-</span><span class="n">failure</span>
+
+<span class="p">[</span><span class="n">Install</span><span class="p">]</span>
+<span class="n">WantedBy</span><span class="o">=</span><span class="n">multi</span><span class="o">-</span><span class="n">user</span><span class="o">.</span><span class="n">target</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">disable</span> <span class="n">alertmanager</span><span class="o">.</span><span class="n">service</span>
+<span class="n">systemctl</span> <span class="n">enable</span> <span class="n">alertmanager</span><span class="o">.</span><span class="n">service</span>
+<span class="n">systemctl</span> <span class="n">status</span> <span class="n">alertmanager</span><span class="o">.</span><span class="n">service</span>
+<span class="n">systemctl</span> <span class="n">restart</span> <span class="n">alertmanager</span><span class="o">.</span><span class="n">service</span>
+</pre></div>
+</div>
+<p>现在可以通过浏览器访问示例地址http://192.168.1.37:9093/#/status，会看到Alertmanager运行时的状态或集群状态、版本信息和默认的配置文件信息</p>
+<div class="figure">
+<img alt="" src="../_images/alertmanager001.png" />
+</div>
+</div>
+<div class="section" id="docker">
+<h3><a class="toc-backref" href="#id13">1.1.5 使用Docker安装</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h3>
+<p>1）下载Alertmanager镜像：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">prom</span><span class="o">/</span><span class="n">alertmanager</span>
+</pre></div>
+</div>
+<p>2）添加Alertmanager使用的配置文件。可以下载Prometheus
+github中提供的简单示例文件，或者使用二进制安装包中的默认配置：<a class="reference external" href="https://github.com/prometheus/alertmanager/blob/master/doc/examples/simple.yml">https://github.com/prometheus/alertmanager/blob/master/doc/examples/simple.yml</a>，这里有快速部署演示，复制使用二进制安装包中默认的alertmanager.yml文件，文件路径为示例安装位置：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">alertmanager</span><span class="o">/</span><span class="n">simple</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>3）运行Alertmanager镜像：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">alertmanager</span><span class="p">]</span><span class="c1"># docker run -d -p 9093:9093 -v /data/alertmanager/alertmanager.yml:/etc/alertmanager/config.yml --name alertmanager prom/alertmanager</span>
+<span class="n">eb6ab18b985177c8e282914a285db86d5bd40086967a63eb45cf2e742d7ad5fb</span>
+</pre></div>
+</div>
+<p>到此，我们完成了使用Docker安装AlertManager，查看alertmanager已经正常运行：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">alertmanager</span><span class="p">]</span><span class="c1"># docker ps</span>
+<span class="n">CONTAINER</span> <span class="n">ID</span>   <span class="n">IMAGE</span>                       <span class="n">COMMAND</span>                  <span class="n">CREATED</span>          <span class="n">STATUS</span>          <span class="n">PORTS</span>                                                                           <span class="n">NAMES</span>
+<span class="n">eb6ab18b9851</span>   <span class="n">prom</span><span class="o">/</span><span class="n">alertmanager</span>           <span class="s2">&quot;/bin/alertmanager -…&quot;</span>   <span class="mi">29</span> <span class="n">seconds</span> <span class="n">ago</span>   <span class="n">Up</span> <span class="mi">28</span> <span class="n">seconds</span>   <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">9093</span><span class="o">-&gt;</span><span class="mi">9093</span><span class="o">/</span><span class="n">tcp</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id6">
+<h2><a class="toc-backref" href="#id14">2. Alertmanager配置</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="global">
+<h3><a class="toc-backref" href="#id15">2.1 global</a><a class="headerlink" href="#global" title="Permalink to this headline">¶</a></h3>
+<p>即全局配置，在Alertmanager配置文件中，只要全局配置项中配置的选项内容均为公共设置，便可以作为其他配置项的默认值，也可以被其他配置项中的设置覆盖掉。其中resolve_timeout用于设置处理超时时间，是声明告警状态为已解决的时间，它的时长设定有可能影响到告警恢复通知的接收时间，需要根据日常生产环境总结出适合自己的时长进行定义，默认为5分钟。如果每一次告警均需要通过电子邮件接收，可以设置用于发送电子邮件的SMTP服务器信息和通知服务，其中对应的配置内容如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·smtp_smarthost，邮箱SMTP服务器代理地址。
+·smtp_from，发送邮件的名称。
+·smtp_auth_username，邮箱用户名称。
+·smtp_auth_password，邮箱授权密码。
+</pre></div>
+</div>
+<p>同时也可以使用smtp_require_tls来设置TLS协议使用状况，如果使用TLS则设置为true且为默认项，如果不使用则设置为false。</p>
+</div>
+<div class="section" id="templates">
+<h3><a class="toc-backref" href="#id16">2.2 templates</a><a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h3>
+<p>告警模板可以自定义告警通知的外观格式及其包含的对应告警数据。在templates部分中包含告警模板的目录列表，也就是设置已存在的模板文件路径，例如：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">templates</span><span class="p">:</span>
+<span class="o">-</span> <span class="s1">&#39;/data/alertmanager/template/*.tmpl&#39;</span>
+</pre></div>
+</div>
+<p>Alertmanager启动时加载该路径下的模板文件。可以自己定义告警模板。</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2019, huxiaojian
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

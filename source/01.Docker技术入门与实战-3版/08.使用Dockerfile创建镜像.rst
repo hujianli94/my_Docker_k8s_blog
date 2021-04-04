@@ -47,17 +47,30 @@ Dockerfile编写准则
 Dockerfile编写注意事项
 ----------------------
 
-::
+华为云上编写高效的Dockerfile说明举例很好，请参考
 
-    * 镜像要轻量化，减少镜像的大小要从根本入手，基础镜像尽量选择简单而且文档的发行版。减少软件依赖，仅按照需要的软件包以及最后要记得清理缓存。
+https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6
 
-    * 使用.dockerignore排除无关文件。在大部分情况下，Dockerfile会和构建所需的文件放在同一个目录中，为了提高构建的性能，应该使用.dockerignore来过滤掉不需要的文件和目录。
+下面的内容中将展示对这个Dockerfile进行改造，说明如何写出更好的Dockerfile，共有如下几种处理方法。
 
-    * 一个容器只做一件事，甚至一个容器只运行一个进程。例如一个动态网站容器，不应该把数据库、运行环境、负载器都放进容器中，这样容器失去了意义。
-
-    * 减少构建命令，这样做的目的是减少镜像层数，这对于减少镜像体积有着极其重要的影响。例如整合多个Label、ENV、RUN标签，优化命令执行顺序等。
-
-    * 其使用反斜杠\连接跨行的命令，提高Dockerfile易读性。
+-  `一个容器只运行一个进程 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section3866856102318>`__
+-  `不要在构建中升级版本 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section18561744132610>`__
+-  `将变化频率一样的RUN指令合一 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section15178156172211>`__
+-  `使用特定的标签 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section15775919162710>`__
+-  `删除多余文件 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section9311112182818>`__
+-  `选择合适的基础镜像 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section1572954810280>`__
+-  `设置WORKDIR和CMD <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section17213643122915>`__
+-  `使用ENTRYPOINT
+   (可选) <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section19889751183011>`__
+-  `在entrypoint脚本中使用exec <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section33991267334>`__
+-  `优先使用COPY <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section855018507339>`__
+-  `合理调整COPY与RUN的顺序 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section672916478354>`__
+-  `设置默认的环境变量、映射端口和数据卷 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section1346617554368>`__
+-  `使用EXPOSE暴露端口 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section0921161411501>`__
+-  `使用VOLUME管理数据卷 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section8904184534812>`__
+-  `使用LABEL设置镜像元数据 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section156282713712>`__
+-  `添加HEALTHCHECK <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section42461157193810>`__
+-  `编写.dockerignore文件 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section1890015265187>`__
 
 1.基本结构
 ----------
@@ -669,6 +682,167 @@ build）特性，可以精简最终生成的镜像大小。
     $ docker images|grep test-multistage
     yeasy/test-multistage   latest              0f21ba20dc58        About a minute ago   8.02MB
 
+示例1
+~~~~~
+
+::
+
+    FROM centos:7.1.1503                     #表示此镜像以centos:7.1.1503为基础镜像
+    RUN mkdir -p /usr/local/mongodb/data \   #创建文件夹，存放数据和依赖文件，建议多个命令写成一条，可减少镜像大小
+     && mkdir -p /usr/local/mongodb/bin \ 
+     && mkdir -p /root/apache-tomcat-7.0.82 \ 
+     && mkdir -p /root/jdk1.8.0_151
+    COPY ./apache-tomcat-7.0.82 /root/apache-tomcat-7.0.82 #将apache-tomcat-7.0.82目录下的文件拷贝到容器目录下
+    COPY ./jdk1.8.0_151 /root/jdk1.8.0_151                 #将jdk1.8.0_151目录下的文件拷贝到容器目录下
+    COPY ./start_tomcat_and_mongo.sh /root/                #将start_tomcat_and_mongo.sh拷贝到容器/root/目录下
+       
+    RUN chown root:root -R /root \                    
+     && echo "JAVA_HOME=/root/jdk1.8.0_151 " >> /etc/profile  \      #注入JAVA环境变量
+     && echo "PATH=\$JAVA_HOME/bin:$PATH " >> /etc/profile  \ 
+     && echo "CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile  \ 
+     && chmod +x /root \ 
+     && chmod +x /root/start_tomcat_and_mongo.sh
+      
+    ENTRYPOINT ["/root/start_tomcat_and_mongo.sh"]    #容器启动的时候会自动运行start_tomcat_and_mongo.sh里面的命令，可以一条可以多条，也可以是一个脚本
+
+示例2
+~~~~~
+
+::
+
+    FROM ubuntu:18.04
+
+    ARG TF_PKG=tensorflow-cpu==1.15.0
+    ARG HOST_ASCEND_BASE=/usr/local/Ascend
+    ARG NNAE_PATH=/usr/local/Ascend/nnae/latest
+    ARG TF_PLUGIN_PATH=/usr/local/Ascend/tfplugin/latest
+    ARG INSTALL_ASCEND_PKGS_SH=install_ascend_pkgs.sh
+    ARG PREBUILD_SH=prebuild.sh
+    ARG POSTBUILD_SH=postbuild.sh
+    WORKDIR /tmp
+    COPY . ./
+
+    # 触发prebuild.sh
+    RUN bash -c "test -f $PREBUILD_SH && bash $PREBUILD_SH || true"
+
+    ENV http_proxy http://xxx.xxx.xxx.xxx:xxx
+    ENV https_proxy http://xxx.xxx.xxx.xxx:xxx
+
+    # 系统包
+    RUN apt update && \
+        apt install --no-install-recommends \
+            python3.7 python3.7-dev \
+            curl g++ pkg-config unzip \
+            libblas3 liblapack3 liblapack-dev \
+            libblas-dev gfortran libhdf5-dev \
+            libffi-dev libicu60 libxml2 -y
+
+    # 配置python pip源
+    RUN mkdir -p ~/.pip \
+    && echo '[global] \n\
+    index-url=https://pypi.doubanio.com/simple/\n\
+    trusted-host=pypi.doubanio.com' >> ~/.pip/pip.conf
+
+    # pip3.7
+    RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+        cd /tmp && \
+        apt-get download python3-distutils && \
+        dpkg-deb -x python3-distutils_*.deb / && \
+        rm python3-distutils_*.deb && \
+        cd - && \
+        python3.7 get-pip.py && \
+        rm get-pip.py
+
+    # HwHiAiUser, hwMindX
+    RUN useradd -d /home/hwMindX -u 9000 -m -s /bin/bash hwMindX && \
+        useradd -d /home/HwHiAiUser -u 1000 -m -s /bin/bash HwHiAiUser && \
+        usermod -a -G HwHiAiUser hwMindX
+
+    # python包
+    RUN pip3.7 install numpy && \
+        pip3.7 install decorator && \
+        pip3.7 install sympy==1.4 && \
+        pip3.7 install cffi==1.12.3 && \
+        pip3.7 install pyyaml && \
+        pip3.7 install pathlib2 && \
+        pip3.7 install grpcio && \
+        pip3.7 install grpcio-tools && \
+        pip3.7 install protobuf && \
+        pip3.7 install scipy && \
+        pip3.7 install requests
+
+    # Ascend包
+    RUN bash $INSTALL_ASCEND_PKGS_SH
+
+    # TF安装
+    ENV LD_LIBRARY_PATH=\
+    /usr/lib/x86_64-linux-gnu/hdf5/serial:\
+    $HOST_ASCEND_BASE/add-ons:\
+    $NNAE_PATH/fwkacllib/lib64:\
+    $HOST_ASCEND_BASE/driver/lib64/common:\
+    $HOST_ASCEND_BASE/driver/lib64/driver:$LD_LIBRARY_PATH
+
+    RUN pip3.7 install $TF_PKG
+
+    # 环境变量
+    ENV GLOG_v=2
+    ENV TBE_IMPL_PATH=$NNAE_PATH/opp/op_impl/built-in/ai_core/tbe
+    ENV TF_PLUGIN_PKG=$TF_PLUGIN_PATH/tfplugin/python/site-packages
+    ENV FWK_PYTHON_PATH=$NNAE_PATH/fwkacllib/python/site-packages
+    ENV PATH=$NNAE_PATH/fwkacllib/ccec_compiler/bin:$PATH
+    ENV ASCEND_OPP_PATH=$NNAE_PATH/opp
+    ENV PYTHONPATH=\
+    $FWK_PYTHON_PATH:\
+    $FWK_PYTHON_PATH/auto_tune.egg:\
+    $FWK_PYTHON_PATH/schedule_search.egg:\
+    $TF_PLUGIN_PKG:\
+    $TBE_IMPL_PATH:\
+    $PYTHONPATH
+
+    ENV http_proxy ""
+    ENV https_proxy ""
+
+    # 触发postbuild.sh
+    RUN bash -c "test -f $POSTBUILD_SH && bash $POSTBUILD_SH || true" && \
+        rm $POSTBUILD_SH
+
+示例3
+~~~~~
+
+安装tomcat docker
+
+::
+
+    FROM openjdk:11-jre
+
+    ENV PATH /usr/local/tomee/bin:$PATH
+    RUN mkdir -p /usr/local/tomee
+
+    WORKDIR /usr/local/tomee
+
+    COPY apache-tomee-8.0.1-plus.tar.gz /usr/local/tomee
+
+    ENV TOMEE_VER 8.0.1
+    ENV TOMEE_BUILD plus
+
+    RUN set -x \
+        && tar -zxf apache-tomee-8.0.1-plus.tar.gz \
+        && mv apache-tomee-${TOMEE_BUILD}-${TOMEE_VER}/* /usr/local/tomee \
+        && rm -Rf apache-tomee-${TOMEE_BUILD}-${TOMEE_VER} \
+        && rm bin/*.bat \
+        && rm apache-tomee-8.0.1-plus.tar.gz*
+    #   && useradd -g root tomee \
+    #   && chown -R tomee:root /usr/local/tomee \
+    #   && chmod -R g=u /usr/local/tomee
+
+    #USER tomee
+    EXPOSE 8080
+    CMD ["catalina.sh", "run"]
+
+更多参考案例
+
+https://support.huaweicloud.com/usermanual-mindxdl202/atlasmindx\_02\_0060.html
+
 最佳实践
 --------
 
@@ -705,6 +879,33 @@ Hub官方仓库中提供了大量的优秀镜像和对应的Dockefile，可以�
     ·调整合理的指令顺序：在开启cache的情况下，内容不变的指令尽量放在前面，这样可以尽量复用；
 
     ·减少外部源的干扰：如果确实要从外部引入数据，需要指定持久的地址，并带版本信息等，让他人可以复用而不出错。
+
+常用的Dockerfile工程
+--------------------
+
+https://github.com/dockerfile
+
+-  `ubuntu <https://github.com/dockerfile/ubuntu>`__
+-  `ubuntu-desktop <https://github.com/dockerfile/ubuntu-desktop>`__
+-  `nginx <https://github.com/dockerfile/nginx>`__
+-  `java <https://github.com/dockerfile/java>`__
+-  `ansible <https://github.com/dockerfile/ansible>`__
+-  `ruby <https://github.com/dockerfile/ruby>`__
+
+**参考docker-library**
+
+https://github.com/docker-library?page=1
+
+鲲鹏应用迁移Dockerfile归档仓库
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+https://gitee.com/kunpeng-app-migration/dockerfiles/blob/develop/README.md
+
+常用Dockerfile例子
+
+https://gitee.com/gaork/dockerfiles/blob/master/centos-base/docker\_files/Dockerfile
+
+https://gitee.com/single\_yang/Dockerfile?\_from=gitee\_search
 
 参考文献
 --------

@@ -517,6 +517,43 @@ pause/unpause(暂停/恢复)容器
     --device-read-iops，限制读某个设备的 iops。
     --device-write-iops，限制写某个设备的 iops。
 
+容器和镜像转化、迁移方式 - 运维小结
+-----------------------------------
+
+::
+
+    一、容器转化为镜像（docker export、docker import）
+    1）docker export：表示将容器导出文件包
+    两种命令方式（finhub-cms为容器名）：
+    docker export finhub-cms > finhub-cms.tar
+    docker export -o finhub-cms.tar finhub-cms
+    2）docker import：表示根据docker export 导出的文件包新建一个镜像。可以基于这个新镜像创建容器，实现容器迁移。
+    另种命令方式：
+    docker import finhub-cms.tar finhub-cms:v1
+    cat finhub-cms.tar | docker import - finhub-cms:v1
+     
+    3）docker commit：也可以实现将容器转化为镜像。
+    docker commit finhub-cms finhub-cms:v1
+     
+
+
+    二、镜像迁移（镜像导出、镜像导入）
+    1）docker save：表示将镜像打包，方便迁移
+    两种命令方式（finhub-cms:v1为镜像名）：
+    docker save finhub-cms:v1 > finhub-cms_v1.tar.gz
+    docer save -o finhub-cms_v1.tar.gz finhub-cms:v1
+     
+    2）docker load： 表示将docker save导出的镜像包导入到本地仓库
+    两种命令方式：
+    docker load < finhub-cms_v1.tar.gz
+    docker load --input finhub-cms_v1.tar.gz
+     
+
+
+    三、注意细节
+    一般情况下：
+    docker save 导出的镜像包 要比 docker export 打成的容器文件包大一点。这是因为docker export导出的容器包 丢失了历史和元数据metadata。
+
 使用Kitematic来管理Docker容器
 -----------------------------
 

@@ -195,8 +195,8 @@ emptyDir是在主机上创建临时目录，优点是能够方便地位Pod中容
 
 日常工作中可能降宿主机上的目录或文件挂载到容器中，而这些文件和目录在每个节点上都要有，所以容器就起到了收集信息的作用，这也是hostPath的主要应用场景。即使Pod被销毁了，hostPath对应目录依然存在，这样看来hostPath持久性要比emptyDir持久性好很多。但是一旦宿主机崩溃，hostPath目录自然也无法访问。
 
-3.NFS
------
+3. NFS
+------
 
 NFS是网络存储，通过挂载去访问里面的资源。
 
@@ -627,3 +627,149 @@ GlusterFS的PV和PVC类型，在此不再举例，主要是知识点的掌握。
 参考文献：
 
 https://www.cnblogs.com/linuxk/p/9760363.html
+
+6. StorageClass
+---------------
+
+创建静态PV
+~~~~~~~~~~
+
+静态创建PV的方法，先要创建各种固定大小的PV，而这些PV都是手动创建的，过程非常麻烦。有时开发人员在申请PVC资源时，不一定有匹配条件的PV可用，这又带来了新的问题。
+
+创建动态PV
+~~~~~~~~~~
+
+为了解决这类问题，Kubernetes提供了StorageClass抽象来动态创建PV，StorageClass大大简化了PV的创建过程。当申请PVC资源时，如果匹配到满足条件的StorageClass，就会自动为PVC创建对应大小的PV并进行绑定。
+
+StorageClass是通过存储分配器（provisioner）来动态分配PV的，但是Kubernetes官方内置的存储分配器并不支持NFS，所以需要额外安装NFS存储分配器。NFS存储分配器的安装过程并不复杂。首先，执行以下命令，下载NFS存储分配器的deployment.yaml配置。
+
+部署NFS服务器
+~~~~~~~~~~~~~
+
+::
+
+    yum -y install nfs-utils rpcbind
+
+    [root@Gitee-Go app]# cat /etc/exports
+    /data/nfs 192.168.1.0/24(rw,sync,insecure,no_subtree_check,no_root_squash)
+
+    service rpcbind restart
+    service nfs restart
+    showmount -e localhost
+
+Node节点部署NFS客户端
+~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    yum -y install nfs-utils
+    systemctl restart nfs
+
+    # 测试到NFS服务器的连接
+    showmount -e 192.168.1.46
+
+下载NFS存储分配器
+~~~~~~~~~~~~~~~~~
+
+::
+
+    git clone https://github.com.cnpmjs.org/kubernetes-retired/external-storage.git
+    cd external-storage/nfs-client/deploy
+    vim deployment.yaml
+
+修改文件中的部分配置，然后保存。
+
+::
+
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: nfs-client-provisioner
+      labels:
+        app: nfs-client-provisioner
+      # replace with namespace where provisioner is deployed
+      namespace: default
+    spec:
+      replicas: 1
+      strategy:
+        type: Recreate
+      selector:
+        matchLabels:
+          app: nfs-client-provisioner
+      template:
+        metadata:
+          labels:
+            app: nfs-client-provisioner
+        spec:
+          serviceAccountName: nfs-client-provisioner
+          containers:
+            - name: nfs-client-provisioner
+              image: quay.io/external_storage/nfs-client-provisioner:latest
+              volumeMounts:
+                - name: nfs-client-root
+                  mountPath: /persistentvolumes
+              env:
+                - name: PROVISIONER_NAME
+                  value: managed-nfs-storage
+                - name: NFS_SERVER
+                  value: 192.168.1.46
+                - name: NFS_PATH
+                  value: /data/nfs
+          volumes:
+            - name: nfs-client-root
+              nfs:
+                server: 192.168.1.46
+                path: /data/nfs
+
+接下来，执行以下命令，创建NFS存储分配器的相关资源。
+
+::
+
+    kubectl apply -f external-storage/nfs-client/deploy/
+    kubectl get deployment
+
+使用StorageClass
+~~~~~~~~~~~~~~~~
+
+test-claim.yaml
+
+::
+
+    kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: test-claim
+      annotations:
+        volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 1Mi
+
+test-pod.yaml
+
+::
+
+    kind: Pod
+    apiVersion: v1
+    metadata:
+      name: test-pod
+    spec:
+      containers:
+      - name: test-pod
+        image: gcr.io/google_containers/busybox:1.24
+        command:
+          - "/bin/sh"
+        args:
+          - "-c"
+          - "touch /mnt/SUCCESS && exit 0 || exit 1"
+        volumeMounts:
+          - name: nfs-pvc
+            mountPath: "/mnt"
+      restartPolicy: "Never"
+      volumes:
+        - name: nfs-pvc
+          persistentVolumeClaim:
+            claimName: test-claim
