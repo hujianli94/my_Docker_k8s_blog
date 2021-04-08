@@ -1,0 +1,1627 @@
+.. contents::
+   :depth: 3
+..
+
+Kubernetes的资源对象
+====================
+
+Pod
+---
+
+Pod是Kubernetes的基本操作单元，也是应用运行的载体。整个Kubernetes系统都是围绕着Pod展开的，比如如何部署运行Pod、如何保证Pod的可靠性、如何访问Pod等。另外，Pod是一个或多个相关容器的集合，这可以说是一大创新点，提供了一种容器组合的模型，当然也使得在Pod的操作和生命周期管理上稍有不同。
+
+同一Pod中，这些共享PID、IPC、Network和UTS名称空间的容器彼此间可通过IPC通信，共享使用主机名和网络接口、IP地址、端口和路由等各种网络资源，因而各容器进程能够通过lo网络接口通信且不能使用相同的网络套接字地址。
+
+尽管可以把Pod类比为物理机或虚拟机，但一个Pod内通常仅应该运行具有强耦合关系的容器，否则除了pause以外，只应该存在单个容器，或者只存在单个主容器和一个以上的辅助类容器（例如服务网格中的Sidecar容器等），这也更符合单进程应用容器的设计初衷。
+
+国际惯例的Hello World
+~~~~~~~~~~~~~~~~~~~~~
+
+``hello-world-pod.yaml``
+
+.. code:: yaml
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: hello-world
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: hello
+        image: "ubuntu:14.04"
+        command: ["/bin/echo","Hello","World"]
+
+.. code:: shell
+
+    [root@172-26-128-31 k8s-pod]# kubectl create -f hello-world-pod.yaml
+    pod/hello-world created
+
+    # 创建成功后，可以查询Hello World Pod
+    [root@172-26-128-31 k8s-pod]# kubectl get pod hello-world
+    NAME          READY   STATUS      RESTARTS   AGE
+    hello-world   0/1     Completed   0          72s
+
+    # 然后可以查询Pod输出
+    [root@172-26-128-31 k8s-pod]# kubectl logs hello-world
+    Hello World
+
+
+    #最后删除Hello World Pod：
+    [root@172-26-128-31 k8s-pod]# kubectl delete pod hello-world 
+    pod "hello-world" deleted
+
+Pod的基本管理
+~~~~~~~~~~~~~
+
+创建Pod
+^^^^^^^
+
+如果Pod的定义存在错误，kubectl
+create会打印错误信息，现有一个Pod的错误定义文件error-pod.yaml：
+
+.. code:: yaml
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: hello-world
+    spec:
+      restartPolicy: Mybe
+      containers:
+      - name: hello
+        image: "ubuntu:14.04"
+        command: ["/bin/echo","Hello","World"]
+
+创建失败时，查看提示的信息
+
+.. code:: shell
+
+    $ kubectl create -f error-pod.yaml 
+    The Pod "hello-world" is invalid: spec.restartPolicy: Unsupported value: "Mybe": supported values: "Always", "OnFailure", "Never"
+
+查询Pod
+^^^^^^^
+
+最常用的查询命令就是kubectl
+get，可以查询一个或者多个Pod的信息，现在查询指定Pod：
+
+.. code:: shell
+
+    $ kubectl get pod my-pod 
+    NAME      READY     STATUS    RESTARTS   AGE 
+    my-pod    1/1       Running   0            10s 
+
+    # 查询显示的字段含义如下所示。
+
+    • NAME：Pod的名称。
+    • READY：Pod的准备状况，右边的数字表示Pod包含的容器总数目，左边的数字表示准备就绪的容器数目。
+    • STATUS：Pod的状态。
+    • RESTARTS：Pod的重启次数。
+    • AGE：Pod的运行时间。
+
+默认情况下，kubectl
+get只是显示Pod的简要信息，以下方式可用于获取Pod的完整信息：
+
+.. code:: shell
+
+    $ kubectl get pod my-pod --output json  #用JSON格式显示Pod的完整信息 
+    $ kubectl get pod my-pod --output yaml  #用YAML方式显示Pod的完整信息 
+
+另外，kubectl get支持以Go
+Template方式过滤出指定的信息，比如查询Pod的运行状态：
+
+.. code:: shell
+
+    $ kubectl get pods my-pod --output=go-template --template={{.status.phase}} 
+    Succeeded
+
+查看pod的状态和生命周期事件
+
+.. code:: shell
+
+    $ kubectl descrobe pod hello-world
+
+获取Pod与容器状态详情
+
+::
+
+    ▪ kubectl describe：显示资源的详情，包括运行状态、事件等信息，但不同的资源类型输出内容不尽相同。
+
+
+    ▪ kubectl logs：查看Pod对象中容器输出到控制台的日志信息；当Pod中运行有多个容器时，需要使用选项-c指定容器名称。
+
+
+    ▪ kubectl exec：在Pod对象某容器内运行指定的程序，其功能类似于docker exec命令，可用于了解容器各方面的相关信息或执行必需的设定操作等，具体功能取决于容器内可用的程序。
+
+使用接口是直接交互式运行容器中的某shell程序。例如，直接查看Pod中的容器运行的进程：
+
+::
+
+    [root@ci-base example01]# kubectl exec demoapp-5f8989b6c5-sgnmz -n dev -- ps aux
+    PID   USER     TIME  COMMAND
+        1 root      0:00 python3 /usr/local/bin/demo.py
+        8 root      0:00 ps aux
+
+为kubectl
+exec命令额外使用-it选项，并指定运行镜像中可用的shell程序就能进入交互式接口。
+
+::
+
+    [root@ci-base example01]# kubectl exec -it demoapp-5f8989b6c5-xvjfg -n dev sh
+    kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl kubectl exec [POD] -- [COMMAND] instead.
+    [root@demoapp-5f8989b6c5-xvjfg /]# netstat -tunpl
+    Active Internet connections (only servers)
+    Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+    tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      1/python3
+
+删除Pod
+^^^^^^^
+
+.. code:: shell
+
+    # 通过kubernetes delete命令删除Pod
+    $ kubectl delete pod hello-world
+
+    # kubernetes delete命令批量删除全部Pod
+    $ kubectl delete pod --all
+
+删除Pod对象则使用kubectl delete命令。
+
+::
+
+    ▪命令式命令：
+    kubectl delete pods/NAME。
+
+    ▪命令式对象配置：
+    kubectl delete -f FILENAME。
+
+更新Pod
+^^^^^^^
+
+.. code:: shell
+
+    # Pod在创建之后，进行更新，修改Pod的定义文件后执行
+    $ kubectl replace -f hello-world-pod.yaml --force
+
+但是因为Pod的很多属性是没办法修改的，比如容器镜像，这时候可以通过kubectl
+replace命令设置\ ``--force``\ 参数，等效于重建Pod。
+
+小结
+~~~~
+
+::
+
+    基本管理：
+    # 创建pod资源
+    kubectl create -f pod.yaml
+    # 查看pods
+    kubectl get pods pod-test
+    # 查看pod描述
+    kubectl describe pod pod-test
+    # 替换资源
+    kubectl replace -f pod.yaml -force
+    # 删除资源
+    kubectl delete pod pod-test
+
+Pod与容器
+~~~~~~~~~
+
+镜像
+^^^^
+
+运行容器必须先指定镜像，镜像的名称则遵循Docker的命名规范。运行容器前需要本地存在对应的镜像，如果镜像不存在，会从Docker镜像仓库下载。Kubernetes中可以选择镜像的下载策略，支持的策略如下。
+
+::
+
+    ▪ Always：每次启动Pod时都要从指定的仓库下载镜像。
+
+    ▪ IfNotPresent：仅本地镜像缺失时方才从目标仓库wp下载镜像。
+
+    ▪ Never：禁止从仓库下载镜像，仅使用本地镜像。
+
+Kubernetes
+Node是容器运行的宿主机，Pod被分配到Node之后，会根据镜像下载策略选择是否下载镜像。有时候网络下载是一个较大的开销，可以根据需要自行选择策略，但是无论如何要确保镜像在本地或者镜像仓库存在，否则Pod无法运行。
+
+示例：
+
+.. code:: yaml
+
+       name: hello 
+       image: "ubuntu:14.04" 
+       imagePullPolicy: Always
+
+​ kubernetes用来进行Docker私有镜像仓库的认证：
+
+    1. 一种方法是在所有的Node上手工操作docker login
+       [registry]进行登录认证；
+
+    2. 另一种方法是在Pod中添加Image Pull Secret用于认证
+
+启动命令
+^^^^^^^^
+
+启动命令用来说明容器是如何运行的，在Pod的定义中可以设置容器启动命令和参数。
+
+.. code:: yaml
+
+    apiVersion: v1 
+    kind: Pod 
+    metadata: 
+      name: hello-world 
+    spec:   
+      restartPolicy: Never 
+      containers: 
+      - name: hello 
+        image: "ubuntu:14.04" 
+        command: ["/bin/echo","Hello","World"] 
+
+另外，容器的启动命令也可以配置为:
+
+.. code:: yaml
+
+        command: ["/bin/echo"] 
+        args: ["Hello","World"]
+
+环境变量
+^^^^^^^^
+
+在一些场景下，Pod中的容器希望获取本身的信息，比如Pod的名称、Pod所在的Namespace等。在Kubernetes中提供了Downward
+API获取这些信息，并且可以通过环境变量告诉容器目前支持的信息。
+
+现在创建一个Pod并通过环境变量来获取Downward
+API，Pod的定义文件\ ``downwardapi-env.yaml``\ ：
+
+.. code:: yaml
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: downwardapi-env
+    spec:
+      containers:
+      - name: test-containers
+        image: "ubuntu:14.04"
+        imagePullPolicy: Always
+        command: ["/bin/bash","-c","while true;do sleep 5;done"]
+        env:
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+
+.. code:: shell
+
+    $ kubectl create -f downwardapi-env.yaml 
+    pod/downwardapi-env created
+
+Pod创建运行后，查询Pod的输出，过滤出配置的3个环境变量：
+
+.. code:: shell
+
+    [root@172-26-128-31 downapi]# kubectl exec downwardapi-env env|grep MY_POD 
+    kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl kubectl exec [POD] -- [COMMAND] instead.
+    MY_POD_NAMESPACE=default
+    MY_POD_IP=172.16.0.196
+    MY_POD_NAME=downwardapi-env
+
+如下示例中使用镜像demoapp中的应用服务器支持通过HOST与PORT环境变量分别获取监听的地址和端口，它们的默认值分别为0.0.0.0和80，下面的配置保存在清单文件demo-deployment.yaml中，它分别为HOST和PORT两个环境变量传递了一个不同的值，以改变容器监听的地址和端口
+
+``demo-deployment.yaml``
+
+::
+
+    ---
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      labels:
+        k8s.kuboard.cn/layer: web
+        k8s.kuboard.cn/name: demoapp
+      name: demoapp
+      namespace: dev
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          k8s.kuboard.cn/layer: web
+          k8s.kuboard.cn/name: demoapp
+
+      template:
+        metadata:
+          labels:
+            k8s.kuboard.cn/layer: web
+            k8s.kuboard.cn/name: demoapp
+        spec:
+          containers:
+            - image: 'ikubernetes/demoapp:v1.0'
+              imagePullPolicy: Always
+              name: demoapp-pod
+              env:
+                - name: HOST
+                  value: "127.0.0.1"
+                - name: PORT
+                  value: "8080"
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+
+::
+
+    [root@ci-base example02]# kubectl apply -f demo-deployment.yaml
+    [root@ci-base example02]# kubectl exec demoapp-76c56d6f54-9sj8k -n dev -- netstat -tnl
+    Active Internet connections (only servers)
+    Proto Recv-Q Send-Q Local Address           Foreign Address         State
+    tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN
+
+端口
+^^^^
+
+在使用docker
+run运行容器的时候往往通过--publish/-p参数设置端口映射规则，同样的，可以在Pod的定义中设置容器的端口映射规则，比如下面这个Pod的设置容器nginx的端口映射规则为0.0.0.0:80->80/TCP：
+
+``nginx.yaml``
+
+.. code:: yaml
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: my-nginx
+
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
+          hostIP: 0.0.0.0
+          hostPort: 80
+
+使用宿主机端口需要考虑端口冲突问题，幸运的是，Kubernetes在调度Pod的时候，会检查宿主机端口是否冲突。比如两个Pod都需要使用宿主机端口80，那么调度的时候就会将这两个Pod调度到不同Node上。不过，如果所有Node的端口都被占用了，那么Pod调度会失败。
+
+数据持久化和共享
+^^^^^^^^^^^^^^^^
+
+容器是临时存在的，如果容器被销毁，容器中的数据将会丢失。为了能够持久化数据以及共享容器间的数据，Docker提出了数据卷（Volume）的概念。简单来说，数据卷就是目录或者文件，它可以绕过默认的联合文件系统，而以正常的文件或者目录的形式存在于宿主机上。
+
+在使用docker
+run运行容器的时候，我们经常使用参数--volume/-v创建数据卷，即将宿主机上的目录或者文件挂载到容器中。即使容器被销毁，数据卷中的数据仍然保存在宿主机上。
+
+一方面，在Kubernetes中对Docker数据卷进行了扩展，支持对接第三方存储系统。另一方面，Kubernetes中的数据卷是Pod级别的，Pod中的容器可以访问共同的数据卷，实现容器间的数据共享。
+
+在Pod中声明创建数据卷，Pod中的两个容器将共享数据卷，容器write写入数据，容器hello读出数据，Hello
+World Pod的定义文件\ ``hello-world-pod.yaml``\ ：
+
+.. code:: yaml
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: hello-world-wr
+
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: write
+        image: "ubuntu:14.04"
+        command: ["bash","-c","echo \"Hello World\" >> /data/hello"]
+        volumeMounts:
+          - name: data
+            mountPath: /data
+      - name: hello
+        image: "ubuntu:14.04"
+        command: ["bash","-c","sleep 2; cat /data/hello"]
+        volumeMounts:
+          - name: data
+            mountPath: /data
+      volumes:
+        - name: data
+          hostPath:
+            path: /tmp
+
+Pod中的两个容器都通过.spec.containers[].
+volumeMounts来设置挂载数据卷到容器中的路径/data。容器write将往/data/hello写入“Hello
+World”，容器hello等待一会儿，然后读取文件/data/hello的数据显示，即输出“Hello
+World”。这样一来就实现了两个容器的数据共享。
+
+.. code:: shell
+
+    [root@172-26-128-31 volume-k8s]# kubectl apply -f hello-world-pod.yaml 
+    pod/hello-world-wr created
+
+    [root@172-26-128-31 volume-k8s]# kubectl logs -f hello-world-wr hello
+    Hello World
+
+Pod的网络
+~~~~~~~~~
+
+.. code:: shell
+
+    # 在Pod运行后，查询Pod的PodIP
+    $ kubectl get pod redis-master-trlnk --template={{.status.podIP}}
+    192.168.1.92
+
+    $ kubectl get pod redis-slave-m2jfs --template={{.status.podIP}}
+    192.168.2.78
+
+可以设置Pod为Host网络模式，即直接使用宿主机的网络，不进行网络虚拟化隔离。这样一来，Pod中的所有容器就直接暴露在宿主机的网络环境中，这时候，Pod的PodIP就是其所在Node的IP。
+
+下面定义的Pod设置为Host网络模式（.spec.hostNetwork=true）：
+
+.. code:: yaml
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: my-app
+    spec:
+      containers:
+      - name: app
+        image: nginx
+        ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
+      hostNetwork: true
+
+使用Host网络模式需要特别注意，一方面，因为不存在网络隔离，容易发生端口冲突；另一方面，Pod可以直接访问宿主机上的所有网络设备和服务，从安全性上来说这是不可控的。
+
+.. code:: shell
+
+    $ kubectl create -f my-pod.yaml 
+    pod/my-app created
+
+.. code:: shell
+
+    $ kubectl get pod my-app --template={{.status.podIP}}
+    172.16.60.226
+
+Pod的重启策略
+~~~~~~~~~~~~~
+
+Pod的重启策略指的是当Pod中的容器终止退出后，重启容器的策略。需要注意的是，因为Docker容器的轻量级，重启容器的做法实际上是直接重建容器，所以容器中的数据将会丢失，如有需要持久化的数据，那么需要使用数据卷进行持久化设置。
+
+重启策略是通过Pod定义中的.spec.restartPolicy进行设置的，目前支持以下3种策略。
+
+::
+
+    • Always：当容器终止退出后，总是重启容器，默认策略。
+
+    • OnFailure：当容器终止异常退出（退出码非0）时，才重启容器。
+
+    • Never：当容器终止退出时，从不重启容器。
+
+现在创建一个Pod，其中的容器将异常退出（exit
+1），而Pod的重启策略为OnFailure，Pod的定义文件\ ``on-failure-restart-pod.yaml``\ ：
+
+.. code:: yaml
+
+    apiVersion: v1 
+    kind: Pod 
+    metadata: 
+      name: on-failure-restart-pod 
+    spec: 
+      containers: 
+      - name: container 
+        image: ubuntu:14.04 
+        command: ["bash","-c", "exit 1"] 
+      restartPolicy: OnFailure 
+
+通过定义文件创建Pod
+
+.. code:: shell
+
+    [root@172-26-128-31 on-failure-restart-pod]# kubectl apply -f on-failure-restart-pod.yaml 
+    pod/on-failure-restart-pod created
+
+Pod创建成功后，一段时间后查询Pod
+
+.. code:: shell
+
+    [root@172-26-128-31 on-failure-restart-pod]# kubectl get pod on-failure-restart-pod
+    NAME                     READY   STATUS   RESTARTS   AGE
+    on-failure-restart-pod   0/1     Error    4          46s
+
+在Pod的查询信息中，属性RESTARTS
+的值为4，说明Pod中的容器已经重启，可以分别查询每个容器的重启次数
+
+.. code:: shell
+
+    [root@172-26-128-31 on-failure-restart-pod]# kubectl get pod on-failure-restart-pod --template="{{range .status.containerStatuses}}{{.name}}:{{.restartCount}}{{end}}"
+    container:4
+
+Pod资源限制
+~~~~~~~~~~~
+
+官方文档：https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+
+Pod和Container的资源请求和限制：
+
+::
+
+    - spec.containers[].resources.limits.cpu
+    - spec.containers[].resources.limits.memory
+    - spec.containers[].resources.requests.cpu
+    - spec.containers[].resources.requests.memory
+
+限制Pod使用资源时为了防止在异常情况下资源使用的溢出，从而影响整个宿主机，Pod资源限制如下：
+
+1、创建测试实例 ``vim pod.yaml``
+
+.. code:: yaml
+
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: frontend
+    spec:
+      containers:
+      - name: db
+        image: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      - name: wp
+        image: wordpress
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+2、查看pod创建实例
+
+``kubectl get pods``
+
+::
+
+    NAME                              READY   STATUS    RESTARTS   AGE
+    frontend                          2/2     Running   1          63s
+
+3、查看pod详情，找到分配到的Node
+
+::
+
+    kubectl describe pod frontend
+
+4、Node 跑的Pod资源利用率
+
+``kubectl describe nodes 192.168.1.111``
+
+::
+
+    .....
+     Kube-Proxy Version:         v1.12.1
+    Non-terminated Pods:         (4 in total)
+      Namespace                  Name                               CPU Requests  CPU Limits  Memory Requests  Memory Limits
+      ---------                  ----                               ------------  ----------  ---------------  -------------
+      default                    frontend                           500m (12%)    1 (25%)     128Mi (9%)       256Mi (18%)
+      default                    nginx-7b67cfbf9f-p8d69             0 (0%)        0 (0%)      0 (0%)           0 (0%)
+      default                    nginx-7b67cfbf9f-xlvnz             0 (0%)        0 (0%)      0 (0%)           0 (0%)
+      default                    nginx-deployment-d55b94fd-rpsgm    0 (0%)        0 (0%)      0 (0%)           0 (0%)
+    Allocated resources:
+      (Total limits may be over 100 percent, i.e., overcommitted.)
+      
+    # 限制说明 
+      Resource                       Requests    Limits
+      --------                       --------    ------
+      cpu                            500m (12%)  1 (25%)
+      memory                         128Mi (9%)  256Mi (18%)
+      attachable-volumes-azure-disk  0           0
+    Events:                          <none>
+
+    注：limits是对资源的总限制、requests是最低分配的资源。requests一般要比limits要小一些。
+
+    注：250m/单核CPU的白分之25/0.25
+
+    注：资源限制 cpu可以直接设置为数字 “1”为1核“2”为2核。
+
+Pod的状态和生命周期
+~~~~~~~~~~~~~~~~~~~
+
+容器状态
+^^^^^^^^
+
+Kubernetes中对于Pod中的容器进行了状态的记录，其中每种状态下包含的信息如下所示。
+
+::
+
+    • Waiting：容器正在等待创建，比如正在下载镜像。
+
+    • Reason：等待的原因。
+
+    • Running：容器已经创建，并且正在运行。
+
+    • startedAt：容器创建时间。
+
+    • Terminated：容器终止退出。
+
+    • exitCode：退出码。
+
+    • signal：容器退出信号。
+
+    • reason：容器退出原因。
+
+    • message：容器退出信息。
+
+    • startedAt：容器创建时间。
+
+    • finishedAt：容器退出时间。
+
+    • containerID：容器的ID。
+
+Pod运行后，可以查询其中容器的状态
+
+.. code:: shell
+
+    [root@172-26-128-31 hello-world]# kubectl describe pod hello-world
+    Name:         hello-world
+    Namespace:    default
+    Priority:     0
+    Node:         172.26.128.27/172.26.128.27
+    Start Time:   Tue, 20 Oct 2020 17:02:50 +0800
+    Labels:       <none>
+    Annotations:  tke.cloud.tencent.com/networks-status:
+                    [{
+                        "name": "tke-bridge",
+                        "ips": [
+                            "172.16.0.200"
+                        ],
+                        "default": true,
+                        "dns": {}
+                    }]
+    Status:       Succeeded
+    IP:           172.16.0.199
+    IPs:
+      IP:  172.16.0.199
+    Containers:
+      hello:
+        Container ID:  docker://4fc02421f52d962cd586e04dbdc7ee40a04d20bd0a18be64e344ac3e4c6c201b
+        Image:         ubuntu:14.04
+        Image ID:      docker-pullable://ubuntu@sha256:63fce984528cec8714c365919882f8fb64c8a3edf23fdfa0b218a2756125456f
+        Port:          <none>
+        Host Port:     <none>
+        Command:
+          /bin/echo
+          Hello
+          World
+
+Pod的生命周期阶段
+^^^^^^^^^^^^^^^^^
+
+Pod的生命周期可以简单描述为：首先Pod被创建，紧接着Pod被调度到Node进行部署运行。Pod是非常忠诚的，一旦被分配到Node后，就不会离开这个Node，直到它被删除，生命周期完结。
+
+Pod的生命周期被定义为以下几个阶段。
+
+::
+
+    • Pending：Pod已经被创建，但是一个或者多个容器还未创建，这包括Pod调度阶段，以及容器镜像的下载过程。
+
+    • Running：Pod已经被调度到Node，所有容器已经创建，并且至少一个容器在运行或者正在重启。
+
+    • Succeeded：Pod中所有容器正常退出。
+
+    • Failed：Pod中所有容器退出，至少有一个容器是一次退出的。
+
+可以查询Pod处于生命周期的哪个阶段：
+
+.. code:: shell
+
+    [root@172-26-128-31 hello-world]# kubectl get pods hello-world --template="{{.status.phase}}" 
+    Succeeded
+
+Pod被创建成功后，首先会进入Pending阶段，然后被调度到Node后运行，进入Running阶段。如果Pod中的容器停止（正常或者异常退出），那么Pod根据重启策略的不同会进入不同的阶段，举例如下。
+
+::
+
+    • Pod是Running阶段，含有一个容器，容器正常退出：
+
+    如果重启策略是Always，那么会重启容器，Pod保持Running阶段。
+
+    如果重启策略是OnFailure，Pod进入Succeeded阶段。
+
+    如果重启策略是Never，Pod进入Succeeded阶段。
+
+    • Pod是Running阶段，含有一个容器，容器异常退出：
+
+    如果重启策略是Always，那么会重启容器，Pod保持Running阶段。
+
+    如果重启策略是OnFailure，Pod保持Running阶段。
+
+    如果重启策略是Never，Pod进入Failed阶段。
+
+    • Pod是Running阶段，含有两个容器，其中一个容器异常退出：
+
+    如果重启策略是Always，那么会重启容器，Pod保持Running阶段。
+
+    如果重启策略是OnFailure，Pod保持Running阶段。
+
+    如果重启策略是Never，Pod保持Running阶段。
+
+    • Pod是Running阶段，含有两个容器，两个容器都异常退出：
+
+    如果重启策略是Always，那么会重启容器，Pod保持Running阶段。
+
+    如果重启策略是OnFailure，Pod保持Running阶段。
+
+    如果重启策略是Never，Pod进入Failed阶段。
+
+一旦被分配到Node，Pod就不会离开这个Node，直到被删除。删除可能是人为地删除，或者被Replication
+Controller删除，也有可能是当Pod进入Succeeded或者Failed阶段过期，被Kubernetes清理掉。总之Pod被删除后，Pod的生命周期就算结束，即使被Replication
+Controller进行重建，那也是新的Pod，因为Pod的ID已经发生了变化，所以实际上Pod迁移，准确的说法是在新的Node上重建Pod。
+
+生命周期回调函数
+^^^^^^^^^^^^^^^^
+
+Kubernetes提供了回调函数，在容器的生命周期的特定阶段执行调用，比如容器在停止前希望执行某项操作，就可以注册相应的钩子函数。目前提供的生命周期回调函数如下所示。
+
+::
+
+    • PostStart：在容器创建成功后调用该回调函数。
+    • PreStop：在容器被终止前调用该回调函数。
+
+钩子函数的实现方式有以下两种。
+
+**• Exec**
+
+说明 在容器中执行指定的命令。
+
+配置参数 command：需要执行的命令，字符串数组。
+
+示例
+
+.. code:: yaml
+
+          exec: 
+            command: 
+            - cat 
+            - /tmp/health 
+
+**• HTTPGet**
+
+说明 发起一个HTTP调用请求。
+
+配置参数 path：请求的URL路径，可选项。 port：请求的端口，必选项。
+host：请求的IP，可选项，默认是Pod的PodIP。
+scheme：请求的协议，可选项，默认是HTTP。
+
+示例
+
+::
+
+          httpGet: 
+            host: 192.168.1.1 
+            path: /notify 
+            port: 8080 
+
+自定义检查Pod
+~~~~~~~~~~~~~
+
+我们需要更加精确的检查机制来判断Pod和容器是否准备就绪，从而让Kubernetes判断是否分发请求给Pod。
+
+针对这些需求，Kubernetes中提供了Probe机制，有以下两种类型的Probe。
+
+::
+
+    • Liveness Probe：用于容器的自定义健康检查，如果Liveness Probe检查失败，Kubernetes将杀死容器，然后根据Pod的重启策略来决定是否重启容器。
+
+    • Readiness Probe：用于容器的自定义准备状况检查，如果Readiness Probe检查失败，Kubernetes将会把Pod从服务代理的分发后端移除，即不会分发请求给该Pod。
+
+Probe支持以下三种检查方法。
+
+**• ExecAction**
+
+说明
+在容器中执行指定的命令进行检查，当命令执行成功（返回码为0），检查成功。
+
+配置参数 command：检查的命令，字符串数组。
+
+示例
+
+.. code:: yaml
+
+          exec: 
+            command: 
+            - cat 
+            - /tmp/health 
+
+**• TCPSocketAction**
+
+说明 对于容器中的指定TCP端口进行检查，当TCP端口被占用，检查成功。
+
+配置参数 port：检查的TCP端口
+
+示例
+
+.. code:: yaml
+
+          tcpSocket: 
+            port: 8080 
+
+**• HTTPGetAction**
+
+说明 发生一个HTTP请求，当返回码介于200~400之间时，检查成功。
+
+配置参数 path：请求的URI路径，可选项。 port：请求的端口，必选项。
+host：请求的IP，可选项，默认是Pod的PodIP。
+scheme：请求的协议，可选项，默认是HTTP。 示例
+
+示例
+
+.. code:: yaml
+
+          httpGet: 
+            path: /healthz 
+            port: 8080 
+
+Pod的健康检查
+^^^^^^^^^^^^^
+
+exec探针
+''''''''
+
+定义一个Pod，使用Liveness
+Probe通过ExecAction方式检查容器的健康状态，Pod的定义文件\ ``liveness-exec-pod.yaml``\ ：
+
+::
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: liveness-exec-pod
+      labels:
+        test: liveness
+    spec:
+      containers:
+      - name: liveness
+        image: "ubuntu:14.04"
+        command:
+        - /bin/sh
+        - -c
+        - echo ok > /tmp/health; sleep 60; rm -rf /tmp/health; sleep 600
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/health
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+
+或者示例2
+
+``liveness-exec-demo.yaml``
+
+::
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: liveness-exec-demo
+      namespace: default
+    spec:
+      containers:
+      - name: demo
+        image: ikubernetes/demoapp:v1.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command: ['/bin/sh', '-c', '[ "$(curl -s 127.0.0.1/livez)" == "OK" ]']
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+          periodSeconds: 5
+
+通过定义文件创建Pod：
+
+.. code:: shell
+
+    $ kubectl create -f liveness-exec-pod.yaml  
+    pod "liveness-exec-pod" created 
+
+Pod创建之初运行正常：
+
+.. code:: shell
+
+    [root@k8s-master chapter01]# kubectl get pod liveness-exec-pod 
+    NAME                READY   STATUS             RESTARTS   AGE
+    liveness-exec-pod   0/1     CrashLoopBackOff   29         119m
+    [root@k8s-master chapter01]# kubectl describe pod liveness-exec-pod|grep Unhealthy 
+      Warning  Unhealthy  4m21s (x85 over 118m)  kubelet  Liveness probe failed: cat: /tmp/health: No such file or directory
+
+HTTP探针
+''''''''
+
+HTTP探针是基于HTTP协议的探测（HTTPGetAction），通过向目标容器发起一个GET请求，并根据其响应码进行结果判定，2xx或3xx类的响应码表示检测通过。
+
+``liveness-httpget-demo.yaml``
+
+::
+
+    # Maintainer: MageEdu <mage@magedu.com>
+    # URL: http://www.magedu.com
+    # ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: liveness-httpget-demo
+      namespace: default
+    spec:
+      containers:
+      - name: demo
+        image: ikubernetes/demoapp:v1.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: '/livez'
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 5
+
+TCP探针
+'''''''
+
+TCP探针是基于TCP协议进行存活性探测（TCPSocketAction），通过向容器的特定端口发起TCP请求并尝试建立连接进行结果判定，连接建立成功即为通过检测。相比较来说，它比基于HTTP协议的探测要更高效、更节约资源，但精准度略低，毕竟连接建立成功未必意味着页面资源可用。
+
+``liveness-tcpsocket-demo.yaml``
+
+::
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: liveness-tcpsocket-demo
+      namespace: default
+    spec:
+      containers:
+      - name: demo
+        image: ikubernetes/demoapp:v1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 80
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+        livenessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 5
+          initialDelaySeconds: 5
+
+Pod的准备状况检查
+^^^^^^^^^^^^^^^^^
+
+定义一个Pod，使用Readiness
+Probe通过ExecAction方式检查容器的准备状况，Pod的定义文件readiness-exec-pod.yaml：
+
+.. code:: yaml
+
+    apiVersion: v1 
+    kind: Pod 
+    metadata: 
+      labels: 
+        test: readiness 
+      name: readiness-exec-pod 
+    spec: 
+      containers: 
+      - name: readiness 
+        image: "ubuntu:14.04" 
+        command: 
+        - /bin/sh 
+        - -c 
+        - echo ok > /tmp/ready; sleep 60; rm -rf /tmp/ready; sleep 600 
+        readinessProbe: 
+          exec: 
+            command: 
+            - cat 
+            - /tmp/ready 
+          initialDelaySeconds: 15 
+          timeoutSeconds: 1
+
+通过定义文件创建Pod：
+
+.. code:: shell
+
+    $ kubectl create -f readiness-exec-pod.yaml 
+    pod "readiness-exec-pod" created 
+
+Pod创建之初运行正常，容器全部准备就绪：
+
+.. code:: shell
+
+    $ kubectl get  pod readiness-exec 
+    NAME                     READY    STATUS    RESTARTS   AGE 
+    readiness-exec-pod   1/1      Running   0            26s 
+
+过1分钟以后，发现Pod的READY数目变为0：
+
+.. code:: shell
+
+    $ kubectl get pod readiness-exec-pod 
+    NAME                     READY     STATUS    RESTARTS   AGE 
+    readiness-exec-pod   0/1        Running   0           1m 
+
+通过查询Pod事件可以看到，Readiness Probe检查失败：
+
+.. code:: shell
+
+    $ kubectl describe  pod readiness-exec|grep Unhealthy 
+    … Unhealthy  Readiness probe failed: cat: /tmp/ready: No such file or directory 
+
+Pod的调度约束
+~~~~~~~~~~~~~
+
+Pod的调度指的是Pod在创建之后分配到哪一个Node上，调度算法分为两个步骤，第一步筛选出符合条件的Node，第二步选择最优的Node。
+
+Pod在正式上线前，需要先在测试的Node上运行，测试完成再发布到生产环境的Node上运行。这时候就可以用到Node
+Selector，通过Node的Label进行选择。
+
+查询所有的node
+
+.. code:: shell
+
+    [root@k8s-master chapter01]# kubectl get node
+    NAME         STATUS   ROLES    AGE   VERSION
+    k8s-master   Ready    master   8d    v1.19.2
+    k8s-node01   Ready    <none>   8d    v1.19.2
+
+目前共有1个Node，状态是Ready，为Node k8s-node01增加新的Label：
+
+.. code:: shell
+
+    $ kubectl label nodes k8s-node01 env=test 
+
+    // 查看node的信息
+    $ kubectl describe nodes k8s-node01 
+
+在定义Pod的时候通过设置 Node Selector（.spec.nodeSelector）来选择
+Node，Pod的定义文件nginx-pod.yaml：
+
+.. code:: yaml
+
+    apiVersion: v1 
+    kind: Pod 
+    metadata: 
+      name: nginx 
+      labels: 
+        env: test 
+    spec: 
+      containers: 
+      - name: nginx 
+        image: nginx 
+        imagePullPolicy: IfNotPresent 
+      nodeSelector: 
+        env: test 
+
+Pod创建成功后将会被分配到Node k8s-node01：
+
+.. code:: shell
+
+    [root@k8s-master chapter01]# kubectl get pod nginx -o wide 
+    NAME    READY   STATUS    RESTARTS   AGE   IP              NODE         NOMINATED NODE   READINESS GATES
+    nginx   1/1     Running   0          72s   10.100.85.238   k8s-node01   <none>           <none>
+
+Pod.spec.nodeName命令强制约束Pod调度到指定节点上，Pod.spec.nodeSelector命令通过lable-selector机制选择节点，代码如下：
+
+::
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: mypod 
+    spec:
+      nodeName: 192.168.10.7    # 指定pod运行的node ip地址
+      containers:
+        - name: nginx 
+          image: nginx:1.14 
+          imagePullPolicy: Always
+
+参考文献：
+
+https://www.cnblogs.com/xiangsikai/p/11413002.html
+
+问题定位指南
+~~~~~~~~~~~~
+
+Pod是应用的承载体，当Pod运行异常的时候，可能是Kubernetes系统问题，也可能是应用本身的问题，那么就需要提供足够的信息用于问题定位，Kubernetes针对Pod提供的事件记录、日志查询和远程调试功能进行问题定位。
+
+Kubernetes从Pod的创建开始，在Pod的生命周期内会产生各种事件信息，比如Pod完成调度、下载镜像完成等。在Pod运行异常的时候，通过排除相关事件可以了解是否是由于Kubernetes的原因导致Pod异常。
+
+事件查询可以先查询所有的事件：
+
+::
+
+    $ kubectl get event 
+
+然后再查询Pod相关的事件：
+
+::
+
+    $ kubectl describe pod my-pod 
+
+日志查询
+^^^^^^^^
+
+日志是一项很重要的信息，可以用来定位问题和显示应用运行状态。Docker容器可以使用docker
+logs命令查询日志，可以通过kubectl logs命令查询Pod中容器的日志。
+
+现在要定义一个Pod，包含两个容器，容器container1输出一条日志然后正常退出（exit
+0），容器container2输出一条日志异常退出（exit
+1），并且设置Pod的重启策略是OnFailure，即当容器异常退出时才进行重启，Pod的定义文件\ ``log-pod.yaml``\ ：
+
+.. code:: yaml
+
+    apiVersion: v1 
+    kind: Pod 
+    metadata: 
+      name: log-pod 
+    spec: 
+      containers: 
+      - name: container1 
+        image: ubuntu:14.04 
+        command:  
+        - "bash" 
+        - "-c" 
+        - "echo \"container1: `date --rfc-3339 ns`\"; exit 0" 
+      - name: container2 
+        image: ubuntu:14.04 
+        command:  
+        - "bash" 
+        - "-c" 
+        - "echo \"container2: `date --rfc-3339 ns`\"; exit 1" 
+      restartPolicy: OnFailure
+
+通过定义文件创建Pod：
+
+::
+
+    $ kubectl create -f log-pod.yaml  
+    pod "log-pod" created 
+
+Pod创建成功后，会重新创建异常退出的容器container2：
+
+::
+
+    $ kubectl get pod log-pod 
+    NAME      READY     STATUS    RESTARTS   AGE 
+    log-pod   0/2       Error     1           19s 
+
+然后分别查询Pod中两个容器的日志：
+
+::
+
+    $ kubectl logs log-pod container1  
+    container1: 2015-11-21 14:52:55.622701243+00:00 
+     
+    $ kubectl logs log-pod container2  
+    Pod "log-pod" in namespace "default": container "container2" is in waiting state. 
+
+因为容器container2将会异常退出然后重建，所以将处于异常状态，从而查询不到当前运行日志。但是kubectl
+logs可以查询之前容器（如果存在的话）的日志，这对于问题定位非常有帮助，往往容器停止前的日志价值更高，获取方法只需要加上--previous/-p参数：
+
+::
+
+    $ kubectl logs log-pod container2 —previous 
+
+    container2: 2015-11-21 14:53:37.377629086+00:00 
+
+Pod的临终遗言
+~~~~~~~~~~~~~
+
+前面我们提到过容器停止前的日志价值更高，能够获取最后的错误异常消息、调用栈等，我们可以把这些信息形象地称为临终遗言，临终遗言对于问题定位是很有帮助的。在Kubernetes中为Pod提供了一个持久化文件，用来保存临终遗言。
+
+Pod的定义中通过\ ``.spec.containers[].terminationMessagePath``\ 指定在容器中的临终遗言日志文件的路径，默认值是/dev/termination-log。这个文件在Pod的整个生命周期内都会保存，每次新建一个Pod，都会在宿主机上创建一个文件，然后挂载到Pod的容器中，这些文件不会因为容器的销毁而丢失，所以容器可以把临终遗言写入这个文件，方便问题排错。
+
+现在创建一个Pod，其中的容器将写入临终遗言，Pod的定义文件\ ``w-message-pod.yaml``\ ：
+
+.. code:: yaml
+
+    apiVersion: v1 
+    kind: Pod 
+    metadata: 
+      name: w-message-pod 
+    spec: 
+      containers: 
+      - name: messager 
+        image: "ubuntu:14.04" 
+        terminationMessagePath: /dev/termination-log 
+        command:  
+        - "bash" 
+        - "-c" 
+        - "echo \"`date --rfc-3339 ns` I was going to die\" >> /dev/termination-log;" 
+
+通过定义文件创建Pod：
+
+.. code:: shell
+
+    $ kubectl create -f w-message-pod.yaml  
+    pod "w-message-pod" created 
+
+.. code:: shell
+
+    [root@k8s-master chapter01]# kubectl get pod w-message-pod
+    NAME            READY   STATUS             RESTARTS   AGE
+    w-message-pod   0/1     CrashLoopBackOff   4          119s
+
+    [root@k8s-master chapter01]# kubectl get pod w-message-pod --template="{{range .status.containerStatuses}}{{.lastState.terminated.message}}{{end}}"
+    2020-10-21 05:49:46.448339098+00:00 I was going to die
+
+远程连接容器
+~~~~~~~~~~~~
+
+问题定位时往往需要连接到应用的运行环境进行操作，相比于传统的SSH方式，Docker提供了docker
+attach和docker
+exec两个命令可以连接容器进行操作。同样的，Kubernetes对应地提供了kubectl
+attach和kubectl exec两个命令用来远程连接Pod中的容器。
+
+其中attach命令使用起来不太方便，相比之下，exec命令则非常强大，我们可以使用kubectl
+exec命令远程连接Pod中的容器运行命令（当Pod只有一个容器时，不需要指定容器）：
+
+.. code:: shell
+
+    $ kubectl exec my-pod -- date 
+    Wed Jan  6 18:19:07 CST 2016 
+
+或者直接进入Pod的容器中：
+
+.. code:: shell
+
+    $ kubectl exec -ti my-pod /bin/bash 
+    [root@ my-pod /]# 
+
+    提示 kubectl exec命令需要在Kubernetes Node上安装nsenter。
+
+kubernetes的资源对象
+--------------------
+
+以资源的主要功能作为分类标准，Kubernetes的API对象大体可分为工作负载、发现与负载均衡、配置与存储、集群和元数据几个类别。它们基本都是围绕一个核心目的而设计：如何更好地运行和丰富Pod资源，从而为容器化应用提供更灵活和更完善的操作与管理组件。
+
+1. 工作负载型资源
+~~~~~~~~~~~~~~~~~
+
+应用程序分为无状态和有状态两种类型
+
+-  无状态应用：ReplicationController、ReplicaSet和Deployment负责管理无状态应用
+
+-  有状态类应用 ：StatefulSet则用于管控。
+
+还有些应用较为独特，有些需要在集群中的每个节点上运行单个Pod资源，负责收集日志或运行系统服务等任务，该类编排操作由DaemonSet控制器对象进行，而需要在正常完成后退出故无须始终处于运行状态任务的编排工作则隶属Job控制器对象。
+
+-  CronJob控制器对象还能为Job型的任务提供定期执行机制。
+
+::
+
+    ▪ReplicationController：用于确保每个Pod副本在任一时刻均能满足目标数量，即它用于保证每个容器或容器组总是运行并可访问；它是上一代的无状态Pod应用控制器，建议读者使用新型控制器Deployment和ReplicaSet来取代它。
+
+
+    ▪ReplicaSet：新一代ReplicationController，它与ReplicationController唯一不同之处在于支持的标签选择器不同，ReplicationController只支持“等值选择器”，而ReplicaSet还支持基于集合的选择器。
+
+
+    ▪Deployment：用于管理无状态的持久化应用，例如HTTP服务等；它用于为Pod和ReplicaSet提供声明式更新，是构建在ReplicaSet之上的、更为高级的控制器。
+
+
+    ▪StatefulSet：用于管理有状态的持久化应用，例如数据库服务程序；与Deployment的不同之处在于，StatefulSet会为每个Pod创建一个独有的持久性标识符，并会确保各Pod间的顺序性。
+
+
+    ▪DaemonSet：用于确保每个节点都运行了某Pod的一个副本，包括后来新增的节点；而节点移除将导致Pod回收；DaemonSet常用于运行各类系统级守护进程，例如kube-proxy和Flannel网络插件，以及日志收集和临近系统的Agent应用，例如fluentd、Logstash、Prometheus的Node Exporter等。
+
+
+    ▪Job：用于管理运行完成后即可终止的应用，例如批处理作业任务；Job创建一个或多个Pod，并确保其符合目标数量，直到应用完成而终止。
+
+2. 发现与负载均衡
+~~~~~~~~~~~~~~~~~
+
+Service是Kubernetes标准的资源类型之一，用于为工作负载实例提供固定的访问入口及负载均衡服务，它把每个可用后端实例定义为Endpoint资源对象，通过IP地址和端口等属性映射至Pod实例或相应的服务端点。
+
+Ingress资源则为工作负载提供7层（HTTP/HTTPS）代理及负载均衡功能。
+
+3. 配置与存储
+~~~~~~~~~~~~~
+
+Kubernetes支持众多类型的存储设备或存储系统，例如GlusterFS、Ceph
+RBD和Flocker等，还可通过FlexVolume及CSI（Container Storage
+Interface）存储接口扩展支持更多类型的存储系统。
+
+Kubernetes的ConfigMap资源能够以环境变量或存储卷的方式接入Pod资源的容器中，并可被多个同类的Pod共享引用，从而做到“一次修改，多处生效”。不过，这种方式不适用于存储敏感数据，例如证书、私钥和密码等，那是另一个资源类型Secret的功能。
+
+4.集群型资源
+~~~~~~~~~~~~
+
+Kubernetes还存在一些用于定义集群自身配置信息的资源类型，它们不属于任何名称空间且仅应该由集群管理员操作。常用的集群型资源有如下几种。
+
+::
+
+    ▪Namespace：名称空间，为资源对象的名称提供了限定条件或作用范围，它为使用同一集群的多个团队或项目提供了逻辑上的隔离机制，降低或消除了资源对象名称冲突的可能性。
+
+    ▪Node：Kubernetes并不能直接管理其工作节点，但它会把由管理员添加进来的任何形式（物理机或虚拟机等）的工作节点映射为一个Node资源对象，因而节点名称（标识符）在集群中必须唯一。
+
+    ▪Role：角色，隶属于名称空间，代表名称空间级别由规则组成的权限集合，可被RoleBinding引用。
+
+    ▪ClusterRole：集群角色，隶属于集群而非名称空间，代表集群级别的、由规则组成的权限集合，可被RoleBinding和ClusterRoleBinding引用。
+
+    ▪RoleBinding：用于将Role中的许可权限绑定在一个或一组用户之上，从而完成用户授权，它隶属于且仅能作用于名称空间级别。
+
+    ▪ClusterRoleBinding：将ClusterRole中定义的许可权限绑定在一个或一组用户之上，通过引用全局名称空间中的ClusterRole将集群级别的权限授予指定用户。
+
+名称空间
+--------
+
+名称空间的作用
+~~~~~~~~~~~~~~
+
+名称空间的核心功能在于限制集群上对象名称的作用域：同一类型的资源对象名称在同一个名称空间中必须唯一，但不同名称空间却可为同一类型的资源使用相同的名称。对于某些场景，这种功能有着非常实用的价值，例如名称空间可用于分隔不同应用程序的生命周期环境（例如开发、预发和生产等），从而能够在每个环境中维护具有相同名称的同一类型的资源对象。名称空间本身并不具有网络隔离和访问限制等功能，但它可以作为网络访问控制策略（NetworkPolicy）、授权策略（RBAC）、资源限制策略（ResourceQuota）和Pod安全策略（PodSecurityPolicy）等管理逻辑的承载组件，这也是支撑集群“多租户”机制
+
+kubectl get namespaces命令可以查看系统上的namespaces资源：
+
+::
+
+    [root@ci-base ~]# kubectl get ns
+    NAME                   STATUS   AGE
+    ci-gitee-10523         Active   18d
+    ci-gitee-12050         Active   3d17h
+
+对于那些隶属名称空间级别的资源，通过API对其进行管理操作时必须明确指定名称空间，kubectl命令经常使用的选项-n或--namespace就用于此目的。例如，下面用于查看kube-system下的所有Pod资源的命令：
+
+::
+
+    [root@ci-base ~]# kubectl get pod -n kube-system
+    NAME                                       READY   STATUS    RESTARTS   AGE
+    calico-kube-controllers-796f544997-2bh7p   1/1     Running   0          59d
+    calico-node-7q895                          1/1     Running   0          59d
+    calico-node-9zq86                          1/1     Running   3          24d
+    calico-node-c5b52                          1/1     Running   0          59d
+
+管理Namespace资源
+~~~~~~~~~~~~~~~~~
+
+1. 命令式对象
+
+管理通常是针对集群上的活动对象直接进行，用户或管理员针对指定的资源运行create、get、describe、edit和delete命令即能完成资源的创建、查看、编辑和删除等基础管理操作。
+
+::
+
+    kubectl create namespace myns
+
+显示myns名称空间的详细信息，可使用类似如下命令
+
+::
+
+    [root@ci-base ~]# kubectl describe ns ci-gitee-release
+    Name:         ci-gitee-release
+    Labels:       <none>
+    Annotations:  <none>
+    Status:       Active
+
+    No resource quota.
+
+删除namespace名称空间
+
+::
+
+    [root@ci-base ~]# kubectl delete namespace myns
+
+给出了几个常用的删除命令格式。
+
+::
+
+    kubectl delete TYPE RESOURCE -n NS          //删除指定名称空间内的指定资源
+    kubectl delete TYPE --all -n NS             //删除指定名称空间内的指定类型所有资源
+    kubectl delete all -n NS                    //删除指定名称空间内的所有类型的所有资源
+
+2.声明式对象配置
+
+``ns-demo.yaml``
+
+::
+
+    # Maintainer: MageEdu <mage@magedu.com>
+    # URL: http://www.magedu.com
+    apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: demo
+    spec:
+      finalizers:
+      - kubernetes
+
+命令的格式为\ ``kubectl apply -f ns-demo.yaml``
+
+kubectl-备忘单
+--------------
+
+Kubectl 自动补全
+~~~~~~~~~~~~~~~~
+
+::
+
+    # setup autocomplete in bash into the current shell, bash-completion package should be installed first.
+    source <(kubectl completion bash) 
+
+    # add autocomplete permanently to your bash shell.
+    echo "source <(kubectl completion bash)" >> ~/.bashrc
+
+别名
+
+::
+
+    alias k=kubectl
+    complete -F __start_kubectl k
+
+Kubectl Context and Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    kubectl config view # Show Merged kubeconfig settings.
+
+    # use multiple kubeconfig files at the same time and view merged config
+    KUBECONFIG=~/.kube/config:~/.kube/kubconfig2 
+
+    kubectl config view
+
+    # get the password for the e2e user
+    kubectl config view -o jsonpath='{.users[?(@.name == "e2e")].user.password}'
+
+    kubectl config view -o jsonpath='{.users[].name}'    # get a list of users
+    kubectl config get-contexts                          # display list of contexts 
+    kubectl config current-context                           # display the current-context
+    kubectl config use-context my-cluster-name           # set the default context to my-cluster-name
+
+    # add a new cluster to your kubeconf that supports basic auth
+    kubectl config set-credentials kubeuser/foo.kubernetes.com --username=kubeuser --password=kubepassword
+
+    # permanently save the namespace for all subsequent kubectl commands in that context.
+    kubectl config set-context --current --namespace=ggckad-s2
+
+    # set a context utilizing a specific username and namespace.
+    kubectl config set-context gce --user=cluster-admin --namespace=foo \
+      && kubectl config use-context gce
+
+    kubectl config unset users.foo                       # delete user foo
+
+Creating Objects
+~~~~~~~~~~~~~~~~
+
+Kubernetes manifests can be defined in json or yaml. The file extension
+``.yaml``, ``.yml``, and ``.json`` can be used.
+
+::
+
+    kubectl apply -f ./my-manifest.yaml           # create resource(s)
+    kubectl apply -f ./my1.yaml -f ./my2.yaml     # create from multiple files
+    kubectl apply -f ./dir                        # create resource(s) in all manifest files in dir
+    kubectl apply -f https://git.io/vPieo         # create resource(s) from url
+    kubectl create deployment nginx --image=nginx  # start a single instance of nginx
+    kubectl explain pods,svc                       # get the documentation for pod and svc manifests
+
+    # Create multiple YAML objects from stdin
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: busybox-sleep
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        args:
+        - sleep
+        - "1000000"
+    ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: busybox-sleep-less
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        args:
+        - sleep
+        - "1000"
+    EOF
+
+    # Create a secret with several keys
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: mysecret
+    type: Opaque
+    data:
+      password: $(echo -n "s33msi4" | base64 -w0)
+      username: $(echo -n "jane" | base64 -w0)
+    EOF
+
+Viewing, Finding Resources
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    # Get commands with basic output
+    kubectl get services                          # List all services in the namespace
+    kubectl get pods --all-namespaces             # List all pods in all namespaces
+    kubectl get pods -o wide                      # List all pods in the namespace, with more details
+    kubectl get deployment my-dep                 # List a particular deployment
+    kubectl get pods --include-uninitialized      # List all pods in the namespace, including uninitialized ones
+    kubectl get pod my-pod -o yaml                # Get a pod's YAML
+    kubectl get pod my-pod -o yaml --export       # Get a pod's YAML without cluster specific information
+
+    # Describe commands with verbose output
+    kubectl describe nodes my-node
+    kubectl describe pods my-pod
+
+    kubectl get services --sort-by=.metadata.name # List Services Sorted by Name
+
+    # List pods Sorted by Restart Count
+    kubectl get pods --sort-by='.status.containerStatuses[0].restartCount'
+
+    # List pods in test namespace sorted by capacity 
+
+    kubectl get pods -n test --sort-by=.spec.capacity.storage  
+
+    # Get the version label of all pods with label app=cassandra
+    kubectl get pods --selector=app=cassandra -o \
+      jsonpath='{.items[*].metadata.labels.version}'
+
+    # Get all worker nodes (use a selector to exclude results that have a label
+    # named 'node-role.kubernetes.io/master')
+    kubectl get node --selector='!node-role.kubernetes.io/master'
+
+    # Get all running pods in the namespace
+    kubectl get pods --field-selector=status.phase=Running
+
+    # Get ExternalIPs of all nodes
+    kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="ExternalIP")].address}'
+
+    # List Names of Pods that belong to Particular RC
+    # "jq" command useful for transformations that are too complex for jsonpath, it can be found at https://stedolan.github.io/jq/
+    sel=${$(kubectl get rc my-rc --output=json | jq -j '.spec.selector | to_entries | .[] | "\(.key)=\(.value),"')%?}
+    echo $(kubectl get pods --selector=$sel --output=jsonpath={.items..metadata.name})
+
+    # Show labels for all pods (or any other Kubernetes object that supports labelling)
+    # Also uses "jq"
+    for item in $( kubectl get pod --output=name); do printf "Labels for %s\n" "$item" | grep --color -E '[^/]+$' && kubectl get "$item" --output=json | jq -r -S '.metadata.labels | to_entries | .[] | " \(.key)=\(.value)"' 2>/dev/null; printf "\n"; done
+
+    # Or this command can be used as well to get all the labels associated with pods
+    kubectl get pods --show-labels
+
+    # Check which nodes are ready
+    JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}' \
+     && kubectl get nodes -o jsonpath="$JSONPATH" | grep "Ready=True"
+
+    # List all Secrets currently in use by a pod
+    kubectl get pods -o json | jq '.items[].spec.containers[].env[]?.valueFrom.secretKeyRef.name' | grep -v null | sort | uniq
+
+    # List Events sorted by timestamp
+    kubectl get events --sort-by=.metadata.creationTimestamp
+
+    kubectl get deploy -o=custom-columns=NAME:'.metadata.name',IMAGES:'.spec.template.spec.containers[*].image'
+    kubectl get deploy -o=custom-columns-file=$HOME/.kube/columns/test
+
+......
+
+参考
+
+https://cs.leops.cn/#/cheatsheet/container/kubectl

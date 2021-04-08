@@ -888,6 +888,10 @@ Kuboard，是一款免费的 Kubernetes 图形化管理工具，Kuboard
 
 https://www.cnblogs.com/xiao987334176/p/12060855.html
 
+在 K8S 中安装 Kuboard v3
+
+https://www.kuboard.cn/install/v3/install-in-k8s.html#%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4
+
 4 kubectl管理工具
 -----------------
 
@@ -1096,6 +1100,71 @@ https://www.cloudcared.cn/3126.html
 https://gitee.com/hujianli94net/kainstall.git
 
 https://gitee.com/oschina/install-single-master-K8s.git
+
+7. 移除node和重新加入node
+-------------------------
+
+::
+
+    1.查看当前所有node节点
+    sudo kubectl get no    
+
+
+    2.将我的节点标记为不可调度
+    kubectl cordon k8-w8
+
+
+    3.排空节点以准备维护
+    kubectl drain my-node  
+
+
+    4.在master上移除节点
+    sudo kubectl delete node <your-node>
+
+
+    5.在被删除节点<node>执行
+    kubeadm reset
+
+
+    6.在master节点重新生成token
+    [root@ci-base ~]# kubeadm token create --print-join-command
+    W0406 18:46:41.609997   17201 configset.go:202] WARNING: kubeadm cannot validate component configs for API groups [kubelet.config.k8s.io kubeproxy.config.k8s.io]
+
+    kubeadm join kube-apiserver.gitee.cc:6443 --token vawvl2.521xl3jo2h2y2h4h     --discovery-token-ca-cert-hash sha256:31a7cc20f0c5471a525c43e530bd21360bd4d1a19fa9e96724ad811a295eebd5
+
+
+    7.在被加入节点执行 kubeadm join
+
+8. 手动管理Node资源与节点
+-------------------------
+
+考虑到系统维护或硬件升级等原因，管理员有时候需要手动重启或下线某个工作节点，
+
+安全的操作步骤是先手动禁止调度器继续向该节点调度新的Pod对象以封锁（cordon）该节点，
+
+但封锁操作并不会影响节点上现有的Pod对象，接下来还需要正常逐出该节点上运行着的工作负载以“排空”（drain）该节点。
+
+    注意
+
+    封锁工作节点对DaemonSet控制器创建的Pod对象无效。
+
+::
+
+    //下面的命令可封锁k8s-W1节点
+    kubectl cordon k8s-w1
+
+    //排空命令自身也会先封锁目标节点而后再进行排空操作，即完成封锁和排空两个步骤
+    kubectl drain k8s-w1
+
+不过，仅期望封锁工作节点时，cordon命令显然更适用。随后，无论是运行cordon还是drain命令，若期望工作节点回归正常工作状态，都需要使用uncordo命令对节点进行解封。
+
+::
+
+    kubectl uncordo k8s-w1
+
+需要注意的是，drain默认只能排空受控制器（如Deployment、DaemonSet或StatefulSet等）管理的Pod对象，而不受控于控制器的Pod（例如静态Pod）则会阻止命令的运行。
+
+如果要忽略这种阻止操作，可以为drain附加--force选项，以清理系统级Pod对象。
 
 参考文献
 --------

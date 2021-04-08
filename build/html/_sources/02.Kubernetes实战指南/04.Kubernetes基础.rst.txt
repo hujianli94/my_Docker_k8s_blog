@@ -366,15 +366,19 @@ Krew自身也表现为kubectl的一个插件，需要以手动方式独立安装
 
 ::
 
-    #!/bin/bash
-    set -x; cd "$(mktemp -d)"
+    # 安装kubectl插件krew
+    curl -fsSLO "https://storage.googleapis.com/krew/v0.2.1/krew.{tar.gz,yaml}"
 
-    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.{tar.gz,yaml}" 
-    tar zxvf krew.tar.gz 
-    KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64"
+    tar zxvf krew.tar.gz
+    ./krew-linux_amd64 install --manifest=krew.yaml --archive=krew.tar.gz
+    echo "export PATH=\"\${KREW_ROOT:-\$HOME/.krew}/bin:\$PATH\"" >>/etc/profile
+    source /etc/profile
 
-    "$KREW" install --manifest=krew.yaml --archive=krew.tar.gz
-    "$KREW" update
+    # 更新插件列表
+    kubectl krew update
+
+    # 查看插件列表
+    kubectl krew list
 
 编辑$HOME/.bash\_profile文件，将export一行命令添加其中，并重启当前shell解释器。
 

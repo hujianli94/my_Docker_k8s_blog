@@ -46,7 +46,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Pod" href="05.Pod.html" />
+    <link rel="next" title="Kubernetes的资源对象" href="05.Kubernetes的资源对象.html" />
     <link rel="prev" title="Docker基础" href="03.Docker基础.html" /> 
 </head>
 
@@ -145,7 +145,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#id18">小结</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="05.Pod.html">Pod</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.Kubernetes的资源对象.html">Kubernetes的资源对象</a></li>
 <li class="toctree-l2"><a class="reference internal" href="06.Serveice.html">Serveice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Ingress.html">Ingress</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.Kubernetest数据管理.html">Kubernetest数据管理</a></li>
@@ -581,15 +581,19 @@ CLI社区还提供了一个插件管理器——Krew，它能够帮助用户打�
 <p>项目地址为https://krew.sigs.k8s.io/。Krew以跨平台的方式打包和分发插件，因此单一打包格式即能适配主流的系统平台（Linux、Windows或macOS等）。为了便于插件分发，Krew还维护有一个插件索引，以方便用户发现主流的可用插件。</p>
 <p>Krew自身也表现为kubectl的一个插件，需要以手动方式独立安装。下面的脚本（krew-install.sh）能自动完成Krew插件的安装，该脚本仅适用于类UNIX系统平台，并以bash解释器运行，其他平台上的部署方式请参考Krew项目的官方文档。</p>
 <p><code class="docutils literal notranslate"><span class="pre">krew-install.sh</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="nb">set</span> <span class="o">-</span><span class="n">x</span><span class="p">;</span> <span class="n">cd</span> <span class="s2">&quot;$(mktemp -d)&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装kubectl插件krew</span>
+<span class="n">curl</span> <span class="o">-</span><span class="n">fsSLO</span> <span class="s2">&quot;https://storage.googleapis.com/krew/v0.2.1/krew.{tar.gz,yaml}&quot;</span>
 
-<span class="n">curl</span> <span class="o">-</span><span class="n">fsSLO</span> <span class="s2">&quot;https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.{tar.gz,yaml}&quot;</span>
 <span class="n">tar</span> <span class="n">zxvf</span> <span class="n">krew</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
-<span class="n">KREW</span><span class="o">=./</span><span class="n">krew</span><span class="o">-</span><span class="s2">&quot;$(uname | tr &#39;[:upper:]&#39; &#39;[:lower:]&#39;)_amd64&quot;</span>
+<span class="o">./</span><span class="n">krew</span><span class="o">-</span><span class="n">linux_amd64</span> <span class="n">install</span> <span class="o">--</span><span class="n">manifest</span><span class="o">=</span><span class="n">krew</span><span class="o">.</span><span class="n">yaml</span> <span class="o">--</span><span class="n">archive</span><span class="o">=</span><span class="n">krew</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<span class="n">echo</span> <span class="s2">&quot;export PATH=</span><span class="se">\&quot;</span><span class="s2">\${KREW_ROOT:-\$HOME/.krew}/bin:\$PATH</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">&gt;&gt;/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span>
+<span class="n">source</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span>
 
-<span class="s2">&quot;$KREW&quot;</span> <span class="n">install</span> <span class="o">--</span><span class="n">manifest</span><span class="o">=</span><span class="n">krew</span><span class="o">.</span><span class="n">yaml</span> <span class="o">--</span><span class="n">archive</span><span class="o">=</span><span class="n">krew</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
-<span class="s2">&quot;$KREW&quot;</span> <span class="n">update</span>
+<span class="c1"># 更新插件列表</span>
+<span class="n">kubectl</span> <span class="n">krew</span> <span class="n">update</span>
+
+<span class="c1"># 查看插件列表</span>
+<span class="n">kubectl</span> <span class="n">krew</span> <span class="nb">list</span>
 </pre></div>
 </div>
 <p>编辑$HOME/.bash_profile文件，将export一行命令添加其中，并重启当前shell解释器。</p>
@@ -1403,7 +1407,7 @@ iKubernetes demoapp v1.0 !! ClientIP: 10.244.215.64, ServerName: demoapp-6c5d545
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="05.Pod.html" class="btn btn-neutral float-right" title="Pod" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="05.Kubernetes的资源对象.html" class="btn btn-neutral float-right" title="Kubernetes的资源对象" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="03.Docker基础.html" class="btn btn-neutral float-left" title="Docker基础" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

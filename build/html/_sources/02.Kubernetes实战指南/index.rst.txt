@@ -11,7 +11,7 @@
     02.Kubespray部署k8s
     03.Docker基础
     04.Kubernetes基础
-    05.Pod
+    05.Kubernetes的资源对象
     06.Serveice
     07.Ingress
     08.Kubernetest数据管理
