@@ -106,7 +106,7 @@
 <li class="toctree-l2"><a class="reference internal" href="02.Kubespray部署k8s.html">Kubespray部署k8s</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03.Docker基础.html">Docker基础</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04.Kubernetes基础.html">Kubernetes基础</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05.Pod.html">Pod</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.Kubernetes的资源对象.html">Kubernetes的资源对象</a></li>
 <li class="toctree-l2"><a class="reference internal" href="06.Serveice.html">Serveice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Ingress.html">Ingress</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Kubernetest数据管理</a><ul>
@@ -134,6 +134,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#id8">使用StorageClass</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#kubernetes-secret">7. Kubernetes Secret（机密存储）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kubernetes-configmap">8. Kubernetes configMap（配置文件存储）</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="09.kubernetes实战案例.html">Kubernetes实战案例</a></li>
@@ -237,6 +239,8 @@
 <li><a class="reference internal" href="#id8" id="id25">使用StorageClass</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#kubernetes-secret" id="id26">7. Kubernetes Secret（机密存储）</a></li>
+<li><a class="reference internal" href="#kubernetes-configmap" id="id27">8. Kubernetes configMap（配置文件存储）</a></li>
 </ul>
 </li>
 </ul>
@@ -419,6 +423,8 @@ grub  nss  useradd  yyy
 <div class="section" id="nfs">
 <h2><a class="toc-backref" href="#id13">3. NFS</a><a class="headerlink" href="#nfs" title="Permalink to this headline">¶</a></h2>
 <p>NFS是网络存储，通过挂载去访问里面的资源。</p>
+<p>Kubernetes内置了多种类型的网络存储卷插件，它们支持的存储服务包括传统的NAS或SAN设备（例如NFS、iscsi和FC等）、分布式存储（例如GlusterFS、CephFS和RBD等）、云存储（例如gcePersistentDisk、azureDisk、Cinder和awsElasticBlockStore等）以及构建在各类存储系统之上的抽象管理层（例如flocker、portworxVolume和vSphereVolume等）。</p>
+<p>这类服务通常都是独立运行的存储系统，因相应的存储卷可以支持超越节点生命周期的数据持久性。</p>
 <div class="section" id="id2">
 <h3><a class="toc-backref" href="#id14">3.1 搭建NFS服务与客户端</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p><strong>1、管理节点：安装nfs服务端、配置nfs主配置文件、添加权限、启动</strong></p>
@@ -838,6 +844,7 @@ PVC：消费者、消费容量
 </pre></div>
 </div>
 <p>修改文件中的部分配置，然后保存。</p>
+<p><code class="docutils literal notranslate"><span class="pre">deployment.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
 <span class="n">metadata</span><span class="p">:</span>
@@ -877,6 +884,17 @@ PVC：消费者、消费容量
           <span class="n">nfs</span><span class="p">:</span>
             <span class="n">server</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.46</span>
             <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">class.yaml</span></code>中的provisioner要与<code class="docutils literal notranslate"><span class="pre">deployment.yaml</span></code>中一致</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">deploy</span><span class="p">]</span><span class="c1"># cat class.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">storage</span><span class="o">.</span><span class="n">k8s</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">StorageClass</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">managed</span><span class="o">-</span><span class="n">nfs</span><span class="o">-</span><span class="n">storage</span>
+<span class="n">provisioner</span><span class="p">:</span> <span class="n">managed</span><span class="o">-</span><span class="n">nfs</span><span class="o">-</span><span class="n">storage</span> <span class="c1"># or choose another name, must match deployment&#39;s env PROVISIONER_NAME&#39;</span>
+<span class="n">parameters</span><span class="p">:</span>
+  <span class="n">archiveOnDelete</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
 </pre></div>
 </div>
 <p>接下来，执行以下命令，创建NFS存储分配器的相关资源。</p>
@@ -927,6 +945,14 @@ PVC：消费者、消费容量
 </pre></div>
 </div>
 </div>
+</div>
+<div class="section" id="kubernetes-secret">
+<h2><a class="toc-backref" href="#id26">7. Kubernetes Secret（机密存储）</a><a class="headerlink" href="#kubernetes-secret" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/11424286.html">https://www.cnblogs.com/xiangsikai/p/11424286.html</a></p>
+</div>
+<div class="section" id="kubernetes-configmap">
+<h2><a class="toc-backref" href="#id27">8. Kubernetes configMap（配置文件存储）</a><a class="headerlink" href="#kubernetes-configmap" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/11424321.html">https://www.cnblogs.com/xiangsikai/p/11424321.html</a></p>
 </div>
 </div>
 

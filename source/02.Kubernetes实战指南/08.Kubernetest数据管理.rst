@@ -200,6 +200,10 @@ emptyDir是在主机上创建临时目录，优点是能够方便地位Pod中容
 
 NFS是网络存储，通过挂载去访问里面的资源。
 
+Kubernetes内置了多种类型的网络存储卷插件，它们支持的存储服务包括传统的NAS或SAN设备（例如NFS、iscsi和FC等）、分布式存储（例如GlusterFS、CephFS和RBD等）、云存储（例如gcePersistentDisk、azureDisk、Cinder和awsElasticBlockStore等）以及构建在各类存储系统之上的抽象管理层（例如flocker、portworxVolume和vSphereVolume等）。
+
+这类服务通常都是独立运行的存储系统，因相应的存储卷可以支持超越节点生命周期的数据持久性。
+
 3.1 搭建NFS服务与客户端
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -679,6 +683,8 @@ Node节点部署NFS客户端
 
 修改文件中的部分配置，然后保存。
 
+``deployment.yaml``
+
 ::
 
     apiVersion: apps/v1
@@ -720,6 +726,19 @@ Node节点部署NFS客户端
               nfs:
                 server: 192.168.1.46
                 path: /data/nfs
+
+``class.yaml``\ 中的provisioner要与\ ``deployment.yaml``\ 中一致
+
+::
+
+    [root@ci-base deploy]# cat class.yaml
+    apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    metadata:
+      name: managed-nfs-storage
+    provisioner: managed-nfs-storage # or choose another name, must match deployment's env PROVISIONER_NAME'
+    parameters:
+      archiveOnDelete: "false"
 
 接下来，执行以下命令，创建NFS存储分配器的相关资源。
 
@@ -773,3 +792,13 @@ test-pod.yaml
         - name: nfs-pvc
           persistentVolumeClaim:
             claimName: test-claim
+
+7. Kubernetes Secret（机密存储）
+--------------------------------
+
+https://www.cnblogs.com/xiangsikai/p/11424286.html
+
+8. Kubernetes configMap（配置文件存储）
+---------------------------------------
+
+https://www.cnblogs.com/xiangsikai/p/11424321.html

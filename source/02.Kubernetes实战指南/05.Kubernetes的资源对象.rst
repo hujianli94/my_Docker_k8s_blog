@@ -1625,3 +1625,88 @@ Viewing, Finding Resources
 参考
 
 https://cs.leops.cn/#/cheatsheet/container/kubectl
+
+应用部署、运行与管理
+--------------------
+
+一个综合案例
+
+下面的示例中有一个初始化容器和两个应用容器，其中sidecar-proxy为Sidecar容器，负责为主容器demo代理服务客户端请求。
+
+::
+
+    kubectl create ns dev
+
+``all-in-one.yaml``
+
+::
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: all-in-one
+      namespace: dev
+    spec:
+      initContainers:
+      - name: iptables-init
+        image: ikubernetes/admin-box:latest
+        imagePullPolicy: IfNotPresent
+        command: ['/bin/sh','-c']
+        args: ['iptables -t nat -A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 80']
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+      containers:
+      - name: sidecar-proxy
+        image: envoyproxy/envoy-alpine:v1.13.1
+        command: ['/bin/sh','-c']
+        args: ['sleep 3 && envoy -c /etc/envoy/envoy.yaml']
+        lifecycle:
+          postStart:
+            exec:
+              command: ['/bin/sh','-c','wget -O /etc/envoy/envoy.yaml http://ilinux.io/envoy.yaml']
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 5
+      - name: demo
+        image: ikubernetes/demoapp:v1.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PORT
+          value: '8080'
+        livenessProbe:
+          httpGet:
+            path: '/livez'
+            port: 8080
+          initialDelaySeconds: 5
+        readinessProbe:
+          httpGet:
+            path: '/readyz'
+            port: 8080
+          initialDelaySeconds: 15
+        securityContext:
+          runAsUser: 1001
+          runAsGroup: 1001
+        resources:
+          requests:
+            cpu: 0.5
+            memory: "64Mi"
+          limits:
+            cpu: 2
+            memory: "1024Mi"
+      securityContext:
+        supplementalGroups: [1002, 1003]
+        fsGroup: 2000
+
+配置清单的Pod对象的各容器中
+
+-  主容器demo在Pod的IP地址上监听TCP协议的8080端口，以接收并响应HTTP请求；
+-  Sidecar容器sidecar-proxy监听TCP协议的80端口，接收HTTP请求并将其代理至demo容器的8080端口；
+-  初始化容器在Pod的Network名称空间中添加了一条iptables重定向规则，该规则负责把所有发往Pod
+   IP上8080端口的请求重定向至80端口，因而demo容器仅能从127.0.0.1的8080端口接收到请求
