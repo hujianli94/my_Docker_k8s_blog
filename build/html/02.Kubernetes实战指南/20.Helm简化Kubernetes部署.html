@@ -113,31 +113,40 @@
 <li class="toctree-l2"><a class="reference internal" href="09.kubernetes实战案例.html">Kubernetes实战案例</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Helm简化kubernetes部署</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#helm">Helm基础</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#helm-3-v3">Helm 3 v3 变化</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#helm-3-v3">Helm 3 v3 变化</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Helm的核心术语</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#helm-3">Helm 3快速入门</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id1">安装</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id2">安装方式1</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">安装方式2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">安装</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">安装方式1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">安装方式2</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#charts">查看Charts仓库信息</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">常见操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">常见操作</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stable-redisns-redis">安装stable/redis在ns=redis中</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">helm包检查项目</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id6">Helm安装和卸载</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">helm包检查项目</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Helm安装和卸载</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#helmdemo">使用Helm部署Demo</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#chart">chart 的基本结构</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#helm-create">helm create</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#helm-package">helm package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#helm-search">helm search</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#helm-inspect">helm inspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id7">Chart 模板示例</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id9">编写一个简单的 Chart 示例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">Chart 模板示例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">编写一个简单的 Chart 示例</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id10">开发自己的 chart</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id11">常见命令</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id12">参考文献</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Chart 模板开发指南</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id14">1 先创建模板</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#chart-yaml-values-yaml">2 修改 Chart.yaml，Values.yaml</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id21">3 模板和值</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id22">4. 自定义Charts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id25">常见命令</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">参考文献</a></li>
 </ul>
 </li>
 </ul>
@@ -214,39 +223,48 @@
   <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#helmkubernetes" id="id13">Helm简化kubernetes部署</a><ul>
-<li><a class="reference internal" href="#helm" id="id14">Helm基础</a></li>
-<li><a class="reference internal" href="#helm-3-v3" id="id15">Helm 3 v3 变化</a></li>
-<li><a class="reference internal" href="#helm-3" id="id16">Helm 3快速入门</a></li>
-<li><a class="reference internal" href="#id1" id="id17">安装</a><ul>
-<li><a class="reference internal" href="#id2" id="id18">安装方式1</a></li>
-<li><a class="reference internal" href="#id3" id="id19">安装方式2</a></li>
+<li><a class="reference internal" href="#helmkubernetes" id="id27">Helm简化kubernetes部署</a><ul>
+<li><a class="reference internal" href="#helm" id="id28">Helm基础</a></li>
+<li><a class="reference internal" href="#helm-3-v3" id="id29">Helm 3 v3 变化</a><ul>
+<li><a class="reference internal" href="#id1" id="id30">Helm的核心术语</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#charts" id="id20">查看Charts仓库信息</a></li>
-<li><a class="reference internal" href="#id4" id="id21">常见操作</a></li>
-<li><a class="reference internal" href="#stable-redisns-redis" id="id22">安装stable/redis在ns=redis中</a></li>
-<li><a class="reference internal" href="#id5" id="id23">helm包检查项目</a></li>
-<li><a class="reference internal" href="#id6" id="id24">Helm安装和卸载</a></li>
-<li><a class="reference internal" href="#helmdemo" id="id25">使用Helm部署Demo</a><ul>
-<li><a class="reference internal" href="#chart" id="id26">chart 的基本结构</a></li>
-<li><a class="reference internal" href="#helm-create" id="id27">helm create</a></li>
-<li><a class="reference internal" href="#helm-package" id="id28">helm package</a></li>
-<li><a class="reference internal" href="#helm-search" id="id29">helm search</a></li>
-<li><a class="reference internal" href="#helm-inspect" id="id30">helm inspect</a></li>
-<li><a class="reference internal" href="#id7" id="id31">Chart 模板示例</a></li>
-<li><a class="reference internal" href="#id9" id="id32">编写一个简单的 Chart 示例</a></li>
+<li><a class="reference internal" href="#helm-3" id="id31">Helm 3快速入门</a></li>
+<li><a class="reference internal" href="#id2" id="id32">安装</a><ul>
+<li><a class="reference internal" href="#id3" id="id33">安装方式1</a></li>
+<li><a class="reference internal" href="#id4" id="id34">安装方式2</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id10" id="id33">开发自己的 chart</a></li>
-<li><a class="reference internal" href="#id11" id="id34">常见命令</a></li>
-<li><a class="reference internal" href="#id12" id="id35">参考文献</a></li>
+<li><a class="reference internal" href="#charts" id="id35">查看Charts仓库信息</a></li>
+<li><a class="reference internal" href="#id5" id="id36">常见操作</a></li>
+<li><a class="reference internal" href="#stable-redisns-redis" id="id37">安装stable/redis在ns=redis中</a></li>
+<li><a class="reference internal" href="#id6" id="id38">helm包检查项目</a></li>
+<li><a class="reference internal" href="#id7" id="id39">Helm安装和卸载</a></li>
+<li><a class="reference internal" href="#helmdemo" id="id40">使用Helm部署Demo</a><ul>
+<li><a class="reference internal" href="#chart" id="id41">chart 的基本结构</a></li>
+<li><a class="reference internal" href="#helm-create" id="id42">helm create</a></li>
+<li><a class="reference internal" href="#helm-package" id="id43">helm package</a></li>
+<li><a class="reference internal" href="#helm-search" id="id44">helm search</a></li>
+<li><a class="reference internal" href="#helm-inspect" id="id45">helm inspect</a></li>
+<li><a class="reference internal" href="#id8" id="id46">Chart 模板示例</a></li>
+<li><a class="reference internal" href="#id10" id="id47">编写一个简单的 Chart 示例</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id13" id="id48">Chart 模板开发指南</a><ul>
+<li><a class="reference internal" href="#id14" id="id49">1 先创建模板</a></li>
+<li><a class="reference internal" href="#chart-yaml-values-yaml" id="id50">2 修改 Chart.yaml，Values.yaml</a></li>
+<li><a class="reference internal" href="#id21" id="id51">3 模板和值</a></li>
+<li><a class="reference internal" href="#id22" id="id52">4. 自定义Charts</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id25" id="id53">常见命令</a></li>
+<li><a class="reference internal" href="#id26" id="id54">参考文献</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="helmkubernetes">
-<h1><a class="toc-backref" href="#id13">Helm简化kubernetes部署</a><a class="headerlink" href="#helmkubernetes" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id27">Helm简化kubernetes部署</a><a class="headerlink" href="#helmkubernetes" title="Permalink to this headline">¶</a></h1>
 <p>Helm是Kubernetes生态系统中的一个软件包管理工具，有点类似于Linux操作系统里面的“apt-get”和“yum”。</p>
 <p>对Kubernetes集群进行部署应用时，我们将面临以下问题：</p>
 <ul class="simple">
@@ -259,14 +277,14 @@ Chart是用来封装Kubernetes原生应用程序的一系列YAML文件。我们�
 <p>对于应用发布者而言，可以通过Helm打包应用、管理应用依赖关系、管理应用版本并发布应用到软件仓库。</p>
 <p>对于使用者而言，使用Helm后不需要编写复杂的应用部署文件，可以以简单的方式在Kubernetes上查找、安装、升级、回滚、卸载应用程序。</p>
 <p>总之，Helm大大简化了应用管理的难度，其主要有以下优点：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>● 管理复杂应用。Charts能定义很复杂的应用，并且可重复使用应用程序部署定义。
-● 易于更新升级。
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>● 管理复杂应用,Charts能够描述哪怕是最复杂的程序结构，其提供了可重复使用的应用安装的定义。
+● 易于更新升级,使用就地升级和自定义钩子来解决更新的难题。
 ● 易于共享。Charts无论是在私有服务器还是公共服务器上，都非常易于升级、共享和托管。
-● 轻松回滚。
+● 轻松回滚，可使用“helm rollback”命令轻松实现快速回滚。
 </pre></div>
 </div>
 <div class="section" id="helm">
-<h2><a class="toc-backref" href="#id14">Helm基础</a><a class="headerlink" href="#helm" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id28">Helm基础</a><a class="headerlink" href="#helm" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Helm</li>
 </ul>
@@ -294,12 +312,10 @@ Chart是用来封装Kubernetes原生应用程序的一系列YAML文件。我们�
 install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到的Release和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。在同一个集群中，一个Chart可以使用不同的配置（Config）安装多次，每次安装都会创建一个Release。</p>
 </div>
 <div class="section" id="helm-3-v3">
-<h2><a class="toc-backref" href="#id15">Helm 3 v3 变化</a><a class="headerlink" href="#helm-3-v3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id29">Helm 3 v3 变化</a><a class="headerlink" href="#helm-3-v3" title="Permalink to this headline">¶</a></h2>
 <p>2019 年 11 月 13 日， Helm 团队发布 Helm v3 的第一个稳定版本。
 该版本主要变化如下： 架构变化：</p>
-<div class="figure">
-<img alt="" src="../_images/k8s-helmv30001.png" />
-</div>
+<p><img alt="image0" src="../_images/k8s-helmv30001.png" /></p>
 <ol class="arabic simple">
 <li>最明显的变化是 Tiller 的删除</li>
 <li>Release 名称可以在不同命名空间重用</li>
@@ -307,15 +323,32 @@ install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到�
 <li>使用 JSONSchema 验证 chart values</li>
 <li>其他</li>
 </ol>
+<div class="section" id="id1">
+<h3><a class="toc-backref" href="#id30">Helm的核心术语</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Helm将Kubernetes应用的相关配置组织为Charts，并通过它完成应用的常规管理操作。通常来说，使用Charts管理应用的流程包括从0开始创建Charts、将Charts及其相关的文件打包为归档格式、将Charts存储于仓库（repository）中并与之交互、在Kubernetes集群中安装或卸载Charts以及管理经Helm安装的应用的版本发行周期。因此，对Helm来说，它具有以下几个关键概念。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·Charts：即一个Helm程序包，它包含了运行一个Kubernetes应用所需要的镜像、依赖关系和资源定义等，必要时还会包含Service的定义；它类似于APT的dpkg文件或者yum的rpm文件。
+
+·Repository：Charts仓库，用于集中存储和分发Charts，类似于Perl的CPAN，或者Python的PyPI。
+
+·Config：应用程序实例化安装运行时使用的配置信息。
+
+·Release：应用程序实例化配置后运行于Kubernetes集群中的一个Charts实例；在同一个集群上，一个Charts可以使用不同的Config重复安装多次，每次安装都会创建一个新的Release。
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="helm-3">
-<h2><a class="toc-backref" href="#id16">Helm 3快速入门</a><a class="headerlink" href="#helm-3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id31">Helm 3快速入门</a><a class="headerlink" href="#helm-3" title="Permalink to this headline">¶</a></h2>
 <p>Helm的版本v2和版本v3目前处于维护当中，考虑了轻量、安全等特性，这里选择只介绍较新的版本v3的部署和使用，版本v2需要额外部署Tiller，而客户端的使用方法大多数都与版本v3相同。</p>
+<p>Helm的每个发行版都提供了主流操作系统的专用版本，主要包括Linux、Mac
+OS和Windows，用户安装前按需下载合用的平台上的相关发行版本即可。</p>
+<p>Helm项目托管在GitHub之上，项目地址为https://github.com/kubernetes/helm
+。</p>
 </div>
-<div class="section" id="id1">
-<h2><a class="toc-backref" href="#id17">安装</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id2">
-<h3><a class="toc-backref" href="#id18">安装方式1</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h2><a class="toc-backref" href="#id32">安装</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id33">安装方式1</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>下载最新的helm 3安装脚本</p>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">fsSL</span> <span class="o">-</span><span class="n">o</span> <span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">scripts</span><span class="o">/</span><span class="n">get</span><span class="o">-</span><span class="n">helm</span><span class="o">-</span><span class="mi">3</span>
 </pre></div>
@@ -341,16 +374,17 @@ install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到�
 </pre></div>
 </div>
 </div>
-<div class="section" id="id3">
-<h3><a class="toc-backref" href="#id19">安装方式2</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3><a class="toc-backref" href="#id34">安装方式2</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>安装helm-v3</p>
 <p>使用一条命令安装helm</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">git</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">bash</span>
 </pre></div>
 </div>
 <p>如果安装包无法下载，可以复制脚本输出的下载链接手动下载，然后解压复制到bin目录，如下所示：</p>
-<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Helm 客户端下载地址：https://github.com/helm/helm/releases解压移动到/usr/bin/目录即可。</span>
-<span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">get</span><span class="o">.</span><span class="n">helm</span><span class="o">.</span><span class="n">sh</span><span class="o">/</span><span class="n">helm</span><span class="o">-</span><span class="n">vv3</span><span class="o">.</span><span class="mf">2.1</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<p>Helm 客户端下载地址：<a class="reference external" href="https://github.com/helm/helm/releases">https://github.com/helm/helm/releases</a>
+解压移动到/usr/bin/目录即可。</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">get</span><span class="o">.</span><span class="n">helm</span><span class="o">.</span><span class="n">sh</span><span class="o">/</span><span class="n">helm</span><span class="o">-</span><span class="n">vv3</span><span class="o">.</span><span class="mf">2.1</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
 <span class="n">tar</span> <span class="n">zxvf</span> <span class="n">helm</span><span class="o">-</span><span class="n">v3</span><span class="o">.</span><span class="mf">2.1</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
 <span class="n">mv</span> <span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">/</span><span class="n">helm</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span>
 </pre></div>
@@ -358,7 +392,7 @@ install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到�
 </div>
 </div>
 <div class="section" id="charts">
-<h2><a class="toc-backref" href="#id20">查看Charts仓库信息</a><a class="headerlink" href="#charts" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id35">查看Charts仓库信息</a><a class="headerlink" href="#charts" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm repo list</span>
 <span class="n">NAME</span>            <span class="n">URL</span>
 <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>   <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>
@@ -367,13 +401,14 @@ install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到�
 </pre></div>
 </div>
 </div>
-<div class="section" id="id4">
-<h2><a class="toc-backref" href="#id21">常见操作</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2><a class="toc-backref" href="#id36">常见操作</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>4.2  配置国内 t chart  仓库
 
- 微软仓库（http://mirror.azure.cn/kubernetes/charts/）这个仓库推荐，基本
-上官网有的 chart 这里都有。
+ 微软仓库（http://mirror.azure.cn/kubernetes/charts/）这个仓库推荐，基本上官网有的 chart 这里都有。
+
  阿里云仓库（https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts ）
+
  官方仓库（https://hub.kubeapps.com/charts/incubator）官方 chart 仓库，国内有点不好使。
 
 
@@ -382,12 +417,14 @@ helm repo add stable http://mirror.azure.cn/kubernetes/charts
 helm repo add aliyun https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
 helm repo update
 
+
 #查看配置的存储库
 helm repo list
 helm search repo stable
 
 #删除存储库：
 helm repo remove aliyun
+
 
 # 列出stable仓库中维护的所有Charts的列表
 helm search repo
@@ -399,6 +436,27 @@ helm ls --all-namespaces
 
 
 # 查看Charts的详细信息
+[root@ci-base k8s_yaml]# helm show chart stable/redis
+apiVersion: v1
+appVersion: 4.0.8
+description: Open source, advanced key-value store. It is often referred to as a data
+  structure server since keys can contain strings, hashes, lists, sets and sorted
+  sets.
+home: http://redis.io/
+icon: https://bitnami.com/assets/stacks/redis/img/redis-stack-220x234.png
+keywords:
+- redis
+- keyvalue
+- database
+maintainers:
+- email: containers@bitnami.com
+  name: bitnami-bot
+name: redis
+sources:
+- https://github.com/bitnami/bitnami-docker-redis
+version: 1.1.15
+
+
 [root@ci-base home]# helm inspect chart stable/redis
 apiVersion: v1
 appVersion: 5.0.7
@@ -416,11 +474,15 @@ name: redis
 sources:
 - https://github.com/bitnami/bitnami-docker-redis
 version: 10.5.7
+
+
+#查看发布状态
+# helm list
 </pre></div>
 </div>
 </div>
 <div class="section" id="stable-redisns-redis">
-<h2><a class="toc-backref" href="#id22">安装stable/redis在ns=redis中</a><a class="headerlink" href="#stable-redisns-redis" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id37">安装stable/redis在ns=redis中</a><a class="headerlink" href="#stable-redisns-redis" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">创建</span>
 <span class="n">helm</span> <span class="n">search</span> <span class="n">repo</span> <span class="n">redis</span>
 <span class="n">kubectl</span> <span class="n">create</span> <span class="n">namespace</span> <span class="n">redis</span>
@@ -450,14 +512,21 @@ version: 10.5.7
 //创建
 [root@ci-base home]# helm install redis stable/redis
 
+//指定value.yaml文件创建
+helm install -f 12705values.yaml -n ci-gitee-12705 ci-gitee-12705 ./
+
+
 //查看
 [root@ci-base home]# helm list
 NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
 redis   default         1               2020-11-13 15:24:01.368251708 +0800 CST deployed        redis-10.5.7    5.0.7
 
+
+
 //删除
 [root@ci-base home]# helm uninstall redis
 或者使用delete
+
 [root@ci-base home]# helm delete redis
 release &quot;redis&quot; uninstalled
 
@@ -490,8 +559,8 @@ $ helm history helloworld
 </pre></div>
 </div>
 </div>
-<div class="section" id="id5">
-<h2><a class="toc-backref" href="#id23">helm包检查项目</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h2><a class="toc-backref" href="#id38">helm包检查项目</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># helm包检查项目</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># helm list --all-namespaces</span>
 
@@ -525,8 +594,8 @@ $ helm history helloworld
 </pre></div>
 </div>
 </div>
-<div class="section" id="id6">
-<h2><a class="toc-backref" href="#id24">Helm安装和卸载</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h2><a class="toc-backref" href="#id39">Helm安装和卸载</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># helm安装和卸载
 [root@ci-base home]# helm install myapp --debug ./mychart --set service.type=NodePort
 [root@ci-base home]# helm uninstall myapp
@@ -538,6 +607,8 @@ $ helm history helloworld
 
 # 删除命名空间ci-gitee-11856中的chart
 helm uninstall -n ci-gitee-11856 ci-gitee-11856
+
+
 
 #删除命名空间dev中的chart
 helm uninstall -n dev dev
@@ -557,13 +628,13 @@ helm install --name myapp --debug ./mychart --set service.type=NodePort
 </div>
 </div>
 <div class="section" id="helmdemo">
-<h2><a class="toc-backref" href="#id25">使用Helm部署Demo</a><a class="headerlink" href="#helmdemo" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id40">使用Helm部署Demo</a><a class="headerlink" href="#helmdemo" title="Permalink to this headline">¶</a></h2>
+<p>事实上，一个单独的Charts既能用于部署简单应用，例如一个memcached
+Pod，也能部署复杂的应用，如由HTTP服务器、DB服务器、Cache服务器和应用程序服务器等共同组成的Web应用栈。</p>
 <p>接下来我们基于以上认知和Demo配置来进行部署，流程如图</p>
-<div class="figure">
-<img alt="" src="../_images/k8s-helm0001.png" />
-</div>
+<p><img alt="image1" src="../_images/k8s-helm0001.png" /></p>
 <div class="section" id="chart">
-<h3><a class="toc-backref" href="#id26">chart 的基本结构</a><a class="headerlink" href="#chart" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id41">chart 的基本结构</a><a class="headerlink" href="#chart" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@ci-base helm]# helm create test
 Creating test
 
@@ -596,7 +667,7 @@ test/
 </ul>
 </div>
 <div class="section" id="helm-create">
-<h3><a class="toc-backref" href="#id27">helm create</a><a class="headerlink" href="#helm-create" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id42">helm create</a><a class="headerlink" href="#helm-create" title="Permalink to this headline">¶</a></h3>
 <p>创建一个 Chart 模板</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># helm create test</span>
 <span class="n">Creating</span> <span class="n">test</span>
@@ -604,7 +675,7 @@ test/
 </div>
 </div>
 <div class="section" id="helm-package">
-<h3><a class="toc-backref" href="#id28">helm package</a><a class="headerlink" href="#helm-package" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id43">helm package</a><a class="headerlink" href="#helm-package" title="Permalink to this headline">¶</a></h3>
 <p>打包一个 Chart 模板</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># helm package test</span>
 <span class="n">Successfully</span> <span class="n">packaged</span> <span class="n">chart</span> <span class="ow">and</span> <span class="n">saved</span> <span class="n">it</span> <span class="n">to</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">k8s</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">test</span><span class="o">-</span><span class="mf">0.1</span><span class="o">.</span><span class="mf">0.</span><span class="n">tgz</span>
@@ -612,7 +683,7 @@ test/
 </div>
 </div>
 <div class="section" id="helm-search">
-<h3><a class="toc-backref" href="#id29">helm search</a><a class="headerlink" href="#helm-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id44">helm search</a><a class="headerlink" href="#helm-search" title="Permalink to this headline">¶</a></h3>
 <p>查找可用的 Chart 模板</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># helm search hub nginx</span>
 <span class="n">URL</span>                                                     <span class="n">CHART</span> <span class="n">VERSION</span>   <span class="n">APP</span> <span class="n">VERSION</span>     <span class="n">DESCRIPTION</span>
@@ -623,7 +694,7 @@ test/
 </div>
 </div>
 <div class="section" id="helm-inspect">
-<h3><a class="toc-backref" href="#id30">helm inspect</a><a class="headerlink" href="#helm-inspect" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id45">helm inspect</a><a class="headerlink" href="#helm-inspect" title="Permalink to this headline">¶</a></h3>
 <p>查看指定 Chart 的基本信息</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># helm inspect chart test</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">v2</span>
@@ -635,10 +706,10 @@ test/
 </pre></div>
 </div>
 </div>
-<div class="section" id="id7">
-<h3><a class="toc-backref" href="#id31">Chart 模板示例</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="id8">
-<h4>Chart 文件结构<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<h3><a class="toc-backref" href="#id46">Chart 模板示例</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id9">
+<h4>Chart 文件结构<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>wordpress
 ├── charts
 ├── Chart.yaml
@@ -669,7 +740,7 @@ test/
 <li>README.md 可选：Chart 的介绍信息等（该文件对于一个大型 Chart
 来说十分重要）</li>
 <li>Requirements.yaml 可选：列举当前 Chart 的需要依赖的 Chart</li>
-<li>templates</li>
+<li>templates<ul>
 <li>该目录下存放 Chart 所有的 K8s
 资源定义模板，通常不同的资源放在不同的文件中，DCE Helm
 插件中自定义模板的 K8s 资源统一放在 all_sources.yaml 文件中</li>
@@ -678,12 +749,37 @@ test/
 其它资源定义模板中使用</li>
 <li>NOTES.txt，可选：一段简短使用说明的文本文件，用于安装 Release
 后提示用户使用</li>
+</ul>
+</li>
 <li>values.yaml 当前 Chart 的默认配置的值</li>
 </ul>
+<p>我们查看下使用 <code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">create</span></code> 命令自动生成的 <code class="docutils literal notranslate"><span class="pre">templates/service.yaml</span></code>
+文件。</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span> <span class="n">include</span> <span class="s2">&quot;mychart.fullname&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="p">{{</span><span class="o">-</span> <span class="n">include</span> <span class="s2">&quot;mychart.labels&quot;</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">4</span> <span class="p">}}</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="p">{{</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">type</span> <span class="p">}}</span>
+  <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">port</span><span class="p">:</span> <span class="p">{{</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">port</span> <span class="p">}}</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="n">http</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">name</span><span class="p">:</span> <span class="n">http</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="p">{{</span><span class="o">-</span> <span class="n">include</span> <span class="s2">&quot;mychart.selectorLabels&quot;</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">4</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>可以看到其中有很多<code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">}}</span></code> 包围的字段，这是使用的 <a class="reference external" href="https://golang.org/pkg/text/template/">Go
+template</a>
+创建的自定义字段，其中 <code class="docutils literal notranslate"><span class="pre">mychart</span></code> 开头的都是在 <code class="docutils literal notranslate"><span class="pre">_helpers.tpl</span></code>
+中生成的定义。</p>
 </div>
 </div>
-<div class="section" id="id9">
-<h3><a class="toc-backref" href="#id32">编写一个简单的 Chart 示例</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id10">
+<h3><a class="toc-backref" href="#id47">编写一个简单的 Chart 示例</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>本节以构建一个名称为 nginx-test Chart 为示例，来描述一个 chart
 必要条件。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># helm create nginx-test</span>
@@ -692,6 +788,57 @@ test/
 </div>
 <p>1、Chart.yaml 文件是 一个 chart 必要文件，
 该文件可以简单包括以下字段（具体字段请参考<a class="reference external" href="https://links.jianshu.com/go?to=https%3A%2F%2Fhelm.sh%2F">Helm官网</a>)</p>
+<div class="section" id="chart-yaml">
+<h4>Chart.yaml文件组织格式<a class="headerlink" href="#chart-yaml" title="Permalink to this headline">¶</a></h4>
+<p>Chart.yaml用于提供Charts相关的各种元数据，如名称、版本、关键词、维护者信息、使用的模板引擎等，它是一个Charts必备的核心文件，主要包含以下字段。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·name：当前Charts的名称，必选字段。
+
+·version：遵循语义化版本规范第2版的版本号，必选字段。
+
+·description：当前项目的单语句描述信息，可选字段。
+
+·keywords：当前项目的关键词列表，可选字段。
+
+·home：当前项目的主页URL，可选字段。
+
+·sources：当前项目用到的源码的来源URL列表，可选字段。
+
+·maintainers：项目维护者信息，主要嵌套name、email和URL几个属性组成；可选字段。
+
+·engine：模板引擎的名称，默认为gotpl，即go模板。
+
+·icon：URL，指向当前项目的图标，SVG或PNG格式的图片；可选字段。
+
+·appVersion：本项目用到的应用程序的版本号，可选字段，且不必为语义化版本。
+
+·deprecated：当前Charts是否已废弃，可选字段，布尔型值。
+
+·tillerVersion：当前Charts依赖的Tiller版本号，可以是语义化版本号的范围，如“&gt;2.4.0”；可选字段。
+</pre></div>
+</div>
+<p>面的示例信息是redis
+Charts中使用的Chart.yaml的内容，用户自行定义Charts编写相关文件时，要采用类似的文件格式：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">appVersion</span><span class="p">:</span> <span class="mf">4.0</span><span class="o">.</span><span class="mi">9</span>
+<span class="n">description</span><span class="p">:</span> <span class="n">Open</span> <span class="n">source</span><span class="p">,</span> <span class="n">advanced</span> <span class="n">key</span><span class="o">-</span><span class="n">value</span> <span class="n">store</span><span class="o">.</span> <span class="n">It</span> <span class="ow">is</span> <span class="n">often</span> <span class="n">referred</span>
+  <span class="n">to</span> <span class="k">as</span> <span class="n">a</span> <span class="n">data</span> <span class="n">structure</span> <span class="n">server</span> <span class="n">since</span> <span class="n">keys</span> <span class="n">can</span> <span class="n">contain</span> <span class="n">strings</span><span class="p">,</span> <span class="n">hashes</span><span class="p">,</span>
+  <span class="n">lists</span><span class="p">,</span> <span class="n">sets</span> <span class="ow">and</span> <span class="nb">sorted</span> <span class="n">sets</span><span class="o">.</span>
+<span class="n">engine</span><span class="p">:</span> <span class="n">gotpl</span>
+<span class="n">home</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">redis</span><span class="o">.</span><span class="n">io</span><span class="o">/</span>
+<span class="n">icon</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">bitnami</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">assets</span><span class="o">/</span><span class="n">stacks</span><span class="o">/</span><span class="n">redis</span><span class="o">/</span><span class="n">img</span><span class="o">/</span><span class="n">redis</span><span class="o">-</span><span class="n">stack</span><span class="o">-</span><span class="mi">220</span><span class="n">x234</span><span class="o">.</span><span class="n">png</span>
+<span class="n">keywords</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">redis</span>
+<span class="o">-</span> <span class="n">keyvalue</span>
+<span class="o">-</span> <span class="n">database</span>
+<span class="n">maintainers</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">email</span><span class="p">:</span> <span class="n">containers</span><span class="nd">@bitnami</span><span class="o">.</span><span class="n">com</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">bitnami</span><span class="o">-</span><span class="n">bot</span>
+<span class="n">name</span><span class="p">:</span> <span class="n">redis</span>
+<span class="n">sources</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bitnami</span><span class="o">/</span><span class="n">bitnami</span><span class="o">-</span><span class="n">docker</span><span class="o">-</span><span class="n">redis</span>
+<span class="n">version</span><span class="p">:</span> <span class="mf">3.3</span><span class="o">.</span><span class="mi">0</span>
+</pre></div>
+</div>
+<p>nginx-test的Charts中使用的Chart.yaml的内容</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># cat nginx-test/Chart.yaml |grep -v &quot;^$&quot;|grep -v &quot;^#&quot;</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">v2</span>
 <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">test</span>
@@ -699,6 +846,60 @@ test/
 <span class="nb">type</span><span class="p">:</span> <span class="n">application</span>
 <span class="n">version</span><span class="p">:</span> <span class="mf">0.1</span><span class="o">.</span><span class="mi">0</span>
 <span class="n">appVersion</span><span class="p">:</span> <span class="mf">1.16</span><span class="o">.</span><span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h4>Charts中的依赖关系<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<p>requirements.yaml文件</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·name：被依赖的Charts的名称。
+
+·version：被依赖的Charts的版本。
+
+·repository：被依赖的Charts所属的仓库及其URL；如果是非官方的仓库，则需要先用helm repo add命令将其添加进本地可用仓库。
+
+·alias：为被依赖的Charts创建一个别名，从而让当前Charts可以将所依赖的Charts对应到新名称，即别名；可选字段。
+
+·tags：默认情况下所有的Charts都会被装载，若给定了tags，则仅装载那些匹配到的Charts。
+
+·condition：类似于tags字段，但需要通过自定义的条件来指明要装载的charts。
+
+·import-values：导入子Charts中的的值；被导入的值需要在子charts中导出。
+</pre></div>
+</div>
+<p>如下所示的示例，是Wordpress Charts中定义的动态依赖关系：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dependencies</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">mariadb</span>
+  <span class="n">version</span><span class="p">:</span> <span class="mf">2.1</span><span class="o">.</span><span class="mi">1</span>
+  <span class="n">repository</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">-</span><span class="n">charts</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">googleapis</span><span class="o">.</span><span class="n">com</span><span class="o">/</span>
+  <span class="n">condition</span><span class="p">:</span> <span class="n">mariadb</span><span class="o">.</span><span class="n">enabled</span>
+  <span class="n">tags</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">wordpress</span><span class="o">-</span><span class="n">database</span>
+</pre></div>
+</div>
+<p>一旦依赖关系文件配置完成，即可使用“helm dependency
+update”命令更新依赖关系，并自动下载被依赖的Charts至charts/目录中。</p>
+</div>
+<div class="section" id="id12">
+<h4>Charts目录<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<p>若需要对依赖关系进行更多的控制，则所有被依赖到的Charts都能以手工方式直接复制到Charts目录中。一个被依赖到的Charts既可以是归档格式，也可以是展开的目录格式，不过，其名称不能以下划线（_）或点号（.）开头，此类文件会被Charts装载器自动忽略。</p>
+<p>例如，Wordpress Charts依赖关系在其Charts目录中的反映类似如下所示：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>charts/
+└── mariadb
+    ├── Chart.yaml
+    ├── README.md
+    ├── templates
+    │   ├── configmap.yaml
+    │   ├── deployment.yaml
+    │   ├── _helpers.tpl
+    │   ├── NOTES.txt
+    │   ├── pvc.yaml
+    │   ├── secrets.yaml
+    │   ├── svc.yaml
+    │   ├── test-runner.yaml
+    │   └── tests.yaml
+    └── values.yaml
 </pre></div>
 </div>
 <p>2、values.yaml 文件是 chart 的必要文件，以 nginx 为示例：</p>
@@ -743,11 +944,11 @@ test/
 templates 下的 K8s 资源 yaml 渲染时填充默认值。</p>
 <p>不过需要注意的是，<strong>如果使用 helm install 来部署一个 Release ,
 可以通过下面命令指定一份yaml 文件作为填充值</strong>：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>helm install --values=myvals.yaml nginx
-
-注意：上面命令不要复制执行，执行会报错的。请根据实际情况执行！！！
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">install</span> <span class="o">--</span><span class="n">values</span><span class="o">=</span><span class="n">myvals</span><span class="o">.</span><span class="n">yaml</span> <span class="n">nginx</span>
 </pre></div>
 </div>
+<blockquote>
+<div>注意：上面命令不要复制执行，执行会报错的。请根据实际情况执行！！！</div></blockquote>
 <p>3、创建 templates 下的模板文件， 用于生成 Kubernetes 资源清单(manifests)
 如下所示:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cat nginx-test/templates/deployment.yaml</span>
@@ -781,7 +982,7 @@ templates 下的 K8s 资源 yaml 渲染时填充默认值。</p>
 </pre></div>
 </div>
 <p>该模板定义了
-“nginx-test.name”、”nginx-test.fullname”、”nginx-test.chart”
+“nginx-test.name”、“nginx-test.fullname”、“nginx-test.chart”
 等可重用模板部分，当模板引擎读取该文件时，它存储对
 nginx-test.name等的引用， 直到调用 template “nginx-test.name”
 为止。然后把值渲染到模板中。</p>
@@ -823,48 +1024,1090 @@ repository（存储库）到本地</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id10">
-<h2><a class="toc-backref" href="#id33">开发自己的 chart</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
-<p>1、先创建模板 2、修改 Chart.yaml，Values.yaml，添加常用的变量 3、 在
-templates 目录下创建部署镜像所需要的 yaml 文件，并变量引用 yaml
-里经常变动的字段</p>
 </div>
-<div class="section" id="id11">
-<h2><a class="toc-backref" href="#id34">常见命令</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">基于本地Chart目录部署</span>
-<span class="c1">#helm install -f values.yaml -n ci-gitee-nginx ci-gitee-nginx ./</span>
+<div class="section" id="id13">
+<h2><a class="toc-backref" href="#id48">Chart 模板开发指南</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id14">
+<h3><a class="toc-backref" href="#id49">1 先创建模板</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm create mychart</span>
+<span class="n">Creating</span> <span class="n">mychart</span>
+</pre></div>
+</div>
+<p>快速看一下目录 <code class="docutils literal notranslate"><span class="pre">mychart/templates/</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@ci-base helm_example]# tree .
+.
+└── mychart
+    ├── charts
+    ├── Chart.yaml
+    ├── templates
+    │   ├── deployment.yaml
+    │   ├── _helpers.tpl
+    │   ├── hpa.yaml
+    │   ├── ingress.yaml
+    │   ├── NOTES.txt
+    │   ├── serviceaccount.yaml
+    │   ├── service.yaml
+    │   └── tests
+    │       └── test-connection.yaml
+    └── values.yaml
 
-<span class="o">//</span><span class="n">删除release</span>
-<span class="c1"># helm uninstall -n ci-gitee-nginx ci-gitee-nginx</span>
-<span class="c1"># helm delete -n ci-gitee-nginx ci-gitee-nginx</span>
-
-<span class="o">//</span> <span class="n">查看版本历史</span>
-<span class="c1"># helm history -n ci-gitee-nginx ci-gitee-nginx</span>
-
-<span class="o">//</span> <span class="n">下载Chart</span>
-<span class="c1">#helm fetch xinlin/k8sapp</span>
-
- <span class="o">//</span><span class="n">基于本地Chart目录部署</span>
-<span class="c1"># helm install ./k8sapp</span>
-
- <span class="o">//</span> <span class="n">打包</span>
-<span class="c1"># helm package nginx_text</span>
-
- <span class="o">//</span> <span class="n">搜索</span>
-<span class="c1"># helm search k8sapp</span>
-
-<span class="o">//</span> <span class="n">启动本地仓库服务</span>
-<span class="c1"># helm serve</span>
-
-<span class="o">//</span> <span class="n">查看所有namespaces中部署的release</span>
-<span class="c1"># helm list --all-namespaces</span>
+4 directories, 10 files
+</pre></div>
+</div>
+<p>看一下 <code class="docutils literal notranslate"><span class="pre">mychart/templates/</span></code> 目录，发现如下几个文件已经存在。</p>
+<ul class="simple">
+<li>NOTES.txt：chart 的 “帮助文本”。这会在用户运行 <code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">install</span></code>
+时显示给用户。</li>
+<li>deployment.yaml：创建 Kubernetes
+<a class="reference external" href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">deployment</a>
+的基本 manifest</li>
+<li>service.yaml：为 deployment 创建 service 端点 <a class="reference external" href="https://kubernetes.io/docs/concepts/services-networking/service/">service
+endpoint</a>
+的基本 manifest</li>
+<li><code class="docutils literal notranslate"><span class="pre">_helpers.tpl</span></code>：放置模板助手的地方，可以在整个 chart 中重复使用</li>
+</ul>
+<p>而我们要做的就是……
+全部删除它们！这样我们就可以从头开始学习我们的教程。实际上，我们将创建自己的
+NOTES.txt 和_helpers.tpl。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># rm -rf mychart/templates/*.*</span>
+</pre></div>
+</div>
+<p>在编写生产级 chart 时，使用这些 chart
+的基本版本可能非常有用。所以在你的日常 chart 制作中，可以不删除它们。</p>
+<div class="section" id="id15">
+<h4>1.1 第一个模板<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<p>我们要创建的第一个模板将是一个 ConfigMap。在 Kubernetes 中，ConfigMap
+只是存储配置数据的地方。其他的东西，比如 Pod，可以访问 ConfigMap
+中的数据。</p>
+<p>由于 ConfigMaps 是基础资源，它们为我们提供了一个很好的起点。</p>
+<p>我们首先创建一个名为 mychart/templates/configmap.yaml：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">mychart</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+</pre></div>
+</div>
+<p><strong>提示：</strong> 模板名称不遵循严格的命名模式。但是，我们建议 <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> 为
+YAML 文件后缀，<code class="docutils literal notranslate"><span class="pre">.tpl</span></code> 为模板助手后缀。</p>
+<p>上面的 YAML 文件是一个简单的
+ConfigMap，具有最少的必要字段。由于该文件位于 <code class="docutils literal notranslate"><span class="pre">templates/</span></code>
+目录中，因此将通过模板引擎发送。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install myapp ./mychart/ -n dev</span>
+<span class="n">NAME</span><span class="p">:</span> <span class="n">myapp</span>
+<span class="n">LAST</span> <span class="n">DEPLOYED</span><span class="p">:</span> <span class="n">Fri</span> <span class="n">Apr</span>  <span class="mi">9</span> <span class="mi">13</span><span class="p">:</span><span class="mi">54</span><span class="p">:</span><span class="mi">30</span> <span class="mi">2021</span>
+<span class="n">NAMESPACE</span><span class="p">:</span> <span class="n">dev</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">deployed</span>
+<span class="n">REVISION</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">TEST</span> <span class="n">SUITE</span><span class="p">:</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>在上面的输出中，我们可以看到我们的 ConfigMap 已经创建。使用
+Helm，我们可以检索版本并查看加载的实际模板。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm get manifest myapp -n dev</span>
+<span class="o">---</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">mychart</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+</pre></div>
+</div>
+<p>该 <code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">get</span> <span class="pre">manifest</span></code> 命令获取 release
+名称（full-coral）并打印出上传到服务器的所有 Kubernetes 资源。</p>
+<p>每个文件都以 <code class="docutils literal notranslate"><span class="pre">---</span></code> 开始作为 YAML
+文档的开始，然后是一个自动生成的注释行，告诉我们该模板文件生成的这个
+YAML 文档。</p>
+<p>删除 release：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm delete myapp -n dev</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id12">
-<h2><a class="toc-backref" href="#id35">参考文献</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id16">
+<h4>1.2 添加一个简单的模板调用<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
+<p>我们改一下 <code class="docutils literal notranslate"><span class="pre">configmap.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Release</span><span class="o">.</span><span class="n">Name</span><span class="p">}}</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+</pre></div>
+</div>
+<p>所以我们可以这样理解 <code class="docutils literal notranslate"><span class="pre">.Release.Name：</span></code>“从顶层命名空间开始，找到
+Release 对象，然后在里面查找名为 <code class="docutils literal notranslate"><span class="pre">Name</span></code> 的对象”。</p>
+<p>现在，当我们安装我们的资源时，我们会立即看到使用这个模板指令的结果:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install clunky-serval ./mychart -n dev</span>
+<span class="n">NAME</span><span class="p">:</span> <span class="n">clunky</span><span class="o">-</span><span class="n">serval</span>
+<span class="n">LAST</span> <span class="n">DEPLOYED</span><span class="p">:</span> <span class="n">Fri</span> <span class="n">Apr</span>  <span class="mi">9</span> <span class="mi">14</span><span class="p">:</span><span class="mi">02</span><span class="p">:</span><span class="mi">25</span> <span class="mi">2021</span>
+<span class="n">NAMESPACE</span><span class="p">:</span> <span class="n">dev</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">deployed</span>
+<span class="n">REVISION</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">TEST</span> <span class="n">SUITE</span><span class="p">:</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>运行 helm get manifest clunky-serval 以查看整个生成的 YAML。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm get manifest clunky-serval  -n dev</span>
+<span class="o">---</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">clunky</span><span class="o">-</span><span class="n">serval</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+</pre></div>
+</div>
+<p>可以使用
+<code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">install</span> <span class="pre">clunky-serval</span> <span class="pre">--debug</span> <span class="pre">--dry-run</span> <span class="pre">./mychart</span> <span class="pre">-n</span> <span class="pre">dev</span></code>。这会将
+chart 发送到 Tiller 服务器，它将渲染模板。但不是安装
+chart，它会将渲染模板返回，以便可以看到输出：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm uninstall clunky-serval -n dev</span>
+<span class="n">release</span> <span class="s2">&quot;clunky-serval&quot;</span> <span class="n">uninstalled</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install clunky-serval --debug --dry-run ./mychart -n dev</span>
+<span class="n">install</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">159</span><span class="p">:</span> <span class="p">[</span><span class="n">debug</span><span class="p">]</span> <span class="n">Original</span> <span class="n">chart</span> <span class="n">version</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+<span class="n">install</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">176</span><span class="p">:</span> <span class="p">[</span><span class="n">debug</span><span class="p">]</span> <span class="n">CHART</span> <span class="n">PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">k8s_yaml</span><span class="o">/</span><span class="n">helm_example</span><span class="o">/</span><span class="n">mychart</span>
+<span class="o">---</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">clunky</span><span class="o">-</span><span class="n">serval</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+</pre></div>
+</div>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">--dry-run</span></code> 可以更容易地测试代码，但不能确保 Kubernetes
+本身会接受生成的模板。</p>
+</div>
+</div>
+<div class="section" id="chart-yaml-values-yaml">
+<h3><a class="toc-backref" href="#id50">2 修改 Chart.yaml，Values.yaml</a><a class="headerlink" href="#chart-yaml-values-yaml" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id17">
+<h4>2.1 内置对象<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">Release</span></code> 是可以在模板中访问的顶级对象之一。</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">Release</span></code>：这个对象描述了 release 本身。它里面有几个对象：</li>
+<li><code class="docutils literal notranslate"><span class="pre">Release.Name</span></code>：release 名称</li>
+<li><code class="docutils literal notranslate"><span class="pre">Release.Time</span></code>：release 的时间</li>
+<li><code class="docutils literal notranslate"><span class="pre">Release.Namespace</span></code>：release 的 namespace（如果清单未覆盖）</li>
+<li><code class="docutils literal notranslate"><span class="pre">Release.Service</span></code>：release 服务的名称（始终是 <code class="docutils literal notranslate"><span class="pre">Tiller</span></code>）。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Release.Revision</span></code>：此 release 的修订版本号。它从 1 开始，每
+<code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">upgrade</span></code> 一次增加一个。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Release.IsUpgrade</span></code>：如果当前操作是升级或回滚，则将其设置为
+<code class="docutils literal notranslate"><span class="pre">true</span></code>。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Release.IsInstall</span></code>：如果当前操作是安装，则设置为 <code class="docutils literal notranslate"><span class="pre">true</span></code>。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Values</span></code>：从 <code class="docutils literal notranslate"><span class="pre">values.yaml</span></code>
+文件和用户提供的文件传入模板的值。默认情况下，Values 是空的。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Chart</span></code>：<code class="docutils literal notranslate"><span class="pre">Chart.yaml</span></code> 文件的内容。任何数据 Chart.yaml
+将在这里访问。例如 {{.Chart.Name}}-{{.Chart.Version}} 将打印出来
+mychart-0.1.0。chart 指南中 <a class="reference external" href="https://github.com/kubernetes/helm/blob/master/docs/charts.md#the-chartyaml-file">Charts
+Guide</a>
+列出了可用字段</li>
+<li><code class="docutils literal notranslate"><span class="pre">Files</span></code>：这提供对 chart
+中所有非特殊文件的访问。虽然无法使用它来访问模板，但可以使用它来访问
+chart 中的其他文件。请参阅 “访问文件” 部分。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Files.Get</span></code>
+是一个按名称获取文件的函数（<code class="docutils literal notranslate"><span class="pre">.Files.Get</span> <span class="pre">config.ini</span></code>）</li>
+<li><code class="docutils literal notranslate"><span class="pre">Files.GetBytes</span></code>
+是将文件内容作为字节数组而不是字符串获取的函数。这对于像图片这样的东西很有用。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Capabilities</span></code>：这提供了关于 Kubernetes 集群支持的功能的信息。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Capabilities.APIVersions</span></code> 是一组版本信息。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Capabilities.APIVersions.Has</span> <span class="pre">$version</span></code>
+指示是否在群集上启用版本（<code class="docutils literal notranslate"><span class="pre">batch/v1</span></code>）。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Capabilities.KubeVersion</span></code> 提供了查找 Kubernetes
+版本的方法。它具有以下值：Major，Minor，GitVersion，GitCommit，GitTreeState，BuildDate，GoVersion，Compiler，和
+Platform。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Capabilities.TillerVersion</span></code> 提供了查找 Tiller
+版本的方法。它具有以下值：SemVer，GitCommit，和 GitTreeState。</li>
+<li><code class="docutils literal notranslate"><span class="pre">Template</span></code>：包含有关正在执行的当前模板的信息</li>
+<li><code class="docutils literal notranslate"><span class="pre">Name</span></code>：到当前模板的 namespace 文件路径（例如
+<code class="docutils literal notranslate"><span class="pre">mychart/templates/mytemplate.yaml</span></code>）</li>
+<li><code class="docutils literal notranslate"><span class="pre">BasePath</span></code>：当前 chart 模板目录的 namespace 路径（例如
+mychart/templates）。</li>
+</ul>
+</div>
+<div class="section" id="values">
+<h4>2.2 values 文件<a class="headerlink" href="#values" title="Permalink to this headline">¶</a></h4>
+<p>该对象提供对传入 chart 的值的访问。其内容来自四个来源：</p>
+<ul class="simple">
+<li>chart 中的 <code class="docutils literal notranslate"><span class="pre">values.yaml</span></code> 文件</li>
+<li>如果这是一个子 chart，来自父 chart 的 <code class="docutils literal notranslate"><span class="pre">values.yaml</span></code> 文件</li>
+<li>value 文件通过 helm install 或 helm upgrade 的 - f
+标志传入文件（<code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">install</span> <span class="pre">-f</span> <span class="pre">myvals.yaml</span> <span class="pre">./mychart</span></code>）</li>
+<li>通过 <code class="docutils literal notranslate"><span class="pre">--set</span></code>（例如 <code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">install</span> <span class="pre">--set</span> <span class="pre">foo=bar</span> <span class="pre">./mychart</span></code>）</li>
+</ul>
+<p>我们编辑 <code class="docutils literal notranslate"><span class="pre">mychart/values.yaml</span></code>，然后来编辑我们的 <code class="docutils literal notranslate"><span class="pre">ConfigMap</span></code>
+模板。</p>
+<p>删除默认带的 values.yaml，我们只设置一个参数：</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">favoriteDrink</span><span class="p">:</span> <span class="n">coffee</span>
+</pre></div>
+</div>
+<p>现在我们可以在模板中使用这个：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Release</span><span class="o">.</span><span class="n">Name</span><span class="p">}}</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favoriteDrink</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>注意我们在最后一行 {{ .Values.favoriteDrink}} 获取 <code class="docutils literal notranslate"><span class="pre">favoriteDrink</span></code>
+的值。</p>
+<p>让我们看看这是如何渲染的。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install myapp2021 --dry-run --debug ./mychart</span>
+<span class="n">install</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">159</span><span class="p">:</span> <span class="p">[</span><span class="n">debug</span><span class="p">]</span> <span class="n">Original</span> <span class="n">chart</span> <span class="n">version</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+<span class="n">install</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">176</span><span class="p">:</span> <span class="p">[</span><span class="n">debug</span><span class="p">]</span> <span class="n">CHART</span> <span class="n">PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">k8s_yaml</span><span class="o">/</span><span class="n">helm_example</span><span class="o">/</span><span class="n">mychart</span>
+
+<span class="n">NAME</span><span class="p">:</span> <span class="n">myapp2021</span>
+<span class="n">LAST</span> <span class="n">DEPLOYED</span><span class="p">:</span> <span class="n">Fri</span> <span class="n">Apr</span>  <span class="mi">9</span> <span class="mi">14</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="mi">16</span> <span class="mi">2021</span>
+<span class="n">NAMESPACE</span><span class="p">:</span> <span class="n">default</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">pending</span><span class="o">-</span><span class="n">install</span>
+<span class="n">REVISION</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">TEST</span> <span class="n">SUITE</span><span class="p">:</span> <span class="kc">None</span>
+<span class="n">USER</span><span class="o">-</span><span class="n">SUPPLIED</span> <span class="n">VALUES</span><span class="p">:</span>
+<span class="p">{}</span>
+
+<span class="n">COMPUTED</span> <span class="n">VALUES</span><span class="p">:</span>
+<span class="n">favoriteDrink</span><span class="p">:</span> <span class="n">coffee</span>
+
+<span class="n">HOOKS</span><span class="p">:</span>
+<span class="n">MANIFEST</span><span class="p">:</span>
+<span class="o">---</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">myapp2021</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="n">coffee</span>
+</pre></div>
+</div>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">favoriteDrink</span></code> 在默认 <code class="docutils literal notranslate"><span class="pre">values.yaml</span></code> 文件中设置为
+<code class="docutils literal notranslate"><span class="pre">coffee</span></code>，这就是模板中显示的值。我们可以轻松地在我们的 helm install
+命令中通过加一个 <code class="docutils literal notranslate"><span class="pre">--set</span></code> 添标志来覆盖：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install myapp2021 --dry-run --debug --set favoriteDrink=slurm ./mychart</span>
+<span class="n">install</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">159</span><span class="p">:</span> <span class="p">[</span><span class="n">debug</span><span class="p">]</span> <span class="n">Original</span> <span class="n">chart</span> <span class="n">version</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+<span class="n">install</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">176</span><span class="p">:</span> <span class="p">[</span><span class="n">debug</span><span class="p">]</span> <span class="n">CHART</span> <span class="n">PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">k8s_yaml</span><span class="o">/</span><span class="n">helm_example</span><span class="o">/</span><span class="n">mychart</span>
+
+<span class="n">NAME</span><span class="p">:</span> <span class="n">myapp2021</span>
+<span class="n">LAST</span> <span class="n">DEPLOYED</span><span class="p">:</span> <span class="n">Fri</span> <span class="n">Apr</span>  <span class="mi">9</span> <span class="mi">14</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">31</span> <span class="mi">2021</span>
+<span class="n">NAMESPACE</span><span class="p">:</span> <span class="n">default</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">pending</span><span class="o">-</span><span class="n">install</span>
+<span class="n">REVISION</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">TEST</span> <span class="n">SUITE</span><span class="p">:</span> <span class="kc">None</span>
+<span class="n">USER</span><span class="o">-</span><span class="n">SUPPLIED</span> <span class="n">VALUES</span><span class="p">:</span>
+<span class="n">favoriteDrink</span><span class="p">:</span> <span class="n">slurm</span>
+
+<span class="n">COMPUTED</span> <span class="n">VALUES</span><span class="p">:</span>
+<span class="n">favoriteDrink</span><span class="p">:</span> <span class="n">slurm</span>
+
+<span class="n">HOOKS</span><span class="p">:</span>
+<span class="n">MANIFEST</span><span class="p">:</span>
+<span class="o">---</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">myapp2021</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="n">slurm</span>
+</pre></div>
+</div>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">--set</span></code> 比默认 <code class="docutils literal notranslate"><span class="pre">values.yaml</span></code>
+文件具有更高的优先级，我们的模板生成 <code class="docutils literal notranslate"><span class="pre">drink:</span> <span class="pre">slurm</span></code>。</p>
+<p>values 文件也可以包含更多结构化内容。例如，我们在 values.yaml
+文件中可以创建 <code class="docutils literal notranslate"><span class="pre">favorite</span></code> 部分，然后在其中添加几个键：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">favorite</span><span class="p">:</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="n">coffee</span>
+  <span class="n">food</span><span class="p">:</span> <span class="n">pizza</span>
+</pre></div>
+</div>
+<p>现在我们稍微修改模板：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Release</span><span class="o">.</span><span class="n">Name</span><span class="p">}}</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">drink</span><span class="p">}}</span>
+  <span class="n">food</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">food</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>虽然以这种方式构建数据是可以的，但建议保持 value
+树浅一些，平一些。当我们看看为子 chart
+分配值时，我们将看到如何使用树结构来命名值。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install myapp2021 --dry-run --debug  ./mychart</span>
+<span class="o">---</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">myapp2021</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="n">coffee</span>
+  <span class="n">food</span><span class="p">:</span> <span class="n">pizza</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id18">
+<h4>2.3 模板函数和管道<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h4>
+<p><strong>使用quote函数</strong></p>
+<p>我们使用管道（|）将 “参数”
+发送给函数：<code class="docutils literal notranslate"><span class="pre">.Values.favorite.drink</span> <span class="pre">|</span> <span class="pre">quote</span></code>。使用管道，我们可以将几个功能链接在一起：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Release</span><span class="o">.</span><span class="n">Name</span><span class="p">}}</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">drink</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+  <span class="n">food</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">food</span> <span class="o">|</span> <span class="n">upper</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>当评估时，该模板将产生如下结果：</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">trendsetting</span><span class="o">-</span><span class="n">p</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="s2">&quot;coffee&quot;</span>
+  <span class="n">food</span><span class="p">:</span> <span class="s2">&quot;PIZZA&quot;</span>
+</pre></div>
+</div>
+<p>原来 <code class="docutils literal notranslate"><span class="pre">pizza</span></code> 现在已经转换为 <code class="docutils literal notranslate"><span class="pre">&quot;PIZZA&quot;</span></code>。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Release</span><span class="o">.</span><span class="n">Name</span><span class="p">}}</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">drink</span> <span class="o">|</span> <span class="n">repeat</span> <span class="mi">5</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+  <span class="n">food</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">food</span> <span class="o">|</span> <span class="n">upper</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>该 repeat 函数将回送给定的字符串和给定的次数，所以我们将得到这个输出：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">melting</span><span class="o">-</span><span class="n">porcup</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="s2">&quot;coffeecoffeecoffeecoffeecoffee&quot;</span>
+  <span class="n">food</span><span class="p">:</span> <span class="s2">&quot;PIZZA&quot;</span>
+</pre></div>
+</div>
+<p><strong>使用 default 函数</strong></p>
+<p>示例：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">drink</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">drink</span> <span class="o">|</span> <span class="n">default</span> <span class="s2">&quot;tea&quot;</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>现在，我们将从以下位置删除喜欢的饮料设置 values.yaml：</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">favorite</span><span class="p">:</span>
+  <span class="c1">#drink: coffee</span>
+  <span class="n">food</span><span class="p">:</span> <span class="n">pizza</span>
+</pre></div>
+</div>
+<p>现在重新运行 <code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">install</span> <span class="pre">--dry-run</span> <span class="pre">--debug</span> <span class="pre">./mychart</span></code> 会产生这个
+YAML：</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">fair</span><span class="o">-</span><span class="n">worm</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="s2">&quot;tea&quot;</span>
+  <span class="n">food</span><span class="p">:</span> <span class="s2">&quot;PIZZA&quot;</span>
+</pre></div>
+</div>
+<p><strong>运算符函数</strong></p>
+<p>对于模板，运算符（eq，ne，lt，gt，and，or
+等等）都是已实现的功能。在管道中，运算符可以用圆括号（<code class="docutils literal notranslate"><span class="pre">(</span></code> 和
+<code class="docutils literal notranslate"><span class="pre">)</span></code>）分组。</p>
+<p>将运算符放到声明的前面，后面跟着它的参数，就像使用函数一样。要多个运算符一起使用，将每个函数通过圆括号分隔。</p>
+</div>
+<div class="section" id="id19">
+<h4>2.4 流程控制<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h4>
+<p>控制结构（模板说法中称为
+“动作”）为模板作者提供了控制模板生成流程的能力。Helm
+的模板语言提供了以下控制结构：</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">if/else</span></code> 用于创建条件块</li>
+<li><code class="docutils literal notranslate"><span class="pre">with</span></code> 指定范围</li>
+<li><code class="docutils literal notranslate"><span class="pre">range</span></code>，它提供了一个 “for each” 风格的循环</li>
+</ul>
+<p>除此之外，它还提供了一些声明和使用命名模板段的操作：</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">define</span></code> 在模板中声明一个新的命名模板</li>
+<li><code class="docutils literal notranslate"><span class="pre">template</span></code> 导入一个命名模板</li>
+<li><code class="docutils literal notranslate"><span class="pre">block</span></code> 声明了一种特殊的可填写模板区域</li>
+</ul>
+<p>我们为 ConfigMap
+添加一个简单的条件。如果饮料被设置为咖啡，我们将添加另一个设置：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Release</span><span class="o">.</span><span class="n">Name</span><span class="p">}}</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">drink</span> <span class="o">|</span> <span class="n">default</span> <span class="s2">&quot;tea&quot;</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+  <span class="n">food</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">food</span> <span class="o">|</span> <span class="n">upper</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+  <span class="p">{{</span><span class="k">if</span> <span class="ow">and</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">drink</span> <span class="p">(</span><span class="n">eq</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">drink</span> <span class="s2">&quot;coffee&quot;</span><span class="p">)</span> <span class="p">}}</span><span class="n">mug</span><span class="p">:</span> <span class="n">true</span><span class="p">{{</span> <span class="n">end</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>输出如下：</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install myapp2021 --dry-run --debug  ./mychart</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">myapp2021</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="s2">&quot;coffee&quot;</span>
+  <span class="n">food</span><span class="p">:</span> <span class="s2">&quot;PIZZA&quot;</span>
+  <span class="n">mug</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p><strong>控制空格</strong></p>
+<p>将空格替换为 <code class="docutils literal notranslate"><span class="pre">*</span></code>, 按照此规则将每个空格将被删除。一个在该行的末尾的
+<code class="docutils literal notranslate"><span class="pre">*</span></code> 指示换行符将被移除</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Release</span><span class="o">.</span><span class="n">Name</span><span class="p">}}</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">drink</span> <span class="o">|</span> <span class="n">default</span> <span class="s2">&quot;tea&quot;</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+  <span class="n">food</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">food</span> <span class="o">|</span> <span class="n">upper</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+  <span class="p">{{</span><span class="o">-</span> <span class="k">if</span> <span class="n">eq</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="o">.</span><span class="n">drink</span> <span class="s2">&quot;coffee&quot;</span><span class="p">}}</span>
+  <span class="n">mug</span><span class="p">:</span> <span class="n">true</span>
+  <span class="p">{{</span><span class="o">-</span> <span class="n">end</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>牢记这一点，我们可以通过 Helm 运行我们的模板并查看结果：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">clunky</span><span class="o">-</span><span class="n">cat</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="s2">&quot;coffee&quot;</span>
+  <span class="n">food</span><span class="p">:</span> <span class="s2">&quot;PIZZA&quot;</span>
+  <span class="n">mug</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p><strong>使用 with 修改范围</strong></p>
+<p>with
+可以允许将当前范围（<code class="docutils literal notranslate"><span class="pre">.</span></code>）设置为特定的对象。例如，我们一直在使用的
+<code class="docutils literal notranslate"><span class="pre">.Values.favorites</span></code>。让我们重写我们的 ConfigMap 来改变 <code class="docutils literal notranslate"><span class="pre">.</span></code>
+范围来指向 <code class="docutils literal notranslate"><span class="pre">.Values.favorites</span></code>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Release</span><span class="o">.</span><span class="n">Name</span><span class="p">}}</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="p">{{</span><span class="o">-</span> <span class="k">with</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="p">}}</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">drink</span> <span class="o">|</span> <span class="n">default</span> <span class="s2">&quot;tea&quot;</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+  <span class="n">food</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">food</span> <span class="o">|</span> <span class="n">upper</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+  <span class="p">{{</span><span class="o">-</span> <span class="n">end</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>注意，现在我们可以引用 <code class="docutils literal notranslate"><span class="pre">.drink</span></code> 和 <code class="docutils literal notranslate"><span class="pre">.food</span></code>
+无需对其进行限定。这是因为该 <code class="docutils literal notranslate"><span class="pre">with</span></code> 声明设置 <code class="docutils literal notranslate"><span class="pre">.</span></code> 为指向
+<code class="docutils literal notranslate"><span class="pre">.Values.favorite</span></code>。在 <code class="docutils literal notranslate"><span class="pre">{{end}}</span></code> 后 <code class="docutils literal notranslate"><span class="pre">.</span></code> 复位其先前的范围。</p>
+<p><strong>循环range动作</strong></p>
+<p>我们在我们的 <code class="docutils literal notranslate"><span class="pre">values.yaml</span></code> 文件中添加一份披萨配料列表：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">favorite</span><span class="p">:</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="n">coffee</span>
+  <span class="n">food</span><span class="p">:</span> <span class="n">pizza</span>
+<span class="n">pizzaToppings</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">mushrooms</span>
+  <span class="o">-</span> <span class="n">cheese</span>
+  <span class="o">-</span> <span class="n">peppers</span>
+  <span class="o">-</span> <span class="n">onions</span>
+</pre></div>
+</div>
+<p>现在我们有一个列表（模板中称为
+slice）pizzaToppings。我们可以修改我们的模板，将这个列表打印到我们的
+ConfigMap 中：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">Release</span><span class="o">.</span><span class="n">Name</span><span class="p">}}</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="p">{{</span><span class="o">-</span> <span class="k">with</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">favorite</span><span class="p">}}</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">drink</span> <span class="o">|</span> <span class="n">default</span> <span class="s2">&quot;tea&quot;</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+  <span class="n">food</span><span class="p">:</span> <span class="p">{{</span><span class="o">.</span><span class="n">food</span> <span class="o">|</span> <span class="n">upper</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+  <span class="p">{{</span><span class="o">-</span> <span class="n">end</span><span class="p">}}</span>
+  <span class="n">toppings</span><span class="p">:</span> <span class="o">|-</span>
+    <span class="p">{{</span><span class="o">-</span> <span class="nb">range</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">pizzaToppings</span><span class="p">}}</span>
+    <span class="o">-</span> <span class="p">{{</span><span class="o">.</span> <span class="o">|</span> <span class="n">title</span> <span class="o">|</span> <span class="n">quote</span><span class="p">}}</span>
+    <span class="p">{{</span><span class="o">-</span> <span class="n">end</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>我们可以直接向管道发送 <code class="docutils literal notranslate"><span class="pre">.</span></code> 的值，所以当我们这样做时
+<code class="docutils literal notranslate"><span class="pre">{{.</span> <span class="pre">|</span> <span class="pre">title</span> <span class="pre">|</span> <span class="pre">quote}}</span></code>，它会发送 <code class="docutils literal notranslate"><span class="pre">.</span></code> 到 title（标题 case
+函数），然后发送到 <code class="docutils literal notranslate"><span class="pre">quote</span></code>。如果我们运行这个模板，输出将是：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install myapp2021 --dry-run --debug  ./mychart</span>
+<span class="o">---</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">myapp2021</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="s2">&quot;coffee&quot;</span>
+  <span class="n">food</span><span class="p">:</span> <span class="s2">&quot;PIZZA&quot;</span>
+  <span class="n">toppings</span><span class="p">:</span> <span class="o">|-</span>
+    <span class="o">-</span> <span class="s2">&quot;Mushrooms&quot;</span>
+    <span class="o">-</span> <span class="s2">&quot;Cheese&quot;</span>
+    <span class="o">-</span> <span class="s2">&quot;Peppers&quot;</span>
+    <span class="o">-</span> <span class="s2">&quot;Onions&quot;</span>
+</pre></div>
+</div>
+<blockquote>
+<div>YAML 中的 <code class="docutils literal notranslate"><span class="pre">|-</span></code>
+标记表示一个多行字符串。这可以是一种有用的技术，用于在清单中嵌入大块数据，如此处所示。</div></blockquote>
+</div>
+<div class="section" id="id20">
+<h4>2.5 变量<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h4>
+<p>在 Helm 模板中，变量是对另一个对象的命名引用。它遵循这个形式
+<code class="docutils literal notranslate"><span class="pre">$name</span></code>。变量被赋予一个特殊的赋值操作符：<code class="docutils literal notranslate"><span class="pre">:=</span></code>。我们可以使用变量重写上面的
+Release.Name。</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{.Release.Name}}-configmap
+data:
+  myvalue: &quot;Hello World&quot;
+  {{- $relname := .Release.Name -}}
+  {{- with .Values.favorite}}
+  drink: {{.drink | default &quot;tea&quot; | quote}}
+  food: {{.food | upper | quote}}
+  release: {{$relname}}
+  {{- end}}
+</pre></div>
+</div>
+<p>注意，在我们开始 <code class="docutils literal notranslate"><span class="pre">with</span></code> 块之前，我们赋值
+<code class="docutils literal notranslate"><span class="pre">$relname</span> <span class="pre">:=</span></code>.Release.Name。现在在 <code class="docutils literal notranslate"><span class="pre">with</span></code> 块内部，<code class="docutils literal notranslate"><span class="pre">$relname</span></code>
+变量仍然指向发布名称。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install myapp2021 --dry-run --debug  ./mychart</span>
+<span class="o">---</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">myapp2021</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="s2">&quot;coffee&quot;</span>
+  <span class="n">food</span><span class="p">:</span> <span class="s2">&quot;PIZZA&quot;</span>
+  <span class="n">release</span><span class="p">:</span> <span class="n">myapp2021</span>
+</pre></div>
+</div>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># mychart/values.yaml</span>
+<span class="n">favorite</span><span class="p">:</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="n">coffee</span>
+  <span class="n">food</span><span class="p">:</span> <span class="n">pizza</span>
+<span class="n">pizzaToppings</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">mushrooms</span>
+  <span class="o">-</span> <span class="n">cheese</span>
+  <span class="o">-</span> <span class="n">peppers</span>
+  <span class="o">-</span> <span class="n">onions</span>
+</pre></div>
+</div>
+<p>变量在 <code class="docutils literal notranslate"><span class="pre">range</span></code>
+循环中特别有用。它们可以用于类似列表的对象以同时捕获索引和值：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{.Release.Name}}-configmap
+data:
+  myvalue: &quot;Hello World&quot;
+  {{- $relname := .Release.Name -}}
+  {{- with .Values.favorite}}
+  drink: {{.drink | default &quot;tea&quot; | quote}}
+  food: {{.food | upper | quote}}
+  release: {{$relname}}
+  {{- end}}
+  toppings: |-
+    {{- range $index, $topping := .Values.pizzaToppings}}
+      {{$index}}: {{ $topping }}
+    {{- end}}
+</pre></div>
+</div>
+<p>注意，<code class="docutils literal notranslate"><span class="pre">range</span></code>
+首先是变量，然后是赋值运算符，然后是列表。这将分配整数索引（从零开始）给
+<code class="docutils literal notranslate"><span class="pre">$index</span></code>，值给 <code class="docutils literal notranslate"><span class="pre">$topping</span></code>。运行它将产生：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install myapp2021 --dry-run --debug  ./mychart</span>
+<span class="o">---</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">myapp2021</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="s2">&quot;coffee&quot;</span>
+  <span class="n">food</span><span class="p">:</span> <span class="s2">&quot;PIZZA&quot;</span>
+  <span class="n">release</span><span class="p">:</span> <span class="n">myapp2021</span>
+  <span class="n">toppings</span><span class="p">:</span> <span class="o">|-</span>
+      <span class="mi">0</span><span class="p">:</span> <span class="n">mushrooms</span>
+      <span class="mi">1</span><span class="p">:</span> <span class="n">cheese</span>
+      <span class="mi">2</span><span class="p">:</span> <span class="n">peppers</span>
+      <span class="mi">3</span><span class="p">:</span> <span class="n">onions</span>
+</pre></div>
+</div>
+<p>对于同时具有键和值的数据结构，我们可以使用 <code class="docutils literal notranslate"><span class="pre">range</span></code>
+来获得两者。例如，我们可以对 <code class="docutils literal notranslate"><span class="pre">.Values.favorite</span></code> 像这样循环：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{.Release.Name}}-configmap
+data:
+  myvalue: &quot;Hello World&quot;
+  {{- range $key, $val := .Values.favorite}}
+  {{$key}}: {{ $val | quote }}
+  {{- end}}
+</pre></div>
+</div>
+<p>现在在第一次迭代中，<code class="docutils literal notranslate"><span class="pre">$key</span></code> 是 <code class="docutils literal notranslate"><span class="pre">drink</span></code>，<code class="docutils literal notranslate"><span class="pre">$val</span></code> 是
+<code class="docutils literal notranslate"><span class="pre">coffee</span></code>，第二次，<code class="docutils literal notranslate"><span class="pre">$key</span></code> 是 food，<code class="docutils literal notranslate"><span class="pre">$val</span></code> 会
+pizza。运行上面的代码会生成下面这个：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm install myapp2021 --dry-run --debug  ./mychart</span>
+<span class="n">HOOKS</span><span class="p">:</span>
+<span class="n">MANIFEST</span><span class="p">:</span>
+<span class="o">---</span>
+<span class="c1"># Source: mychart/templates/configmap.yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">myapp2021</span><span class="o">-</span><span class="n">configmap</span>
+<span class="n">data</span><span class="p">:</span>
+  <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
+  <span class="n">drink</span><span class="p">:</span> <span class="s2">&quot;coffee&quot;</span>
+  <span class="n">food</span><span class="p">:</span> <span class="s2">&quot;pizza&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id21">
+<h3><a class="toc-backref" href="#id51">3 模板和值</a><a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<p>在 templates 目录下创建部署镜像所需要的 yaml 文件，并变量引用 yaml
+里经常变动的字段</p>
+<p>Helm
+Charts模板（template）遵循Go模板语言格式，并支持50种以上的来自Spring库的模板函数附件，以及为数不少的其他专用函数。所有的模板文件都存储于Templates目录中，在当前Charts被Helm引用时，此目录中的所有模板文件都会传递给模板引擎进行处理。</p>
+<p>模板文件中用到的值（value）有如下两种提供方式。</p>
+<ul class="simple">
+<li>通过Charts的values.yaml文件提供，通常用于提供默认值。</li>
+<li>在运行“helm
+install”命令时传递包含所需要的自定义值的YAML文件；此处传递的值会覆盖默认值。</li>
+</ul>
+<p>下面的示例是Wordpress Charts中Deployment模板文件的部分内容：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">extensions</span><span class="o">/</span><span class="n">v1beta1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span> <span class="n">template</span> <span class="s2">&quot;fullname&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">app</span><span class="p">:</span> <span class="p">{{</span> <span class="n">template</span> <span class="s2">&quot;fullname&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+    <span class="n">chart</span><span class="p">:</span> <span class="s2">&quot;{{ .Chart.Name }}-{{ .Chart.Version }}&quot;</span>
+    <span class="n">release</span><span class="p">:</span> <span class="s2">&quot;{{ .Release.Name }}&quot;</span>
+    <span class="n">heritage</span><span class="p">:</span> <span class="s2">&quot;{{ .Release.Service }}&quot;</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">replicas</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">template</span><span class="p">:</span>
+    <span class="n">metadata</span><span class="p">:</span>
+      <span class="n">labels</span><span class="p">:</span>
+        <span class="n">app</span><span class="p">:</span> <span class="p">{{</span> <span class="n">template</span> <span class="s2">&quot;fullname&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+    <span class="n">spec</span><span class="p">:</span>
+      <span class="n">containers</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="p">{{</span> <span class="n">template</span> <span class="s2">&quot;fullname&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+        <span class="n">image</span><span class="p">:</span> <span class="s2">&quot;{{ .Values.image }}&quot;</span>
+        <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="p">{{</span> <span class="n">default</span> <span class="s2">&quot;&quot;</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">imagePullPolicy</span> <span class="o">|</span> <span class="n">quote</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>而在values.yaml一类的文件中定义值（value）时，既可以将它们定义为全局作用域，也可以定义为仅供Charts目录下的某个Charts所使用。一般来说，上级Charts可访问下级Charts中的值，但下级Charts不能访问其上级Charts的值。</p>
+<p>如下面示例中的内容，其中title属于全局作用域，max_connections和password则仅属于mysql
+Charts，port仅属于apache Charts：</p>
+<p><code class="docutils literal notranslate"><span class="pre">values.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">title</span><span class="p">:</span> <span class="s2">&quot;My WordPress Site&quot;</span> <span class="c1"># Sent to the WordPress template</span>
+
+<span class="n">mysql</span><span class="p">:</span>
+  <span class="n">max_connections</span><span class="p">:</span> <span class="mi">100</span> <span class="c1"># Sent to MySQL</span>
+  <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;secret&quot;</span>
+
+<span class="n">apache</span><span class="p">:</span>
+  <span class="n">port</span><span class="p">:</span> <span class="mi">8080</span> <span class="c1"># Passed to Apache</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id22">
+<h3><a class="toc-backref" href="#id52">4. 自定义Charts</a><a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id23">
+<h4>4.1 生成一个空Charts<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h4>
+<p>下面的命令会于命令执行的当前目录中创建一个名为demoapp的子目录作为Charts存储路径：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">create</span> <span class="n">demoapp</span>
+
+<span class="c1"># 创建namespace</span>
+<span class="n">kubectl</span> <span class="n">create</span> <span class="n">namespace</span> <span class="n">demoapp</span>
+</pre></div>
+</div>
+<p>此命令会初始化出一个空的Charts目录结构，它有着所需要的各个核心文件：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@ci-base helm_example]# tree demoapp
+demoapp
+├── Chart.yaml
+├── demoapp-values.yaml
+├── README.md
+├── templates
+│   ├── deployment.yaml
+│   ├── _helpers.tpl
+│   ├── hpa.yaml
+│   ├── ingress.yaml
+│   ├── NOTES.txt
+│   ├── NOTES.txt.bak
+│   ├── serviceaccount.yaml
+│   ├── service.yaml
+│   └── tests
+│       └── test-connection.yaml
+└── values.yaml
+</pre></div>
+</div>
+</div>
+<div class="section" id="id24">
+<h4>4.2 修改Charts以部署自定义服务<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v2</span>
+<span class="n">name</span><span class="p">:</span> <span class="n">demoapp</span>
+<span class="n">description</span><span class="p">:</span> <span class="n">A</span> <span class="n">kubernetes</span><span class="o">-</span><span class="n">natvie</span> <span class="n">application</span> <span class="n">demo</span><span class="o">.</span>
+
+<span class="nb">type</span><span class="p">:</span> <span class="n">application</span>
+
+<span class="n">version</span><span class="p">:</span> <span class="mf">0.1</span><span class="o">.</span><span class="mi">0</span>
+
+<span class="n">appVersion</span><span class="p">:</span> <span class="mf">1.0</span><span class="o">.</span><span class="mi">0</span>
+
+<span class="n">maintainers</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">MageEdu</span>
+    <span class="n">email</span><span class="p">:</span> <span class="n">mage</span><span class="nd">@magedu</span><span class="o">.</span><span class="n">com</span>
+    <span class="n">url</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">magedu</span><span class="o">.</span><span class="n">com</span>
+</pre></div>
+</div>
+<p>修改values.yaml文件为demo-app.yaml内容如下：</p>
+<p>cp -rf values.yaml demoapp-values.yaml</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">replicaCount</span><span class="p">:</span> <span class="mi">1</span>
+
+<span class="n">image</span><span class="p">:</span>
+  <span class="n">repository</span><span class="p">:</span> <span class="n">ikubernetes</span><span class="o">/</span><span class="n">demoapp</span>
+  <span class="n">pullPolicy</span><span class="p">:</span> <span class="n">IfNotPresent</span>
+  <span class="n">tag</span><span class="p">:</span> <span class="s2">&quot;v1.0&quot;</span>
+
+<span class="n">imagePullSecrets</span><span class="p">:</span> <span class="p">[]</span>
+<span class="n">nameOverride</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+<span class="n">fullnameOverride</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+
+<span class="n">serviceAccount</span><span class="p">:</span>
+  <span class="n">create</span><span class="p">:</span> <span class="n">false</span>
+  <span class="n">annotations</span><span class="p">:</span> <span class="p">{}</span>
+  <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+
+<span class="n">podAnnotations</span><span class="p">:</span> <span class="p">{}</span>
+
+<span class="n">podSecurityContext</span><span class="p">:</span> <span class="p">{}</span>
+
+<span class="n">securityContext</span><span class="p">:</span> <span class="p">{}</span>
+
+<span class="c1"># service</span>
+<span class="n">service</span><span class="p">:</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">ClusterIP</span>
+  <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
+
+<span class="c1"># ingress</span>
+<span class="n">ingress</span><span class="p">:</span>
+  <span class="n">enabled</span><span class="p">:</span> <span class="n">true</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">.</span><span class="n">class</span><span class="p">:</span> <span class="s2">&quot;nginx&quot;</span>
+  <span class="n">hosts</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">host</span><span class="p">:</span> <span class="n">helm</span><span class="o">-</span><span class="n">demoapp</span><span class="o">.</span><span class="n">runjs</span><span class="o">.</span><span class="n">cn</span>
+      <span class="n">paths</span><span class="p">:</span>
+        <span class="o">-</span> <span class="o">/</span>
+  <span class="n">tls</span><span class="p">:</span> <span class="p">[]</span>
+
+<span class="n">resources</span><span class="p">:</span> <span class="p">{}</span>
+
+<span class="n">autoscaling</span><span class="p">:</span>
+  <span class="n">enabled</span><span class="p">:</span> <span class="n">false</span>
+  <span class="n">minReplicas</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">maxReplicas</span><span class="p">:</span> <span class="mi">100</span>
+  <span class="n">targetCPUUtilizationPercentage</span><span class="p">:</span> <span class="mi">80</span>
+
+<span class="n">nodeSelector</span><span class="p">:</span> <span class="p">{}</span>
+
+<span class="n">tolerations</span><span class="p">:</span> <span class="p">[]</span>
+
+<span class="n">affinity</span><span class="p">:</span> <span class="p">{}</span>
+</pre></div>
+</div>
+<p>templates/service.yaml</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span> <span class="n">include</span> <span class="s2">&quot;demoapp.fullname&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="p">{{</span><span class="o">-</span> <span class="n">include</span> <span class="s2">&quot;demoapp.labels&quot;</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">4</span> <span class="p">}}</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="p">{{</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">type</span> <span class="p">}}</span>
+  <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">port</span><span class="p">:</span> <span class="p">{{</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">port</span> <span class="p">}}</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="n">http</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">name</span><span class="p">:</span> <span class="n">http</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="p">{{</span><span class="o">-</span> <span class="n">include</span> <span class="s2">&quot;demoapp.selectorLabels&quot;</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">4</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>templates/deployment.yaml</p>
+<p>创建了一个pod中2个containers。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span> <span class="n">include</span> <span class="s2">&quot;demoapp.fullname&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="p">{{</span><span class="o">-</span> <span class="n">include</span> <span class="s2">&quot;demoapp.labels&quot;</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">4</span> <span class="p">}}</span>
+<span class="n">spec</span><span class="p">:</span>
+<span class="p">{{</span><span class="o">-</span> <span class="k">if</span> <span class="ow">not</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">autoscaling</span><span class="o">.</span><span class="n">enabled</span> <span class="p">}}</span>
+  <span class="n">replicas</span><span class="p">:</span> <span class="p">{{</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">replicaCount</span> <span class="p">}}</span>
+<span class="p">{{</span><span class="o">-</span> <span class="n">end</span> <span class="p">}}</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">matchLabels</span><span class="p">:</span>
+      <span class="p">{{</span><span class="o">-</span> <span class="n">include</span> <span class="s2">&quot;demoapp.selectorLabels&quot;</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">6</span> <span class="p">}}</span>
+  <span class="n">template</span><span class="p">:</span>
+    <span class="n">metadata</span><span class="p">:</span>
+    <span class="p">{{</span><span class="o">-</span> <span class="k">with</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">podAnnotations</span> <span class="p">}}</span>
+      <span class="n">annotations</span><span class="p">:</span>
+        <span class="p">{{</span><span class="o">-</span> <span class="n">toYaml</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">8</span> <span class="p">}}</span>
+    <span class="p">{{</span><span class="o">-</span> <span class="n">end</span> <span class="p">}}</span>
+      <span class="n">labels</span><span class="p">:</span>
+        <span class="p">{{</span><span class="o">-</span> <span class="n">include</span> <span class="s2">&quot;demoapp.selectorLabels&quot;</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">8</span> <span class="p">}}</span>
+    <span class="n">spec</span><span class="p">:</span>
+      <span class="p">{{</span><span class="o">-</span> <span class="k">with</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">imagePullSecrets</span> <span class="p">}}</span>
+      <span class="n">imagePullSecrets</span><span class="p">:</span>
+        <span class="p">{{</span><span class="o">-</span> <span class="n">toYaml</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">8</span> <span class="p">}}</span>
+      <span class="p">{{</span><span class="o">-</span> <span class="n">end</span> <span class="p">}}</span>
+      <span class="n">serviceAccountName</span><span class="p">:</span> <span class="p">{{</span> <span class="n">include</span> <span class="s2">&quot;demoapp.serviceAccountName&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+      <span class="n">securityContext</span><span class="p">:</span>
+        <span class="p">{{</span><span class="o">-</span> <span class="n">toYaml</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">podSecurityContext</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">8</span> <span class="p">}}</span>
+      <span class="n">containers</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="p">{{</span> <span class="o">.</span><span class="n">Chart</span><span class="o">.</span><span class="n">Name</span> <span class="p">}}</span>
+          <span class="n">securityContext</span><span class="p">:</span>
+            <span class="p">{{</span><span class="o">-</span> <span class="n">toYaml</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">securityContext</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">12</span> <span class="p">}}</span>
+          <span class="n">image</span><span class="p">:</span> <span class="s2">&quot;{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}&quot;</span>
+          <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="p">{{</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">pullPolicy</span> <span class="p">}}</span>
+          <span class="n">ports</span><span class="p">:</span>
+            <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">http</span>
+              <span class="n">containerPort</span><span class="p">:</span> <span class="mi">80</span>
+              <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+          <span class="n">livenessProbe</span><span class="p">:</span>
+            <span class="n">httpGet</span><span class="p">:</span>
+              <span class="n">path</span><span class="p">:</span> <span class="o">/</span>
+              <span class="n">port</span><span class="p">:</span> <span class="n">http</span>
+          <span class="n">readinessProbe</span><span class="p">:</span>
+            <span class="n">httpGet</span><span class="p">:</span>
+              <span class="n">path</span><span class="p">:</span> <span class="o">/</span>
+              <span class="n">port</span><span class="p">:</span> <span class="n">http</span>
+          <span class="n">resources</span><span class="p">:</span>
+            <span class="p">{{</span><span class="o">-</span> <span class="n">toYaml</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">resources</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">12</span> <span class="p">}}</span>
+
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">wget</span>
+          <span class="n">image</span><span class="p">:</span> <span class="n">registry</span><span class="o">.</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">aliacs</span><span class="o">-</span><span class="n">app</span><span class="o">-</span><span class="n">catalog</span><span class="o">/</span><span class="n">busybox</span><span class="p">:</span><span class="mf">1.30</span><span class="o">.</span><span class="mi">1</span>
+          <span class="n">command</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;wget&#39;</span><span class="p">]</span>
+          <span class="n">args</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;{{ include &quot;demoapp.fullname&quot; . }}:{{ .Values.service.port }}&#39;</span><span class="p">]</span>
+      <span class="p">{{</span><span class="o">-</span> <span class="k">with</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">nodeSelector</span> <span class="p">}}</span>
+      <span class="n">nodeSelector</span><span class="p">:</span>
+        <span class="p">{{</span><span class="o">-</span> <span class="n">toYaml</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">8</span> <span class="p">}}</span>
+      <span class="p">{{</span><span class="o">-</span> <span class="n">end</span> <span class="p">}}</span>
+      <span class="p">{{</span><span class="o">-</span> <span class="k">with</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">affinity</span> <span class="p">}}</span>
+      <span class="n">affinity</span><span class="p">:</span>
+        <span class="p">{{</span><span class="o">-</span> <span class="n">toYaml</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">8</span> <span class="p">}}</span>
+      <span class="p">{{</span><span class="o">-</span> <span class="n">end</span> <span class="p">}}</span>
+      <span class="p">{{</span><span class="o">-</span> <span class="k">with</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">tolerations</span> <span class="p">}}</span>
+      <span class="n">tolerations</span><span class="p">:</span>
+        <span class="p">{{</span><span class="o">-</span> <span class="n">toYaml</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">8</span> <span class="p">}}</span>
+      <span class="p">{{</span><span class="o">-</span> <span class="n">end</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>templates/hpa.yaml 保持默认，无需修改</p>
+<p>templates/NOTES.txt 保持默认，无需修改，部署后的访问方式，和提示信息</p>
+<p>templates/serviceaccount.yaml 保持默认，无需修改</p>
+<p>templates/_helpers.tpl 保持默认，无需修改</p>
+<p>templates/ingress.yaml如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{{- if .Values.ingress.enabled -}}
+{{- $fullName := include &quot;demoapp.fullname&quot; . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- if semverCompare &quot;&gt;=1.14-0&quot; .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include &quot;demoapp.labels&quot; . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- range .Values.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ . }}
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
+          {{- end }}
+    {{- end }}
+  {{- end }}
+</pre></div>
+</div>
+<p>通过“helm lint”命令确认修改后的Charts是否遵循最佳实践且模板格式良好：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm lint demoapp</span>
+<span class="o">==&gt;</span> <span class="n">Linting</span> <span class="n">demoapp</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Chart</span><span class="o">.</span><span class="n">yaml</span><span class="p">:</span> <span class="n">icon</span> <span class="ow">is</span> <span class="n">recommended</span>
+
+<span class="mi">1</span> <span class="n">chart</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">linted</span><span class="p">,</span> <span class="mi">0</span> <span class="n">chart</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">failed</span>
+</pre></div>
+</div>
+<p>多数情况下，“helm
+lint”命令报告的错误信息，根据其错误提示中的行号信息即能定位出错误所在。确保一切问题都得以解决之后，即可通过“helm
+install”命令调试运行以查看由Charts定义的容器化应用是否能够正确部署：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">install</span> <span class="n">demoapp</span> <span class="o">--</span><span class="n">debug</span> <span class="o">./</span><span class="n">demoapp</span> <span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span> <span class="o">-</span><span class="n">n</span> <span class="n">demoapp</span> <span class="o">--</span><span class="nb">set</span> <span class="n">service</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="n">NodePort</span>
+</pre></div>
+</div>
+<p>确认上述命令输出信息无误后，移除命令中的“–dry-run”选项后再次运行命令即可完成应用的部署</p>
+<p>通过-f选项将该文件附加于helm
+install命令即可将其合并到Chart默认的值文件上，例如下面的命令基于自定义的demoapp
+Chart创建了第二个实例，它通过Ingress将服务发布到集群之外。</p>
+<p>使用demoapp-values.yaml模板进行部署</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">install</span> <span class="n">demoapp</span> <span class="o">./</span><span class="n">demoapp</span> <span class="o">--</span><span class="n">debug</span> <span class="o">-</span><span class="n">n</span> <span class="n">demoapp</span> <span class="o">-</span><span class="n">f</span> <span class="o">./</span><span class="n">demoapp</span><span class="o">/</span><span class="n">demoapp</span><span class="o">-</span><span class="n">values</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p>查看deployment、pod、service、ingress等信息</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># kubectl get deployment,pod,svc,ingress -n demoapp</span>
+
+<span class="n">NAME</span>                      <span class="n">READY</span>   <span class="n">UP</span><span class="o">-</span><span class="n">TO</span><span class="o">-</span><span class="n">DATE</span>   <span class="n">AVAILABLE</span>   <span class="n">AGE</span>
+<span class="n">deployment</span><span class="o">.</span><span class="n">apps</span><span class="o">/</span><span class="n">demoapp</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="mi">1</span>            <span class="mi">1</span>           <span class="mi">2</span><span class="n">m47s</span>
+
+<span class="n">NAME</span>                           <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">pod</span><span class="o">/</span><span class="n">demoapp</span><span class="o">-</span><span class="mi">7</span><span class="n">b97fd699c</span><span class="o">-</span><span class="mi">55</span><span class="n">l4w</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">m47s</span>
+
+<span class="n">NAME</span>              <span class="n">TYPE</span>        <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>       <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>   <span class="n">AGE</span>
+<span class="n">service</span><span class="o">/</span><span class="n">demoapp</span>   <span class="n">ClusterIP</span>   <span class="mf">10.105</span><span class="o">.</span><span class="mf">213.227</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">80</span><span class="o">/</span><span class="n">TCP</span>    <span class="mi">2</span><span class="n">m47s</span>
+
+<span class="n">NAME</span>                         <span class="n">CLASS</span>    <span class="n">HOSTS</span>                   <span class="n">ADDRESS</span>   <span class="n">PORTS</span>   <span class="n">AGE</span>
+<span class="n">ingress</span><span class="o">.</span><span class="n">extensions</span><span class="o">/</span><span class="n">demoapp</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>   <span class="n">helm</span><span class="o">-</span><span class="n">demoapp</span><span class="o">.</span><span class="n">runjs</span><span class="o">.</span><span class="n">cn</span>             <span class="mi">80</span>      <span class="mi">2</span><span class="n">m47s</span>
+</pre></div>
+</div>
+<p><img alt="image2" src="../_images/helm-demoapp001.png" /></p>
+</div>
+</div>
+</div>
+<div class="section" id="id25">
+<h2><a class="toc-backref" href="#id53">常见命令</a><a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 基于本地Chart目录部署</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="o">-</span><span class="n">f</span> <span class="n">values</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">n</span> <span class="n">ci</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">nginx</span> <span class="n">ci</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">nginx</span> <span class="o">./</span>
+
+<span class="c1"># 删除release</span>
+<span class="n">helm</span> <span class="n">uninstall</span> <span class="o">-</span><span class="n">n</span> <span class="n">ci</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">nginx</span> <span class="n">ci</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">nginx</span>
+<span class="n">helm</span> <span class="n">delete</span> <span class="o">-</span><span class="n">n</span> <span class="n">ci</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">nginx</span> <span class="n">ci</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">nginx</span>
+
+<span class="c1"># 查看版本历史</span>
+<span class="n">helm</span> <span class="n">history</span> <span class="o">-</span><span class="n">n</span> <span class="n">ci</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">nginx</span> <span class="n">ci</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">nginx</span>
+
+<span class="c1"># 下载Chart</span>
+<span class="n">helm</span> <span class="n">fetch</span> <span class="n">xinlin</span><span class="o">/</span><span class="n">k8sapp</span>
+
+<span class="c1"># 基于本地Chart目录部署</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="o">./</span><span class="n">k8sapp</span>
+
+<span class="c1"># 安装本地 chart</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="o">-</span><span class="n">f</span> <span class="n">myvalues</span><span class="o">.</span><span class="n">yaml</span> <span class="n">myredis</span> <span class="o">./</span><span class="n">redis</span>
+
+<span class="c1"># 指定变量</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="o">--</span><span class="nb">set</span> <span class="n">name</span><span class="o">=</span><span class="n">prod</span> <span class="n">myredis</span> <span class="o">./</span><span class="n">redis</span>
+
+<span class="c1"># 指定变量的值为 string 类型</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="o">--</span><span class="nb">set</span><span class="o">-</span><span class="n">string</span> <span class="n">long_int</span><span class="o">=</span><span class="mi">1234567890</span> <span class="n">myredis</span> <span class="o">./</span><span class="n">redis</span>
+
+<span class="c1"># 指定引用的文件地址</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="o">--</span><span class="nb">set</span><span class="o">-</span><span class="n">file</span> <span class="n">my_script</span><span class="o">=</span><span class="n">dothings</span><span class="o">.</span><span class="n">sh</span> <span class="n">myredis</span> <span class="o">./</span><span class="n">redis</span>
+
+<span class="c1"># 同时指定多个变量</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="o">--</span><span class="nb">set</span> <span class="n">foo</span><span class="o">=</span><span class="n">bar</span> <span class="o">--</span><span class="nb">set</span> <span class="n">foo</span><span class="o">=</span><span class="n">newbar</span>  <span class="n">myredis</span> <span class="o">./</span><span class="n">redis</span>
+
+<span class="c1"># 卸载helm安装包</span>
+<span class="n">helm</span> <span class="n">uninstall</span> <span class="n">demoapp</span> <span class="o">-</span><span class="n">n</span> <span class="n">demoapp</span>
+
+<span class="c1"># 打包</span>
+<span class="n">helm</span> <span class="n">package</span> <span class="n">nginx_text</span>
+
+<span class="c1"># 搜索</span>
+<span class="n">helm</span> <span class="n">search</span> <span class="n">k8sapp</span>
+
+<span class="c1"># 启动本地仓库服务</span>
+<span class="n">helm</span> <span class="n">serve</span>
+
+<span class="c1"># 查看所有namespaces中部署的release</span>
+<span class="n">helm</span> <span class="nb">list</span> <span class="o">--</span><span class="nb">all</span><span class="o">-</span><span class="n">namespaces</span>
+
+<span class="c1"># 查看某Release的相关状态信息</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm_example</span><span class="p">]</span><span class="c1"># helm status ci-gitee-release -n ci-gitee-release</span>
+<span class="n">NAME</span><span class="p">:</span> <span class="n">ci</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">release</span>
+<span class="n">LAST</span> <span class="n">DEPLOYED</span><span class="p">:</span> <span class="n">Thu</span> <span class="n">Apr</span>  <span class="mi">8</span> <span class="mi">10</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">33</span> <span class="mi">2021</span>
+<span class="n">NAMESPACE</span><span class="p">:</span> <span class="n">ci</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">release</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">deployed</span>
+<span class="n">REVISION</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">TEST</span> <span class="n">SUITE</span><span class="p">:</span> <span class="kc">None</span>
+
+<span class="c1"># 查看由Charts定义的容器化应用是否能够正确部署，调试</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="n">demoapp</span> <span class="o">--</span><span class="n">debug</span> <span class="o">./</span><span class="n">demoapp</span> <span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span> <span class="o">-</span><span class="n">n</span> <span class="n">demoapp</span> <span class="o">--</span><span class="nb">set</span> <span class="n">service</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="n">NodePort</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id26">
+<h2><a class="toc-backref" href="#id54">参考文献</a><a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://blog.csdn.net/weixin_36938307/article/details/105245770">https://blog.csdn.net/weixin_36938307/article/details/105245770</a></p>
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12752783.html">https://www.cnblogs.com/xiao987334176/p/12752783.html</a></p>
+<p><a class="reference external" href="https://jimmysong.io/kubernetes-handbook/practice/helm.html">https://jimmysong.io/kubernetes-handbook/practice/helm.html</a></p>
 </div>
 </div>
 

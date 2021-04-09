@@ -5,7 +5,6 @@
 # filename: md_to_rst_tool.py
 import os
 import subprocess
-import sys
 import json
 import hashlib
 import time
