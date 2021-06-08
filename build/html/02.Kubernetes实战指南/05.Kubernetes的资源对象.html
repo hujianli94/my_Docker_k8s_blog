@@ -1484,16 +1484,25 @@ Interface）存储接口扩展支持更多类型的存储系统。</p>
 <h2><a class="toc-backref" href="#id60">kubectl-备忘单</a><a class="headerlink" href="#kubectl" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id35">
 <h3><a class="toc-backref" href="#id61">Kubectl 自动补全</a><a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup autocomplete in bash into the current shell, bash-completion package should be installed first.</span>
+<p>Linux</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">bash</span><span class="o">-</span><span class="n">completion</span>
+<span class="n">source</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">bash</span><span class="o">-</span><span class="n">completion</span><span class="o">/</span><span class="n">bash_completion</span>
 <span class="n">source</span> <span class="o">&lt;</span><span class="p">(</span><span class="n">kubectl</span> <span class="n">completion</span> <span class="n">bash</span><span class="p">)</span>
-
-<span class="c1"># add autocomplete permanently to your bash shell.</span>
 <span class="n">echo</span> <span class="s2">&quot;source &lt;(kubectl completion bash)&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bashrc</span>
+
+
+<span class="c1">#添加kubectl的k别名</span>
+<span class="n">vim</span>   <span class="o">~/.</span><span class="n">bashrc</span>
+<span class="n">alias</span> <span class="n">k</span><span class="o">=</span><span class="s1">&#39;kubectl&#39;</span>
+
+<span class="c1">#tab命令只在使用完整的kubectl 命令起作用，使用别名k 时不起作用，修补：</span>
+<span class="n">source</span> <span class="o">&lt;</span><span class="p">(</span> <span class="n">kubectl</span> <span class="n">completion</span> <span class="n">bash</span> <span class="o">|</span> <span class="n">sed</span> <span class="s1">&#39;s/kubectl/k/g&#39;</span> <span class="p">)</span>  <span class="c1">#写入 .bashrc</span>
 </pre></div>
 </div>
-<p>别名</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alias</span> <span class="n">k</span><span class="o">=</span><span class="n">kubectl</span>
-<span class="n">complete</span> <span class="o">-</span><span class="n">F</span> <span class="n">__start_kubectl</span> <span class="n">k</span>
+<p>mac</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ brew install bash-completion
+$ source $(brew --prefix)/etc/bash_completion
+$ source &lt;(kubectl completion bash)
 </pre></div>
 </div>
 </div>

@@ -47,7 +47,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Docker基础" href="03.Docker基础.html" />
-    <link rel="prev" title="通过Kubeadm部署kubernetes" href="01.通过Kubeadm部署kubernetes.html" /> 
+    <link rel="prev" title="Kubernetes安装配置指南" href="01.Kubernetes安装配置指南.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -102,22 +102,22 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../01.Docker技术入门与实战-3版/index.html">01.Docker技术入门与实战-第3版</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">02.Kubernetes实战指南</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="01.通过Kubeadm部署kubernetes.html">通过Kubeadm部署kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01.Kubernetes安装配置指南.html">Kubernetes安装配置指南</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Kubespray部署k8s</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">1. 环境需求</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id2">2. 环境角色</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">3. 系统环境初始化</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#kubespray">4. 部署Kubespray基础环境</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id4">5. kubespray安装部署k8s</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id5">替换镜像</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">6. 替换镜像</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id6">6. 快捷命令</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">7. 快捷命令</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="03.Docker基础.html">Docker基础</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04.Kubernetes基础.html">Kubernetes基础</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05.Pod.html">Pod</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.Kubernetes的资源对象.html">Kubernetes的资源对象</a></li>
 <li class="toctree-l2"><a class="reference internal" href="06.Serveice.html">Serveice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Ingress.html">Ingress</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.Kubernetest数据管理.html">Kubernetest数据管理</a></li>
@@ -126,6 +126,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../03.Docker经典实例/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../04.Prometheus监控运维实战/index.html">04.Prometheus监控运维实战</a></li>
 </ul>
 
             
@@ -202,10 +203,10 @@
 <li><a class="reference internal" href="#id3" id="id10">3. 系统环境初始化</a></li>
 <li><a class="reference internal" href="#kubespray" id="id11">4. 部署Kubespray基础环境</a></li>
 <li><a class="reference internal" href="#id4" id="id12">5. kubespray安装部署k8s</a><ul>
-<li><a class="reference internal" href="#id5" id="id13">替换镜像</a></li>
+<li><a class="reference internal" href="#id5" id="id13">6. 替换镜像</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6" id="id14">6. 快捷命令</a></li>
+<li><a class="reference internal" href="#id6" id="id14">7. 快捷命令</a></li>
 </ul>
 </li>
 </ul>
@@ -219,8 +220,8 @@
 <h2><a class="toc-backref" href="#id8">1. 环境需求</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="29%" />
-<col width="71%" />
+<col width="30%" />
+<col width="70%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">环境</th>
@@ -251,50 +252,45 @@
 <h2><a class="toc-backref" href="#id9">2. 环境角色</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="10%" />
-<col width="12%" />
-<col width="12%" />
-<col width="66%" />
+<col width="13%" />
+<col width="15%" />
+<col width="14%" />
+<col width="58%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head" colspan="2">主机名 | IP</th>
+<tr class="row-odd"><th class="head">主机名</th>
+<th class="head">IP</th>
 <th class="head">角色</th>
 <th class="head">安装软件</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>i1-ma
-ster-
-1</td>
-<td>172.16
-.60.17
-8</td>
-<td>k8s-Ma
-ster01</td>
-<td>ansible kubespray etcd ingress-nginx
-calico kube-apiserver
-kube-controller-manager kube-proxy
-kube-scheduler nodelocaldns node-exporte
-kubelet</td>
+<tr class="row-even"><td>i1-maste
+r-1</td>
+<td>172.16.60.
+178</td>
+<td>k8s-Maste
+r01</td>
+<td>ansible kubespray etcd ingress-nginx calico
+kube-apiserver kube-controller-manager
+kube-proxy kube-scheduler nodelocaldns
+node-exporte kubelet</td>
 </tr>
-<tr class="row-odd"><td>i1-wo
-rker-
+<tr class="row-odd"><td>i1-worke
+r-1</td>
+<td>172.16.60.
+226</td>
+<td>k8s-node0
 1</td>
-<td>172.16
-.60.22
-6</td>
-<td>k8s-no
-de01</td>
 <td>calico kube-proxy nginx-proxy nodelocaldns
 node-exporte kubelet</td>
 </tr>
-<tr class="row-even"><td>i1-wo
-rker-
+<tr class="row-even"><td>i1-worke
+r-2</td>
+<td>172.16.60.
+9</td>
+<td>k8s-node0
 2</td>
-<td>172.16
-.60.9</td>
-<td>k8s-no
-de02</td>
 <td>calico kube-proxy nginx-proxy nodelocaldns
 node-exporte kubelet</td>
 </tr>
@@ -514,7 +510,7 @@ CONFIG_FILE=inventory/mycluster/hosts.yaml /usr/bin/python3.6 contrib/inventory_
 </pre></div>
 </div>
 <div class="section" id="id5">
-<h3><a class="toc-backref" href="#id13">替换镜像</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">6. 替换镜像</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>在kuberspay源码源代码中搜索包含
 <a class="reference external" href="http://gcr.io/google_containers">gcr.io/google_containers</a> 和
 <a class="reference external" href="http://quay.io/">quay.io</a>
@@ -559,7 +555,7 @@ done
 </div>
 </div>
 <div class="section" id="id6">
-<h2><a class="toc-backref" href="#id14">6. 快捷命令</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">7. 快捷命令</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alias</span> <span class="n">kk</span><span class="o">=</span><span class="s1">&#39;kubectl get pod --all-namespaces -o wide --show-labels&#39;</span>
 <span class="n">alias</span> <span class="n">ks</span><span class="o">=</span><span class="s1">&#39;kubectl get svc --all-namespaces -o wide&#39;</span>
 <span class="n">alias</span> <span class="n">kss</span><span class="o">=</span><span class="s1">&#39;kubectl get svc --all-namespaces -o wide --show-labels&#39;</span>
@@ -588,7 +584,7 @@ done
         <a href="03.Docker基础.html" class="btn btn-neutral float-right" title="Docker基础" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="01.通过Kubeadm部署kubernetes.html" class="btn btn-neutral float-left" title="通过Kubeadm部署kubernetes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="01.Kubernetes安装配置指南.html" class="btn btn-neutral float-left" title="Kubernetes安装配置指南" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
