@@ -12,8 +12,10 @@ Kubernetes基础
 Kubernetes致力于提供跨主机集群的自动部署、扩展、高可用以及运行应用程序容器的平台，其遵循主从式架构设计，其组件可以分为管理单个节点（Node）组件和控制平面组件。Kubernetes
 Master是集群的主要控制单元，用于管理其工作负载并指导整个系统的通信。Kubernetes控制平面由各自的进程组成，每个组件都可以在单个主节点上运行，也可以在支持高可用集群的多个节点上运行。
 
-Master节点
-----------
+Kubernetes集群的两种管理角色：\ ``Master``\ 和\ ``Node``\ 。
+
+1.Master节点
+------------
 
 Master节点是Kubernetes集群的控制节点，在生产环境中不建议部署集群核心组件外的任何Pod，\ **公司业务的Pod更是不建议部署到Master节点上，以免升级或者维护时对业务造成影响**\ 。Master节点的组件包括：
 
@@ -53,8 +55,8 @@ Etcd
 
     Etcd作为Kubernetes集群的持久化存储系统，集群的灾难恢复和状态信息存储都与其密不可分，所以在Kubernetes高可用集群中，Etcd的高可用是至关重要的一部分，在生产环境中建议部署为大于3的奇数个数的Etcd，以保证数据的安全性和可恢复性。Etcd可与Master组件部署在同一个节点上，大规模集群环境下建议部署在集群外，并且使用高性能服务器来提高Etcd的性能和降低Etcd同步数据的延迟。
 
-Node节点
---------
+2.Node节点
+----------
 
 Node节点也被称为Worker或Minion，是主要负责部署容器（工作负载）的单机（或虚拟机），集群中的每个节点都必须具备容器的运行环境（runtime），比如Docker及其他组件等。Kubelet作为守护进程运行在Node节点上，负责监听该节点上所有的Pod，同时负责上报该节点上所有Pod的运行状态，确保节点上的所有容器都能正常运行。当Node节点宕机（NotReady状态）时，该节点上运行的Pod会被自动地转移到其他节点上。
 
@@ -80,6 +82,20 @@ Docker Engine
 ::
 
     Docker引擎，负载对容器的管理。
+
+3.小结
+------
+
+.. code:: shell
+
+    # 查看集群中有多少个Node
+    $ kubectl get nodes
+    NAME        STATUS    AGE
+    127.0.0.1   Ready     1d
+
+
+    #通过kubectl describe node 来查看某个Node的详细信息
+    $ kubectl describe node 127.0.0.1
 
 kubernetes的资源对象
 --------------------
@@ -109,6 +125,27 @@ kubernetes常用资源对象
 -  DaemonSet常用于运行集群存储守护进程。如glusterd和ceph
 -  日志收集进程--fluentd和logstash。
 -  监控进程-- prometheus的Node Exporter、Ingress等
+
+查看k8s资源对象字段对照表
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    $ kubectl explain deploy --recursive=true
+    $ kubectl explain pod --recursive=true
+    $ kubectl explain server --recursive=true
+
+通过web界面配置k8s的yaml文件
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+https://k8syaml.com/
+
+基于图形化的方式自动生成yaml
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+本次采用Ratel自动生成yaml文件。
+
+Ratel安装文档：https://github.com/dotbalo/ratel-doc/blob/master/cluster/Install.md
 
 查询Kubernetes的健康状态
 ------------------------
@@ -158,93 +195,93 @@ kubectl提供了一系列子命令用于执行此类任务，例如create、dele
 1.1.1 创建资源对象
 ''''''''''''''''''
 
-::
+.. code:: shell
 
     // 新增
-    [root@ci-base k8s_yaml]# kubectl create namespace dev
+    $ kubectl create namespace dev
     namespace/dev created
 
-    [root@ci-base k8s_yaml]# kubectl create deployment demoapp --image="ikubernetes/demoapp:v1.0" -n dev
+    $ kubectl create deployment demoapp --image="ikubernetes/demoapp:v1.0" -n dev
     deployment.apps/demoapp created
 
-    [root@ci-base k8s_yaml]# kubectl create service clusterip demoapp --tcp=80 -n dev
+    $ kubectl create service clusterip demoapp --tcp=80 -n dev
     service/demoapp created
 
     // 查询
-    [root@ci-base example01]# kubectl get deployment -n dev
+    $ kubectl get deployment -n dev
 
-    [root@ci-base example01]# kubectl get pod -n dev
+    $ kubectl get pod -n dev
 
-    [root@ci-base example01]# kubectl get svc -n dev
+    $ kubectl get svc -n dev
 
     // 删除
-    kubectl delete deployment demoapp -n dev
-    kubectl delete svc demoapp -n dev
-    kubectl delete ns dev
+    $ kubectl delete deployment demoapp -n dev
+    $ kubectl delete svc demoapp -n dev
+    $ kubectl delete ns dev
 
 将资源导出为命令配置文件
 
-::
+.. code:: shell
 
-    // 打印资源对象的详细信息
-    kubectl get pod metrics-server-7477b75789-xlx4b -n kube-system  -o yaml
+    // 打印并导出资源对象的详细信息
+    $ kubectl get pod metrics-server-7477b75789-xlx4b -n kube-system  -o yaml
 
     // 导出资源对象的详细信息
-    kubectl get ns dev -o yaml > dev-ns.yaml
-    kubectl get pod -n dev -o yaml > demo-pod.yaml
-    kubectl get service -n dev -o yaml > demo-svc.yaml
+    $ kubectl get ns dev -o yaml > dev-ns.yaml
+    $ kubectl get pod -n dev -o yaml > demo-pod.yaml
+    $ kubectl get service -n dev -o yaml > demo-svc.yaml
 
 使用命令式对象配置文件方式创建部署
 
-::
+.. code:: shell
 
-    [root@ci-base example01]# ll
+    $ ll
     total 16
     -rw-r--r-- 1 root root 5349 Apr  2 10:47 demo-pod.yaml
     -rw-r--r-- 1 root root 1189 Apr  2 10:47 demo-svc.yaml
 
 
-    [root@ci-base example01]# kubectl create ns dev
+    $ kubectl create ns dev
 
-    [root@ci-base example01]# kubectl create -f demo-pod.yaml
+    $ kubectl create -f demo-pod.yaml
 
-    [root@ci-base example01]# kubectl create -f demo-svc.yaml
+    $ kubectl create -f demo-svc.yaml
 
     // 删除所有资源
     kubectl delete -f example01/
 
-    [root@ci-base example01]# kubectl create ns dev
+    $ kubectl create ns dev
 
-    [root@ci-base k8s_yaml]# kubectl apply -f example01/
+    $ kubectl apply -f example01/
     pod/demoapp-6c5d545684-bn5t8 created
     service/demoapp created
 
-    [root@ci-base k8s_yaml]# kubectl delete ns dev
+    $ kubectl delete ns dev
 
 1.1.2 查看资源对象
 ''''''''''''''''''
 
-::
+.. code:: shell
 
-    [root@ci-base k8s_yaml]# kubectl get ns
+    $ kubectl get ns
 
-    [root@ci-base k8s_yaml]# kubectl get pod,svc -o wide
+    $ kubectl get pod,svc -o wide
 
     //下面的命令能够取出kube-system名称空间中带有k8s-app=kube-dns标签的Pod对象的资源名称。
-    [root@ci-base k8s_yaml]# kubectl get pods -l k8s-app -n kube-system
+    $ kubectl get pods -l k8s-app -n kube-system
 
 kubectl
 describe命令还能显示当前对象相关的其他资源对象，如Event或Controller等。
 
-::
+.. code:: shell
 
-    kubectl describe pod metrics-server-7477b75789-xlx4b -n kube-system
+    $ kubectl describe pod metrics-server-7477b75789-xlx4b -n kube-system
 
 打印容器中的日志信息
 
-::
+.. code:: shell
 
-    [root@ci-base example01]# kubectl logs pod/demoapp -n dev
+    $ kubectl logs pod/demoapp -n dev
      * Running on http://0.0.0.0:80/ (Press CTRL+C to quit)
 
 1.1.3 使用yaml文件
@@ -252,13 +289,13 @@ describe命令还能显示当前对象相关的其他资源对象，如Event或C
 
 使用和查看命令如下
 
-::
+.. code:: shell
 
-    [root@ci-base example01]# kubectl apply -f .
+    $ kubectl apply -f .
     deployment.apps/demoapp created
     service/demoapp created
 
-    [root@ci-base example01]# kubectl get pod,svc,ep -n dev
+    $ kubectl get pod,svc,ep -n dev
     .....
 
 yaml文件如下
@@ -329,7 +366,7 @@ yaml文件如下
 
 ::
 
-    [root@ci-base example01]# kubectl exec -it demoapp-5f8989b6c5-hpq9w sh -n dev
+    $ kubectl exec -it demoapp-5f8989b6c5-hpq9w sh -n dev
     [root@demoapp-5f8989b6c5-hpq9w /]#
 
 1.1.5 删除资源
@@ -348,6 +385,24 @@ yaml文件如下
      kubectl delete pods demoapp --force --grace-period=0
 
 需要特别说明的是，对于受控于控制器的对象来说，仅删除受控对象自身，其控制器可能会重建出类似的对象，例如Deployment控制器下的Pod对象被删除时即会被重建。
+
+**强制删除terminating状态的资源**
+
+参考文献
+
+::
+
+    https://www.cnblogs.com/Dev0ps/p/12642501.html
+
+    https://www.cnblogs.com/Dev0ps/p/10888815.html
+
+强制删除namespace，有时kubectl delete删除会删不掉
+
+::
+
+    kubectl get namespace tigera-operator -o json \
+                | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" \
+                | kubectl replace --raw /api/v1/namespaces/tigera-operator/finalize -f -
 
 2. kubectl插件
 ~~~~~~~~~~~~~~
@@ -532,7 +587,7 @@ Kubernetes中Service是真实应用的抽象，将用来代理Pod，对外提供
 Service来代理Redis Master Pod，Redis Master
 Service的定义文件redis-master-service.yaml：
 
-.. code:: shell
+.. code:: yaml
 
     apiVersion: v1
     kind: Service
@@ -614,7 +669,7 @@ redisslave镜像Dockerfile下载链接地址
 Pod。Redis Slave Replication
 Controller的定义文件redis-slave-controller.yaml：
 
-::
+.. code:: yaml
 
     apiVersion: v1
     kind: ReplicationController
@@ -869,7 +924,7 @@ kubectl部署应用 示例2
 
 ::
 
-    [root@k8s-master pod_deamon]# cat deployment-demo.yaml
+    $ cat deployment-demo.yaml
     #API对象版本，可通过“kubectl api-versions”命令查看
     apiVersion: apps/v1 
     #资源类型，区分大小写，可通过“kubectl api-resources”命令查看，这里使用Deployment对象
@@ -904,19 +959,19 @@ kubectl部署应用 示例2
 
 ::
 
-    [root@k8s-master pod_deamon]# kubectl create -f deployment-demo.yaml
+    $ kubectl create -f deployment-demo.yaml
 
     //检查部署对象是否已经创建、部署是否已经完成
-    [root@k8s-master pod_deamon]# kubectl get Deployment demo-deployment
+    $ kubectl get Deployment demo-deployment
     NAME              READY   UP-TO-DATE   AVAILABLE   AGE
     demo-deployment   2/2     2            2           87m
 
     // 查看副本集（ReplicaSet）对象
-    [root@k8s-master pod_deamon]# kubectl get rs -lapp=demo
+    $ kubectl get rs -lapp=demo
     NAME                         DESIRED   CURRENT   READY   AGE
     demo-deployment-68b59dd5b8   2         2         2       87m
 
-    [root@k8s-master pod_deamon]# kubectl get rs -lapp=demo --show-labels
+    $ kubectl get rs -lapp=demo --show-labels
     NAME                         DESIRED   CURRENT   READY   AGE   LABELS
     demo-deployment-68b59dd5b8   2         2         2       88m   app=demo,pod-template-hash=68b59dd5b8
 
@@ -927,14 +982,14 @@ kubectl部署应用 示例2
 
 ::
 
-    [root@k8s-node01 ~]# curl --head http://10.100.85.197
+    $ curl --head http://10.100.85.197
     HTTP/1.1 200 OK
     Date: Tue, 22 Dec 2020 08:44:20 GMT
     Content-Type: text/html; charset=utf-8
     Server: Kestrel
 
 
-    [root@k8s-node01 ~]# curl --head http://10.100.85.196
+    $ curl --head http://10.100.85.196
     HTTP/1.1 200 OK
     Date: Tue, 22 Dec 2020 08:44:32 GMT
     Content-Type: text/html; charset=utf-8
@@ -944,11 +999,11 @@ kubectl部署应用 示例2
 
 ::
 
-    [root@k8s-master pod_deamon]# kubectl delete pods -lapp=demo
+    $ kubectl delete pods -lapp=demo
     pod "demo-deployment-68b59dd5b8-5gw7q" deleted
     pod "demo-deployment-68b59dd5b8-hd9pm" deleted
 
-    [root@k8s-master pod_deamon]# kubectl get pods -lapp=demo -o wide
+    $ kubectl get pods -lapp=demo -o wide
     NAME                               READY   STATUS    RESTARTS   AGE   IP              NODE         NOMINATED NODE   READINESS GATES
     demo-deployment-68b59dd5b8-gtf45   1/1     Running   0          48s   10.100.85.200   k8s-node01   <none>           <none>
     demo-deployment-68b59dd5b8-r6c9s   1/1     Running   0          48s   10.100.85.199   k8s-node01   <none>           <none>
@@ -977,14 +1032,14 @@ kubectl部署应用 示例2
 
 ::
 
-    [root@k8s-master pod_deamon]# kubectl create -f clusterIPService.yaml
+    $ kubectl create -f clusterIPService.yaml
     service/demo-service created
-    [root@k8s-master pod_deamon]# kubectl get svc demo-service -o wide
+    $ kubectl get svc demo-service -o wide
     NAME           TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE   SELECTOR
     demo-service   ClusterIP   10.96.212.33   <none>        80/TCP    12s   app=demo
 
 
-    [root@k8s-master pod_deamon]# kubectl get endpoints demo-service -o wide
+    $ kubectl get endpoints demo-service -o wide
     NAME           ENDPOINTS                           AGE
     demo-service   10.100.85.199:80,10.100.85.200:80   72s
 
@@ -992,7 +1047,7 @@ kubectl部署应用 示例2
 
 ::
 
-    [root@k8s-node01 ~]# curl --head 10.96.212.33
+    $ curl --head 10.96.212.33
     HTTP/1.1 200 OK
     Date: Tue, 22 Dec 2020 08:58:14 GMT
     Content-Type: text/html; charset=utf-8
@@ -1021,14 +1076,14 @@ kubectl部署应用 示例2
 
 ::
 
-    [root@k8s-master pod_deamon]# kubectl create -f nodePortService.yaml
+    $ kubectl create -f nodePortService.yaml
     service/nodeport-service created
 
-    [root@k8s-master pod_deamon]# kubectl get svc nodeport-service
+    $ kubectl get svc nodeport-service
     NAME               TYPE       CLUSTER-IP   EXTERNAL-IP   PORT(S)        AGE
     nodeport-service   NodePort   10.96.30.5   <none>        80:31001/TCP   11s
 
-    [root@k8s-master pod_deamon]# kubectl get svc
+    $ kubectl get svc
     NAME               TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)        AGE
     kubernetes         ClusterIP   10.96.0.1    <none>        443/TCP        7h12m
     nodeport-service   NodePort    10.96.30.5   <none>        80:31001/TCP   20s

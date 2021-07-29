@@ -861,14 +861,14 @@ Chart 模板开发指南
 
 ::
 
-    [root@ci-base helm_example]# helm create mychart
+    $  helm create mychart
     Creating mychart
 
 快速看一下目录 ``mychart/templates/``
 
 ::
 
-    [root@ci-base helm_example]# tree .
+    $  tree .
     .
     └── mychart
         ├── charts
@@ -905,7 +905,7 @@ NOTES.txt 和\_helpers.tpl。
 
 ::
 
-    [root@ci-base helm_example]# rm -rf mychart/templates/*.*
+    $  rm -rf mychart/templates/*.*
 
 在编写生产级 chart 时，使用这些 chart
 的基本版本可能非常有用。所以在你的日常 chart 制作中，可以不删除它们。
@@ -939,7 +939,7 @@ ConfigMap，具有最少的必要字段。由于该文件位于 ``templates/``
 
 ::
 
-    [root@ci-base helm_example]# helm install myapp ./mychart/ -n dev
+    $  helm install myapp ./mychart/ -n dev
     NAME: myapp
     LAST DEPLOYED: Fri Apr  9 13:54:30 2021
     NAMESPACE: dev
@@ -952,7 +952,7 @@ Helm，我们可以检索版本并查看加载的实际模板。
 
 ::
 
-    [root@ci-base helm_example]# helm get manifest myapp -n dev
+    $  helm get manifest myapp -n dev
     ---
     # Source: mychart/templates/configmap.yaml
     apiVersion: v1
@@ -973,7 +973,7 @@ YAML 文档。
 
 ::
 
-    [root@ci-base helm_example]# helm delete myapp -n dev
+    $  helm delete myapp -n dev
 
 1.2 添加一个简单的模板调用
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -996,7 +996,7 @@ Release 对象，然后在里面查找名为 ``Name`` 的对象"。
 
 ::
 
-    [root@ci-base helm_example]# helm install clunky-serval ./mychart -n dev
+    $  helm install clunky-serval ./mychart -n dev
     NAME: clunky-serval
     LAST DEPLOYED: Fri Apr  9 14:02:25 2021
     NAMESPACE: dev
@@ -1008,7 +1008,7 @@ Release 对象，然后在里面查找名为 ``Name`` 的对象"。
 
 ::
 
-    [root@ci-base helm_example]# helm get manifest clunky-serval  -n dev
+    $  helm get manifest clunky-serval  -n dev
     ---
     # Source: mychart/templates/configmap.yaml
     apiVersion: v1
@@ -1025,10 +1025,10 @@ chart，它会将渲染模板返回，以便可以看到输出：
 
 ::
 
-    [root@ci-base helm_example]# helm uninstall clunky-serval -n dev
+    $  helm uninstall clunky-serval -n dev
     release "clunky-serval" uninstalled
 
-    [root@ci-base helm_example]# helm install clunky-serval --debug --dry-run ./mychart -n dev
+    $  helm install clunky-serval --debug --dry-run ./mychart -n dev
     install.go:159: [debug] Original chart version: ""
     install.go:176: [debug] CHART PATH: /app/k8s_yaml/helm_example/mychart
     ---
@@ -1129,7 +1129,7 @@ chart，它会将渲染模板返回，以便可以看到输出：
 
 ::
 
-    [root@ci-base helm_example]# helm install myapp2021 --dry-run --debug ./mychart
+    $  helm install myapp2021 --dry-run --debug ./mychart
     install.go:159: [debug] Original chart version: ""
     install.go:176: [debug] CHART PATH: /app/k8s_yaml/helm_example/mychart
 
@@ -1163,7 +1163,7 @@ chart，它会将渲染模板返回，以便可以看到输出：
 
 ::
 
-    [root@ci-base helm_example]# helm install myapp2021 --dry-run --debug --set favoriteDrink=slurm ./mychart
+    $  helm install myapp2021 --dry-run --debug --set favoriteDrink=slurm ./mychart
     install.go:159: [debug] Original chart version: ""
     install.go:176: [debug] CHART PATH: /app/k8s_yaml/helm_example/mychart
 
@@ -1223,7 +1223,7 @@ values 文件也可以包含更多结构化内容。例如，我们在 values.ya
 ::
 
 
-    [root@ci-base helm_example]# helm install myapp2021 --dry-run --debug  ./mychart
+    $  helm install myapp2021 --dry-run --debug  ./mychart
     ---
     # Source: mychart/templates/configmap.yaml
     apiVersion: v1
@@ -1370,7 +1370,7 @@ YAML：
 
 .. code:: yaml
 
-    [root@ci-base helm_example]# helm install myapp2021 --dry-run --debug  ./mychart
+    $  helm install myapp2021 --dry-run --debug  ./mychart
     # Source: mychart/templates/configmap.yaml
     apiVersion: v1
     kind: ConfigMap
@@ -1483,7 +1483,7 @@ ConfigMap 中：
 ::
 
 
-    [root@ci-base helm_example]# helm install myapp2021 --dry-run --debug  ./mychart
+    $  helm install myapp2021 --dry-run --debug  ./mychart
     ---
     # Source: mychart/templates/configmap.yaml
     apiVersion: v1
@@ -1531,7 +1531,7 @@ Release.Name。
 
 ::
 
-    [root@ci-base helm_example]# helm install myapp2021 --dry-run --debug  ./mychart
+    $  helm install myapp2021 --dry-run --debug  ./mychart
     ---
     # Source: mychart/templates/configmap.yaml
     apiVersion: v1
@@ -1584,7 +1584,7 @@ Release.Name。
 
 ::
 
-    [root@ci-base helm_example]# helm install myapp2021 --dry-run --debug  ./mychart
+    $  helm install myapp2021 --dry-run --debug  ./mychart
     ---
     # Source: mychart/templates/configmap.yaml
     apiVersion: v1
@@ -1624,7 +1624,7 @@ pizza。运行上面的代码会生成下面这个：
 ::
 
 
-    [root@ci-base helm_example]# helm install myapp2021 --dry-run --debug  ./mychart
+    $  helm install myapp2021 --dry-run --debug  ./mychart
     HOOKS:
     MANIFEST:
     ---
@@ -1697,6 +1697,8 @@ Charts，port仅属于apache Charts：
     apache:
       port: 8080 # Passed to Apache
 
+    参考文献：https://blog.csdn.net/qq\_39680564/article/details/107388151
+
 4. 自定义Charts
 ~~~~~~~~~~~~~~~
 
@@ -1714,9 +1716,9 @@ Charts，port仅属于apache Charts：
 
 此命令会初始化出一个空的Charts目录结构，它有着所需要的各个核心文件：
 
-::
+.. code:: shell
 
-    [root@ci-base helm_example]# tree demoapp
+    $  tree demoapp
     demoapp
     ├── Chart.yaml
     ├── demoapp-values.yaml
@@ -1737,7 +1739,7 @@ Charts，port仅属于apache Charts：
 4.2 修改Charts以部署自定义服务
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-::
+.. code:: shell
 
     apiVersion: v2
     name: demoapp
@@ -1758,7 +1760,7 @@ Charts，port仅属于apache Charts：
 
 cp -rf values.yaml demoapp-values.yaml
 
-::
+.. code:: shell
 
     replicaCount: 1
 
@@ -1814,7 +1816,7 @@ cp -rf values.yaml demoapp-values.yaml
 
 templates/service.yaml
 
-::
+.. code:: shell
 
     apiVersion: v1
     kind: Service
@@ -1836,7 +1838,7 @@ templates/deployment.yaml
 
 创建了一个pod中2个containers。
 
-::
+.. code:: shell
 
     apiVersion: apps/v1
     kind: Deployment
@@ -1915,7 +1917,7 @@ templates/\_helpers.tpl 保持默认，无需修改
 
 templates/ingress.yaml如下
 
-::
+.. code:: shell
 
     {{- if .Values.ingress.enabled -}}
     {{- $fullName := include "demoapp.fullname" . -}}
@@ -1961,9 +1963,9 @@ templates/ingress.yaml如下
 
 通过“helm lint”命令确认修改后的Charts是否遵循最佳实践且模板格式良好：
 
-::
+.. code:: shell
 
-    [root@ci-base helm_example]# helm lint demoapp
+    $ helm lint demoapp
     ==> Linting demoapp
     [INFO] Chart.yaml: icon is recommended
 
@@ -1973,9 +1975,9 @@ templates/ingress.yaml如下
 lint”命令报告的错误信息，根据其错误提示中的行号信息即能定位出错误所在。确保一切问题都得以解决之后，即可通过“helm
 install”命令调试运行以查看由Charts定义的容器化应用是否能够正确部署：
 
-::
+.. code:: shell
 
-    helm install demoapp --debug ./demoapp --dry-run -n demoapp --set service.type=NodePort
+    $ helm install demoapp --debug ./demoapp --dry-run -n demoapp --set service.type=NodePort
 
 确认上述命令输出信息无误后，移除命令中的“--dry-run”选项后再次运行命令即可完成应用的部署
 
@@ -1985,16 +1987,15 @@ Chart创建了第二个实例，它通过Ingress将服务发布到集群之外�
 
 使用demoapp-values.yaml模板进行部署
 
-::
+.. code:: shell
 
-    helm install demoapp ./demoapp --debug -n demoapp -f ./demoapp/demoapp-values.yaml
+    $ helm install demoapp ./demoapp --debug -n demoapp -f ./demoapp/demoapp-values.yaml
 
 查看deployment、pod、service、ingress等信息
 
-::
+.. code:: shell
 
-    # kubectl get deployment,pod,svc,ingress -n demoapp                                                   
-
+    $ kubectl get deployment,pod,svc,ingress -n demoapp                                                   
     NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
     deployment.apps/demoapp   1/1     1            1           2m47s
 
@@ -2016,9 +2017,9 @@ Chart创建了第二个实例，它通过Ingress将服务发布到集群之外�
 测试完成的自定义Chart可打包后存储在目标仓库仅供自己或有限范围内的用户使用，也可按需公开回馈到社区之中。helm
 package命令基于众多选项提供了灵活的打包机制，如下的命令就会先更新依赖关系再进行打包操作。
 
-::
+.. code:: shell
 
-    [root@ci-base gitee_workspace_parallel]# helm package CI-gitee-helm/
+    $ helm package CI-gitee-helm/
     Successfully packaged chart and saved it to: /data/jenkins/gitee_workspace_parallel/gitee-ci-3.0.0.tgz
 
 将该仓库添加至本地helm命令的可用列表中。
@@ -2030,14 +2031,14 @@ package命令基于众多选项提供了灵活的打包机制，如下的命令�
 
 该类Chart的仓库地址为http://hub.gitee.cc/chartrepo/gitee-helm
 
-::
+.. code:: shell
 
-    [root@ci-base gitee_workspace_parallel]# helm repo add gitee-helm http://hub.gitee.cc/chartrepo/gitee-helm
+    $ helm repo add gitee-helm http://hub.gitee.cc/chartrepo/gitee-helm
     "gitee-helm" has been added to your repositories
 
-::
+.. code:: shell
 
-    [root@ci-base gitee_workspace_parallel]# helm repo list
+    $ helm repo list
     NAME            URL
     ingress-nginx   https://kubernetes.github.io/ingress-nginx
     stable          https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
@@ -2051,9 +2052,9 @@ helm(3.0.3)现在默认不支持推送到charts库，需要安装插件helm-push
 
 https://github.com/chartmuseum/helm-push
 
-::
+.. code:: shell
 
-    [root@ci-base gitee_workspace_parallel]# helm plugin install https://github.com/chartmuseum/helm-push
+    $ helm plugin install https://github.com/chartmuseum/helm-push
     Downloading and installing helm-push v0.9.0 ...
     https://github.com/chartmuseum/helm-push/releases/download/v0.9.0/helm-push_0.9.0_linux_amd64.tar.gz
     Installed plugin: push
@@ -2062,22 +2063,118 @@ https://github.com/chartmuseum/helm-push
 
 安装好插件之后，就可以push charts 到 harbor 里面了
 
-::
+.. code:: shell
 
-    helm push gitee-ci-3.0.0.tgz gitee-helm --username xxx --password xxxxx
+    $ helm push gitee-ci-3.0.0.tgz gitee-helm --username xxx --password xxxxx
     Pushing gitee-ci-3.0.0.tgz to gitee-helm...
     Done.
 
 出现以上就说明 push 成功了
 
-::
-
+.. code:: shell
 
     # 更新
-    helm repo update
+    $ helm repo update
      
     # 下载
-    helm pull gitee-helm/gitee-ci
+    $ helm pull gitee-helm/gitee-ci
+
+    參考文献
+
+    https://blog.51cto.com/u\_13812615/2523543
+
+    Harbor 1.10管理Helm Chart
+
+    https://blog.csdn.net/qq\_39680564/article/details/107238009
+
+6. Helm3 Chart多依赖微服务构建案例
+----------------------------------
+
+6.1 创建父chart
+~~~~~~~~~~~~~~~
+
+创建一个\ ``giteeGO-zk-activeMQ``\ 作为父\ ``Chart``\ 。
+
+.. code:: bash
+
+    $ helm create giteeGO-zk-activeMQ
+
+当前的 ``Chart`` 结构如下：
+
+.. code:: shell
+
+    $ tree
+    .
+    ├── giteeGO-zk-activeMQ
+    │   ├── charts
+    │   ├── Chart.yaml
+    │   ├── templates
+    │   │   ├── deployment.yaml
+    │   │   ├── _helpers.tpl
+    │   │   ├── hpa.yaml
+    │   │   ├── ingress.yaml
+    │   │   ├── NOTES.txt
+    │   │   ├── serviceaccount.yaml
+    │   │   ├── service.yaml
+    │   │   └── tests
+    │   │       └── test-connection.yaml
+    │   └── values.yaml
+
+``charts``\ ：目录用于存放其他依赖的chart（我们称之为子chart）。
+
+``Chart.yaml``\ ：文件包含chart的说明。
+
+``templates``\ ：目录用于放置模板文件。是所有资源的位置，我们可以看到很多kubernetes的资源文件都在这里存放。
+
+``values.yaml``\ ：文件对模板也很重要。该文件包含 chart
+默认值。这些值可能在用户在 helm install 或 helm upgrade 期间被覆盖。
+
+**templates目录中的文件：**
+
+``deployment.yaml``\ ：创建Kubernetes工作负载的基本文件。
+
+``_helpers.tpl``\ ：放置模板的地方，该文件中定义模版可以在整个chart中重复使用。
+
+``hpa.yaml``\ ：HPA配置文件。
+
+``ingress.yaml``\ ：负载均衡配置文件。
+
+``NOTES.txt``\ ：chart的 “帮助文本”。这会在用户运行helm
+install时显示给用户。
+
+``serviceaccount.yaml``\ ：serviceaccount配置文件。
+
+``service.yaml``\ ：服务发现的配置文件。
+
+``ests/test-connection.yaml``\ ：用于测试chart安装后的测试pod。
+
+6.2 创建子Chart
+~~~~~~~~~~~~~~~
+
+创建\ ``activeMQ``\ 消息队列和一个\ ``zookeeper``\ 微服务，作为子\ ``Chart``\ 。
+
+.. code:: shell
+
+    $ helm create activeMQ \
+    > && helm create zookeeper
+    Creating activeMQ
+    Creating zookeeper
+
+现在当前目录我们一共有3个待调试的\ ``Chart``\ 。
+
+::
+
+    giteeGO-zk-activeMQ              ---父chart
+    activeMQ                    ---子chart 
+    zookeeper                   ---子chart
+
+6.3 调试
+~~~~~~~~
+
+6.3.1 调试父Chart
+^^^^^^^^^^^^^^^^^
+
+**首先删除\ ``Chart``\ 中无用的文件，所有文件根据自己需求创建。**
 
 常见命令
 --------
@@ -2131,7 +2228,7 @@ https://github.com/chartmuseum/helm-push
     helm list --all-namespaces
 
     # 查看某Release的相关状态信息
-    [root@ci-base helm_example]# helm status ci-gitee-release -n ci-gitee-release
+    $  helm status ci-gitee-release -n ci-gitee-release
     NAME: ci-gitee-release
     LAST DEPLOYED: Thu Apr  8 10:46:33 2021
     NAMESPACE: ci-gitee-release

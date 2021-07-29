@@ -247,7 +247,7 @@ Kubernetes内置了多种类型的网络存储卷插件，它们支持的存储�
 
 ``vim nginx-nfs.yaml``
 
-::
+.. code:: yaml
 
     ---
     apiVersion: apps/v1
@@ -297,7 +297,7 @@ Kubernetes内置了多种类型的网络存储卷插件，它们支持的存储�
 
 查看创建情况
 
-::
+.. code:: yaml
 
     [root@ci-base nfs-demo]# kubectl create -f nfs-deployment.yaml
     deployment.apps/nginx-deploy-nfs created
@@ -326,7 +326,7 @@ Kubernetes内置了多种类型的网络存储卷插件，它们支持的存储�
 
 查看详细信息
 
-::
+.. code:: yaml
 
     [root@ci-base nfs-demo]# kubectl describe deployment nginx-deploy-nfs
     Name:                   nginx-deploy-nfs
@@ -477,9 +477,23 @@ PersistentVolume支持的PV类型如下：
 5.1.1 创建NFS-PV存储
 ^^^^^^^^^^^^^^^^^^^^
 
+NFS
+
+使用NFS网络文件系统提供的共享目录存储数据时，我们需要在系统中部署一个NFS
+Server。定义NFS类型的Volume的示例如下：
+
+.. code:: yaml
+
+    volumes:
+     - name: nfs
+       nfs:
+         # 改为你的NFS服务器地址
+         server: nfs-server.localhost
+         path: "/"
+
 ``vim nfs-pv.yaml``
 
-::
+.. code:: yaml
 
     apiVersion: v1
     kind: PersistentVolume
@@ -497,7 +511,7 @@ PersistentVolume支持的PV类型如下：
 
 ``kubectl get pv``\ 查看
 
-::
+.. code:: yaml
 
     [root@ci-base PersistenVolume-demo]# kubectl create -f nfs-pv.yaml
     [root@ci-base PersistenVolume-demo]# kubectl get pv
@@ -792,6 +806,27 @@ test-pod.yaml
         - name: nfs-pvc
           persistentVolumeClaim:
             claimName: test-claim
+
+查看集群中storageclass信息
+
+.. code:: shell
+
+    $ k get sc
+    NAME   PROVISIONER     RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+    cds1   csi-cdsplugin   Delete          Immediate           false                  5s
+
+    $ k describe storageclass cds1
+    Name:            cds1
+    IsDefaultClass:  No
+    Annotations:     kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{},"name":"cds1"},"parameters":{"paymentTiming":"Postpaid","reservationLength":"","storageType":"hdd"},"provisioner":"csi-cdsplugin","reclaimPolicy":"Delete"}
+
+    Provisioner:           csi-cdsplugin
+    Parameters:            paymentTiming=Postpaid,reservationLength=,storageType=hdd
+    AllowVolumeExpansion:  <unset>
+    MountOptions:          <none>
+    ReclaimPolicy:         Delete
+    VolumeBindingMode:     Immediate
+    Events:                <none>
 
 参考文献：
 

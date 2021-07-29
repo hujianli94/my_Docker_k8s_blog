@@ -125,6 +125,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#id20">开启Docker服务器的端口，外部客户端可以访问</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-deamondeamon-json">Docker deamon配置文件说明deamon.json</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pycharmdocker">pycharm连接docker开发</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dockerdocker-compose">Docker和docker-compose在线和离线安装</a></li>
 </ul>
@@ -157,6 +158,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes实战指南/index.html">02.Kubernetes实战指南</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../03.Docker经典实例/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../04.Prometheus监控运维实战/index.html">04.Prometheus监控运维实战</a></li>
 </ul>
 
             
@@ -251,8 +253,9 @@
 <li><a class="reference internal" href="#id20" id="id38">开启Docker服务器的端口，外部客户端可以访问</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#pycharmdocker" id="id39">pycharm连接docker开发</a></li>
-<li><a class="reference internal" href="#dockerdocker-compose" id="id40">Docker和docker-compose在线和离线安装</a></li>
+<li><a class="reference internal" href="#docker-deamondeamon-json" id="id39">Docker deamon配置文件说明deamon.json</a></li>
+<li><a class="reference internal" href="#pycharmdocker" id="id40">pycharm连接docker开发</a></li>
+<li><a class="reference internal" href="#dockerdocker-compose" id="id41">Docker和docker-compose在线和离线安装</a></li>
 </ul>
 </li>
 </ul>
@@ -355,7 +358,7 @@ Edition，EE）。社区版本包括大部分的核心功能，企业版本则�
 <h3><a class="toc-backref" href="#id29">Centos 7安装</a><a class="headerlink" href="#centos-7" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="id8">
 <h4>方法1<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Docker 支持 CentOS6 及以后的版本。
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>Docker 支持 CentOS6 及以后的版本。
 #CentOS6
 
 对于 CentOS6，可以使用 EPEL 库安装 Docker，命令如下
@@ -388,7 +391,7 @@ $ sudo systemctl enable docker.service
 </div>
 <div class="section" id="id9">
 <h4>方法2<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>## Docker CE 的安装使用。
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>## Docker CE 的安装使用。
 $ sudo yum remove docker \
                   docker-client \
                   docker-client-latest \
@@ -458,7 +461,7 @@ $ sudo rm -rf /var/lib/docker
 </div>
 <div class="section" id="id10">
 <h4>方法3<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>安装Docker前的准备
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>安装Docker前的准备
 
 #添加内核配置参数
 $ sudo tee -a /etc/sysctl.conf &lt;&lt;-EOF
@@ -499,12 +502,12 @@ $ sudo usermod -aG docker $USER
 </div>
 <p>最后记得安装加速器，DockerHub在国外，访问可能比较慢，要使用国内的DaoCloud，非常快</p>
 <p>执行命令</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">sSL</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">get</span><span class="o">.</span><span class="n">daocloud</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">daotools</span><span class="o">/</span><span class="n">set_mirror</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">sh</span> <span class="o">-</span><span class="n">s</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">f1361db2</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">daocloud</span><span class="o">.</span><span class="n">io</span>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">sSL</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">get</span><span class="o">.</span><span class="n">daocloud</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">daotools</span><span class="o">/</span><span class="n">set_mirror</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">sh</span> <span class="o">-</span><span class="n">s</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">f1361db2</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">daocloud</span><span class="o">.</span><span class="n">io</span>
 <span class="n">systemctl</span> <span class="n">restart</span> <span class="n">docker</span>
 </pre></div>
 </div>
 <p>阿里云的加速器</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">docker</span>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">docker</span>
 <span class="n">sudo</span> <span class="n">tee</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">docker</span><span class="o">/</span><span class="n">daemon</span><span class="o">.</span><span class="n">json</span> <span class="o">&lt;&lt;-</span><span class="s1">&#39;EOF&#39;</span>
 <span class="p">{</span>
   <span class="s2">&quot;registry-mirrors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;https://25bxwt20.mirror.aliyuncs.com&quot;</span><span class="p">]</span>
@@ -519,7 +522,7 @@ $ sudo usermod -aG docker $USER
 <div class="section" id="ubuntu">
 <h3><a class="toc-backref" href="#id30">Ubuntu安装</a><a class="headerlink" href="#ubuntu" title="Permalink to this headline">¶</a></h3>
 <p>①1.配置 Docker 的 apt 源</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. 安装包，允许 apt 命令 HTTPS 访问 Docker 源。
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>1. 安装包，允许 apt 命令 HTTPS 访问 Docker 源。
 $ sudo apt-get install \
     apt-transport-https \
     ca-certificates \
@@ -528,11 +531,11 @@ $ sudo apt-get install \
 </pre></div>
 </div>
 <p>② 2. 添加 Docker 官方的 GPG</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 </pre></div>
 </div>
 <p>③ 3. 将 Docker 的源添加到 /etc/apt/sources.list</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo add-apt-repository \
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo add-apt-repository \
   &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) \
   stable&quot;
@@ -540,23 +543,23 @@ $ sudo apt-get install \
  安装 Docker
 
 $ sudo apt-get update
-$  sudo apt-get install docker-ce
+$ sudo apt-get install docker-ce
 </pre></div>
 </div>
 <p>④ 镜像下载加速</p>
 <p>由于 Docker Hub 的服务器在国外，下载镜像会比较慢。</p>
 <p>幸好 DaoCloud 为我们提供了免费的国内镜像服务。daocloud.io
 免费注册一个用户,点击查看加速器</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 镜像加速器</span>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 镜像加速器</span>
 <span class="n">curl</span> <span class="o">-</span><span class="n">sSL</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">get</span><span class="o">.</span><span class="n">daocloud</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">daotools</span><span class="o">/</span><span class="n">set_mirror</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">sh</span> <span class="o">-</span><span class="n">s</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">f1361db2</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">daocloud</span><span class="o">.</span><span class="n">io</span>
 </pre></div>
 </div>
 <p>重启 Docker deamon，即可体验飞一般的感觉。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">restart</span> <span class="n">docker</span><span class="o">.</span><span class="n">service</span>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">restart</span> <span class="n">docker</span><span class="o">.</span><span class="n">service</span>
 </pre></div>
 </div>
 <p>运行第一个docker</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="nd">@hujianli</span><span class="p">:</span><span class="o">~</span><span class="c1"># docker run -d -p 80:80 httpd</span>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run -d -p 80:80 httpd
 </pre></div>
 </div>
 </div>
@@ -564,19 +567,19 @@ $  sudo apt-get install docker-ce
 <h3><a class="toc-backref" href="#id31">通过脚本安装</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p>用户还可以使用官方提供的shell脚本来在Linux系统（目前支持Ubuntu、Debian、Oracleserver、Fedora、Centos、OpenSuse、Gentoo等常见发行版）上安装Docker的最新正式版本，
 该脚本会自动检测系统信息并进行相应配置：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl -fsSL https://get.docker.com/ | sh
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl -fsSL https://get.docker.com/ | sh
 </pre></div>
 </div>
 <p>或者：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget -qO- https://get.docker.com/ | sh
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget -qO- https://get.docker.com/ | sh
 </pre></div>
 </div>
 <p>如果想尝鲜使用最新功能，可以使用下面的脚本来安装预发布版本。但要注意，预发布版本往往意味着功能还不够稳定，不要在生产环境中使用：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl -fsSL https://test.docker.com/ | sh
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl -fsSL https://test.docker.com/ | sh
 </pre></div>
 </div>
 <p>另外，也可以从github.com/docker/docker/releases找到所有的发行版本信息和二进制包，自行下载使用。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#阿里云的安装脚本</span>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#阿里云的安装脚本</span>
 <span class="n">curl</span> <span class="o">-</span><span class="n">sSL</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">acs</span><span class="o">-</span><span class="n">public</span><span class="o">-</span><span class="n">mirror</span><span class="o">.</span><span class="n">oss</span><span class="o">-</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">docker</span><span class="o">-</span><span class="n">engine</span><span class="o">/</span><span class="n">internet</span> <span class="o">|</span> <span class="n">sh</span> <span class="o">-</span>
 
 
@@ -823,7 +826,7 @@ docker.service。</p>
 info命令），确保服务已经正常运行。</p>
 <div class="section" id="id20">
 <h3><a class="toc-backref" href="#id38">开启Docker服务器的端口，外部客户端可以访问</a><a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1.修改配置文件
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>1.修改配置文件
 执行命令： vim /lib/systemd/system/docker.service
 # 注释掉这行
 #ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
@@ -840,13 +843,17 @@ ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock
 </div>
 </div>
 </div>
+<div class="section" id="docker-deamondeamon-json">
+<h2><a class="toc-backref" href="#id39">Docker deamon配置文件说明deamon.json</a><a class="headerlink" href="#docker-deamondeamon-json" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.cnblogs.com/wt645631686/p/13356743.html">https://www.cnblogs.com/wt645631686/p/13356743.html</a></p>
+</div>
 <div class="section" id="pycharmdocker">
-<h2><a class="toc-backref" href="#id39">pycharm连接docker开发</a><a class="headerlink" href="#pycharmdocker" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id40">pycharm连接docker开发</a><a class="headerlink" href="#pycharmdocker" title="Permalink to this headline">¶</a></h2>
 <p>参考文献：</p>
 <p><a class="reference external" href="https://www.cnblogs.com/Mr-shen/p/12833142.html">https://www.cnblogs.com/Mr-shen/p/12833142.html</a></p>
 </div>
 <div class="section" id="dockerdocker-compose">
-<h2><a class="toc-backref" href="#id40">Docker和docker-compose在线和离线安装</a><a class="headerlink" href="#dockerdocker-compose" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id41">Docker和docker-compose在线和离线安装</a><a class="headerlink" href="#dockerdocker-compose" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.jb51.net/article/201220.htm">https://www.jb51.net/article/201220.htm</a></p>
 </div>
 </div>

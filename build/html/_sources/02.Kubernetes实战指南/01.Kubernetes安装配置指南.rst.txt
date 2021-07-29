@@ -501,6 +501,10 @@ https://www.kuboard.cn/install/install-kubernetes.html#%E4%BB%8B%E7%BB%8D
     kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
     kubectl -n kube-system get pods |grep calico
 
+最新calico网络插件安装方式
+
+https://www.wqblogs.com/2020/12/14/calico%E9%83%A8%E7%BD%B2/
+
 3.8 Ingress Controller
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -992,7 +996,102 @@ Kubectl工具默认连接本地apiserver127.0.0.1:8080，通过-s选项可以指
     k8s-n1、k8s-n2                         #node节点，对外映射发布服务，安装了ingress插件
     k8s-w1~w7                             #worker节点，运行容器和存储镜像
 
-配置kubectl连接多个kubernetes集群
+4.1.1 kubectl连接多个kubernetes集群
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+具体步骤如下：
+
+.. code:: shell
+
+    $ ll ~/.kube/
+    -rw-r--r-- 1 root root 6546 Jun 21 19:23 kubectl-baseService.conf
+    -rw-r--r-- 1 root root 6546 Jun 21 19:23 kubectl-rake.conf
+
+    $ cat kubectl-rake.conf
+    apiVersion: v1
+    clusters:
+    - cluster:
+        certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURuakNDQW9hZ0F3SUJBZ0lVRkdBNmlkZ0FSNXVwY3VUWXZMRkVKVjV2WW1nd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1p6RUxNQWtHQTFVRUJoTUNRMDR4RURBT0JnTlZCQWdUQjBKbGFVcHBibWN4RURBT0JnTlZCQWNUQjBKbAphVXBwYm1jeERqQU1CZ05WQkFvVEJXcHdZV0Z6TVJRd0VnWURWUVFMRXd0amJHOTFaRzVoZEdsMlpURU9NQXdHCkExVUVBeE1GYW5CaFlYTXdIaGNOTWpFd05qSXhNRE14T0RBd1doY05NekV3TmpFNU1ETXhPREF3V2pCbk1Rc3cKQ1FZRFZRUUdFd0pEVGpFUU1BNEdBMVVFQ0JNSFFtVnBTbWx1WnpFUU1BNEdBMVVFQnhNSFFtVnBTbWx1WnpFTwpNQXdHQTFVRUNoTUZhbkJoWVhNeEZEQVNCZ05WQkFzVEMyTnNiM1ZrYm1GMGFYWmxNUTR3REFZRFZRUURFd1ZxCmNHRmhjekNDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFEZ2dFUEFEQ0NBUW9DZ2dFQkFMcmo5SmcxaXZmRUI0TmUKaGRFQzAxdks0ZklydHlQclhmaytGbmJ5NldHSmsxMnN0RkFzM0ZIdzAvSWwwSU9ZNythRzZZTlo3SEVGUER1UQpPK0Z5eFhkQThpdUlYUW1ZYW1UM1k1aTQ3bVVWeDlWK2ZwZk9zUzUvSUVhUFNObmROVzN4cnkyLzNZaldpQnA5CmNhT3VOMXltQ1l6dnl5dGVPWXFQLzhpTHRDVXlEWmJsVkEzZFY4N0hnc2ErQWpYakVRbm01MS8zaFFiT1FxUisKRWpnZnI5Nm1MSmJpRUpacFJnWjJlTXNRLzNIbXVaeWs3ejRuQm5qcE1QaW10b1pUaTA5ZUxRQk9XTXRxSy9CZgp1cy8xZmxGS3V6dkRaWU02bHI5VHdhbFB1YjdUM2hSN05tSEhNS1U4NzhxUTNoNjErM0pTbktHYy9EeEVaL2sxCk9va0NXdWNDQXdFQUFhTkNNRUF3RGdZRFZSMFBBUUgvQkFRREFnRUdNQThHQTFVZEV3RUIvd1FGTUFNQkFmOHcKSFFZRFZSME9CQllFRk5kYTNjNFJQTTlwb3JiRUdJSlZuVmxqN2U0WU1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQgpBUUJRcWxqTFVSYndjSlZMbTZHU0JOL0dNM245bDJaaTBSVC9ETUpESzBEbjdmZlBybHVmY01uVjhFQmxPaGtYCllLUDhHNmRXbWdLSTFDTW5WNHZXRi9RRG8waGl1OGNGYXcyTS9kNmE0OFk2T0VKb0g1S3g5Wk5wT0p4NlNCSlcKMGdCRnJYaXlOVXZpVEJWWlFSbC9KU0g1cmRxMHI2b3FEbm0zalRQeE1YdTBLbXhzdU5YTS83YzZSaVZlODBDZwpseFdmZG5NbU9IVUI5UDU0c1JHMVFLdWNkTW1MYjZwbU05TG9WSzRibXNGOWpucUJwSDRlMnhabG1tc21uWFhzCmpYM0hNNi9LQitDRFRDSUZXKzE2ajlucmRJNmZKaXlkbHlUQWJoTUJEMTBHZ0hyUEg1Qk42T0F4a29rdkpDOVIKNGZZZDZERnByNm9yWHN6QWhkbTY4RFNFCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+        server: https://100.64.230.123:6443
+      name: kubernetes
+    contexts:
+    - context:
+    .......
+
+    $ cat kubectl-baseService.conf
+    apiVersion: v1
+    clusters:
+    - cluster:
+        client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVWekNDQXorZ0F3SUJBZ0lVRDlQQ0l0Z0hRUCtEVE10U1NGV1lmVXFoR01Zd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1p6RUxNQWtHQTFVRUJoTUNRMDR4RURBT0JnTlZCQWdUQjBKbGFVcHBibWN4RURBT0JnTlZCQWNUQjBKbAphVXBwYm1jeERqQU1CZ05WQkFvVEJXcHdZV0Z6TVJRd0VnWURWUVFMRXd0amJHOTFaRzVoZEdsMlpURU9NQXdHCkExVUVBeE1GYW5CaFlYTXdJQmNOTWpFd05qSXhNRE15TURBd1doZ1BNakV5TVRBMU1qZ3dNekl3TURCYU1JR2QKTVFzd0NRWURWUVFHRXdKRFRqRVFNQTRHQTFVRUNCTUhRbVZwU21sdVp6RVFNQTRHQTFVRUJ4TUhRbVZwU21sdQpaekVwTUNjR0ExVUVDaE1nWldSalpqa3laVGs0TmpoaU5EZ3hNbUV6TVROalpUQTFZbVprWWpBNFlXTXhGREFTCkJnTlZCQXNUQzJOc2IzVmtibUYwYVhabE1Ta3dKd1lEVlFRREV5QmxaR05tT1RKbE9UZzJPR0k
+        .......
+      
+
+通过config信息，可以看到两个集群的cluster name，context
+name，以及用户信息。
+
+配置文件已准备好，下面开始变身了。文件合成：
+
+.. code:: shell
+
+    $ cd $HOME/.kube/
+    $ KUBECONFIG=kubectl-rake.conf:kubectl-baseService.conf kubectl config view --flatten > $HOME/.kube/config
+    $ ll
+
+    -rw-r--r-- 1 root root 6546 Jun 21 19:32 config
+    -rw-r--r-- 1 root root 6546 Jun 21 19:23 kubectl-baseService.conf
+    -rw-r--r-- 1 root root 6546 Jun 21 19:23 kubectl-rake.conf
+
+那么如何使用呢？
+
+1、查看cluster name以及context name
+
+.. code:: shell
+
+    $ kubectl config view
+    apiVersion: v1
+    clusters:
+    - cluster:
+        certificate-authority-data: DATA+OMITTED
+        server: https://100.64.230.127:6443
+      name: kubernetes1
+    - cluster:
+        certificate-authority-data: DATA+OMITTED
+        server: https://100.64.230.123:6443
+      name: kubernetes2
+    contexts:
+    - context:
+        cluster: kubernetes
+        user: edcf92e9868b4812a313ce05bfdb08ac
+      name: edcf92e9868b4812a313ce05bfdb08ac@kubernetes1
+    - context:
+        cluster: kubernetes
+        user: edcf92e9868b4812a313ce05bfdb08ac
+      name: edcf92e9868b4812a313ce05bfdb08ac@kubernetes2
+    current-context: edcf92e9868b4812a313ce05bfdb08ac@kubernetes
+    kind: Config
+    preferences: {}
+    users:
+    - name: edcf92e9868b4812a313ce05bfdb08ac
+      user:
+        client-certificate-data: REDACTED
+        client-key-data: REDACTED
+
+2、查看当前使用的集群
+
+::
+
+    $ kubectl config current-context
+    edcf92e9868b4812a313ce05bfdb08ac@kubernetes
+
+3、修改当前使用的集群
+
+::
+
+    $ kubectl config use-context edcf92e9868b4812a313ce05bfdb08ac@kubernetes1
+    Switched to context "edcf92e9868b4812a313ce05bfdb08ac@kubernetes1".
+
+参考文献：
+
 http://www.manongjc.com/detail/12-dxwuzgmmmatvykr.html
 
 4.2 在kuberct基础上安装helm
@@ -1044,6 +1143,14 @@ kubectl 在 Bash 和 Zsh 下可以使用下面的命令自动生成并打印出�
 
     $ kubectl completion bash  >>/etc/profile
     $ source /etc/profile
+
+如果你想在linxu上自动补全kubenetes的命令，可以执行下列步骤：
+
+.. code:: shell
+
+    $ yum install -y bash-completion
+    $ source <(kubectl completion bash)
+    $ echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 参考文献：
 
@@ -1135,36 +1242,57 @@ https://gitee.com/oschina/install-single-master-K8s.git
 7. 移除node和重新加入node
 -------------------------
 
-::
+**Kubernetes Node的隔离与恢复**
+
+在硬件升级、硬件维护等情况下，我们需要将某些Node进行隔离，脱离Kubernetes集群的调度范围。Kubernetes提供了一种机制，即可以将Node纳入调度范围，也可以将Node脱离调度范围。
+
+使用kubectl cordon对某个Node进行隔离和恢复调度的操作。
+
+.. code:: shell
+
+    #隔离
+    $ kubectl cordon k8s-node1
+
+
+    #恢复
+    $ kubectl uncordon k8s-node1
+
+**移除节点和加入节点操作**
+
+.. code:: shell
 
     1.查看当前所有node节点
-    sudo kubectl get no    
+    $ sudo kubectl get no    
 
 
     2.将我的节点标记为不可调度
-    kubectl cordon k8-w8
+    $ kubectl cordon k8-w8
 
 
     3.排空节点以准备维护
-    kubectl drain my-node  
+    $ kubectl drain my-node  
 
 
     4.在master上移除节点
-    sudo kubectl delete node <your-node>
+    $ sudo kubectl delete node <your-node>
 
 
     5.在被删除节点<node>执行
-    kubeadm reset
+    $ kubeadm reset
 
 
     6.在master节点重新生成token
-    [root@ci-base ~]# kubeadm token create --print-join-command
+    $ kubeadm token create --print-join-command
     W0406 18:46:41.609997   17201 configset.go:202] WARNING: kubeadm cannot validate component configs for API groups [kubelet.config.k8s.io kubeproxy.config.k8s.io]
 
     kubeadm join kube-apiserver.gitee.cc:6443 --token vawvl2.521xl3jo2h2y2h4h     --discovery-token-ca-cert-hash sha256:31a7cc20f0c5471a525c43e530bd21360bd4d1a19fa9e96724ad811a295eebd5
 
 
     7.在被加入节点执行 kubeadm join
+
+参考文献：
+
+https://www.orchome.com/1777
 
 8. 手动管理Node资源与节点
 -------------------------
@@ -1181,10 +1309,10 @@ https://gitee.com/oschina/install-single-master-K8s.git
 
 ::
 
-    //下面的命令可封锁k8s-W1节点
+    //封锁k8s-W1节点
     kubectl cordon k8s-w1
 
-    //排空命令自身也会先封锁目标节点而后再进行排空操作，即完成封锁和排空两个步骤
+    //排空节点内的资源
     kubectl drain k8s-w1
 
 不过，仅期望封锁工作节点时，cordon命令显然更适用。随后，无论是运行cordon还是drain命令，若期望工作节点回归正常工作状态，都需要使用uncordo命令对节点进行解封。
@@ -1196,6 +1324,58 @@ https://gitee.com/oschina/install-single-master-K8s.git
 需要注意的是，drain默认只能排空受控制器（如Deployment、DaemonSet或StatefulSet等）管理的Pod对象，而不受控于控制器的Pod（例如静态Pod）则会阻止命令的运行。
 
 如果要忽略这种阻止操作，可以为drain附加--force选项，以清理系统级Pod对象。
+
+8.1 节点维护和设置污点操作
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    #查看taint
+    kubectl describe node node1
+
+
+    #设置taint
+    #NoExecute不仅不会调度, 还会驱逐Node上已有的Pod
+    kubectl taint node node1 key1=value1:NoSchedule
+    kubectl taint node node1 key1=value1:NoExecute
+    kubectl taint node node1 key2=value2:NoSchedule
+
+
+
+    #删除taint
+    kubectl taint node node1 key1:NoSchedule-  # 这里的key可以不用指定value
+    kubectl taint node node1 key1:NoExecute-
+    # kubectl taint node node1 key1-  删除指定key所有的effect
+    kubectl taint node node1 key2:NoSchedule-
+
+
+
+
+    kubectl taint node k8s-m1 node-role.kubernetes.io/master-   #允许master调度
+
+    kubectl taint nodes master1 node-role.kubernetes.io/master=:NoSchedule #禁止master调度
+
+    kubectl describe node master |grep Taints #查看污点
+
+
+
+    #节点设置不可调度
+    kubectl taint node k8s-n1 GiteeCommonAddonsOnly:NoSchedule
+
+    #节点设置为可调度
+    kubectl taint node k8s-n1 GiteeCommonAddonsOnly=yes:NoSchedule-
+
+
+    kubectl cordon my-node                                                # 将节点设置为不可调度
+    kubectl drain my-node                                                 # 排空 my-node 以准备维护
+    kubectl uncordon my-node                                              # 将节点标记为可调度
+    kubectl top node my-node                                              # 显示给定节点的指标
+    kubectl cluster-info                                                  # 显示 master 和 services 的地址
+    kubectl cluster-info dump                                             # 将当前集群状态转储到标准输出
+    kubectl cluster-info dump --output-directory=/path/to/cluster-state   # 将当前集群状态转储到标准输出 to /path/to/cluster-state
+
+    # 如果具有该键和效果的污点已存在，则按指定替换其值。
+    kubectl taint nodes foo dedicated=special-user:NoSchedule
 
 参考文献
 --------

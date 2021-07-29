@@ -459,7 +459,7 @@ grub  nss  useradd  yyy
 <h3><a class="toc-backref" href="#id15">3.2 共享NFS网络数据卷</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p><strong>1、管理节点：创建yaml文件</strong></p>
 <p><code class="docutils literal notranslate"><span class="pre">vim</span> <span class="pre">nginx-nfs.yaml</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
 <span class="n">metadata</span><span class="p">:</span>
@@ -506,7 +506,7 @@ grub  nss  useradd  yyy
 </div>
 <p><strong>2、管理节点：创建Deployment</strong></p>
 <p>查看创建情况</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">nfs</span><span class="o">-</span><span class="n">demo</span><span class="p">]</span><span class="c1"># kubectl create -f nfs-deployment.yaml</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">nfs</span><span class="o">-</span><span class="n">demo</span><span class="p">]</span><span class="c1"># kubectl create -f nfs-deployment.yaml</span>
 <span class="n">deployment</span><span class="o">.</span><span class="n">apps</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">deploy</span><span class="o">-</span><span class="n">nfs</span> <span class="n">created</span>
 <span class="n">service</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">service</span> <span class="n">created</span>
 
@@ -533,7 +533,7 @@ grub  nss  useradd  yyy
 </pre></div>
 </div>
 <p>查看详细信息</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">nfs</span><span class="o">-</span><span class="n">demo</span><span class="p">]</span><span class="c1"># kubectl describe deployment nginx-deploy-nfs</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">nfs</span><span class="o">-</span><span class="n">demo</span><span class="p">]</span><span class="c1"># kubectl describe deployment nginx-deploy-nfs</span>
 <span class="n">Name</span><span class="p">:</span>                   <span class="n">nginx</span><span class="o">-</span><span class="n">deploy</span><span class="o">-</span><span class="n">nfs</span>
 <span class="n">Namespace</span><span class="p">:</span>              <span class="n">default</span>
 <span class="n">CreationTimestamp</span><span class="p">:</span>      <span class="n">Fri</span><span class="p">,</span> <span class="mi">25</span> <span class="n">Dec</span> <span class="mi">2020</span> <span class="mi">12</span><span class="p">:</span><span class="mi">51</span><span class="p">:</span><span class="mi">33</span> <span class="o">+</span><span class="mi">0800</span>
@@ -665,8 +665,19 @@ PVC：消费者、消费容量
 </div>
 <div class="section" id="nfs-pv">
 <h4>5.1.1 创建NFS-PV存储<a class="headerlink" href="#nfs-pv" title="Permalink to this headline">¶</a></h4>
+<p>NFS</p>
+<p>使用NFS网络文件系统提供的共享目录存储数据时，我们需要在系统中部署一个NFS
+Server。定义NFS类型的Volume的示例如下：</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">volumes</span><span class="p">:</span>
+ <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nfs</span>
+   <span class="n">nfs</span><span class="p">:</span>
+     <span class="c1"># 改为你的NFS服务器地址</span>
+     <span class="n">server</span><span class="p">:</span> <span class="n">nfs</span><span class="o">-</span><span class="n">server</span><span class="o">.</span><span class="n">localhost</span>
+     <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span>
+</pre></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">vim</span> <span class="pre">nfs-pv.yaml</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">PersistentVolume</span>
 <span class="n">metadata</span><span class="p">:</span>
   <span class="n">name</span><span class="p">:</span> <span class="n">nfs</span><span class="o">-</span><span class="n">pv</span>
@@ -682,7 +693,7 @@ PVC：消费者、消费容量
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pv</span></code>查看</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">PersistenVolume</span><span class="o">-</span><span class="n">demo</span><span class="p">]</span><span class="c1"># kubectl create -f nfs-pv.yaml</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">PersistenVolume</span><span class="o">-</span><span class="n">demo</span><span class="p">]</span><span class="c1"># kubectl create -f nfs-pv.yaml</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">PersistenVolume</span><span class="o">-</span><span class="n">demo</span><span class="p">]</span><span class="c1"># kubectl get pv</span>
 <span class="n">NAME</span>         <span class="n">CAPACITY</span>   <span class="n">ACCESS</span> <span class="n">MODES</span>   <span class="n">RECLAIM</span> <span class="n">POLICY</span>   <span class="n">STATUS</span>      <span class="n">CLAIM</span>              <span class="n">STORAGECLASS</span>   <span class="n">REASON</span>   <span class="n">AGE</span>
 <span class="n">nfs</span><span class="o">-</span><span class="n">pv</span>       <span class="mi">5</span><span class="n">Gi</span>        <span class="n">RWX</span>            <span class="n">Recycle</span>          <span class="n">Available</span>                                              <span class="mi">33</span><span class="n">s</span>
@@ -942,6 +953,25 @@ PVC：消费者、消费容量
     <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nfs</span><span class="o">-</span><span class="n">pvc</span>
       <span class="n">persistentVolumeClaim</span><span class="p">:</span>
         <span class="n">claimName</span><span class="p">:</span> <span class="n">test</span><span class="o">-</span><span class="n">claim</span>
+</pre></div>
+</div>
+<p>查看集群中storageclass信息</p>
+<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span>$ k get sc
+NAME   PROVISIONER     RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+cds1   csi-cdsplugin   Delete          Immediate           false                  5s
+
+$ k describe storageclass cds1
+Name:            cds1
+IsDefaultClass:  No
+Annotations:     kubectl.kubernetes.io/last-applied-configuration={&quot;apiVersion&quot;:&quot;storage.k8s.io/v1&quot;,&quot;kind&quot;:&quot;StorageClass&quot;,&quot;metadata&quot;:{&quot;annotations&quot;:{},&quot;name&quot;:&quot;cds1&quot;},&quot;parameters&quot;:{&quot;paymentTiming&quot;:&quot;Postpaid&quot;,&quot;reservationLength&quot;:&quot;&quot;,&quot;storageType&quot;:&quot;hdd&quot;},&quot;provisioner&quot;:&quot;csi-cdsplugin&quot;,&quot;reclaimPolicy&quot;:&quot;Delete&quot;}
+
+Provisioner:           csi-cdsplugin
+Parameters:            paymentTiming=Postpaid,reservationLength=,storageType=hdd
+AllowVolumeExpansion:  &lt;unset&gt;
+MountOptions:          &lt;none&gt;
+ReclaimPolicy:         Delete
+VolumeBindingMode:     Immediate
+Events:                &lt;none&gt;
 </pre></div>
 </div>
 <p>参考文献：</p>
