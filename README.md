@@ -24,7 +24,7 @@ python md_to_rst_tool.py
 #必须先清理，保证目录层级
 start make.bat claen	
 
-# 增量生成html页面	
+# 增量生成html页面
 start make.bat html
 
 # 重新生成静态网页删除build目录下的所有文件

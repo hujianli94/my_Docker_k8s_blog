@@ -132,10 +132,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#nodenfs">Node节点部署NFS客户端</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id7">下载NFS存储分配器</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id8">使用StorageClass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kubernetesnfs-server-provisioner">kubernetes部署nfs-server-provisioner</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#kubernetes-secret">7. Kubernetes Secret（机密存储）</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#kubernetes-configmap">8. Kubernetes configMap（配置文件存储）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kubernetes-secret">8. Kubernetes Secret（机密存储）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kubernetes-configmap">9. Kubernetes configMap（配置文件存储）</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="09.kubernetes实战案例.html">Kubernetes实战案例</a></li>
@@ -237,10 +238,11 @@
 <li><a class="reference internal" href="#nodenfs" id="id23">Node节点部署NFS客户端</a></li>
 <li><a class="reference internal" href="#id7" id="id24">下载NFS存储分配器</a></li>
 <li><a class="reference internal" href="#id8" id="id25">使用StorageClass</a></li>
+<li><a class="reference internal" href="#kubernetesnfs-server-provisioner" id="id26">kubernetes部署nfs-server-provisioner</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#kubernetes-secret" id="id26">7. Kubernetes Secret（机密存储）</a></li>
-<li><a class="reference internal" href="#kubernetes-configmap" id="id27">8. Kubernetes configMap（配置文件存储）</a></li>
+<li><a class="reference internal" href="#kubernetes-secret" id="id27">8. Kubernetes Secret（机密存储）</a></li>
+<li><a class="reference internal" href="#kubernetes-configmap" id="id28">9. Kubernetes configMap（配置文件存储）</a></li>
 </ul>
 </li>
 </ul>
@@ -974,16 +976,34 @@ VolumeBindingMode:     Immediate
 Events:                &lt;none&gt;
 </pre></div>
 </div>
-<p>参考文献：</p>
+<p>在kubernetes1.20.1版本以上，出现一个bug</p>
+<p>1.20.4版本，解决方法 /etc/kubernetes/manifests/kube-apiserver.yaml
+添加”–feature-gates=RemoveSelfLink=false” link:
+<a class="reference external" href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fkubernetes-sigs%2Fnfs-subdir-external-provisioner%2Fissues%2F25">https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/issues/25</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>provision &quot;default/test-claim&quot; class &quot;managed-nfs-storage&quot;: unexpected error getting claim reference: selfLink was empty, can&#39;t make reference
+</pre></div>
+</div>
+<p>解决方案如下：</p>
+<p><a class="reference external" href="https://stackoverflow.com/questions/65376314/kubernetes-nfs-provider-selflink-was-empty">https://stackoverflow.com/questions/65376314/kubernetes-nfs-provider-selflink-was-empty</a></p>
+<p>参考文献：
+<a class="reference external" href="https://www.wqblogs.com/2021/01/27/k8s%E5%AF%B9%E6%8E%A5nfs%E5%AD%98%E5%82%A8/">https://www.wqblogs.com/2021/01/27/k8s%E5%AF%B9%E6%8E%A5nfs%E5%AD%98%E5%82%A8/</a></p>
 <p><a class="reference external" href="https://blog.csdn.net/networken/article/details/86697018">https://blog.csdn.net/networken/article/details/86697018</a></p>
+</div>
+<div class="section" id="kubernetesnfs-server-provisioner">
+<h3><a class="toc-backref" href="#id26">kubernetes部署nfs-server-provisioner</a><a class="headerlink" href="#kubernetesnfs-server-provisioner" title="Permalink to this headline">¶</a></h3>
+<p>nfs-server-provisioner部署一个nfs
+server，然后创建pv与nfs进行绑定，所有其他使用nfs的storageclass的pvc所动态创建的pv都会在这个pv下进行挂载。</p>
+<p>github地址：<a class="reference external" href="https://github.com/helm/charts/tree/master/stable/nfs-server-provisioner">https://github.com/helm/charts/tree/master/stable/nfs-server-provisioner</a></p>
+<p>参考文献：</p>
+<p><a class="reference external" href="https://blog.csdn.net/networken/article/details/105945174">https://blog.csdn.net/networken/article/details/105945174</a></p>
 </div>
 </div>
 <div class="section" id="kubernetes-secret">
-<h2><a class="toc-backref" href="#id26">7. Kubernetes Secret（机密存储）</a><a class="headerlink" href="#kubernetes-secret" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id27">8. Kubernetes Secret（机密存储）</a><a class="headerlink" href="#kubernetes-secret" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/11424286.html">https://www.cnblogs.com/xiangsikai/p/11424286.html</a></p>
 </div>
 <div class="section" id="kubernetes-configmap">
-<h2><a class="toc-backref" href="#id27">8. Kubernetes configMap（配置文件存储）</a><a class="headerlink" href="#kubernetes-configmap" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id28">9. Kubernetes configMap（配置文件存储）</a><a class="headerlink" href="#kubernetes-configmap" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/11424321.html">https://www.cnblogs.com/xiangsikai/p/11424321.html</a></p>
 </div>
 </div>

@@ -56,6 +56,10 @@
 
     docker rmi $(docker images -q -f dangling=true) 
 
+
+    # 查看状态是关闭的镜像
+    docker ps -a --filter status=exited 
+
 3.如何删除所有本地的镜像？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -64,6 +68,27 @@
 ::
 
     dokcer rmi -f $(docker images -q)
+
+删除所有未运行 Docker 容器
+
+::
+
+    docker rm $(docker ps -a -q)
+
+    # 删除none的镜像，要先删除镜像中的容器。要删除镜像中的容器，必须先停止容器
+    docker stop $(docker ps -a | grep "Exited" | awk '{print $1 }')         //停止容器
+    docker rm $(docker ps -a | grep "Exited" | awk '{print $1 }')           //删除容器
+    docker rmi $(docker images | grep "none" | awk '{print $3}')            //删除镜像
+
+
+    # docker 删除所有none的镜像
+    docker images|grep none|awk '{print $3}'|xargs docker rmi
+
+删除所有未打 tag 的镜像
+
+::
+
+    docker rmi $(docker images -q | awk '/^<none>/ { print $3 }')
 
 4.如何清理Docker系统中的无用数据
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -226,7 +251,9 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 容器退出后会处于终止(exited)状态，此时可以通过docker ps
--a查看。其中的数据也不会丢失，还可以通过``docker [container] start``\ 命令来启动它。
+-a查看。其中的数据也不会丢失，还可以通过
+``docker [container] start``\ 命令来启动它。
+
 只有删除掉容器才会清除所有数据。
 
 2.如何停止所有正在运行的容器
@@ -256,3 +283,11 @@
 ::
 
     可以使用 docker [container] inspect --format '{{ .NetworkSettings.IPAddress }}' <CONTAINER ID or NAME> 命令。
+
+6.如何清理 Docker 占用的磁盘空间
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+https://zhuanlan.zhihu.com/p/100793598
+
+迁移 /var/lib/docker 目录
+https://blog.csdn.net/weixin\_32820767/article/details/81196250

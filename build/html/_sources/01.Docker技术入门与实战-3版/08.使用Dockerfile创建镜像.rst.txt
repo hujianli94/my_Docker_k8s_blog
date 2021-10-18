@@ -26,21 +26,18 @@ Dockerfile编写准则
     （3）优化指令顺序。
     # 可以把WORKDIR、ENV等放在前面，把COPY、ADD放在后面。总的来说，就是把不需要经常更改的指令放到前面，将最频繁更改的指令放到最后面。
 
-
     （4）只复制需要的文件，切忌复制所有内容。
-
 
     （5）最小化可缓存的执行层。
     比如，每一个RUN指令都会被看作是可缓存的执行单元。太多的RUN指令会增加镜像的层数，增大镜像体积，而将所有的命令都放到同一个RUN指令中又会破坏缓存，从而延缓构建周期。
 
     （6）使用多阶段构建。
 
-
     （7）根据情况合并指令。前面其实提到过这一点，甚至还特地讲了转义字符，主要就是为此服务的。前面我们讲过，每一个指令都会创建一层，并构成新的镜像
-
 
     （8）删除多余文件和清理没用的中间结果。
     这一点很易于理解，通常来讲，体积更小，部署更快！因此，在构建过程中，我们需要清理那些最终不需要的代码或文件，比如临时文件、源代码、缓存等。
+
 
     （9）使用.dockerignore。.dockerignore文件用于忽略那些镜像构建时非必需的文件，可以是开发文档、日志和其他无用的文件。
 
@@ -186,13 +183,19 @@ Hub上两个热门镜像nginx和Go的Dockerfile的例子，通过这两个例子
 dockerfile拷贝目录的一个坑
 --------------------------
 
+    拷贝文件不需要写目标
+
 .. code:: dockerfile
 
-    # 拷贝文件不需要写目标
+    # 拷贝文件
     FROM centos
     COPY 2.txt /usr/local/
 
-    # 拷贝目录则需要这样写,目标,不然拷贝不进去
+    拷贝目录则需要这样写,目标,不然拷贝不进去
+
+::
+
+    # 拷贝目录
     FROM centos
     COPY mysql /usr/local/mysql
 
@@ -248,6 +251,10 @@ Docker内置了一些镜像创建变量，用户可以直接使用而无须声�
     ARG VERSION=9.3
     FROM debian:${VERSION}
 
+    #示例
+    FROM scratch
+    .....
+
 3.LABEL
 ~~~~~~~
 
@@ -259,10 +266,29 @@ LABEL指令可以为生成的镜像添加元数据标签信息。这些信息可
 
 .. code:: dockerfile
 
-    LABEL version="1.0.0-rc3"
-    LABEL author="yeasy@github" date="2020-01-01"
-    LABEL description="This text illustrates \ 
-        that label-values can span multiple lines."
+    LABEL "com.example.vendor"="ACME Incorporated"
+    LABEL com.example.label-with-value="foo"
+    LABEL version="1.0"
+    LABEL description="This text illustrates \
+    that label-values can span multiple lines."
+
+在镜像构建后并成功运行容器，可以通过 ``inspect`` 查看
+
+::
+
+    # docker image inspect --format='' myimage
+    {
+      "com.example.vendor": "ACME Incorporated",
+      "com.example.label-with-value": "foo",
+      "version": "1.0",
+      "description": "This text illustrates that label-values can span multiple lines."
+    }
+
+如果要声明作者，语法为
+
+::
+
+    LABEL maintainer="SvenDowideit@home.org.au"
 
 4.EXPOSE
 ~~~~~~~~
@@ -302,6 +328,10 @@ HOST\_PORT：CONTAINER\_PORT参数（具体指定所映射的本地端口）。
     ENV APP_VERSION=1.0.0
     ENV APP_HOME=/usr/local/app
     ENV PATH $PATH:/usr/local/bin
+
+    ENV MY_NAME="John Doe"
+    ENV MY_DOG=Rex\ The\ Dog
+    ENV MY_CAT=fluffy
 
 指令指定的环境变量在运行时可以被覆盖掉，如
 
@@ -357,10 +387,16 @@ run--entrypoint。
 9.WORKDIR
 ~~~~~~~~~
 
-为后续的RUN、CMD、ENTRYPOINT指令配置工作目录。
+``WORKDIR`` 指令为 ``Dockerfile`` 中的任何 ``RUN`` 、 ``CMD`` 、
+``ENTRYPOINT`` 、 ``COPY`` 和 ``ADD``
+指令设置工作目录。如果工作目录不存在，即使它没有在后续的 ``Dockerfile``
+指令中使用，它也会被创建
 
 格式为\ ``WORKDIR /path/to/workdir``\ 。
-可以使用多个WORKDIR指令，后续命令如果参数是相对路径，则会基于之前命令指定的路径。例如：
+
+``WORKDIR`` 指令可以在 ``Dockerfile``
+中使用多次。如果提供了一个相对路径，它将相对于前一个 ``WORKDIR``
+指令的路径，语法为
 
 .. code:: shell
 
@@ -371,6 +407,17 @@ run--entrypoint。
 
 则最终路径为/a/b/c。
 因此，为了避免出错，推荐WORKDIR指令中只使用绝对路径。
+
+``WORKDIR`` 指令也可以解析之前使用 ``ENV`` 设置的环境变量，只能使用在
+``Dockerfile`` 中显式设置的环境变量，语法为
+
+::
+
+    ENV DIRPATH=/path
+    WORKDIR $DIRPATH/$DIRNAME
+    RUN pwd
+
+这里的最终路径是 ``/path/$DIRNAME``
 
 10.ONBUILD
 ~~~~~~~~~~
@@ -473,6 +520,9 @@ OPTION支持如下参数：
 
 注意后者指令会被解析为JSON数组，因此必须用双引号。前者默认将在shell终端中运行命令，即/bin/sh-c；后者则使用exec执行，不会启动shell环境。
 
+在 ``RUN`` 命令中也可以使用 ``exec`` 格式来避免 ``shell``
+字符串损坏，语法为
+
 指定使用其他终端类型可以通过第二种方式实现，
 
 例如\ ``RUN ["/bin/bash"，"-c"，"echo hello"]``\ 。
@@ -485,6 +535,19 @@ OPTION支持如下参数：
         && apt-get install -y libsnappy-dev zlib1g-dev libbz2-dev \
         && rm -rf /var/cache/apt \
         && rm -rf /var/lib/apt/lists/*
+
+``RUN`` 作为 ``Dockerfile`` 中最为常用的指令，在使用时有以下建议：
+
+-  在 ``RUN``
+   指令执行过程中，产生的中间镜像会被当做缓存在下一次构建时使用，如果不想使用缓存，使其失效，可以在
+   ``build`` 时添加 ``--no-cache``
+
+-  尽量把所有的 ``RUN`` 指令写到一起，如果是多条 ``shell``
+   命令，可以不用每条命令都添加 ``RUN`` ，更好的做法是通过 ``\``
+   换行，通过 ``&&``
+   连接多个指令，这样对构建生成的镜像的大小优化是很有帮助的，语法为
+
+``RUN set -x && \       yum install -y epel-release \       make \       gcc \       gcc-c++``
 
 2.CMD
 ~~~~~
@@ -536,14 +599,90 @@ ADD指令与COPY指令非常类似，它包含了更多的功能，除了将文�
 4.COPY
 ~~~~~~
 
+``COPY`` 和 ``ADD``
+都是用于在构建时往镜像中复制文件或目录的，并且两者都支持在复制时修改文件或目录的属主和属组，语法为
+
+::
+
+    ADD [--chown=<user>:<group>] <src>... <dest>
+    ADD [--chown=<user>:<group>] ["<src>",... "<dest>"]
+    COPY [--chown=<user>:<group>] <src>... <dest>
+    COPY [--chown=<user>:<group>] ["<src>",... "<dest>"]
+
 复制内容到镜像。 格式为
 
-``COPY <src> <dest>``\ 。
+``COPY <src> <dest>``
 
 复制本地主机的（为Dockerfile所在目录的相对路径，文件或目录）下内容到镜像中的。目标路径不存在时，会自动创建。
 
 路径同样支持正则格式。
 COPY与ADD指令功能类似，当使用本地目录为源目录时，推荐使用COPY。
+
+两者的使用差不多，但 ``ADD`` 功能更丰富
+
+-  支持URL
+
+例如源路径是文件的 ``URL``
+链接，构建时自动进行下载，下载后放到目标路径下，文件权限为 ``600``
+
+-  压缩包自动解压
+
+例如 ``tar`` 、 ``gzip`` 、 ``bzip2`` 、 ``xz`` 格式的压缩包， ``ADD``
+指令将会自动解压缩这个压缩文件到目标路径去
+
+写 Dockerfile 的一些技巧
+------------------------
+
+用 python -m pip 而不是 pip
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    # 升级 pip,让 pip install 更安静,--quiet 参数
+    python -m pip install --quiet --upgrade pip
+
+让 apt-get install 更安静
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    #我们用 -qq 命令，甚至重定向输出到 /dev/null 让它更安静。
+    apt-get -qq update
+    apt-get -qq install -y curl > /dev/null
+
+让 curl 和 wget 更安静
+~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    # 首先，如果要下载文件，curl 和 wget 二选一即可。如果用 curl，可以用 --silent 参数。
+    curl -sLO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+    #wget 有 --quiet 参数。
+    wget -q https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+用 axel 而不是 curl 或者 wget
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+对于身处国内的开发者，axel 完全可以取代 curl 以及 wget
+
+::
+
+    cho "Install Go compiler ..."
+
+    GO_MIRROR_0="http://mirrors.ustc.edu.cn/golang/go1.13.4.linux-amd64.tar.gz"
+
+    GO_MIRROR_1="https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz"
+
+    axel --quiet --output go.tar.gz $GO_MIRROR_0 $GO_MIRROR_1
+
+设置容器时间与宿主机时间同步
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    #设置容器时间与宿主机时间同步
+    RUN /bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
 
 创建镜像
 --------
@@ -580,6 +719,124 @@ COPY与ADD指令功能类似，当使用本地目录为源目录时，推荐使�
 
 .. figure:: ../_static/dockerfile03.png
    :alt: 
+
+Build images with BuildKit
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+安装buildx
+^^^^^^^^^^
+
+::
+
+    $ export DOCKER_BUILDKIT=1
+    $ docker build --platform=local -o . git://github.com/docker/buildx
+    $ mkdir -p ~/.docker/cli-plugins
+    $ mv buildx ~/.docker/cli-plugins/docker-buildx
+
+① 第一种方式使用BuildKit特性，设置环境变量
+
+::
+
+     DOCKER_BUILDKIT=1 docker build .
+
+下面的示例Dockerfile使用一个单独的阶段来收集要导出的生成文件：
+
+示例1
+
+::
+
+    FROM
+    Learn more about the "FROM" Dockerfile command.
+     golang AS build-stage
+    RUN go get -u github.com/LK4D4/vndr
+
+    FROM scratch AS export-stage
+    COPY --from=build-stage /go/bin/vndr /
+
+示例2
+
+.. code:: dockerfile
+
+    FROM nodejs:buster-slimv1.0 AS builder
+    MAINTAINER 1879324764@qq.com
+
+    COPY sources.list /etc/apt/sources.list
+    COPY gitee-ent-web /home/gitee-ent-web
+
+    RUN set -eux;\
+        apt-get update && \
+        apt-get install -y wget git && \
+        cd /home/gitee-ent-web && \
+        yarn install && \
+        yarn run build-i18n && \
+        yarn run build-vendor && \
+        yarn web:prod-ci-runjs
+
+    FROM scratch AS export-stage
+    COPY --from=builder /home/gitee-ent-web/dist ./dist
+
+② 第二种方式使用BuildKit特性
+
+::
+
+    docker buildx build -o out .
+
+下面命令会在当前out目录下生成输出的文件，out如果不存在会自动创建
+
+::
+
+    DOCKER_BUILDKIT=1 docker build -o out .
+    或者
+
+    # 直接使用 docker buildx build 命令构建镜像。
+    docker buildx build -o out .
+
+**一个go编译环境的例子**
+
+.. code:: bash
+
+    $ ls
+    Dockerfile  go.mod  main.go
+
+    $ cat Dockerfile
+    FROM golang:1.12-alpine as dev
+    RUN apk add --no-cache git ca-certificates
+    RUN adduser -D appuser
+    WORKDIR /src
+    COPY . /src/
+    CMD CGO_ENABLED=0 go build -o app . && ./app
+
+    FROM dev as build
+    RUN CGO_ENABLED=0 go build -o app .
+    USER appuser
+    CMD [ "./app" ]
+
+    FROM scratch as release
+    COPY --from=build /etc/passwd /etc/group /etc/
+    COPY --from=build /src/app /app
+    USER appuser
+    CMD [ "/app" ]
+
+    FROM scratch as artifact
+    COPY --from=build /src/app /app
+
+    FROM release
+
+.. code:: bash
+
+    $ DOCKER_BUILDKIT=1 docker build --target artifact --output type=local,dest=. .
+    或者
+    $ docker buildx build  --output type=local,dest=path/to/output-dir
+
+After the build was complete the ``app`` binary was exported:
+
+::
+
+    $ ls
+    Dockerfile  app  go.mod  main.go
+
+    $ ./app
+    Ready to receive requests on port 8080
 
 选择父镜像
 ~~~~~~~~~~
@@ -662,7 +919,7 @@ build）特性，可以精简最终生成的镜像大小。
 
 创建Dockerfile，使用golang：1.9镜像编译应用二进制文件为app，使用精简的镜像alpine：latest作为运行环境。Dockerfile完整内容为：
 
-.. code:: shell
+.. code:: dockerfile
 
     FROM golang:1.9 as builder # define stage name as builder
     RUN mkdir -p /go/src/test
