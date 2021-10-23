@@ -97,8 +97,8 @@ Docker Engine
     #通过kubectl describe node 来查看某个Node的详细信息
     $ kubectl describe node 127.0.0.1
 
-kubernetes的资源对象
---------------------
+4.kubernetes的资源对象
+----------------------
 
 kubernetes常用资源对象
 
@@ -147,8 +147,8 @@ https://k8syaml.com/
 
 Ratel安装文档：https://github.com/dotbalo/ratel-doc/blob/master/cluster/Install.md
 
-查询Kubernetes的健康状态
-------------------------
+5.查询Kubernetes的健康状态
+--------------------------
 
 .. code:: shell
 
@@ -171,6 +171,112 @@ Ratel安装文档：https://github.com/dotbalo/ratel-doc/blob/master/cluster/Ins
     k8s-node1    Ready    <none>   45h   v1.18.3
     k8s-node2    Ready    <none>   45h   v1.18.3
     k8s-node3    Ready    <none>   45h   v1.18.3
+
+6. kubectl 常用命令总结
+-----------------------
+
+    参考文献：
+
+    https://www.cnblogs.com/klvchen/p/9585746.html
+
+.. code:: shell
+
+    # 查看所有 pod 列表,  -n 后跟 namespace, 查看指定的命名空间
+    kubectl get pod
+    kubectl get pod -n kube  
+    kubectl get pod -o wide
+
+
+    # 重启Kubernetes Pod的几种方式
+    #方法1
+    kubectl scale deployment XXXX --replicas=0 -n {namespace}
+    kubectl scale deployment XXXX --replicas=1 -n {namespace}
+    #方法2
+    kubectl delete pod {podname} -n {namespace}
+    #方法3
+    kubectl get pod {podname} -n {namespace} -o yaml | kubectl replace --force -f -
+    #方法4
+    #Kubernetes 1.15开始才有
+    kubectl rollout restart deploy {your_deployment_name}
+
+
+    # 查看 RC 和 service 列表， -o wide 查看详细信息
+    kubectl get rc,svc
+    kubectl get pod,svc -o wide  
+    kubectl get pod <pod-name> -o yaml
+
+
+    # 显示 Node 的详细信息
+    kubectl describe node 192.168.0.212
+
+
+    # 显示 Pod 的详细信息, 特别是查看 pod 无法创建的时候的日志
+    kubectl describe pod <pod-name>
+    eg:
+    kubectl describe pod redis-master-tqds9
+
+
+    # 根据 yaml 创建资源, apply 可以重复执行，create 不行
+    kubectl create -f pod.yaml
+    kubectl apply -f pod.yaml
+
+
+    # 基于 pod.yaml 定义的名称删除 pod 
+    kubectl delete -f pod.yaml 
+
+
+    # 删除所有包含某个 label 的pod 和 service
+    kubectl delete pod,svc -l name=<label-name>
+
+
+    # 删除所有 Pod
+    kubectl delete pod --all
+
+
+    # 查看 endpoint 列表
+    kubectl get endpoints
+
+
+    # 执行 pod 的 date 命令
+    kubectl exec <pod-name> -- date
+    kubectl exec <pod-name> -- bash
+    kubectl exec <pod-name> -- ping 10.24.51.9
+
+
+    # 通过bash获得 pod 中某个容器的TTY，相当于登录容器
+    kubectl exec -it <pod-name> -c <container-name> -- bash
+    eg:
+    kubectl exec -it redis-master-cln81 -- bash
+
+
+    # 查看容器的日志
+    kubectl logs <pod-name>
+    kubectl logs -f <pod-name> # 实时查看日志
+    kubectl log  <pod-name>  -c <container_name> # 若 pod 只有一个容器，可以不加 -c 
+
+    kubectl logs -l app=frontend # 返回所有标记为 app=frontend 的 pod 的合并日志。
+
+
+    # 查看注释
+    kubectl explain pod
+    kubectl explain pod.apiVersion
+
+    # 查看节点 labels
+    kubectl get node --show-labels
+
+    # 重启 pod
+    kubectl get pod <POD名称> -n <NAMESPACE名称> -o yaml | kubectl replace --force -f -
+
+    # 修改网络类型
+    kubectl patch service istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
+
+    # 伸缩 pod 副本
+    # 可用于将Deployment及其Pod缩小为零个副本，实际上杀死了所有副本。当您将其缩放回1/1时，将创建一个新的Pod，重新启动您的应用程序。
+    kubectl scale deploy/nginx-1 --replicas=0
+    kubectl scale deploy/nginx-1 --replicas=1
+
+    # 查看前一个 pod 的日志，logs -p 选项 
+    kubectl logs --tail 100 -p user-klvchen-v1.0-6f67dcc46b-5b4qb > pre.log
 
 kubectl命令与资源管理
 ---------------------
@@ -1411,16 +1517,16 @@ Service对象demoapp的标签选择器动态纳入的新Pod副本也将成为该
 
 ::
 
-    ▪kubeadm是由Kubernetes原生提供的集群部署工具，支持高可用控制平面；kubeadminit可快速拉起一个控制平面，而kubeadm join则用于将节点加入集群之中。
+    ▪ kubeadm是由Kubernetes原生提供的集群部署工具，支持高可用控制平面；kubeadminit可快速拉起一个控制平面，而kubeadm join则用于将节点加入集群之中。
 
 
-    ▪Pod是运行容器化应用及调度的原子单元，同一个Pod中可同时运行多个容器，这些容器共享Mount、UTS及Network等Linux内核名称空间，并能够访问同一组存储卷。
+    ▪ Pod是运行容器化应用及调度的原子单元，同一个Pod中可同时运行多个容器，这些容器共享Mount、UTS及Network等Linux内核名称空间，并能够访问同一组存储卷。
 
 
-    ▪Deployment是最常用的无状态应用控制器，它支持应用的扩缩容、滚动更新等操作，为容器化应用赋予了极具弹性的功能。
+    ▪ Deployment是最常用的无状态应用控制器，它支持应用的扩缩容、滚动更新等操作，为容器化应用赋予了极具弹性的功能。
 
 
-    ▪Service为弹性变动且存在生命周期的Pod对象提供了一个固定的访问接口，用于服务发现和服务访问。
+    ▪ Service为弹性变动且存在生命周期的Pod对象提供了一个固定的访问接口，用于服务发现和服务访问。
 
 
-    ▪kubectl是Kubernetes API Server最常用的客户端程序之一，它功能强大、特性丰富，几乎能完成除了安装部署之外的所有管理操作。
+    ▪ kubectl是Kubernetes API Server最常用的客户端程序之一，它功能强大、特性丰富，几乎能完成除了安装部署之外的所有管理操作。

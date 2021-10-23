@@ -210,7 +210,46 @@
         echo_g "Done"
     done
 
-10 批量删除指定 repository 所有镜像工具
+10.批量导入导出Docker镜像
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+docker导出
+
+::
+
+    docker save -o centos-binary-neutron-server-2.0.0.5.tar.gz  kollaglue/centos-binary-neutron-server:2.0.0.5
+
+docker导入
+
+::
+
+    docker load < centos-binary-neutron-server-2.0.0.5.tar.gz
+
+docker导出镜像
+
+.. code:: shell
+
+    #!/bin/bash
+    IMAGES_LIST=($(docker images|sed '1d'|awk '{print $1}'))
+    IMAGES_NM_LIST=($(docker images|sed '1d'|awk '{print $1"-"$2}'|awk -F/ '{print $NF}'))
+    IMAGES_NUM=${#IMAGES_LIST[*]}
+    for((i=0;i<$IMAGES_NUM;i++))
+    do
+        docker save "${IMAGES_LIST[$i]}"  -o "${IMAGES_NM_LIST[$i]}".tar.gz 
+        echo $i ${IMAGES_NM_LIST[$i]} is ok
+    done
+
+docker导入镜像
+
+.. code:: shell
+
+    #!/bin/bash
+    for image_name in $(ls ./*.tar.gz)
+    do
+        docker load < ${image_name}
+    done 
+
+11 批量删除指定 repository 所有镜像工具
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: shell
@@ -292,3 +331,24 @@ https://zhuanlan.zhihu.com/p/100793598
 迁移/var/lib/docker目录
 
 https://blog.csdn.net/weixin\_32820767/article/details/81196250
+
+7.给运行中的docker容器添加端口映射
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1.获取容器IP
+
+.. code:: shell
+
+    $ docker inspect <container_id> | grep IPAddress
+
+2.通过iptable转发端口，并做映射
+
+.. code:: shell
+
+    $ iptables -t nat -A DOCKER -p tcp --dport 50000 -j DNAT --to-destination 172.17.0.3:50000
+
+3.重启容器
+
+.. code:: shell
+
+    $ docker restart <container_id>
