@@ -14,9 +14,9 @@ A script that converts md to rst format, records the converted md 5 value,
 judges and incrementally updates it based on the md5 value
 """
 
-
-
 Search_Path = os.path.abspath(os.path.dirname(os.path.abspath(__file__))) + "/source"
+
+
 # ENV_PATH = sys.path.append("D:\\Users\\pandocc-2.2.3.2")
 
 def log():
