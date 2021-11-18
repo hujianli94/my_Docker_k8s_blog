@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>配置私有仓库 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="安全防护与配置" href="12.%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E4%B8%8E%E9%85%8D%E7%BD%AE.html" />
+    <link rel="prev" title="Docker核心实现技术" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">01.Docker技术入门与实战3版</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.%E5%88%9D%E8%AF%86Docker%E4%B8%8E%E5%AE%B9%E5%99%A8.html">初识Docker与容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Docker%E9%95%9C%E5%83%8F%E7%9A%84%E4%BD%BF%E7%94%A8.html">Docker镜像的使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.%E6%93%8D%E4%BD%9CDocker%E5%AE%B9%E5%99%A8.html">操作Docker容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.%E8%AE%BF%E9%97%AEDocker%E4%BB%93%E5%BA%93.html">访问Docker仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">搭建本地私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06.Docker%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Docker数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html">Docker使用网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html">Docker核心实现技术</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">配置私有仓库</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#docker-registry">安装Docker Registry</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">1.基于容器安装运行</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">2.本地安装运行</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tls">配置TLS证书</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id4">1.自行生成证书</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">2.从代理商申请证书</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">管理访问权限</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#registry">配置Registry</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">1.示例配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">2.选项</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">批量管理镜像</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id10">1.批量上传指定镜像</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id11">2.上传本地所有镜像</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">使用通知系统</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">本章小结</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker">基于Docker容器的内部循环开发工作流</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12.%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E4%B8%8E%E9%85%8D%E7%BD%AE.html">安全防护与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.%E9%AB%98%E7%BA%A7%E7%BD%91%E7%BB%9C%E5%8A%9F%E8%83%BD.html">高级网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.libnetwork%E6%8F%92%E4%BB%B6%E5%8C%96%E7%BD%91%E7%BB%9C%E5%8A%9F%E8%83%BD.html">libnetwork插件化网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.Etcd%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84%E9%94%AE%E5%80%BC%E6%95%B0%E6%8D%AE%E5%BA%93.html">Etcd高可用的键值数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Compose.html">Docker三剑客之Docker-Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Swarm.html">Docker三剑客之Docker-Swarm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Machine.html">Docker三剑客之Docker-Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19.%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AAWeb%E5%BA%94%E7%94%A8%E6%A0%88.html">搭建一个Web应用栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.Docker%E9%AB%98%E7%BA%A7%E7%BD%91%E7%BB%9C%E5%AE%9E%E6%88%98.html">Docker高级网络实战</a></li>
+<li class="toctree-l2"><a class="reference internal" href="21.%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.html">服务发现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22.Mesos-%E4%BC%98%E7%A7%80%E7%9A%84%E9%9B%86%E7%BE%A4%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6%E5%B9%B3%E5%8F%B0.html">Mesos—优秀的集群资源调度平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="23.Kubernetes-%E7%94%9F%E4%BA%A7%E7%BA%A7%E5%AE%B9%E5%99%A8%E9%9B%86%E7%BE%A4%E5%B9%B3%E5%8F%B0.html">Kubernetes-生产级容器集群平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24.%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E9%A1%B9%E7%9B%AE.html">其他相关项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25.%E9%99%84%E5%BD%95.html">附录</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">01.Docker技术入门与实战3版</a> &raquo;</li>
+      <li>配置私有仓库</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/01.Docker技术入门与实战3版/11.配置私有仓库.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id14">配置私有仓库</a></p>
+<ul>
+<li><p><a class="reference internal" href="#docker-registry" id="id15">安装Docker Registry</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id16">1.基于容器安装运行</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id17">2.本地安装运行</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#tls" id="id18">配置TLS证书</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id4" id="id19">1.自行生成证书</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id20">2.从代理商申请证书</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id6" id="id21">管理访问权限</a></p></li>
+<li><p><a class="reference internal" href="#registry" id="id22">配置Registry</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id7" id="id23">1.示例配置</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id24">2.选项</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id9" id="id25">批量管理镜像</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id10" id="id26">1.批量上传指定镜像</a></p></li>
+<li><p><a class="reference internal" href="#id11" id="id27">2.上传本地所有镜像</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id12" id="id28">使用通知系统</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id29">本章小结</a></p></li>
+<li><p><a class="reference internal" href="#docker" id="id30">基于Docker容器的内部循环开发工作流</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="id1">
+<h1><a class="toc-backref" href="#id14">配置私有仓库</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>在使用Docker一段时间后，往往会发现手头积累了大量的自定义镜像文件，这些文件通过公有仓库（如Dockerhub）进行管理并不方便；另外有时候只是希望在内部用户之间进行分享，不希望暴露出去。在这种情况下，就有必要搭建一个本地私有镜像仓库。</p>
+<p>在第一部分中，笔者曾介绍快速使用Registry镜像搭建一个私有仓库的方法。本章将具体讲解Registry的使用技巧，并通过案例来展示如何搭建一个功能完善的私有镜像仓库。在搭建完成本地的私有仓库服务后，来会剖析Registry的配置参数，最后会介绍通过编写脚本来实现对镜像的快速批量化管理。</p>
+<section id="docker-registry">
+<h2><a class="toc-backref" href="#id15">安装Docker Registry</a><a class="headerlink" href="#docker-registry" title="Permalink to this headline">¶</a></h2>
+<p>Docker
+Registry工具目前最新为2.0系列版本，这一版本和一些类库和工具一起被打包为负责容器内容分发的工具集：Docker
+Distribution。目前其核心的功能组件仍为负责镜像仓库的管理。</p>
+<p>新版本的Registry基于Golang进行了重构，提供更好的性能和扩展性，并且支持Docker
+1.6+的API，非常适合用来构建私有的镜像注册服务器。官方仓库中也提供了Registry的镜像，因此用户可以通过容器运行和源码安装两种方式来使用Registry。</p>
+<section id="id2">
+<h3><a class="toc-backref" href="#id16">1.基于容器安装运行</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>基于容器的运行方式十分简单，只需要一条命令：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker run -d -p <span class="m">5000</span>:5000 --restart<span class="o">=</span>always --name registry registry:2
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>启动后，服务监听在本地的5000端口，可以通过访问<a class="reference external" href="http://localhost:5000/v2/">http://localhost:5000/v2/</a>
+测试启动成功。</p>
+<p>Registry比较关键的参数是配置文件和仓库存储路径。默认的配置文件为/etc/docker/registry/config.yml，因此，通过如下命令，可以指定使用本地主机上的配置文件（如/home/user/registry-conf）：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker run -d -p <span class="m">5000</span>:5000 <span class="se">\</span>
+    --restart<span class="o">=</span>always <span class="se">\</span>
+    --name registry <span class="se">\</span>
+    -v /home/user/registry-conf/config.yml:/etc/docker/registry/config.yml <span class="se">\</span>
+    registry:2
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>默认的存储位置为/var/lib/registry，可以通过-v参数来映射本地的路径到容器内。</p>
+<p>例如，下面将镜像存储到本地/opt/data/registry目录：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker run -d -p <span class="m">5000</span>:5000 <span class="se">\</span>
+    --restart<span class="o">=</span>always <span class="se">\</span>
+    --name registry <span class="se">\</span>
+    -v /opt/data/registry:/var/lib/registry <span class="se">\</span>
+    registry:2
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h3><a class="toc-backref" href="#id17">2.本地安装运行</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>有时候需要本地运行仓库服务，可以通过源码方式进行安装。</p>
+<p>首先安装Golang环境支持，以Ubuntu为例，可以执行如下命令：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
+$ sudo apt-get update
+$ sudo apt-get install golang
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>确认Golang环境安装成功，并配置$GOPATH环境变量，例如/go。</p>
+<p>创建$GOPATH/src/github.com/docker/目录，并获取源码：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mkdir -p <span class="nv">$GOPATH</span>/src/github.com/docker/
+$ <span class="nb">cd</span> <span class="nv">$GOPATH</span>/src/github.com/docker/
+$ git clone https://github.com/docker/distribution.git
+$ <span class="nb">cd</span> distribution
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>将自带的模板配置文件复制到/etc/docker/registry/路径下，创建存储目录/var/lib/registry：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ cp cmd/registry/config-dev.yml /etc/docker/registry/config.yml
+$ mkdir -p /var/lib/registry
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>然后执行安装操作：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ make <span class="nv">PREFIX</span><span class="o">=</span>/go clean binaries
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>编译成功后，可以通过下面的命令来启动：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ registry serve /etc/docker/registry/config.yml
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>此时使用访问本地的5000端口，看到返回信息为200 OK，则说明运行成功：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl -i <span class="m">127</span>.0.0.1:5000/v2/
+HTTP/1.1 <span class="m">200</span> OK
+Content-Length: <span class="m">2</span>
+Content-Type: application/json<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+Docker-Distribution-Api-Version: registry/2.0
+X-Content-Type-Options: nosniff
+Date: Wed, <span class="m">31</span> Sep <span class="m">2016</span> <span class="m">06</span>:36:10 GMT
+<span class="o">{}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="tls">
+<h2><a class="toc-backref" href="#id18">配置TLS证书</a><a class="headerlink" href="#tls" title="Permalink to this headline">¶</a></h2>
+<p>当本地主机运行Registry服务后，所有能访问到该主机的Docker
+Host都可以把它作为私有仓库使用，只需要在镜像名称前面添加上具体的服务器地址即可。</p>
+<p>例如将本地的ubuntu：latest镜像上传到私有仓库myrepo.com：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker tag ubuntu:latest myrepo.com:5000/ubuntu:latest
+$ docker push myrepo.com:5000/ubuntu:latest
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>或者从私有仓库myrepo.com下载镜像到本地：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker pull myrepo.com:5000/ubuntu
+$ docker tag myrepo.com:5000/ubuntu ubuntu
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>私有仓库需要启用TLS认证，否则会报错。在第一部分中，我们介绍了通过添加DOCKER_OPTS=”–insecure-registry
+myrepo.com：5000来避免这个问题。在这里将介绍如何获取和生成TLS证书。</p>
+<section id="id4">
+<h3><a class="toc-backref" href="#id19">1.自行生成证书</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>使用Openssl工具可以很容易地生成私人证书文件：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mkdir -p certs
+$ openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/myrepo.key -x509 -days <span class="m">365</span> -out certs/myrepo.crt
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>生成过程中会提示填入各种信息，注意CN一栏的信息要填入跟访问的地址相同的域名，例如这里应该为myrepo.com。</p>
+<p>生成结果为秘钥文件myrepo.key，以及证书文件myrepo.crt。其中证书文件需要发送给用户，并且配置到用户Docker
+Host上，注意路径需要跟域名一致，例如：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>/etc/docker/certs.d/myrepo.com:5000/ca.crt
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h3><a class="toc-backref" href="#id20">2.从代理商申请证书</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>如果Registry服务需要对外公开，需要申请大家都认可的证书。知名的代理商包括SSLs.com、GoDaddy.com、LetsEncrypt.org、GlobalSign.com等，用户可以自行选择权威的证书提供商。</p>
+<p>3.启用证书</p>
+<p>当拥有秘钥文件和证书文件后，可以配置Registry启用证书支持，主要通过使用REGI-STRY_HTTP_TLS_CERTIFICATE和REGISTRY_HTTP_TLS_KEY参数：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run -d <span class="se">\</span>
+    --restart<span class="o">=</span>always <span class="se">\</span>
+    --name registry <span class="se">\</span>
+    -v <span class="s1">&#39;pwd&#39;</span>/certs:/certs <span class="se">\</span>
+    -e <span class="nv">REGISTRY_HTTP_ADDR</span><span class="o">=</span><span class="m">0</span>.0.0.0:443 <span class="se">\</span>
+    -e <span class="nv">REGISTRY_HTTP_TLS_CERTIFICATE</span><span class="o">=</span>/certs/myrepo.crt <span class="se">\</span>
+    -e <span class="nv">REGISTRY_HTTP_TLS_KEY</span><span class="o">=</span>/certs/myrepo.key <span class="se">\</span>
+    -p <span class="m">443</span>:443 <span class="se">\</span>
+    registry:2
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id21">管理访问权限</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>通常在生产场景中，对私有仓库还需要进行访问代理并提供认证和用户管理。</p>
+<img alt="../_images/docker_acl_00001.png" src="../_images/docker_acl_00001.png" />
+<p>图18-1　Docker Registry v2的认证模式</p>
+<p>1.Docker Registry v2的认证模式</p>
+<p>Docker Registry
+v2的认证模式和v1有了较大的变化，降低了系统的复杂度、减少了服务之间的交互次数，其基本工作模式如图18-1所示。</p>
+<p>具体交互过程包括如下步骤：</p>
+<p>1）Docker
+Daemon或者其他客户端尝试访问Registry服务器，比如pull、push或者访问manifiest文件；</p>
+<p>2）在Registry服务器开启了认证服务模式时，就会直接返回401
+Unauthorized错误，并通知调用方如何获得授权；</p>
+<p>3）调用方按照要求，向Authorization Service发送请求，并携带Authorization
+Service需要的信息，比如用户名、密码；</p>
+<p>4）如果授权成功，则可以拿到合法的Bearer
+token，来标识该请求方可以获得的权限；</p>
+<p>5）请求方将拿到Bearer token加到请求的Authorization
+header中，再次尝试步骤1中的请求；</p>
+<p>6）Registry服务通过验证Bearer
+token以及JWT格式的授权数据，来决定用户是否有权限进行请求的操作。</p>
+<p>当启用认证服务时，需要注意以下两个地方：</p>
+<p>·对于Authentication
+Service，Docker官方目前并没有放出对应的实现方案，需要自行实现对应的服务接口；</p>
+<p>·Registry服务和Authentication服务之间通过证书进行Bearer
+token的生成和认证，所以要保证两个服务之间证书的匹配。</p>
+<p>除了使用第三方实现的认证服务（如docker_auth、SUSE
+Portus等）外，还可以通过Nginx代理方式来配置基于用户名和密码的认证。</p>
+<p>2.配置Nginx代理</p>
+<p>使用Nginx来代理registry服务的原理十分简单，在上一节中，我们让Registry服务监听在127.0.0.1：5000，这意味着只允许本机才能通过5000端口访问到，其他主机是无法访问到的。为了让其他主机访问到，可以通过Nginx监听在对外地址的15000端口，当外部访问请求到达15000端口时，内部再将请求转发到本地的5000端口。具体操作如下。</p>
+<p>首先，安装Nginx：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo apt-get -y install nginx
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>在/etc/nginx/sites-available/目录下，创建新的站点配置文件/etc/nginx/sites-available/docker-registry.conf，代理本地的15000端口转发到5000端口。</p>
+<p>配置文件内容如下：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 本地的registry服务监听在15000端口</span>
+upstream docker-registry <span class="o">{</span>
+    server localhost:5000<span class="p">;</span>
+<span class="o">}</span>
+<span class="c1">#代理服务器监听在15000端口</span>
+server <span class="o">{</span>
+    listen <span class="m">15000</span><span class="p">;</span>
+    server_name private-registry-server.com<span class="p">;</span>
+    add_header <span class="s1">&#39;Docker-Distribution-Api-Version&#39;</span> <span class="s1">&#39;registry/2.0&#39;</span> always<span class="p">;</span>
+    <span class="c1"># If you have SSL certification files, then can enable this section.</span>
+    ssl on<span class="p">;</span>
+    ssl_certificate /etc/ssl/certs/myrepo.crt<span class="p">;</span>
+    ssl_certificate_key /etc/ssl/private/myrepo.key<span class="p">;</span>
+    proxy_pass                          http://docker-registry<span class="p">;</span>
+    proxy_set_header  Host              <span class="se">\$</span>http_host<span class="p">;</span>   <span class="c1"># required for docker client&#39;s sake</span>
+    proxy_set_header  X-Real-IP         <span class="se">\$</span>remote_addr<span class="p">;</span> <span class="c1"># pass on real client&#39;s IP</span>
+    proxy_set_header  X-Forwarded-For   <span class="se">\$</span>proxy_add_x_forwarded_for<span class="p">;</span>
+    proxy_set_header  X-Forwarded-Proto <span class="se">\$</span>scheme<span class="p">;</span>
+    proxy_read_timeout                  <span class="m">600</span><span class="p">;</span>
+    client_max_body_size <span class="m">0</span><span class="p">;</span> <span class="c1"># disable any limits to avoid HTTP 413 for large image uploads</span>
+    <span class="c1"># required to avoid HTTP 411: see Issue #1486</span>
+    <span class="o">(</span>https://github.com/dotcloud/docker/issues/1486<span class="o">)</span>
+    chunked_transfer_encoding on<span class="p">;</span>
+    location /v2/ <span class="o">{</span>
+        <span class="c1"># 禁止旧版本 Docker 访问</span>
+        <span class="k">if</span> <span class="o">(</span><span class="se">\$</span>http_user_agent ~ <span class="s2">&quot;^(docker\/1\.(3|4|5(?!\.[0-9]-dev))|Go ).*\$&quot;</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="m">404</span><span class="p">;</span>
+        <span class="o">}</span>
+         <span class="c1">#配置转发访问请求到registry服务</span>
+         proxy_pass http://docker-registry<span class="p">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>建立配置文件软连接，放到/etc/nginx/sites-enabled/下面，让Nginx启用它，最后重启Nginx服务：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo ln -s /etc/nginx/sites-available/docker-registry.conf /etc/nginx/sites-enabled/docker-registry.conf
+$ service nginx restart
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>之后，可以通过上传镜像来测试服务是否正常。</p>
+<p>测试上传本地的ubuntu：latest镜像：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker tag ubuntu:16.04 <span class="m">127</span>.0.0.1:15000/ubuntu:latest
+$ docker push <span class="m">127</span>.0.0.1:15000/ubuntu:latest
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>3.添加用户认证</p>
+<p>公共仓库DockerHub是通过注册索引（index）服务来实现的。由于index服务并没有完善的开源实现，在这里介绍基于Nginx代理的用户访问管理方案。Nginx支持基于用户名和密码的访问管理。</p>
+<p>首先，在配置文件的location/字段中添加两行：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>...
+location / <span class="o">{</span>
+        <span class="c1"># let Nginx know about our auth file</span>
+        auth_basic              <span class="s2">&quot;Please Input username/password&quot;</span><span class="p">;</span>
+        auth_basic_user_file    docker-registry-htpasswd<span class="p">;</span>
+        proxy_pass http://docker-registry<span class="p">;</span>
+    <span class="o">}</span>
+ ...
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>其中，auth_basic行说明启用认证服务，不通过的请求将无法转发。auth_basic_user_file
+docker-registry-htpasswd；行指定了验证的用户名和密码存储文件为本地（/etc/nginx/下）的docker-registry-htpasswd文件。</p>
+<p>docker-registry-htpasswd文件中存储用户名和密码的格式为每行放一个用户名、密码对。例如：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>...
+user1:password1
+user2:password2
+...
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>需要注意的是，密码字段存储的并不是明文，而是使用crypt函数加密过的字符串。</p>
+<p>要生成加密后的字符串，可以使用htpasswd工具，首先安装apache2-utils：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo aptitude install apache2-utils -y
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>创建用户user1，并添加密码。</p>
+<p>例如，如下的操作会创建/etc/nginx/docker-registry-htpasswd文件来保存用户名和加密后的密码信息，并创建user1和对应密码：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo htpasswd -c /etc/nginx/docker-registry-htpasswd user1
+$ New password:
+$ Re-type new password:
+$ Adding password <span class="k">for</span> user user1
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>添加更多用户，可以重复上面的命令（密码文件存在后，不需要再使用-c选项来新创建）。</p>
+<p>最后，重新启动Nginx服务：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo service nginx restart
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>此时，通过浏览器访问本地的服务<a class="reference external" href="http://127.0.0.1:15000/v2/">http://127.0.0.1:15000/v2/</a>
+，会弹出对话框，提示需要输入用户名和密码。</p>
+<p>通过命令行访问，需要在地址前面带上用户名和密码才能正常返回：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl USERNAME:PASSWORD@127.0.0.1:15000/v2/
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>除了使用Nginx作为反向代理外，Registry自身也支持简单的基于用户名和密码的认证，以及基于token的认证，可以通过如下环境变量来指定：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">REGISTRY_AUTH</span><span class="p">:</span> <span class="n">htpasswd</span>
+<span class="n">REGISTRY_AUTH_HTPASSWD_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">auth</span><span class="o">/</span><span class="n">htpasswd</span>
+<span class="n">REGISTRY_AUTH_HTPASSWD_REALM</span><span class="p">:</span> <span class="n">basic</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>4.用Compose启动Registry</p>
+<p>一般情况下，用户使用Registry需要的配置包括存储路径、TLS证书和用户认证。这里提供一个基于Docker
+Compose的快速启动Registry的模板：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>registry:
+    restart: always
+    image: registry:2.1
+    ports:
+        - <span class="m">5000</span>:5000
+    environment:
+        REGISTRY_HTTP_TLS_CERTIFICATE: /certs/myrepo.crt
+        REGISTRY_HTTP_TLS_KEY: /certs/myrepo.key
+        REGISTRY_AUTH: htpasswd
+        REGISTRY_AUTH_HTPASSWD_PATH: /auth/docker-registry-htpasswd
+        REGISTRY_AUTH_HTPASSWD_REALM: basic
+    volumes:
+        - /path/to/data:/var/lib/registry
+        - /path/to/certs:/certs
+        - /path/to/auth:/auth
+</pre></div>
+</div>
+</section>
+<section id="registry">
+<h2><a class="toc-backref" href="#id22">配置Registry</a><a class="headerlink" href="#registry" title="Permalink to this headline">¶</a></h2>
+<p>Docker
+Registry利用提供了一些样例配置，用户可以直接使用它们进行开发或生产部署。</p>
+<p>笔者将以下面的示例配置为例，介绍如何使用配置文件来管理私有仓库。</p>
+<section id="id7">
+<h3><a class="toc-backref" href="#id23">1.示例配置</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>version: <span class="m">0</span>.1
+log:
+    level: debug
+    fields:
+        service: registry
+        environment: development
+    hooks:
+        - type: mail
+          disabled: <span class="nb">true</span>
+          levels:
+            - panic
+          options:
+            smtp:
+                addr: mail.example.com:25
+                username: mailuser
+                password: password
+                insecure: <span class="nb">true</span>
+            from: sender@example.com
+            to:
+                - errors@example.com
+storage:
+    delete:
+        enabled: <span class="nb">true</span>
+    cache:
+            blobdescriptor: redis
+    filesystem:
+            rootdirectory: /var/lib/registry
+    maintenance:
+            uploadpurging:
+                enabled: <span class="nb">false</span>
+http:
+    addr: :5000
+    debug:
+        addr: localhost:5001
+    headers:
+        X-Content-Type-Options: <span class="o">[</span>nosniff<span class="o">]</span>
+redis:
+    addr: localhost:6379
+    pool:
+        maxidle: <span class="m">16</span>
+        maxactive: <span class="m">64</span>
+        idletimeout: 300s
+    dialtimeout: 10ms
+    readtimeout: 10ms
+    writetimeout: 10ms
+notifications:
+    endpoints:
+        - name: local-5003
+          url: http://localhost:5003/callback
+          headers:
+            Authorization: <span class="o">[</span>Bearer &lt;an example token&gt;<span class="o">]</span>
+          timeout: 1s
+          threshold: <span class="m">10</span>
+          backoff: 1s
+          disabled: <span class="nb">true</span>
+        - name: local-8083
+          url: http://localhost:8083/callback
+          timeout: 1s
+          threshold: <span class="m">10</span>
+          backoff: 1s
+          disabled: <span class="nb">true</span>
+health:
+    storagedriver:
+        enabled: <span class="nb">true</span>
+        interval: 10s
+        threshold: <span class="m">3</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h3><a class="toc-backref" href="#id24">2.选项</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>这些选项以yaml文件格式提供，用户可以直接进行修改，也可以添加自定义的模板段。</p>
+<p>默认情况下变量可以从环境变量中读取，例如log.level：debug可以配置为：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">LOG_LEVEL</span><span class="o">=</span><span class="n">debug</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>比较重要的选项包括版本信息、log选项、hooks选项、存储选项、认证选项、HTTP选项、通知选项、redis选项、健康监控选项、代理选项和验证选项等。下面分别介绍。</p>
+<p>（1）版本信息</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="mf">0.1</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>（2）log选项</p>
+<p>日志相关，代码如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log</span><span class="p">:</span>
+    <span class="n">level</span><span class="p">:</span> <span class="n">debug</span>
+    <span class="n">formatter</span><span class="p">:</span> <span class="n">text</span>
+    <span class="n">fields</span><span class="p">:</span>
+        <span class="n">service</span><span class="p">:</span> <span class="n">registry</span>
+        <span class="n">environment</span><span class="p">:</span> <span class="n">staging</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>其中：</p>
+<p>·level：字符串类型，标注输出调试信息的级别，包括debug、info、warn、error；</p>
+<p>·fomatter：字符串类型，日志输出的格式，包括text、json、logstash等；</p>
+<p>·fields：增加到日志输出消息中的键值对，可以用于过滤日志。</p>
+<p>（3）hooks选项</p>
+<p>配置当仓库发生异常时，通过邮件发送日志时的参数，代码如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hooks</span><span class="p">:</span>
+    <span class="o">-</span> <span class="nb">type</span><span class="p">:</span> <span class="n">mail</span>
+      <span class="n">levels</span><span class="p">:</span>
+            <span class="o">-</span> <span class="n">panic</span>
+    <span class="n">options</span><span class="p">:</span>
+        <span class="n">smtp</span><span class="p">:</span>
+                <span class="n">addr</span><span class="p">:</span> <span class="n">smtp</span><span class="o">.</span><span class="n">sendhost</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="mi">25</span>
+                <span class="n">username</span><span class="p">:</span> <span class="n">sendername</span>
+                <span class="n">password</span><span class="p">:</span> <span class="n">password</span>
+                <span class="n">insecure</span><span class="p">:</span> <span class="n">true</span>
+            <span class="n">from</span><span class="p">:</span> <span class="n">name</span><span class="nd">@sendhost</span><span class="o">.</span><span class="n">com</span>
+            <span class="n">to</span><span class="p">:</span>
+                <span class="o">-</span> <span class="n">name</span><span class="nd">@receivehost</span><span class="o">.</span><span class="n">com</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>（4）存储选项</p>
+<p>storage选项将配置存储的引擎，默认支持包括本地文件系统、Google云存储、AWS
+S3云存储和OpenStack Swift分布式存储等，代码如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">storage</span><span class="p">:</span>
+    <span class="n">filesystem</span><span class="p">:</span>
+        <span class="n">rootdirectory</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">registry</span>
+    <span class="n">azure</span><span class="p">:</span>
+        <span class="n">accountname</span><span class="p">:</span> <span class="n">accountname</span>
+        <span class="n">accountkey</span><span class="p">:</span> <span class="n">base64encodedaccountkey</span>
+        <span class="n">container</span><span class="p">:</span> <span class="n">containername</span>
+    <span class="n">gcs</span><span class="p">:</span>
+        <span class="n">bucket</span><span class="p">:</span> <span class="n">bucketname</span>
+        <span class="n">keyfile</span><span class="p">:</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">keyfile</span>
+        <span class="n">rootdirectory</span><span class="p">:</span> <span class="o">/</span><span class="n">gcs</span><span class="o">/</span><span class="nb">object</span><span class="o">/</span><span class="n">name</span><span class="o">/</span><span class="n">prefix</span>
+    <span class="n">s3</span><span class="p">:</span>
+        <span class="n">accesskey</span><span class="p">:</span> <span class="n">awsaccesskey</span>
+        <span class="n">secretkey</span><span class="p">:</span> <span class="n">awssecretkey</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">regionendpoint</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">myobjects</span><span class="o">.</span><span class="n">local</span>
+        <span class="n">bucket</span><span class="p">:</span> <span class="n">bucketname</span>
+        <span class="n">encrypt</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">keyid</span><span class="p">:</span> <span class="n">mykeyid</span>
+        <span class="n">secure</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">v4auth</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">chunksize</span><span class="p">:</span> <span class="mi">5242880</span>
+        <span class="n">multipartcopychunksize</span><span class="p">:</span> <span class="mi">33554432</span>
+        <span class="n">multipartcopymaxconcurrency</span><span class="p">:</span> <span class="mi">100</span>
+        <span class="n">multipartcopythresholdsize</span><span class="p">:</span> <span class="mi">33554432</span>
+        <span class="n">rootdirectory</span><span class="p">:</span> <span class="o">/</span><span class="n">s3</span><span class="o">/</span><span class="nb">object</span><span class="o">/</span><span class="n">name</span><span class="o">/</span><span class="n">prefix</span>
+    <span class="n">swift</span><span class="p">:</span>
+        <span class="n">username</span><span class="p">:</span> <span class="n">username</span>
+        <span class="n">password</span><span class="p">:</span> <span class="n">password</span>
+        <span class="n">authurl</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">storage</span><span class="o">.</span><span class="n">myprovider</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">auth</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mi">0</span> <span class="ow">or</span>
+            <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">storage</span><span class="o">.</span><span class="n">myprovider</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">v2</span><span class="o">.</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">storage</span><span class="o">.</span><span class="n">myprovider</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">v3</span><span class="o">/</span><span class="n">auth</span>
+        <span class="n">tenant</span><span class="p">:</span> <span class="n">tenantname</span>
+        <span class="n">tenantid</span><span class="p">:</span> <span class="n">tenantid</span>
+        <span class="n">domain</span><span class="p">:</span> <span class="n">domain</span> <span class="n">name</span> <span class="k">for</span> <span class="n">Openstack</span> <span class="n">Identity</span> <span class="n">v3</span> <span class="n">API</span>
+        <span class="n">domainid</span><span class="p">:</span> <span class="n">domain</span> <span class="nb">id</span> <span class="k">for</span> <span class="n">Openstack</span> <span class="n">Identity</span> <span class="n">v3</span> <span class="n">API</span>
+        <span class="n">insecureskipverify</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">fr</span>
+        <span class="n">container</span><span class="p">:</span> <span class="n">containername</span>
+        <span class="n">rootdirectory</span><span class="p">:</span> <span class="o">/</span><span class="n">swift</span><span class="o">/</span><span class="nb">object</span><span class="o">/</span><span class="n">name</span><span class="o">/</span><span class="n">prefix</span>
+    <span class="n">oss</span><span class="p">:</span>
+        <span class="n">accesskeyid</span><span class="p">:</span> <span class="n">accesskeyid</span>
+        <span class="n">accesskeysecret</span><span class="p">:</span> <span class="n">accesskeysecret</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">OSS</span> <span class="n">region</span> <span class="n">name</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="n">optional</span> <span class="n">endpoints</span>
+        <span class="n">internal</span><span class="p">:</span> <span class="n">optional</span> <span class="n">internal</span> <span class="n">endpoint</span>
+        <span class="n">bucket</span><span class="p">:</span> <span class="n">OSS</span> <span class="n">bucket</span>
+        <span class="n">encrypt</span><span class="p">:</span> <span class="n">optional</span> <span class="n">data</span> <span class="n">encryption</span> <span class="n">setting</span>
+        <span class="n">secure</span><span class="p">:</span> <span class="n">optional</span> <span class="n">ssl</span> <span class="n">setting</span>
+        <span class="n">chunksize</span><span class="p">:</span> <span class="n">optional</span> <span class="n">size</span> <span class="n">valye</span>
+        <span class="n">rootdirectory</span><span class="p">:</span> <span class="n">optional</span> <span class="n">root</span> <span class="n">directory</span>
+    <span class="n">inmemory</span><span class="p">:</span>
+    <span class="n">delete</span><span class="p">:</span>
+        <span class="n">enabled</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">cache</span><span class="p">:</span>
+        <span class="n">blobdescriptor</span><span class="p">:</span> <span class="n">inmemory</span>
+    <span class="n">maintenance</span><span class="p">:</span>
+        <span class="n">uploadpurging</span><span class="p">:</span>
+            <span class="n">enabled</span><span class="p">:</span> <span class="n">true</span>
+            <span class="n">age</span><span class="p">:</span> <span class="mi">168</span><span class="n">h</span>
+            <span class="n">interval</span><span class="p">:</span> <span class="mi">24</span><span class="n">h</span>
+            <span class="n">dryrun</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">redirect</span><span class="p">:</span>
+        <span class="n">disable</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>比较重要的选项如下：</p>
+<p>·maintenance：配置维护相关的功能，包括对孤立旧文件的清理、开启只读模式等；</p>
+<p>·delete：是否允许删除镜像功能，默认关闭；</p>
+<p>·cache：开启对镜像层元数据的缓存功能，默认开启；</p>
+<p>（5）认证选项</p>
+<p>对认证类型的配置，代码如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">auth</span><span class="p">:</span>
+    <span class="n">silly</span><span class="p">:</span>
+        <span class="n">realm</span><span class="p">:</span> <span class="n">silly</span><span class="o">-</span><span class="n">realm</span>
+        <span class="n">service</span><span class="p">:</span> <span class="n">silly</span><span class="o">-</span><span class="n">service</span>
+    <span class="n">token</span><span class="p">:</span>
+        <span class="n">realm</span><span class="p">:</span> <span class="n">token</span><span class="o">-</span><span class="n">realm</span>
+        <span class="n">service</span><span class="p">:</span> <span class="n">token</span><span class="o">-</span><span class="n">service</span>
+        <span class="n">issuer</span><span class="p">:</span> <span class="n">registry</span><span class="o">-</span><span class="n">token</span><span class="o">-</span><span class="n">issuer</span>
+        <span class="n">rootcertbundle</span><span class="p">:</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">bundle</span>
+    <span class="n">htpasswd</span><span class="p">:</span>
+        <span class="n">realm</span><span class="p">:</span> <span class="n">basic</span><span class="o">-</span><span class="n">realm</span>
+        <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">htpasswd</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>其中：</p>
+<p>·silly：仅供测试使用，只要请求头带有认证域即可，不做内容检查；</p>
+<p>·token：基于token的用户认证，适用于生产环境，需要额外的token服务来支持；</p>
+<p>·htpasswd：基于Apache htpasswd密码文件的权限检查。</p>
+<p>（6）HTTP选项</p>
+<p>与HTTP服务相关的配置，代码如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span>
+    <span class="n">addr</span><span class="p">:</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">5000</span>
+    <span class="n">net</span><span class="p">:</span> <span class="n">tcp</span>
+    <span class="n">prefix</span><span class="p">:</span> <span class="o">/</span><span class="n">my</span><span class="o">/</span><span class="n">nested</span><span class="o">/</span><span class="n">registry</span><span class="o">/</span>
+    <span class="n">host</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">myregistryaddress</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">5000</span>
+    <span class="n">secret</span><span class="p">:</span> <span class="n">asecretforlocaldevelopment</span>
+    <span class="n">relativeurls</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">tls</span><span class="p">:</span>
+        <span class="n">certificate</span><span class="p">:</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">x509</span><span class="o">/</span><span class="n">public</span>
+        <span class="n">key</span><span class="p">:</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">x509</span><span class="o">/</span><span class="n">private</span>
+        <span class="n">clientcas</span><span class="p">:</span>
+            <span class="o">-</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">ca</span><span class="o">.</span><span class="n">pem</span>
+            <span class="o">-</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">another</span><span class="o">/</span><span class="n">ca</span><span class="o">.</span><span class="n">pem</span>
+        <span class="n">letsencrypt</span><span class="p">:</span>
+            <span class="n">cachefile</span><span class="p">:</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">cache</span><span class="o">-</span><span class="n">file</span>
+            <span class="n">email</span><span class="p">:</span> <span class="n">emailused</span><span class="nd">@letsencrypt</span><span class="o">.</span><span class="n">com</span>
+    <span class="n">debug</span><span class="p">:</span>
+        <span class="n">addr</span><span class="p">:</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">5001</span>
+    <span class="n">headers</span><span class="p">:</span>
+        <span class="n">X</span><span class="o">-</span><span class="n">Content</span><span class="o">-</span><span class="n">Type</span><span class="o">-</span><span class="n">Options</span><span class="p">:</span> <span class="p">[</span><span class="n">nosniff</span><span class="p">]</span>
+    <span class="n">http2</span><span class="p">:</span>
+        <span class="n">disabled</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>其中：</p>
+<p>·addr：必选，服务监听地址；</p>
+<p>·secret：必选，与安全相关的随机字符串，用户可以自己定义；</p>
+<p>·tls：证书相关的文件路径信息；</p>
+<p>·http2：是否开启http2支持，默认关闭。</p>
+<p>（7）通知选项</p>
+<p>有事件发生时候的通知系统：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">notifications</span><span class="p">:</span>
+    <span class="n">endpoints</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">alistener</span>
+          <span class="n">disabled</span><span class="p">:</span> <span class="n">false</span>
+          <span class="n">url</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">my</span><span class="o">.</span><span class="n">listener</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">event</span>
+          <span class="n">headers</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">http</span><span class="o">.</span><span class="n">Header</span><span class="o">&gt;</span>
+          <span class="n">timeout</span><span class="p">:</span> <span class="mi">500</span>
+          <span class="n">threshold</span><span class="p">:</span> <span class="mi">5</span>
+          <span class="n">backoff</span><span class="p">:</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>（8）redis选项</p>
+<p>Registry可以用Redis来缓存文件块，这里可以配置相关选项：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">redis</span><span class="p">:</span>
+    <span class="n">addr</span><span class="p">:</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">6379</span>
+    <span class="n">password</span><span class="p">:</span> <span class="n">asecret</span>
+    <span class="n">db</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="n">dialtimeout</span><span class="p">:</span> <span class="mi">10</span><span class="n">ms</span>
+    <span class="n">readtimeout</span><span class="p">:</span> <span class="mi">10</span><span class="n">ms</span>
+    <span class="n">writetimeout</span><span class="p">:</span> <span class="mi">10</span><span class="n">ms</span>
+    <span class="n">pool</span><span class="p">:</span>
+        <span class="n">maxidle</span><span class="p">:</span> <span class="mi">16</span>
+        <span class="n">maxactive</span><span class="p">:</span> <span class="mi">64</span>
+        <span class="n">idletimeout</span><span class="p">:</span> <span class="mi">300</span><span class="n">s</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>（9）健康监控选项</p>
+<p>与健康监控相关，主要是对配置服务进行检测判断系统状态，代码如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">health</span><span class="p">:</span>
+    <span class="n">storagedriver</span><span class="p">:</span>
+        <span class="n">enabled</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">interval</span><span class="p">:</span> <span class="mi">10</span><span class="n">s</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="mi">3</span>
+    <span class="n">file</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">file</span><span class="p">:</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">checked</span><span class="o">/</span><span class="n">file</span>
+          <span class="n">interval</span><span class="p">:</span> <span class="mi">10</span><span class="n">s</span>
+    <span class="n">http</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">uri</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">server</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">check</span><span class="o">/</span><span class="n">must</span><span class="o">/</span><span class="k">return</span><span class="o">/</span><span class="mi">200</span>
+          <span class="n">headers</span><span class="p">:</span>
+            <span class="n">Authorization</span><span class="p">:</span> <span class="p">[</span><span class="n">Basic</span> <span class="n">QWxhZGRpbjpvcGVuIHNlc2FtZQ</span><span class="o">==</span><span class="p">]</span>
+        <span class="n">statuscode</span><span class="p">:</span> <span class="mi">200</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="mi">3</span><span class="n">s</span>
+        <span class="n">interval</span><span class="p">:</span> <span class="mi">10</span><span class="n">s</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="mi">3</span>
+    <span class="n">tcp</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">addr</span><span class="p">:</span> <span class="n">redis</span><span class="o">-</span><span class="n">server</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="mi">6379</span>
+          <span class="n">timeout</span><span class="p">:</span> <span class="mi">3</span><span class="n">s</span>
+          <span class="n">interval</span><span class="p">:</span> <span class="mi">10</span><span class="n">s</span>
+          <span class="n">threshold</span><span class="p">:</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>默认并未启用。</p>
+<p>（10）代理选项</p>
+<p>配置Registry作为一个pull代理，从远端（目前仅支持官方仓库）下拉Docker镜像，代码如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">proxy</span><span class="p">:</span>
+    <span class="n">remoteurl</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">registry</span><span class="o">-</span><span class="mf">1.</span><span class="n">docker</span><span class="o">.</span><span class="n">io</span>
+    <span class="n">username</span><span class="p">:</span> <span class="p">[</span><span class="n">username</span><span class="p">]</span>
+    <span class="n">password</span><span class="p">:</span> <span class="p">[</span><span class="n">password</span><span class="p">]</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>之后，用户可以通过如下命令来配置Docker使用代理：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker --registry-mirror=https://myrepo.com:5000 daemon
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>（11）验证选项</p>
+<p>限定来自指定地址的客户端才可以执行push操作，代码如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>validation:
+    enabled: true
+    manifests:
+        urls:
+            allow:
+                - ^https?://([^/]+\.)*example\.com/
+            deny:
+                - ^https?://www\.example\.com/
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id9">
+<h2><a class="toc-backref" href="#id25">批量管理镜像</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>在之前章节中，笔者介绍了如何对单个镜像进行上传、下载的操作。有时候，本地镜像很多，逐个打标记进行操作将十分浪费时间。这里将以批量上传镜像为例，介绍如何利用脚本实现对镜像的批量化处理。</p>
+<section id="id10">
+<h3><a class="toc-backref" href="#id26">1.批量上传指定镜像</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>可以使用下面的push_images.sh脚本，批量上传本地的镜像到注册服务器中，默认是本地注册服务器127.0.0.1：5000，用户可以通过修改registry=127.0.0.1：5000这行来指定目标注册服务器：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#!/bin/sh
+# This script will upload the given local images to a registry server ($registry is the default value).
+# See:
+https://github.com/yeasy/docker_practice/blob/master/_local/push_images.sh
+# Usage:  push_images image1 [image2...]
+# Author: yeasy@github
+# Create: 2014-09-23
+#The registry server address where you want push the images into
+registry=127.0.0.1:5000
+### DO NOT MODIFY THE FOLLOWING PART, UNLESS YOU KNOW WHAT IT MEANS ###
+echo_r () {
+    [ $# -ne 1 ] &amp;&amp; return 0
+    echo -e &quot;\033[31m$1\033[0m&quot;
+}
+echo_g () {
+    [ $# -ne 1 ] &amp;&amp; return 0
+    echo -e &quot;\033[32m$1\033[0m&quot;
+}
+echo_y () {
+    [ $# -ne 1 ] &amp;&amp; return 0
+    echo -e &quot;\033[33m$1\033[0m&quot;
+}
+echo_b () {
+    [ $# -ne 1 ] &amp;&amp; return 0
+    echo -e &quot;\033[34m$1\033[0m&quot;
+}
+usage() {
+    docker images
+    echo &quot;Usage: $0 registry1:tag1 [registry2:tag2...]&quot;
+}
+[ $# -lt 1 ] &amp;&amp; usage &amp;&amp; exit
+echo_b &quot;The registry server is $registry&quot;
+for image in &quot;$@&quot;
+do
+    echo_b &quot;Uploading $image...&quot;
+    docker tag $image $registry/$image
+    docker push $registry/$image
+    docker rmi $registry/$image
+    echo_g &quot;Done&quot;
+done
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>建议把脚本存放到本地可执行路径下，例如放在/usr/local/bin/下面。然后添加可执行权限，就可以使用该脚本了：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo chmod a+x /usr/local/bin/push_images.sh
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>例如，推送本地的ubuntu：latest和centos：centos7两个镜像到本地仓库：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./push_images.sh ubuntu:latest centos:centos7
+The registry server is 127.0.0.1
+Uploading ubuntu:latest...
+The push refers to a repository [127.0.0.1:5000/ubuntu] (len: 1)
+Sending image list
+Pushing repository 127.0.0.1:5000/ubuntu (1 tags)
+Image 511136ea3c5a already pushed, skipping
+Image bfb8b5a2ad34 already pushed, skipping
+Image c1f3bdbd8355 already pushed, skipping
+Image 897578f527ae already pushed, skipping
+Image 9387bcc9826e already pushed, skipping
+Image 809ed259f845 already pushed, skipping
+Image 96864a7d2df3 already pushed, skipping
+Pushing tag for rev [96864a7d2df3] on
+    {http://127.0.0.1:5000/v1/repositories/ubuntu/ tags/latest}
+Untagged: 127.0.0.1:5000/ubuntu:latest
+Done
+Uploading centos:centos7...
+The push refers to a repository [127.0.0.1:5000/centos] (len: 1)
+Sending image list
+Pushing repository 127.0.0.1:5000/centos (1 tags)
+Image 511136ea3c5a already pushed, skipping
+34e94e67e63a: Image successfully pushed
+70214e5d0a90: Image successfully pushed
+Pushing tag for rev [70214e5d0a90] on
+    {http://127.0.0.1:5000/v1/repositories/centos/ tags/centos7}
+Untagged: 127.0.0.1:5000/centos:centos7
+Done
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>上传后，查看本地镜像，会发现上传中创建的临时标签也同时被清理了。</p>
+</section>
+<section id="id11">
+<h3><a class="toc-backref" href="#id27">2.上传本地所有镜像</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>在push_images工具的基础上，还可以进一步地创建push_all工具，来上传本地所有镜像：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#!/bin/sh
+# This script will upload all local images to a registry server ($registry is the default value).
+# This script requires the push_images, which can be found at https://github.com/yeasy/docker_practice/blob/master/_local/push_images.sh
+# Usage:  push_all
+# Author: yeasy@github
+# Create: 2014-09-23
+for image in &#39;docker images|grep -v &quot;REPOSITORY&quot;|grep -v &quot;&lt;none&gt;&quot;|awk &#39;{print $1&quot;:&quot;$2}&#39;&#39;
+do
+    push_images.sh $image
+done
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>另外，推荐读者把它放在/usr/local/bin/下面，并添加可执行权限。这样就可以通过push_all命令来同步本地所有镜像到本地私有仓库了。</p>
+<p>同样的，读者可以试着修改脚本，实现批量化下载镜像、删除镜像、更新镜像标签等更多的操作。</p>
+</section>
+</section>
+<section id="id12">
+<h2><a class="toc-backref" href="#id28">使用通知系统</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>Docker Registry
+v2还内置提供了Notification功能，提供了非常方便、快捷地集成接口，避免了v1中需要用户自己实现的麻烦。</p>
+<p>Notification功能其实就是Registry在有事件发生的时候，向用户自己定义的地址发送webhook通知。目前的事件包括镜像manifest的push、pull，镜像层的push、pull。这些动作会被序列化成webhook事件的payload，为集成服务提供事件详情，并通过Registry
+v2的内置广播系统发送到用户定义的服务接口，Registry
+v2将这些用户服务接口称为Endpoints。</p>
+<p>Registry服务器的事件会通过HTTP协议发送到用户定义的所有Endpoints上，而且每个Registry实例的每个Endpoint都有自己独立的队列、重试选项以及HTTP的目的地址。当一个动作发生时，会被转换成对应的事件并放置到一个内存队列中。镜像服务器会依次处理队列中的事件，并向用户定义的Endpoint发送请求。事件发送处理是串行的，但是Registry服务器并不会保证其到达顺序。</p>
+<p>1.相关配置</p>
+<p>Notification在Docker Registry中的相关配置如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">notifications</span><span class="p">:</span>
+    <span class="n">endpoints</span><span class="p">:</span>
+        <span class="o">-</span>  <span class="n">name</span><span class="p">:</span> <span class="n">cd</span><span class="o">-</span><span class="n">handler</span>
+            <span class="n">disabled</span><span class="p">:</span> <span class="n">false</span>
+            <span class="n">url</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">cd</span><span class="o">-</span><span class="n">service</span><span class="o">-</span><span class="n">host</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">cd</span><span class="o">-</span><span class="n">service</span>
+            <span class="n">headers</span><span class="p">:</span>
+                <span class="n">Authorization</span><span class="p">:</span> <span class="p">[</span><span class="n">token</span> <span class="o">******************</span><span class="p">]</span>
+            <span class="n">timeout</span><span class="p">:</span> <span class="mi">1</span><span class="n">s</span>
+            <span class="n">threshold</span><span class="p">:</span> <span class="mi">5</span>
+            <span class="n">backoff</span><span class="p">:</span> <span class="mi">10</span><span class="n">s</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>上面的配置会在pull或者push发生时向http://cd-service-host/api/v1/cd-service发送事件，并在HTTP请求的header中传入认证信息，可以是Basic、token、Bearer等模式，主要用于接收事件方进行身份认证。更新配置后，需要重启Registry服务器，如果配置正确，会在日志中看到对应的提示信息，比如：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">configuring</span> <span class="n">endpoint</span> <span class="n">listener</span> <span class="p">(</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">cd</span><span class="o">-</span><span class="n">service</span><span class="o">-</span><span class="n">host</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">cd</span><span class="o">-</span><span class="n">service</span><span class="p">),</span> <span class="n">time</span><span class="o">-</span><span class="n">out</span><span class="o">=</span><span class="mi">1</span><span class="n">s</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="nb">map</span><span class="p">[</span><span class="n">Authorization</span><span class="p">:</span> <span class="p">[</span><span class="n">token</span> <span class="o">******</span><span class="p">]]</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>此时，用户再通过docker客户端进行push、pull，或者查询一些manifiest信息时，就会有相应的事件发送到定义的Endpoint上。</p>
+<p>接下来看一下事件的格式及其主要属性：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{
+    &quot;events&quot;: [
+        {
+            &quot;id&quot;: &quot;70f44894-c4b4-4be8-9691-d37db77074cd&quot;,
+            &quot;timestamp&quot;: &quot;2016-06-05T01:57:04.654256149Z&quot;,
+            &quot;action&quot;: &quot;push&quot;,
+            &quot;target&quot;: {
+                &quot;mediaType&quot;: &quot;application/vnd.docker.distribution.manifest.v1+ json&quot;,
+                &quot;size&quot;: 45765,
+                &quot;digest&quot;: &quot;sha256:fd0af29ba2ae034449bffb18dd6db2ed90d798464cc43aa81e63770713edaea8&quot;,
+                &quot;length&quot;: 45765,
+                &quot;repository&quot;: “test-user/hello-world”,
+                &quot;url&quot;: &quot;http://registry-server/v2/test-user/hello-world/manifests/sha256:fd0af29ba2ae034449bffb18dd6db2ed90d798464cc43aa81e63770713edaea8&quot;
+            },
+            &quot;request&quot;: {
+                &quot;id&quot;: &quot;9d3d837f-d7ed-4fa9-afb4-dda58687a6ce&quot;,
+                &quot;addr&quot;: “client-host:46504&quot;,
+                &quot;host&quot;: “registry-server&quot;,
+                &quot;method&quot;: &quot;PUT&quot;,
+                &quot;useragent&quot;: &quot;docker/1.9.1 go/go1.4.2 git-commit/a34a1d5 kernel/ 4.2.0-35-generic os/linux arch/amd64&quot;
+            },
+            &quot;actor&quot;: {
+                &quot;name&quot;: “test-user&quot;
+            },
+            &quot;source&quot;: {
+                &quot;addr&quot;: &quot;8e14c2a190f2:5000&quot;,
+                &quot;instanceID&quot;: &quot;c564003e-dd9b-4a9b-8a30-fe8564e97ba9&quot;
+            }
+        }
+    ]
+}
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>每个事件的payload，都是一个定义好的JSON格式的数据。通知系统的主要属性主要包括action、target.mediaType、target.repository、target.url、request.method、request.useragent、actor.name等，参见表18-1。</p>
+<p>表18-1　通知系统的主要属性及描述</p>
+<img alt="../_images/docker_tongzhi00001.png" src="../_images/docker_tongzhi00001.png" />
+<p>2.通知系统的使用场景</p>
+<p>理解了如何配置Docker Registry
+v2的Notification、Endpoint以及接收的Event数据格式，我们就可以很方便地实现一些个性化的需求。这里简单列举两个场景：一个是如何统计镜像的上传、下载次数，方便了解镜像的使用情况；另一个是对服务的持续部署，方便管理镜像，参见图18-2。</p>
+<p>图18-2　通知系统整合持续部署</p>
+<img alt="../_images/docker_tongzhi00002.png" src="../_images/docker_tongzhi00002.png" />
+<p>（1）镜像上传、下载计数</p>
+<p>很常见的一个场景是根据镜像下载次数，向用户推荐使用最多的镜像，或者统计镜像更新的频率，以便了解用户对镜像的维护程度。</p>
+<p>用户可以利用Notification功能定义自己的计数服务，并在Docker
+Registry上配置对应的Endpoint。在有pull、push动作发生时，对对应镜像的下载或者上传次数进行累加，达到计数效果。然后添加一个查询接口，供用户查看用户镜像的上传、下载次数，或者提供排行榜等扩展服务。</p>
+<p>（2）实现应用的自动部署</p>
+<p>在这个场景下，可以在新的镜像push到Docker
+Registry服务器时候，自动创建或者更新对应的服务，这样可以快速查看新镜像的运行效果或者进行集成测试。用户还可以根据事件中的相应属性，比如用户信息、镜像名称等，调用对应的服务部署接口进行自动化部署操作。</p>
+<p>另外，镜像的命名规则是namespace/repository：tag，但在上面的事件payload示例中，并没有看到tag的属性。如果需要tag信息，需要使用Docker
+Registry
+v2.4.0及以上的版本，在这个版本中对应的manifest事件中将会携带tag的属性，来标识该动作涉及的镜像版本信息。</p>
+</section>
+<section id="id13">
+<h2><a class="toc-backref" href="#id29">本章小结</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<p>本章详细介绍了使用Docker
+Registry的两种主要方式：通过容器方式运行和通过本地安装运行并注册为系统服务，以及添加Nginx反向代理和添加用户认证功能。接下来还详细介绍了Docker
+Registry配置文件中各个选项的含义和使用。最后演示如何通过脚本来实现对镜像的批量管理，以及使用Registry的通知系统来支持更多应用场景。</p>
+<p>读者通过本章的学习，将能轻松搭建一套私有的仓库服务环境，并对其进行管理操作。私有仓库服务是集中存储镜像的场所，它的性能和稳定性将影响基于Docker容器的开发和部署过程。</p>
+<p>在生产环境中，笔者推荐使用负载均衡来提高仓库服务的性能；还可以利用HAProxy等方式对仓库服务增加容错功能。同时，为了安全考虑，要为仓库访问启用HTTPS等加密协议来确保通信安全。</p>
+</section>
+<section id="docker">
+<h2><a class="toc-backref" href="#id30">基于Docker容器的内部循环开发工作流</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
+<p>相关步骤说明如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>（1）开发。根据需求开发应用程序，和传统开发没有什么变化，不限编程语言。
+
+（2）编写Dockerfile。Dockerfile是由一系列命令和参数构成的脚本，用来构建镜像。
+
+（3）创建自定义镜像。基于“docker build”命令构建自定义镜像。
+
+（4）定义docker-compose。Docker Compose是一个用于定义和运行多个Docker应用程序的工具，非常适合进行开发和测试，尤其适用于微服务架构。
+
+（5）启动Docker应用。docker run命令启动docker容器，docker-compose up启动多个容器。
+
+（6）测试。测试人员基于容器环境进行测试，无须开发人员介入，随时部署或摧毁。
+
+（7）部署或继续开发。基于容器实现持续交付和部署。
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html" class="btn btn-neutral float-left" title="Docker核心实现技术" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="12.%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E4%B8%8E%E9%85%8D%E7%BD%AE.html" class="btn btn-neutral float-right" title="安全防护与配置" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

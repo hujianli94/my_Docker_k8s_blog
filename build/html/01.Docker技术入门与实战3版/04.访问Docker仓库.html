@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>访问Docker仓库 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="搭建本地私有仓库" href="05.%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html" />
+    <link rel="prev" title="操作Docker容器" href="03.%E6%93%8D%E4%BD%9CDocker%E5%AE%B9%E5%99%A8.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">01.Docker技术入门与实战3版</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.%E5%88%9D%E8%AF%86Docker%E4%B8%8E%E5%AE%B9%E5%99%A8.html">初识Docker与容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Docker%E9%95%9C%E5%83%8F%E7%9A%84%E4%BD%BF%E7%94%A8.html">Docker镜像的使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.%E6%93%8D%E4%BD%9CDocker%E5%AE%B9%E5%99%A8.html">操作Docker容器</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">访问Docker仓库</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#docker-hub">Docker Hub公共镜像市场</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">1登录</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">2.基本操作</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">3.自动创建</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">第三方镜像市场</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">下载镜像</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">访问阿里云公有镜像仓库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-registry">1. 登录阿里云Docker Registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#registry">2. 从Registry中拉取镜像</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">3. 将镜像推送到Registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">4. 选择合适的镜像仓库地址</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">5. 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="05.%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">搭建本地私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06.Docker%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Docker数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html">Docker使用网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html">Docker核心实现技术</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.%E9%85%8D%E7%BD%AE%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">配置私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E4%B8%8E%E9%85%8D%E7%BD%AE.html">安全防护与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.%E9%AB%98%E7%BA%A7%E7%BD%91%E7%BB%9C%E5%8A%9F%E8%83%BD.html">高级网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.libnetwork%E6%8F%92%E4%BB%B6%E5%8C%96%E7%BD%91%E7%BB%9C%E5%8A%9F%E8%83%BD.html">libnetwork插件化网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.Etcd%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84%E9%94%AE%E5%80%BC%E6%95%B0%E6%8D%AE%E5%BA%93.html">Etcd高可用的键值数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Compose.html">Docker三剑客之Docker-Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Swarm.html">Docker三剑客之Docker-Swarm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Machine.html">Docker三剑客之Docker-Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19.%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AAWeb%E5%BA%94%E7%94%A8%E6%A0%88.html">搭建一个Web应用栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.Docker%E9%AB%98%E7%BA%A7%E7%BD%91%E7%BB%9C%E5%AE%9E%E6%88%98.html">Docker高级网络实战</a></li>
+<li class="toctree-l2"><a class="reference internal" href="21.%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.html">服务发现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22.Mesos-%E4%BC%98%E7%A7%80%E7%9A%84%E9%9B%86%E7%BE%A4%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6%E5%B9%B3%E5%8F%B0.html">Mesos—优秀的集群资源调度平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="23.Kubernetes-%E7%94%9F%E4%BA%A7%E7%BA%A7%E5%AE%B9%E5%99%A8%E9%9B%86%E7%BE%A4%E5%B9%B3%E5%8F%B0.html">Kubernetes-生产级容器集群平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24.%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E9%A1%B9%E7%9B%AE.html">其他相关项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25.%E9%99%84%E5%BD%95.html">附录</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">01.Docker技术入门与实战3版</a> &raquo;</li>
+      <li>访问Docker仓库</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/01.Docker技术入门与实战3版/04.访问Docker仓库.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#docker" id="id10">访问Docker仓库</a></p>
+<ul>
+<li><p><a class="reference internal" href="#docker-hub" id="id11">Docker Hub公共镜像市场</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id12">1登录</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id13">2.基本操作</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id14">3.自动创建</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id4" id="id15">第三方镜像市场</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id5" id="id16">下载镜像</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id6" id="id17">访问阿里云公有镜像仓库</a></p></li>
+<li><p><a class="reference internal" href="#docker-registry" id="id18">1. 登录阿里云Docker Registry</a></p></li>
+<li><p><a class="reference internal" href="#registry" id="id19">2. 从Registry中拉取镜像</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id20">3. 将镜像推送到Registry</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id21">4. 选择合适的镜像仓库地址</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id22">5. 示例</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="docker">
+<h1><a class="toc-backref" href="#id10">访问Docker仓库</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h1>
+<section id="docker-hub">
+<h2><a class="toc-backref" href="#id11">Docker Hub公共镜像市场</a><a class="headerlink" href="#docker-hub" title="Permalink to this headline">¶</a></h2>
+<p>Docker Hub是Docker官方提供的最大的公共镜像仓库，目前包括了超过100
+000的镜像，地址为<a class="reference external" href="https://hub.docker.com/">https://hub.docker.com</a>
+。大部分对镜像的需求，都可以通过在Docker Hub中直接下载镜像来实现。</p>
+<p>如图：</p>
+<img alt="../_images/docker_hub01.png" src="../_images/docker_hub01.png" />
+<section id="id1">
+<h3><a class="toc-backref" href="#id12">1登录</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>可以通过命令行执行docker
+login命令来输入用户名、密码和邮箱来完成注册和登录。注册成功后，本地用户目录下会自动创建.docker/config.json文件，保存用户的认证信息。</p>
+<p>登录成功的用户可以上传个人制作的镜像到Docker Hub。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#执行docker login命令来输入用户名、密码和邮箱来完成注册和登录</span>
+
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker login</span>
+Login with your Docker ID to push and pull images from Docker Hub. If you don<span class="se">\&#39;</span>t have a Docker ID, head over to https://hub.docker.com to create one.
+Username <span class="o">(</span><span class="m">1879324764</span><span class="o">)</span>: <span class="m">1879324764</span>
+Password:
+Login Succeeded
+
+<span class="c1">#或者使用面交互式的登录方式</span>
+<span class="o">[</span>root@k8s-node01 ~<span class="o">]</span><span class="c1"># docker login -u 1879324764 -p admin#123</span>
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+WARNING! Your password will be stored unencrypted <span class="k">in</span> /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3><a class="toc-backref" href="#id13">2.基本操作</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#用户无需登录即可通过docker search命令来查找官方仓库中的镜像，并利用docker pull命令来将它下载到本地。</span>
+
+搜索镜像
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker search centos</span>
+NAME               DESCRIPTION          STARS          OFFICIAL        AUTOMATED
+centos                        The official build of CentOS.                 <span class="m">2507</span>   <span class="o">[</span>OK<span class="o">]</span>
+ansible/centos7-ansible       Ansible on Centos7                              <span class="m">82</span>   <span class="o">[</span>OK<span class="o">]</span>
+jdeathe/centos-ssh            CentOS-6 <span class="m">6</span>.8 x86_64 / CentOS-7 <span class="m">7</span>.2.1511 x8...   <span class="m">27</span>   <span class="o">[</span>OK<span class="o">]</span>
+nimmis/java-centos            This is docker images of CentOS <span class="m">7</span> with dif...   <span class="m">13</span>   <span class="o">[</span>OK<span class="o">]</span>
+million12/centos-supervisor   Base CentOS-7 with supervisord launcher, h...   <span class="m">12</span>   <span class="o">[</span>OK<span class="o">]</span>
+</pre></div>
+</div>
+<p>根据是否为官方提供，可将这些镜像资源分为两类：</p>
+<p>·一种是类似于centos这样的基础镜像，也称为根镜像。这些镜像是由Docker公司创建、验证、支持、提供，这样的镜像往往使用单个单词作为名字；</p>
+<p>·另一种类型的镜像，比如ansible/centos7-ansible镜像，是由Docker用户ansible创建并维护的，带有用户名称为前缀，表明是某用户下的某仓库。可以通过用户名称前缀“user_name/镜像名”来指定使用某个用户提供的镜像。</p>
+<p>下载官方centos镜像到本地，代码如下所示</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>下载镜像
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker pull centos</span>
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker images</span>
+docker.io/centos                   latest              9f38484d220f        <span class="m">2</span> months ago        <span class="m">202</span> MB
+
+
+上传镜像
+<span class="c1">#注意tag名称不要太长，长度太长会失败。</span>
+<span class="c1"># 报错如下：denied: requested access to the resource is denied</span>
+
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker tag centos:latest 1879324764/centos_test:latest</span>
+
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker push 1879324764/centos_test:latest</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h3><a class="toc-backref" href="#id14">3.自动创建</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>自动创建（Automated Builds）是Docker
+Hub提供的自动化服务，这一功能可以自动跟随项目代码的变更而重新构建镜像。</p>
+<p>例如，用户构建了某应用镜像，如果应用发布新版本，用户需要手动更新镜像。而自动创建则允许用户通过Docker
+Hub指定跟踪一个目标网站（目前支持GitHub或BitBucket）上的项目，一旦项目发生新的提交，则自动执行创建。</p>
+<p>要配置自动创建，包括如下的步骤：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1）创建并登录Docker Hub，以及目标网站如Github；
+2）在目标网站中允许Docker Hub访问服务；
+3）在Docker Hub中配置一个“自动创建”类型的项目；
+4）选取一个目标网站中的项目（需要含Dockerfile）和分支；
+5）指定Dockerfile的位置，并提交创建。
+</pre></div>
+</div>
+<p>之后，可以在Docker Hub的“自动创建”页面中跟踪每次创建的状态。</p>
+</section>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id15">第三方镜像市场</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>国内不少云服务商都提供了Docker镜像市场，包括</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>国内比较有名的镜像源仓库：
+
+阿里云：https://cr.console.aliyun.com/cn-beijing/instances/images
+道云：DaoCloud: https://hub.daocloud.io/
+
+
+网易云
+.......
+
+时速云
+.......
+</pre></div>
+</div>
+<p>下面以时速云为例，介绍如何使用这些市场。</p>
+<p>1.查看镜像</p>
+<p>访问<a class="reference external" href="https://hub.tenxcloud.com/">https://hub.tenxcloud.com</a>
+，即可看到已存在的仓库和存储的镜像，包括Ubuntu、Java、Mongo、MySQL、Nginx等热门仓库和镜像。时速云官方仓库中的镜像会保持与DockerHub中官方镜像的同步。</p>
+<p>以MongoDB仓库为例，其中包括了2.6、3.0和3.2等镜像。</p>
+<section id="id5">
+<h3><a class="toc-backref" href="#id16">下载镜像</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#下载镜像也是使用docker pull命令，但是要在镜像名称前添加注册服务器的具体地址。</span>
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker pull daocloud.io/library/nginx:1.13.0-alpine</span>
+
+
+<span class="c1">#通过docker images命令来查看下载到本地的镜像</span>
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker images</span>
+daocloud.io/library/nginx          <span class="m">1</span>.13.0-alpine       f00ab1b3ac6d        <span class="m">2</span> years ago         <span class="m">15</span>.5 MB
+
+
+<span class="c1">#更新镜像标签</span>
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker tag daocloud.io/library/nginx:1.13.0-alpine nginx:1.13.0</span>
+
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker ps -a</span>
+
+daocloud.io/library/nginx          <span class="m">1</span>.13.0-alpine       f00ab1b3ac6d        <span class="m">2</span> years ago         <span class="m">15</span>.5 MB
+nginx                              <span class="m">1</span>.13.0              f00ab1b3ac6d        <span class="m">2</span> years ago         <span class="m">15</span>.5 MB
+
+<span class="c1"># 运行nginx容器</span>
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker run --name nginx_hu -d -p 8080:80 nginx:1.13.0</span>
+eea29a2e03329b026bc623da2f12ac4bc0da8a38755b5f570a3e50b60584f472
+<span class="o">[</span>root@iZ2ze38chylj63vuj6fqiaZ ~<span class="o">]</span><span class="c1"># docker ps</span>
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+eea29a2e0332        nginx:1.13.0        <span class="s2">&quot;nginx -g &#39;daemon ...&quot;</span>   <span class="m">3</span> seconds ago       Up <span class="m">2</span> seconds        <span class="m">0</span>.0.0.0:8080-&gt;80/tcp   nginx_hu
+
+<span class="c1">#暴露端口</span>
+docker run --name 新名称 -d -p <span class="m">8080</span>:80 some-content-nginx
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id17">访问阿里云公有镜像仓库</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="docker-registry">
+<h2><a class="toc-backref" href="#id18">1. 登录阿里云Docker Registry</a><a class="headerlink" href="#docker-registry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker login --username=hujianli_722 registry.cn-shenzhen.aliyuncs.com
+</pre></div>
+</div>
+<p>用于登录的用户名为阿里云账号全名，密码为开通服务时设置的密码。</p>
+<p>您可以在访问凭证页面修改凭证密码。</p>
+</section>
+<section id="registry">
+<h2><a class="toc-backref" href="#id19">2. 从Registry中拉取镜像</a><a class="headerlink" href="#registry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker pull registry.cn-shenzhen.aliyuncs.com/devops_hu/haproxy:[镜像版本号]
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h2><a class="toc-backref" href="#id20">3. 将镜像推送到Registry</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker login --username=hujianli_722 registry.cn-shenzhen.aliyuncs.com
+或者
+$ sudo docker login --username=hujianli_722 -p admin#123 registry.cn-shenzhen.aliyuncs.com
+
+
+$ sudo docker tag [ImageId] registry.cn-shenzhen.aliyuncs.com/devops_hu/haproxy:[镜像版本号]
+
+
+$ sudo docker push registry.cn-shenzhen.aliyuncs.com/devops_hu/haproxy:[镜像版本号]
+</pre></div>
+</div>
+<p>请根据实际镜像信息替换示例中的[ImageId]和[镜像版本号]参数。</p>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id21">4. 选择合适的镜像仓库地址</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>从ECS推送镜像时，可以选择使用镜像仓库内网地址。推送速度将得到提升并且将不会损耗您的公网流量。</p>
+<p>如果您使用的机器位于VPC网络，请使用
+registry-vpc.cn-shenzhen.aliyuncs.com
+作为Registry的域名登录，并作为镜像命名空间前缀。</p>
+</section>
+<section id="id9">
+<h2><a class="toc-backref" href="#id22">5. 示例</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>使用“docker tag”命令重命名镜像，并将它通过专有网络地址推送至Registry。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker imagesREPOSITORY                                                         TAG                 IMAGE ID            CREATED             VIRTUAL SIZEregistry.aliyuncs.com/acs/agent                                    0.7-dfb6816         37bb9c63c8b2        7 days ago          37.89 MB$ sudo docker tag 37bb9c63c8b2 registry-vpc.cn-shenzhen.aliyuncs.com/acs/agent:0.7-dfb6816
+</pre></div>
+</div>
+<p>使用“docker
+images”命令找到镜像，将该镜像名称中的域名部分变更为Registry专有网络地址。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker push registry-vpc.cn-shenzhen.aliyuncs.com/acs/agent:0.7-dfb6816
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="03.%E6%93%8D%E4%BD%9CDocker%E5%AE%B9%E5%99%A8.html" class="btn btn-neutral float-left" title="操作Docker容器" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="05.%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html" class="btn btn-neutral float-right" title="搭建本地私有仓库" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

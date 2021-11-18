@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>高级网络功能 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="libnetwork插件化网络功能" href="14.libnetwork%E6%8F%92%E4%BB%B6%E5%8C%96%E7%BD%91%E7%BB%9C%E5%8A%9F%E8%83%BD.html" />
+    <link rel="prev" title="安全防护与配置" href="12.%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E4%B8%8E%E9%85%8D%E7%BD%AE.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">01.Docker技术入门与实战3版</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.%E5%88%9D%E8%AF%86Docker%E4%B8%8E%E5%AE%B9%E5%99%A8.html">初识Docker与容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Docker%E9%95%9C%E5%83%8F%E7%9A%84%E4%BD%BF%E7%94%A8.html">Docker镜像的使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.%E6%93%8D%E4%BD%9CDocker%E5%AE%B9%E5%99%A8.html">操作Docker容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.%E8%AE%BF%E9%97%AEDocker%E4%BB%93%E5%BA%93.html">访问Docker仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">搭建本地私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06.Docker%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Docker数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html">Docker使用网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html">Docker核心实现技术</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.%E9%85%8D%E7%BD%AE%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">配置私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E4%B8%8E%E9%85%8D%E7%BD%AE.html">安全防护与配置</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">高级网络功能</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">启动与配置参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dns">配置容器DNS和主机名</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">容器访问控制</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">映射容器端口到宿主主机的实现</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">配置容器网桥</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">自定义网桥</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openvswitch">使用OpenvSwitch网桥</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">创建一个点到点连接</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">本章小结</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="14.libnetwork%E6%8F%92%E4%BB%B6%E5%8C%96%E7%BD%91%E7%BB%9C%E5%8A%9F%E8%83%BD.html">libnetwork插件化网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.Etcd%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84%E9%94%AE%E5%80%BC%E6%95%B0%E6%8D%AE%E5%BA%93.html">Etcd高可用的键值数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Compose.html">Docker三剑客之Docker-Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Swarm.html">Docker三剑客之Docker-Swarm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Machine.html">Docker三剑客之Docker-Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19.%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AAWeb%E5%BA%94%E7%94%A8%E6%A0%88.html">搭建一个Web应用栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.Docker%E9%AB%98%E7%BA%A7%E7%BD%91%E7%BB%9C%E5%AE%9E%E6%88%98.html">Docker高级网络实战</a></li>
+<li class="toctree-l2"><a class="reference internal" href="21.%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.html">服务发现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22.Mesos-%E4%BC%98%E7%A7%80%E7%9A%84%E9%9B%86%E7%BE%A4%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6%E5%B9%B3%E5%8F%B0.html">Mesos—优秀的集群资源调度平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="23.Kubernetes-%E7%94%9F%E4%BA%A7%E7%BA%A7%E5%AE%B9%E5%99%A8%E9%9B%86%E7%BE%A4%E5%B9%B3%E5%8F%B0.html">Kubernetes-生产级容器集群平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24.%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E9%A1%B9%E7%9B%AE.html">其他相关项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25.%E9%99%84%E5%BD%95.html">附录</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">01.Docker技术入门与实战3版</a> &raquo;</li>
+      <li>高级网络功能</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/01.Docker技术入门与实战3版/13.高级网络功能.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id9">高级网络功能</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id10">启动与配置参数</a></p></li>
+<li><p><a class="reference internal" href="#dns" id="id11">配置容器DNS和主机名</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id12">容器访问控制</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id13">映射容器端口到宿主主机的实现</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id14">配置容器网桥</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id15">自定义网桥</a></p></li>
+<li><p><a class="reference internal" href="#openvswitch" id="id16">使用OpenvSwitch网桥</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id17">创建一个点到点连接</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id18">本章小结</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="id1">
+<h1><a class="toc-backref" href="#id9">高级网络功能</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<section id="id2">
+<h2><a class="toc-backref" href="#id10">启动与配置参数</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>1.网络启动过程</p>
+<p>Docker服务启动时会首先在主机上自动创建一个docker0虚拟网桥，实际上是一个Linux网桥。网桥可以理解为一个软件交换机，负责挂载其上的接口之间进行包转发。</p>
+<p>同时，Docker随机分配一个本地未占用的私有网段（在RFC1918中定义）中的一个地址给docker0接口。比如典型的172.17.0.0/16网段，掩码为255.255.0.0。此后启动的容器内的网口也会自动分配一个该网段的地址。</p>
+<p>当创建一个Docker容器的时候，同时会创建了一对veth
+pair互联接口。当向任一个接口发送包时，另外一个接口自动收到相同的包。互联接口的一端位于容器内，即eth0；另一端在本地并被挂载到docker0网桥，名称以veth开头（例如vethAQI2QT）。通过这种方式，主机可以与容器通信，容器之间也可以相互通信。如此一来，Docker就创建了在主机和所有容器之间一个虚拟共享网络，如图20-1所示</p>
+<p>Docker网络连接原理示意图</p>
+<img alt="../_images/docker_gaoji00001.png" src="../_images/docker_gaoji00001.png" />
+<p>2.网络相关参数</p>
+<p>下面是与Docker网络相关的命令参数。其中部分命令选项只有在Docker服务启动的时候才能配置，修改后重启生效，包括：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·-b BRIDGE or--bridge=BRIDGE：指定容器挂载的网桥；
+·--bip=CIDR：定制docker0的掩码；
+·-H SOCKET...or--host=SOCKET...：Docker服务端接收命令的通道；
+·--icc=true|false：是否支持容器之间进行通信；
+·--ip-forward=true|false：启用net.ipv4.ip_forward，即打开转发功能；
+
+·--iptables=true|false：禁止Docker添加iptables规则；
+·--mtu=BYTES：容器网络中的MTU。
+</pre></div>
+</div>
+<p>下面的命令选项既可以在启动服务时指定，也可以Docker容器启动（使用docker[con-tainer]run命令）时候指定。在Docker服务启动的时候指定则会成为默认值，后续执行该命令时可以覆盖设置的默认值：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·--dns=IP_ADDRESS：使用指定的DNS服务器；
+·--dns-opt=&quot;&quot;：指定DNS选项；
+·--dns-search=DOMAIN：指定DNS搜索域。
+</pre></div>
+</div>
+<p>还有些选项只能在docker[container]run命令执行时使用，因为它针对容器的配置：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·-h HOSTNAME or--hostname=HOSTNAME：配置容器主机名；
+
+·-ip=&quot;&quot;：指定容器内接口的IP地址；
+
+·--link=CONTAINER_NAME：ALIAS：添加到另一个容器的连接；
+
+·--net=bridge|none|container：NAME_or_ID|host|user_defined_network：配置容器的桥接模式；
+
+·--network-alias：容器在网络中的别名；
+
+·-p SPEC or--publish=SPEC：映射容器端口到宿主主机；
+
+·-P or--publish-all=true|false：映射容器所有端口到宿主主机。
+
+其中，--net选项支持以下五种模式：
+
+·--net=bridge：默认配置。为容器创建独立的网络命名空间，分配网卡、IP地址等网络配置，并通过veth接口对将容器挂载到一个虚拟网桥（默认为docker0）上；
+
+·--net=none：为容器创建独立的网络命名空间，但不进行网络配置，即容器内没有创建网卡、IP地址等；
+
+·--net=container：NAME_or_ID：新创建的容器共享指定的已存在容器的网络命名空间，两个容器内的网络配置共享，但其他资源（如进程空间、文件系统等）还是相互隔离的；
+
+·--net=host：不为容器创建独立的网络命名空间，容器内看到的网络配置（网卡信息、路由表、Iptables规则等）均与主机上的保持一致。注意其他资源还是与主机隔离的；
+
+·--net=user_defined_network：用户自行用network相关命令创建一个网络，同一个网络内的容器彼此可见，可以采用更多类型的网络插件。
+</pre></div>
+</div>
+</section>
+<section id="dns">
+<h2><a class="toc-backref" href="#id11">配置容器DNS和主机名</a><a class="headerlink" href="#dns" title="Permalink to this headline">¶</a></h2>
+<p>Docker服务启动后会默认启用一个内嵌的DNS服务，来自动解析同一个网络中的容器主机名和地址，如果无法解析，则通过容器内的DNS相关配置进行解析。用户可以通过命令选项自定义容器的主机名和DNS配置，下面分别介绍。</p>
+<p>1.相关配置文件</p>
+<p>容器中主机名和DNS配置信息可以通过三个系统配置文件来管理：/etc/resolv.conf、/etc/hostname和/etc/hosts。</p>
+<p>启动一个容器，在容器中使用mount命令可以看到这三个文件挂载信息：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker run -it ubuntu
+root@75dbd6685305:/# mount
+...
+/dev/sda on /etc/resolv.conf <span class="nb">type</span> ext4 <span class="o">(</span>rw,noatime,errors<span class="o">=</span>remount-ro, <span class="nv">data</span><span class="o">=</span> ordered<span class="o">)</span>
+/dev/sda on /etc/hostname <span class="nb">type</span> ext4 <span class="o">(</span>rw,noatime,errors<span class="o">=</span>remount-ro,data<span class="o">=</span>ordered<span class="o">)</span>
+/dev/sda on /etc/hosts <span class="nb">type</span> ext4 <span class="o">(</span>rw,noatime,errors<span class="o">=</span>remount-ro,data<span class="o">=</span>ordered<span class="o">)</span>
+...
+</pre></div>
+</div>
+<p>Docker启动容器时，会从宿主机上复制/etc/resolv.conf文件，并删除掉其中无法连接到的DNS服务器：</p>
+<hr class="docutils" />
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>root@75dbd6685305:/# cat /etc/resolv.conf
+nameserver <span class="m">8</span>.8.8.8
+search my-docker-cloud.com
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>/etc/hosts文件中默认只记录了容器自身的地址和名称：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mi">75</span><span class="n">dbd6685305</span><span class="p">:</span><span class="o">/</span><span class="c1"># cat /etc/hosts</span>
+<span class="mf">172.17</span><span class="o">.</span><span class="mf">0.2</span>  <span class="mi">75</span><span class="n">dbd6685305</span>
+<span class="p">::</span><span class="mi">1</span> <span class="n">localhost</span> <span class="n">ip6</span><span class="o">-</span><span class="n">localhost</span> <span class="n">ip6</span><span class="o">-</span><span class="n">loopback</span>
+<span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>   <span class="n">localhost</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>/etc/hostname文件则记录了容器的主机名：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mi">75</span><span class="n">dbd6685305</span><span class="p">:</span><span class="o">/</span><span class="c1"># cat /etc/hostname</span>
+<span class="mi">75</span><span class="n">dbd6685305</span>
+</pre></div>
+</div>
+<p>2.容器内修改配置文件</p>
+<p>容器运行时，可以在运行中的容器里直接编辑/etc/hosts、/etc/hostname和/etc/resolve.conf文件。但是这些修改是临时的，只在运行的容器中保留，容器终止或重启后并不会被保存下来，也不会被docker
+commit提交。</p>
+<p>3.通过参数指定</p>
+<p>如果用户想要自定义容器的配置，可以在创建或启动容器时利用下面的参数指定，注意一般不推荐与-net=host一起使用，会破坏宿主机上的配置信息：</p>
+<p>·指定主机名-h
+HOSTNAME或者–hostname=HOSTNAME：设定容器的主机名。容器主机名会被写到容器内的/etc/hostname和/etc/hosts。但这个主机名只有容器内能中看到，在容器外部则看不到，既不会在docker
+ps中显示，也不会在其他容器的/etc/hosts中看到；</p>
+<p>·–link=CONTAINER_NAME：ALIAS：记录其他容器主机名。在创建容器的时候，添加一个所连接容器的主机名到容器内/etc/hosts文件中。这样，新建容器可以直接使用主机名与所连接容器通信；</p>
+<p>·–dns=IP_ADDRESS：指定DNS服务器。添加DNS服务器到容器的/etc/resolv.conf中，容器会用指定的服务器来解析所有不在/etc/hosts中的主机名；</p>
+<p>·–dns-option list：指定DNS相关的选项；</p>
+<p>·–dns-search=DOMAIN：指定DNS搜索域。设定容器的搜索域，当设定搜索域为.example.com时，在搜索一个名为host的主机时，DNS不仅搜索host，还会搜索host.example.com。</p>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id12">容器访问控制</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>容器的访问控制主要通过Linux上的iptables防火墙软件来进行管理和实现。iptables是Linux系统流行的防火墙软件，在大部分发行版中都自带。</p>
+<p>1.容器访问外部网络</p>
+<p>从前面的描述中，我们知道容器默认指定了网关为docker0网桥上的docker0内部接口。docker0内部接口同时也是宿主机的一个本地接口。因此，容器默认情况下可以访问到宿主机本地网络。如果容器要想通过宿主机访问到外部网络，则需要宿主机进行辅助转发。</p>
+<p>在宿主机Linux系统中，检查转发是否打开，代码如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo sysctl net.ipv4.ip_forward
+net.ipv4.ip_forward = 1
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>如果为0，说明没有开启转发，则需要手动打开：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo sysctl -w net.ipv4.ip_forward=1
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>Docker服务启动时会默认开启–ip-forward=true，自动配置宿主机系统的转发规则。</p>
+<p>2.容器之间访问</p>
+<p>容器之间相互访问需要两方面的支持：</p>
+<p>·网络拓扑是否已经连通。默认情况下，所有容器都会连接到docker0网桥上，这意味着默认情况下拓扑是互通的；</p>
+<p>·本地系统的防火墙软件iptables是否允许访问通过。这取决于防火墙的默认规则是允许（大部分情况）还是禁止。</p>
+<p>下面分两种情况介绍容器间的访问。</p>
+<p>（1）访问所有端口</p>
+<p>当启动Docker服务时候，默认会添加一条“允许”转发策略到iptables的FORWARD链上。通过配置–icc=true|false（默认值为true）参数可以控制默认的策略。</p>
+<p>为了安全考虑，可以在Docker配置文件中配置DOCKER_OPTS=–icc=false来默认禁止容器之间的相互访问。</p>
+<p>同时，如果启动Docker服务时手动指定–iptables=false参数，则不会修改宿主机系统上的iptables规则。</p>
+<p>（2）访问指定端口</p>
+<p>在通过-icc=false禁止容器间相互访问后，仍可以通过–link=CONTAINER_NAME：ALIAS选项来允许访问指定容器的开放端口。</p>
+<p>例如，在启动Docker服务时，可以同时使用icc=false–iptables=true参数来配置容器间禁止访问，并允许Docker自动修改系统中的iptables规则。此时，系统中的iptables规则可能是类似如下规则，禁止所有转发流量：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo iptables -nL
+...
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination
+DROP       all  --  0.0.0.0/0            0.0.0.0/0
+...
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>之后，启动容器（docker[container]run）时使用–link=CONTAINER_NAME：ALIAS选项。Docker会在iptable中为两个互联容器分别添加一条ACCEPT规则，允许相互访问开放的端口（取决于Dockerfile中的EXPOSE行）。</p>
+<p>此时，iptables的规则可能是类似如下规则：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo iptables -nL
+...
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination
+ACCEPT     tcp  --  172.17.0.2           172.17.0.3           tcp spt:80
+ACCEPT     tcp  --  172.17.0.3           172.17.0.2           tcp dpt:80
+DROP       all  --  0.0.0.0/0            0.0.0.0/0
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>注意</p>
+<p>–link=CONTAINER_NAME：ALIAS中的CONTAINER_NAME目前必须是Docker自动分配的容器名，或使用–name参数指定的名字。不能为容器-h参数配置的主机名。</p>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id13">映射容器端口到宿主主机的实现</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>默认情况下，容器可以主动访问到外部网络的连接，但是外部网络无法访问到容器。</p>
+<p>1.容器访问外部实现</p>
+<p>假设容器内部的网络地址为172.17.0.2，本地网络地址为10.0.2.2。容器要能访问外部网络，源地址不能为172.17.0.2，需要进行源地址映射（Source
+NAT，SNAT），修改为本地系统的IP地址10.0.2.2。</p>
+<p>映射是通过iptables的源地址伪装操作实现的。查看主机nat表上POSTROUTING链的规则。该链负责网包要离开主机前，改写其源地址：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo iptables -t nat -nvL POSTROUTING
+Chain POSTROUTING (policy ACCEPT 12 packets, 738 bytes)
+pkts bytes target     prot opt in     out     source               destination
+...
+0     0 MASQUERADE  all  --  *      !docker0  172.17.0.0/16        0.0.0.0/0
+...
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>其中，上述规则将所有源地址在172.17.0.0/16网段，且不是从docker0接口发出的流量（即从容器中出来的流量），动态伪装为从系统网卡发出。MASQUERADE行动与传统SNAT行动相比，好处是能动态地从网卡获取地址。</p>
+<p>2.外部访问容器实现</p>
+<p>容器允许外部访问，可以在docker[container]run时候通过-p或-P参数来启用。</p>
+<p>不管用哪种办法，其实也是在本地的iptable的nat表中添加相应的规则，将访问外部IP地址的包进行目标地址DNAT，将目标地址修改为容器的IP地址。</p>
+<p>以一个开放80端口的Web容器为例，使用-P时，会自动映射本地49000～49900范围内的随机端口到容器的80端口：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ iptables -t nat -nvL
+Chain PREROUTING (policy ACCEPT 236 packets, 33317 bytes)
+ pkts bytes target    prot opt in     out     source               destination
+  567 30236 DOCKER     all  --  *      *        0.0.0.0/0             0.0.0.0/0
+            ADDRTYPE match dst-type LOCAL
+Chain DOCKER (2 references)
+ pkts bytes target     prot opt in     out           source          destination
+  0   0     RETURN    all  --  docker0 *            0.0.0.0/0       0.0.0.0/0
+  0   0     RETURN    all  --  br-337120b7e82e *    0.0.0.0/0       0.0.0.0/0
+  0   0     DNAT       tcp  --  !docker0 *            0.0.0.0/0       0.0.0.0/0
+ tcp dpt:49153 to:172.17.0.2:80
+...
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>可以看到，nat表中涉及两条链：PREROUTING链负责包到达网络接口时，改写其目的地址，其中规则将所有流量都转发到DOCKER链；而DOCKER链将所有不是从docker0进来的包（意味着不是本地主机产生），同时目标端口为49153的修改其目标地址为172.17.0.2，目标端口修改为80。</p>
+<p>使用-p 80：80时，与上面类似，只是本地端口也为80：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ iptables -t nat -nvL
+...
+Chain PREROUTING (policy ACCEPT 236 packets, 33317 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+  567 30236 DOCKER     all  --  *      *       0.0.0.0/0
+            0.0.0.0/0            ADDRTYPE match dst-type LOCAL
+Chain DOCKER (2 references)
+ pkts bytes target     prot opt in     out     source               destination
+    0     0 DNAT       tcp  --  !docker0 *     0.0.0.0/0            0.0.0.0/0
+tcp dpt:80 to:172.17.0.2:80
+...
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>这里有两点需要注意：</p>
+<p>·规则映射地址为0.0.0.0，意味着将接受主机来自所有网络接口上的流量。用户可以通过-p
+IP：host_port：container_port或-p
+IP：：port来指定绑定的外部网络接口，以制定更严格的访问规则；</p>
+<p>·如果希望映射绑定到某个固定的宿主机IP地址，可以在Docker配置文件中指定DOCKER_OPTS=“–ip=IP_ADDRESS”，之后重启Docker服务即可生效。</p>
+<p>2.外部访问容器实现</p>
+<p>容器允许外部访问，可以在docker[container]run时候通过-p或-P参数来启用。</p>
+<p>不管用哪种办法，其实也是在本地的iptable的nat表中添加相应的规则，将访问外部IP地址的包进行目标地址DNAT，将目标地址修改为容器的IP地址。</p>
+<p>以一个开放80端口的Web容器为例，使用-P时，会自动映射本地49000～49900范围内的随机端口到容器的80端口：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ iptables -t nat -nvL
+Chain PREROUTING (policy ACCEPT 236 packets, 33317 bytes)
+ pkts bytes target    prot opt in     out     source               destination
+  567 30236 DOCKER     all  --  *      *        0.0.0.0/0             0.0.0.0/0
+            ADDRTYPE match dst-type LOCAL
+Chain DOCKER (2 references)
+ pkts bytes target     prot opt in     out           source          destination
+  0   0     RETURN    all  --  docker0 *            0.0.0.0/0       0.0.0.0/0
+  0   0     RETURN    all  --  br-337120b7e82e *    0.0.0.0/0       0.0.0.0/0
+  0   0     DNAT       tcp  --  !docker0 *            0.0.0.0/0       0.0.0.0/0
+ tcp dpt:49153 to:172.17.0.2:80
+...
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>可以看到，nat表中涉及两条链：PREROUTING链负责包到达网络接口时，改写其目的地址，其中规则将所有流量都转发到DOCKER链；而DOCKER链将所有不是从docker0进来的包（意味着不是本地主机产生），同时目标端口为49153的修改其目标地址为172.17.0.2，目标端口修改为80。</p>
+<p>使用-p 80：80时，与上面类似，只是本地端口也为80：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ iptables -t nat -nvL
+...
+Chain PREROUTING (policy ACCEPT 236 packets, 33317 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+  567 30236 DOCKER     all  --  *      *       0.0.0.0/0
+            0.0.0.0/0            ADDRTYPE match dst-type LOCAL
+Chain DOCKER (2 references)
+ pkts bytes target     prot opt in     out     source               destination
+    0     0 DNAT       tcp  --  !docker0 *     0.0.0.0/0            0.0.0.0/0
+tcp dpt:80 to:172.17.0.2:80
+...
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>这里有两点需要注意：</p>
+<p>·规则映射地址为0.0.0.0，意味着将接受主机来自所有网络接口上的流量。用户可以通过-p
+IP：host_port：container_port或-p
+IP：：port来指定绑定的外部网络接口，以制定更严格的访问规则；</p>
+<p>·如果希望映射绑定到某个固定的宿主机IP地址，可以在Docker配置文件中指定DOCKER_OPTS=“–ip=IP_ADDRESS”，之后重启Docker服务即可生效。</p>
+</section>
+<section id="id5">
+<h2><a class="toc-backref" href="#id14">配置容器网桥</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>Docker服务默认会创建一个名称为docker0的Linux网桥（其上有一个docker0内部接口），它在内核层连通了其他的物理或虚拟网卡，这就将所有容器和本地主机都放到同一个物理网络。用户使用Docker创建多个自定义网络时可能会出现多个容器网桥。</p>
+<p>Docker默认指定了docker0接口的IP地址和子网掩码，让主机和容器之间可以通过网桥相互通信，它还给出了MTU（接口允许接收的最大传输单元），通常是1500
+B，或宿主主机网络路由上支持的默认值。这些值都可以在服务启动的时候进行配置：</p>
+<p>·–bip=CIDR：IP地址加掩码格式，例如192.168.1.5/24；</p>
+<p>·–mtu=BYTES：覆盖默认的Docker mtu配置。</p>
+<p>也可以在配置文件中配置DOCKER_OPTS，然后重启服务。由于目前Docker网桥是Linux网桥，用户可以使用brctl
+show来查看网桥和端口连接信息：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo brctl show
+bridge name     bridge id               STP enabled     interfaces
+docker0         8000.3a1d7362b4ee       no              veth65f9
+                                             vethdda6
+</pre></div>
+</div>
+<hr class="docutils" />
+<p><code class="docutils literal notranslate"><span class="pre">注意</span></code></p>
+<p>如果系统中没有自带brctl命令，可以使用<code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">bridge-utils</span></code>命令来安装（Debian、Ubuntu系列系统）。</p>
+<p>每次创建一个新容器的时候，Docker从可用的地址段中选择一个空闲的IP地址分配给容器的eth0端口，并且使用本地主机上docker0接口的IP作为容器的默认网关：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run -it --rm debian:stable bash
+# ip addr show eth0
+66: eth0@if67: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default
+    link/ether 02:42:ac:11:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 172.17.0.3/16 scope global eth0
+       valid_lft forever preferred_lft forever
+# ip route
+default via 172.17.0.1 dev eth0
+172.17.0.0/16 dev eth0 proto kernel scope link src 172.17.0.3
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>目前，Docker不支持在启动容器时候指定IP地址。</p>
+<p>注意</p>
+<p>容器默认使用Linux网桥，用户也可以替换为OpenvSwitch等功能更强大的网桥实现，支持更多的软件定义网络特性。</p>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id15">自定义网桥</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>除了默认的docker0网桥，用户也可以指定其他网桥来连接各个容器。在启动Docker服务的时候，可使用-b
+BRIDGE或–bridge=BRIDGE来指定使用的网桥。</p>
+<p>如果服务已经运行，就需要先停止服务，并删除旧的网桥：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo service docker stop
+$ sudo ip link set dev docker0 down
+$ sudo brctl delbr docker0
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>然后创建一个网桥bridge0：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo brctl addbr bridge0
+$ sudo ip addr add 192.168.5.1/24 dev bridge0
+$ sudo ip link set dev bridge0 up
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>查看确认网桥创建并启动：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ip addr show bridge0
+4: bridge0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state UP group default
+    link/ether 66:38:d0:0d:76:18 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.5.1/24 scope global bridge0
+        valid_lft forever preferred_lft forever
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>配置Docker服务，默认桥接到创建的网桥上：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ echo &#39;DOCKER_OPTS=&quot;-b=bridge0&quot;&#39; &gt;&gt; /etc/default/docker
+$ sudo service docker start
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>启动Docker服务：</p>
+<p>新建一个容器，可以看到它已经桥接到了bridge0上。</p>
+<p>可以继续用brctl show命令查看桥接的信息。另外，在容器中可以使用ip
+addr和ip route命令来查看IP地址配置和路由信息。</p>
+</section>
+<section id="openvswitch">
+<h2><a class="toc-backref" href="#id16">使用OpenvSwitch网桥</a><a class="headerlink" href="#openvswitch" title="Permalink to this headline">¶</a></h2>
+<p>Docker默认使用的是Linux自带的网桥实现，可以替换为使用功能更强大的Openv-Switch虚拟交换机实现。</p>
+<p>1.环境</p>
+<p>在debian：stable系统中进行测试。操作流程也适用于RedHat/CentOS系列系统，但少数命令和配置文件可能略有差异。</p>
+<p>2.安装Docker</p>
+<p>安装最近版本的Docker并启动服务。默认情况下，Docker服务会创建一个名为docker0的Linux网桥，作为连接容器的本地网桥。</p>
+<p>可以通过如下命令查看：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo brctl show
+bridge name     bridge id               STP enabled     interfaces
+docker0         8000.000000000000       no
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>网桥上内部接口的默认地址一般为172.17.0.1：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ifconfig docker0
+docker0   Link encap:Ethernet  HWaddr 02:42:cf:31:5e:f7
+          inet addr:172.17.0.1  Bcast:0.0.0.0  Mask:255.255.0.0
+          inet6 addr: fe80::42:cfff:fe31:5ef7/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:604 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:740 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:19636 (19.6 KB)  TX bytes:39072 (39.0 KB)
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>3.安装OpenvSwitch</p>
+<p>通过如下命令安装OpenvSwitch：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo aptitude install openvswitch-switch
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>测试添加一个网桥br0并查看：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ovs-vsctl add-br br0
+$ sudo ovs-vsctl show
+20d0b972-e323-4e3c-9e66-1d8bb57c7ff5
+    Bridge ovs-br
+        Port ovs-br
+            Interface br0
+                type: internal
+    ovs_version: &quot;2.0.2&quot;
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>4.配置容器连接到OpenvSwitch网桥</p>
+<p>目前OpenvSwitch网桥还不能直接支持挂载容器，需要手动在OpenvSwitch网桥上创建虚拟网口并挂载到容器中。操作方法如下。</p>
+<p>（1）创建无网口容器</p>
+<p>启动一个容器，并指定不创建网络，后面我们手动添加网络。较新版本的Docker默认不允许在容器内修改网络配置，需要在run的时候指定参数-privileged=true：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run --net=none --privileged=true -it debian:stable bash
+root@298bbb17c244:/#
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>记住这里容器的id为298bbb17c244。</p>
+<p>此时在容器内查看网络信息，只能看到一个本地网卡lo：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mi">298</span><span class="n">bbb17c244</span><span class="p">:</span><span class="o">/</span><span class="c1"># ifconfig</span>
+<span class="n">lo</span>        <span class="n">Link</span> <span class="n">encap</span><span class="p">:</span><span class="n">Local</span> <span class="n">Loopback</span>
+          <span class="n">inet</span> <span class="n">addr</span><span class="p">:</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>  <span class="n">Mask</span><span class="p">:</span><span class="mf">255.0</span><span class="o">.</span><span class="mf">0.0</span>
+          <span class="n">inet6</span> <span class="n">addr</span><span class="p">:</span> <span class="p">::</span><span class="mi">1</span><span class="o">/</span><span class="mi">128</span> <span class="n">Scope</span><span class="p">:</span><span class="n">Host</span>
+          <span class="n">UP</span> <span class="n">LOOPBACK</span> <span class="n">RUNNING</span>  <span class="n">MTU</span><span class="p">:</span><span class="mi">65536</span>  <span class="n">Metric</span><span class="p">:</span><span class="mi">1</span>
+          <span class="n">RX</span> <span class="n">packets</span><span class="p">:</span><span class="mi">0</span> <span class="n">errors</span><span class="p">:</span><span class="mi">0</span> <span class="n">dropped</span><span class="p">:</span><span class="mi">0</span> <span class="n">overruns</span><span class="p">:</span><span class="mi">0</span> <span class="n">frame</span><span class="p">:</span><span class="mi">0</span>
+          <span class="n">TX</span> <span class="n">packets</span><span class="p">:</span><span class="mi">0</span> <span class="n">errors</span><span class="p">:</span><span class="mi">0</span> <span class="n">dropped</span><span class="p">:</span><span class="mi">0</span> <span class="n">overruns</span><span class="p">:</span><span class="mi">0</span> <span class="n">carrier</span><span class="p">:</span><span class="mi">0</span>
+          <span class="n">collisions</span><span class="p">:</span><span class="mi">0</span> <span class="n">txqueuelen</span><span class="p">:</span><span class="mi">0</span>
+          <span class="n">RX</span> <span class="nb">bytes</span><span class="p">:</span><span class="mi">0</span> <span class="p">(</span><span class="mf">0.0</span> <span class="n">B</span><span class="p">)</span>  <span class="n">TX</span> <span class="nb">bytes</span><span class="p">:</span><span class="mi">0</span> <span class="p">(</span><span class="mf">0.0</span> <span class="n">B</span><span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>（2）手动为容器添加网络</p>
+<p>下载OpenvSwitch项目提供的支持Docker容器的辅助脚本ovs-docker：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/openvswitch/ovs/raw/master/utilities/ovs-docker
+$ sudo chmod a+x ovs-docker
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>为容器添加网卡，并挂载到br0上，命令如下：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ./ovs-docker add-port br0 eth0 298bbb17c244 --ipaddress=172.17.0.2/16
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>添加成功后，在容器内查看网络信息，多了一个新添加的网卡eth0，以及对应添加的IP地址：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mi">298</span><span class="n">bbb17c244</span><span class="p">:</span><span class="o">/</span><span class="c1"># ifconfig</span>
+<span class="n">eth0</span>      <span class="n">Link</span> <span class="n">encap</span><span class="p">:</span><span class="n">Ethernet</span>  <span class="n">HWaddr</span> <span class="n">ae</span><span class="p">:</span><span class="mi">3</span><span class="n">d</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span><span class="mi">2</span><span class="n">c</span><span class="p">:</span><span class="mi">18</span><span class="p">:</span><span class="n">ba</span>
+          <span class="n">inet</span> <span class="n">addr</span><span class="p">:</span><span class="mf">172.17</span><span class="o">.</span><span class="mf">0.2</span>  <span class="n">Bcast</span><span class="p">:</span><span class="mf">172.17</span><span class="o">.</span><span class="mf">255.255</span>  <span class="n">Mask</span><span class="p">:</span><span class="mf">255.255</span><span class="o">.</span><span class="mf">0.0</span>
+          <span class="n">inet6</span> <span class="n">addr</span><span class="p">:</span> <span class="n">fe80</span><span class="p">::</span><span class="n">ac3d</span><span class="p">:</span><span class="mi">75</span><span class="n">ff</span><span class="p">:</span><span class="n">fe2c</span><span class="p">:</span><span class="mi">18</span><span class="n">ba</span><span class="o">/</span><span class="mi">64</span> <span class="n">Scope</span><span class="p">:</span><span class="n">Link</span>
+          <span class="n">UP</span> <span class="n">BROADCAST</span> <span class="n">RUNNING</span> <span class="n">MULTICAST</span>  <span class="n">MTU</span><span class="p">:</span><span class="mi">1500</span>  <span class="n">Metric</span><span class="p">:</span><span class="mi">1</span>
+          <span class="n">RX</span> <span class="n">packets</span><span class="p">:</span><span class="mi">187</span> <span class="n">errors</span><span class="p">:</span><span class="mi">0</span> <span class="n">dropped</span><span class="p">:</span><span class="mi">2</span> <span class="n">overruns</span><span class="p">:</span><span class="mi">0</span> <span class="n">frame</span><span class="p">:</span><span class="mi">0</span>
+          <span class="n">TX</span> <span class="n">packets</span><span class="p">:</span><span class="mi">11</span> <span class="n">errors</span><span class="p">:</span><span class="mi">0</span> <span class="n">dropped</span><span class="p">:</span><span class="mi">0</span> <span class="n">overruns</span><span class="p">:</span><span class="mi">0</span> <span class="n">carrier</span><span class="p">:</span><span class="mi">0</span>
+          <span class="n">collisions</span><span class="p">:</span><span class="mi">0</span> <span class="n">txqueuelen</span><span class="p">:</span><span class="mi">1000</span>
+          <span class="n">RX</span> <span class="nb">bytes</span><span class="p">:</span><span class="mi">33840</span> <span class="p">(</span><span class="mf">33.8</span> <span class="n">KB</span><span class="p">)</span>  <span class="n">TX</span> <span class="nb">bytes</span><span class="p">:</span><span class="mi">1170</span> <span class="p">(</span><span class="mf">1.1</span> <span class="n">KB</span><span class="p">)</span>
+<span class="n">lo</span>        <span class="n">Link</span> <span class="n">encap</span><span class="p">:</span><span class="n">Local</span> <span class="n">Loopback</span>
+          <span class="n">inet</span> <span class="n">addr</span><span class="p">:</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>  <span class="n">Mask</span><span class="p">:</span><span class="mf">255.0</span><span class="o">.</span><span class="mf">0.0</span>
+          <span class="n">inet6</span> <span class="n">addr</span><span class="p">:</span> <span class="p">::</span><span class="mi">1</span><span class="o">/</span><span class="mi">128</span> <span class="n">Scope</span><span class="p">:</span><span class="n">Host</span>
+          <span class="n">UP</span> <span class="n">LOOPBACK</span> <span class="n">RUNNING</span>  <span class="n">MTU</span><span class="p">:</span><span class="mi">65536</span>  <span class="n">Metric</span><span class="p">:</span><span class="mi">1</span>
+          <span class="n">RX</span> <span class="n">packets</span><span class="p">:</span><span class="mi">0</span> <span class="n">errors</span><span class="p">:</span><span class="mi">0</span> <span class="n">dropped</span><span class="p">:</span><span class="mi">0</span> <span class="n">overruns</span><span class="p">:</span><span class="mi">0</span> <span class="n">frame</span><span class="p">:</span><span class="mi">0</span>
+          <span class="n">TX</span> <span class="n">packets</span><span class="p">:</span><span class="mi">0</span> <span class="n">errors</span><span class="p">:</span><span class="mi">0</span> <span class="n">dropped</span><span class="p">:</span><span class="mi">0</span> <span class="n">overruns</span><span class="p">:</span><span class="mi">0</span> <span class="n">carrier</span><span class="p">:</span><span class="mi">0</span>
+          <span class="n">collisions</span><span class="p">:</span><span class="mi">0</span> <span class="n">txqueuelen</span><span class="p">:</span><span class="mi">0</span>
+          <span class="n">RX</span> <span class="nb">bytes</span><span class="p">:</span><span class="mi">0</span> <span class="p">(</span><span class="mf">0.0</span> <span class="n">B</span><span class="p">)</span>  <span class="n">TX</span> <span class="nb">bytes</span><span class="p">:</span><span class="mi">0</span> <span class="p">(</span><span class="mf">0.0</span> <span class="n">B</span><span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>在容器外，配置OpenvSwitch的网桥br0内部接口地址为172.17.0.1/16（只要与所挂载容器IP在同一个子网内即可）：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ifconfig br0 172.17.0.1/16
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>（3）测试连通</p>
+<p>经过上面步骤，容器已经连接到了网桥br0上了，拓扑如下所示：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>容器（172.17.0.2/16）&lt;-&gt; br0网桥&lt;-&gt; br0内部端口（172.17.0.1/16）
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>此时，在容器内就可以测试是否连通到网桥br0上了：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mi">298</span><span class="n">bbb17c244</span><span class="p">:</span><span class="o">/</span><span class="c1"># ping 172.17.0.1</span>
+<span class="n">PING</span> <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.1</span> <span class="p">(</span><span class="mf">172.17</span><span class="o">.</span><span class="mf">0.1</span><span class="p">)</span> <span class="mi">56</span><span class="p">(</span><span class="mi">84</span><span class="p">)</span> <span class="nb">bytes</span> <span class="n">of</span> <span class="n">data</span><span class="o">.</span>
+<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">1</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.874</span> <span class="n">ms</span>
+<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">2</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.079</span> <span class="n">ms</span>
+<span class="o">^</span><span class="n">C</span>
+<span class="o">---</span> <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.1</span> <span class="n">ping</span> <span class="n">statistics</span> <span class="o">---</span>
+<span class="mi">2</span> <span class="n">packets</span> <span class="n">transmitted</span><span class="p">,</span> <span class="mi">2</span> <span class="n">received</span><span class="p">,</span> <span class="mi">0</span><span class="o">%</span> <span class="n">packet</span> <span class="n">loss</span><span class="p">,</span> <span class="n">time</span> <span class="mi">1001</span><span class="n">ms</span>
+<span class="n">rtt</span> <span class="nb">min</span><span class="o">/</span><span class="n">avg</span><span class="o">/</span><span class="nb">max</span><span class="o">/</span><span class="n">mdev</span> <span class="o">=</span> <span class="mf">0.079</span><span class="o">/</span><span class="mf">0.476</span><span class="o">/</span><span class="mf">0.874</span><span class="o">/</span><span class="mf">0.398</span> <span class="n">ms</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>在容器内也可以配置默认网关为br0接口地址：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mi">298</span><span class="n">bbb17c244</span><span class="p">:</span><span class="o">/</span><span class="c1"># route add default gw 172.17.0.1</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>删除该接口的命令为：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ./ovs-docker del-port br0 eth0 &lt;CONTAINER_ID&gt;
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>另外，用户也可以直接使用支持OpenvSwitch的容器云平台（如Kubernetes、OpenStack等）来自动化这一过程。</p>
+</section>
+<section id="id7">
+<h2><a class="toc-backref" href="#id17">创建一个点到点连接</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>在默认情况下，Docker会将所有容器连接到由docker0提供的虚拟网络中。</p>
+<p>用户有时候需要两个容器之间可以直连通信，而不用通过主机网桥进行桥接。解决办法很简单：创建一对peer接口，分别放到两个容器中，配置成点到点链路类型即可。</p>
+<p>下面笔者将通过手动操作完成Docker配置容器网络的过程。</p>
+<p>首先启动两个容器：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run -i -t --rm --net=none debian:stable /bin/bash
+root@1f1f4c1f931a:/#
+$ docker run -i -t --rm --net=none debian:stable /bin/bash
+root@12e343489d2f:/#
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>找到进程号，然后创建网络命名空间的跟踪文件：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker [container] inspect -f &#39;{{.State.Pid}}&#39; 1f1f4c1f931a
+2989
+$ docker [container] inspect -f &#39;{{.State.Pid}}&#39; 12e343489d2f
+3004
+$ sudo mkdir -p /var/run/netns
+$ sudo ln -s /proc/2989/ns/net /var/run/netns/2989
+$ sudo ln -s /proc/3004/ns/net /var/run/netns/3004
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>创建一对peer接口：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ip link add A type veth peer name B
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>添加IP地址和路由信息：</p>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ip link set A netns 2989
+$ sudo ip netns exec 2989 ip addr add 10.1.1.1/32 dev A
+$ sudo ip netns exec 2989 ip link set A up
+$ sudo ip netns exec 2989 ip route add 10.1.1.2/32 dev A
+$ sudo ip link set B netns 3004
+$ sudo ip netns exec 3004 ip addr add 10.1.1.2/32 dev B
+$ sudo ip netns exec 3004 ip link set B up
+$ sudo ip netns exec 3004 ip route add 10.1.1.1/32 dev B
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>现在这两个容器就可以相互ping通，并成功建立连接。点到点链路不需要子网和子网掩码。此外，也可以不指定–net=none来创建点到点链路。这样容器还可以通过原先的网络来通信。</p>
+<p>利用类似的办法，可以创建一个只跟主机通信的容器。但是一般情况下，更推荐使用–icc=false命令来关闭容器之间的通信。</p>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id18">本章小结</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>本章具体讲解了使用Docker网络的一些高级部署和操作配置，包括配置启动参数、DNS、容器的访问控制管理等。并介绍了Docker网络相关的一些工具和项目。</p>
+<p>网络是一个十分复杂的领域，所涉及的学科和技术门类众多，包括软件、硬件、系统、协议等等。要在大规模复杂场景下提供稳定的网络服务，要求运营者对于整个网络栈的管理都要到位。</p>
+<p>Docker最初基于操作系统上的本地网络支持技术，较快提供了基本的网络支持。随着Docker越来越多地应用在各种分布式环境，网络方面的需求越来越复杂，容器网络目前已经成为了云计算领域的关键技术。</p>
+<p>如何结合已有的网络虚拟化技术来解决容器网络的问题，仍将是未来云计算领域值得持续探讨的重点技术话题。下一章将介绍Docker标准化的插件式网络方案：libnetwork。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="12.%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E4%B8%8E%E9%85%8D%E7%BD%AE.html" class="btn btn-neutral float-left" title="安全防护与配置" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="14.libnetwork%E6%8F%92%E4%BB%B6%E5%8C%96%E7%BD%91%E7%BB%9C%E5%8A%9F%E8%83%BD.html" class="btn btn-neutral float-right" title="libnetwork插件化网络功能" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

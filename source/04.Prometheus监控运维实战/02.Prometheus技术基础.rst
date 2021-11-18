@@ -14,7 +14,7 @@ Prometheus技术基础
 
 Prometheus核心组件中，Exporter是重要的组成部分，在实际中监控样本数据的收集都是由Exporter完成的，Prometheus服务器只需要定时从这些Exporter提供的HTTP服务获取监控数据即可。
 
-本章将对Exporter的类型以及文本数据格式进行说明，讨论如何从官方的Exporter列表获取常用的Exporter，比如用于监控基础设施中服务器性能的node\_exporter、wmi\_exporter，用于对数据库监控的mysqld\_exporter和redis\_exporter等。
+本章将对Exporter的类型以及文本数据格式进行说明，讨论如何从官方的Exporter列表获取常用的Exporter，比如用于监控基础设施中服务器性能的node_exporter、wmi_exporter，用于对数据库监控的mysqld_exporter和redis_exporter等。
 
 并对这些获取特定目标监控样本数据的Exporter软件包进行安装集成，最终可以很直观地通过Prometheus
 Web UI浏览采集到的各类监控数据。
@@ -24,12 +24,11 @@ Web UI浏览采集到的各类监控数据。
 
 通常来说可以将Exporter分为两类：
 
-::
+-  直接采集型。这类Exporter直接内置了相应的应用程序，用于向Prometheus直接提供Target数据支持。这样设计的好处是，可以更好地监控各自系统的内部运行状态，同时也适合更多自定义监控指标的项目实施。例如cAdvisor、Kubernetes等，它们均内置了用于向Prometheus提供监控数据的端点。
 
-    ·直接采集型。这类Exporter直接内置了相应的应用程序，用于向Prometheus直接提供Target数据支持。这样设计的好处是，可以更好地监控各自系统的内部运行状态，同时也适合更多自定义监控指标的项目实施。例如cAdvisor、Kubernetes等，它们均内置了用于向Prometheus提供监控数据的端点。
-
-
-    ·间接采集型。原始监控目标并不直接支持Prometheus，需要我们使用Prometheus提供的Client Library编写该监控目标的监控采集程序，用户可以将该程序独立运行，去获取指定的各类监控数据值。例如，由于Linux操作系统自身并不能直接支持Prometheus，用户无法从操作系统层面上直接提供对Prometheus的支持，因此单独提供Node exporter，还有数据库或网站HTTP应用类等Exporter。
+-  间接采集型。原始监控目标并不直接支持Prometheus，需要我们使用Prometheus提供的Client
+   Library编写该监控目标的监控采集程序，用户可以将该程序独立运行，去获取指定的各类监控数据值。例如，由于Linux操作系统自身并不能直接支持Prometheus，用户无法从操作系统层面上直接提供对Prometheus的支持，因此单独提供Node
+   exporter，还有数据库或网站HTTP应用类等Exporter。
 
 2.1 文本数据格式
 ~~~~~~~~~~~~~~~~
@@ -39,43 +38,43 @@ Web UI提供的页面http://192.168.24.17:9090/metrics来获取信息.
 
 ::
 
-    # HELP go_gc_duration_seconds A summary of the GC invocation durations.
-    # TYPE go_gc_duration_seconds summary
-    go_gc_duration_seconds{quantile="0"} 1.6686e-05
-    go_gc_duration_seconds{quantile="0.25"} 2.3724e-05
-    go_gc_duration_seconds{quantile="0.5"} 3.4785e-05
-    go_gc_duration_seconds{quantile="0.75"} 5.5535e-05
-    go_gc_duration_seconds{quantile="1"} 0.000209371
-    go_gc_duration_seconds_sum 0.017473216
-    go_gc_duration_seconds_count 304
-    # HELP go_goroutines Number of goroutines that currently exist.
-    # TYPE go_goroutines gauge
-    go_goroutines 88
-    # HELP go_info Information about the Go environment.
-    # TYPE go_info gauge
-    go_info{version="go1.13.4"} 1
-    # HELP go_memstats_alloc_bytes Number of bytes allocated and still in use.
-    # TYPE go_memstats_alloc_bytes gauge
-    go_memstats_alloc_bytes 4.170512e+07
-    # HELP go_memstats_alloc_bytes_total Total number of bytes allocated, even if freed.
-    # TYPE go_memstats_alloc_bytes_total counter
-    go_memstats_alloc_bytes_total 7.036375856e+09
-    # HELP go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table.
-    # TYPE go_memstats_buck_hash_sys_bytes gauge
-    go_memstats_buck_hash_sys_bytes 1.871112e+06
-    # HELP go_memstats_frees_total Total number of frees.
+   # HELP go_gc_duration_seconds A summary of the GC invocation durations.
+   # TYPE go_gc_duration_seconds summary
+   go_gc_duration_seconds{quantile="0"} 1.6686e-05
+   go_gc_duration_seconds{quantile="0.25"} 2.3724e-05
+   go_gc_duration_seconds{quantile="0.5"} 3.4785e-05
+   go_gc_duration_seconds{quantile="0.75"} 5.5535e-05
+   go_gc_duration_seconds{quantile="1"} 0.000209371
+   go_gc_duration_seconds_sum 0.017473216
+   go_gc_duration_seconds_count 304
+   # HELP go_goroutines Number of goroutines that currently exist.
+   # TYPE go_goroutines gauge
+   go_goroutines 88
+   # HELP go_info Information about the Go environment.
+   # TYPE go_info gauge
+   go_info{version="go1.13.4"} 1
+   # HELP go_memstats_alloc_bytes Number of bytes allocated and still in use.
+   # TYPE go_memstats_alloc_bytes gauge
+   go_memstats_alloc_bytes 4.170512e+07
+   # HELP go_memstats_alloc_bytes_total Total number of bytes allocated, even if freed.
+   # TYPE go_memstats_alloc_bytes_total counter
+   go_memstats_alloc_bytes_total 7.036375856e+09
+   # HELP go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table.
+   # TYPE go_memstats_buck_hash_sys_bytes gauge
+   go_memstats_buck_hash_sys_bytes 1.871112e+06
+   # HELP go_memstats_frees_total Total number of frees.
 
 这些样本数据集合说明如下：
 
 ::
 
-    ·以#HELP开始的行，表示metric的帮助与说明注释，可以包含当前监控指标名称和对应的说明信息。
+   ·以#HELP开始的行，表示metric的帮助与说明注释，可以包含当前监控指标名称和对应的说明信息。
 
-    ·以#TYPE开始的行，表示定义metric类型，可以包含当前监控指标名称和类型，类型有Counter、Gauge、Histogram、Summary和Untyped。
+   ·以#TYPE开始的行，表示定义metric类型，可以包含当前监控指标名称和类型，类型有Counter、Gauge、Histogram、Summary和Untyped。
 
-    ·以非#开始的行，即监控样本数据。
+   ·以非#开始的行，即监控样本数据。
 
-    ·其他一般性注释，方便阅读使用，会被Prometheus忽略。
+   ·其他一般性注释，方便阅读使用，会被Prometheus忽略。
 
 2.2 获取Exporter
 ----------------
@@ -102,30 +101,25 @@ GitHub官网https://github.com/prometheus上获取对应的Exporter最新版本�
 2.2.1 测试主机列表及其软件
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-+--------------------+-------------+---------------------------------------+------+
-| 名称               | IP地址      | 软件信息                              | 端口 |
-+====================+=============+=======================================+======+
-| prometheus         | 192.168.1.x | prometheus-2.4.0.linux-amd64.tar.zip  | 9090 |
-+--------------------+-------------+---------------------------------------+------+
-| Grafana            | 192.168.1.x | grafana-5.2.4-1.x86\_64.zip           | 3000 |
-+--------------------+-------------+---------------------------------------+------+
-| Linux主机          | 192.168.1.x | node\_exporter-0.16.0.linux-amd64.tar | 9100 |
-|                    |             | .gz                                   |      |
-+--------------------+-------------+---------------------------------------+------+
-| Windows主机        | 192.168.1.x | wmi\_exporter-0.5.0-amd64.msi         | 9182 |
-+--------------------+-------------+---------------------------------------+------+
-| MySQL主机          | 192.168.1.x | mysqld\_exporter-0.11.0.linux-amd64.t | 9104 |
-|                    |             | ar.gz                                 |      |
-+--------------------+-------------+---------------------------------------+------+
-| Redis主机          | 192.168.1.x | redis\_exporter-v0.23.0.linux-amd64.t | 9121 |
-|                    | x           | ar.gz                                 |      |
-+--------------------+-------------+---------------------------------------+------+
-| Nginx主机          | 192.168.1.x | nginx-vts-exporter-0.10.3.linux-amd64 | 9913 |
-|                    | xx          | .tar.gz                               |      |
-+--------------------+-------------+---------------------------------------+------+
-| Blackbox           | 192.168.1.x | blackbox\_exporter-0.14.0.linux-amd64 | 9115 |
-| Exporter主机       | x           | .tar.gz                               |      |
-+--------------------+-------------+---------------------------------------+------+
++-----------------------+---------------+----------------------------------+------+
+| 名称                  | IP地址        | 软件信息                         | 端口 |
++=======================+===============+==================================+======+
+| prometheus            | 192.168.1.x   | prometheus-2.4.0.linux…          | 9090 |
++-----------------------+---------------+----------------------------------+------+
+| Grafana               | 192.168.1.x   | grafana-5.2.4-1.x86_64.zip       | 3000 |
++-----------------------+---------------+----------------------------------+------+
+| Linux主机             | 192.168.1.x   | node_exporter-0.16.0.linux…      | 9100 |
++-----------------------+---------------+----------------------------------+------+
+| Windows主机           | 192.168.1.x   | wmi_exporter-0.5.0-amd64.msi     | 9182 |
++-----------------------+---------------+----------------------------------+------+
+| MySQL主机             | 192.168.1.x   | mysqld_exporter-0.11.0.linux…    | 9104 |
++-----------------------+---------------+----------------------------------+------+
+| Redis主机             | 192.168.1.xx  | redis-exporter-v0.23.0.linux…    | 9121 |
++-----------------------+---------------+----------------------------------+------+
+| Nginx主机             | 192.168.1.xxx | nginx-vts-exporter-0.10.3.linux… | 9913 |
++-----------------------+---------------+----------------------------------+------+
+| Blackbox Exporter主机 | 192.168.1.xx  | blackbox_exporter-0.14.0.linux…  | 9115 |
++-----------------------+---------------+----------------------------------+------+
 
 2.2.2 软件下载清单
 ~~~~~~~~~~~~~~~~~~
@@ -141,95 +135,94 @@ GitHub官网https://github.com/prometheus上获取对应的Exporter最新版本�
 **1.下载部署**
 
 在安装之前，首先在官方下载页面https://prometheus.io/download/找到Nodeexporter列表，下载最新版本中特定平台的二进制文件。或者直接在官方的Prometheus
-GitHub下载，在https://github.com/prometheus/node\_exporter/releases下载指定的Node
+GitHub下载，在https://github.com/prometheus/node_exporter/releases下载指定的Node
 exporter版本所对应的特定平台的二进制文件。然后开始Node
 exporter的安装部署以及使用。
 
 ::
 
-    tar zxvf node_exporter-0.16.0.linux-amd64.tar.gz
-    cd node_exporter-0.16.0.linux-amd64
-    mkdir /data/node_exporter
-    mv node_exporter /data/node_exporter/
+   tar zxvf node_exporter-0.16.0.linux-amd64.tar.gz
+   cd node_exporter-0.16.0.linux-amd64
+   mkdir /data/node_exporter
+   mv node_exporter /data/node_exporter/
 
-    [root@cicd-dev node_exporter]# ./node_exporter
-    INFO[0000] Starting node_exporter (version=0.16.0, branch=HEAD, revision=d42bd70f4363dced6b77d8fc311ea57b63387e4f)  source="node_exporter.go:82"
-    INFO[0000] Build context (go=go1.9.6, user=root@a67a9bc13a69, date=20180515-15:52:42)  source="node_exporter.go:83"
-    INFO[0000] Enabled collectors:                           source="node_exporter.go:90"
-    INFO[0000]  - arp                                        source="node_exporter.go:97"
-    INFO[0000]  - bcache                                     source="node_exporter.go:97"
-    INFO[0000]  - bonding                                    source="node_exporter.go:97"
-    INFO[0000]  - conntrack                                  source="node_exporter.go:97"
-    INFO[0000]  - cpu                                        source="node_exporter.go:97"
-    INFO[0000]  - diskstats                                  source="node_exporter.go:97"
-    INFO[0000]  - edac                                       source="node_exporter.go:97"
-    INFO[0000]  - entropy                                    source="node_exporter.go:97"
-    INFO[0000]  - filefd                                     source="node_exporter.go:97"
-    INFO[0000]  - filesystem                                 source="node_exporter.go:97"
-    INFO[0000]  - hwmon                                      source="node_exporter.go:97"
-    INFO[0000]  - infiniband                                 source="node_exporter.go:97"
+   [root@cicd-dev node_exporter]# ./node_exporter
+   INFO[0000] Starting node_exporter (version=0.16.0, branch=HEAD, revision=d42bd70f4363dced6b77d8fc311ea57b63387e4f)  source="node_exporter.go:82"
+   INFO[0000] Build context (go=go1.9.6, user=root@a67a9bc13a69, date=20180515-15:52:42)  source="node_exporter.go:83"
+   INFO[0000] Enabled collectors:                           source="node_exporter.go:90"
+   INFO[0000]  - arp                                        source="node_exporter.go:97"
+   INFO[0000]  - bcache                                     source="node_exporter.go:97"
+   INFO[0000]  - bonding                                    source="node_exporter.go:97"
+   INFO[0000]  - conntrack                                  source="node_exporter.go:97"
+   INFO[0000]  - cpu                                        source="node_exporter.go:97"
+   INFO[0000]  - diskstats                                  source="node_exporter.go:97"
+   INFO[0000]  - edac                                       source="node_exporter.go:97"
+   INFO[0000]  - entropy                                    source="node_exporter.go:97"
+   INFO[0000]  - filefd                                     source="node_exporter.go:97"
+   INFO[0000]  - filesystem                                 source="node_exporter.go:97"
+   INFO[0000]  - hwmon                                      source="node_exporter.go:97"
+   INFO[0000]  - infiniband                                 source="node_exporter.go:97"
 
-先在终端界面启动node\_exporter，成功启动后可以看到默认监听端口是9100，其中“Enabled
-collectors”列是node\_exporter默认情况下启用的功能。如果想更换默认监控端口，需要启动时添加参数--web.listen-address=":9200"即可，更多方法可以使用#./node\_exporter-h查看相关帮助信息。
+先在终端界面启动node_exporter，成功启动后可以看到默认监听端口是9100，其中“Enabled
+collectors”列是node_exporter默认情况下启用的功能。如果想更换默认监控端口，需要启动时添加参数–web.listen-address=“:9200”即可，更多方法可以使用#./node_exporter-h查看相关帮助信息。
 
-添加node\_exporter为系统服务开机启动
+添加node_exporter为系统服务开机启动
 
 ::
 
-    [root@cicd-dev node_exporter]# cat /usr/lib/systemd/system/node_exporter.service
-    [Unit]
-    Description=node_exporter
-    Documentation=https://prometheus.io/
-    After=network-online.target
-    [Service]
-    Type=simple
-    User=root
-    Group=root
-    ExecStart=/data/node_exporter/node_exporter
-    Restart=on-failure
-    [Install]
-    WantedBy=multi-user.target
+   [root@cicd-dev node_exporter]# cat /usr/lib/systemd/system/node_exporter.service
+   [Unit]
+   Description=node_exporter
+   Documentation=https://prometheus.io/
+   After=network-online.target
+   [Service]
+   Type=simple
+   User=root
+   Group=root
+   ExecStart=/data/node_exporter/node_exporter
+   Restart=on-failure
+   [Install]
+   WantedBy=multi-user.target
 
 设置开机自启动
 
 ::
 
-    systemctl daemon-reload
-    systemctl enable node_exporter
-    systemctl stop node_exporter
-    systemctl start node_exporter
+   systemctl daemon-reload
+   systemctl enable node_exporter
+   systemctl stop node_exporter
+   systemctl start node_exporter
 
 ::
 
-    [root@cicd-dev node_exporter]# ps aux |grep node_exporter
-    992      12057  0.1  0.1  22216 11352 ?        Ssl  Feb04  52:32 /opt/gitlab/embedded/bin/node_exporter --web.listen-address=localhost:9100 --collector.textfile.directory=/var/opt/gitlab/node-exporter/textfile_collector
-    root     25878  0.0  0.0 113404  5768 ?        Ssl  09:34   0:00 /data/node_exporter/node_exporter
+   [root@cicd-dev node_exporter]# ps aux |grep node_exporter
+   992      12057  0.1  0.1  22216 11352 ?        Ssl  Feb04  52:32 /opt/gitlab/embedded/bin/node_exporter --web.listen-address=localhost:9100 --collector.textfile.directory=/var/opt/gitlab/node-exporter/textfile_collector
+   root     25878  0.0  0.0 113404  5768 ?        Ssl  09:34   0:00 /data/node_exporter/node_exporter
 
-至此，我们完成了对node\_exporter的下载安装，并对其进行了系统服务添加和开机自启动设置。
+至此，我们完成了对node_exporter的下载安装，并对其进行了系统服务添加和开机自启动设置。
 
 **2.与Prometheus集成**
 
-当启动node\_exporter在后台开始工作时，node\_exporter和Prometheus还没有进行对接关联，此时，二者只是各自独立运行的应用程序。现在需要将已安装部署好的node\_exporter添加到Prometheus服务器中。可以在Prometheus主机目录中，找到主配置文件，使用其中的静态配置功能static\_configs来采集node\_exporter提供的数据。
+当启动node_exporter在后台开始工作时，node_exporter和Prometheus还没有进行对接关联，此时，二者只是各自独立运行的应用程序。现在需要将已安装部署好的node_exporter添加到Prometheus服务器中。可以在Prometheus主机目录中，找到主配置文件，使用其中的静态配置功能static_configs来采集node_exporter提供的数据。
 
-在默认配置文件的基础上，重新编辑prometheus.yml文件，添加job与node\_exporter进行关联的参考配置内容如下：
+在默认配置文件的基础上，重新编辑prometheus.yml文件，添加job与node_exporter进行关联的参考配置内容如下：
 
 ::
 
-      - job_name: 'prometheus'
-        static_configs:
-        - targets: ['localhost:9090']
+     - job_name: 'prometheus'
+       static_configs:
+       - targets: ['localhost:9090']
 
-      - job_name: 'node_exporter'
-        static_configs:
-        - targets: ['192.168.1.27:9100']
+     - job_name: 'node_exporter'
+       static_configs:
+       - targets: ['192.168.1.27:9100']
 
-注意，这里的YAML语法空格缩进；prometheus.yml配置文件中的prometheus和node\_exporter均部署不同的主机上。
+注意，这里的YAML语法空格缩进；prometheus.yml配置文件中的prometheus和node_exporter均部署不同的主机上。
 
-进入Targets页面后，可以在列表中看到刚才配置好的node\_exporter的状态为“UP”，说明Prometheus最后一次从Node
+进入Targets页面后，可以在列表中看到刚才配置好的node_exporter的状态为“UP”，说明Prometheus最后一次从Node
 exporter中采集数据是成功的，此刻，被监控的服务器主机工作运行状态是正常的。
 
-.. figure:: ../_static/prometheus-004.png
-   :alt: 
+.. image:: ../_static/prometheus-004.png
 
 当然，我们也可以使用浏览器访问Prometheus web
 UI提供的graph页面地址http://192.168.1.37:9090/graph，在搜索框中输入“up”进行搜索，或者直接在“Execute”按钮后的选项框中，点击下拉按钮选择最末尾的“up”，再点击“Execute”进行搜索.
@@ -240,11 +233,11 @@ Node
 exporter服务正常运行时，使用浏览器访问被监控主机的页面地址http://192.168.1.37:9090/metrics，可以直接查看当前被监控主机的样本信息。列举以下常见的几类监控指标。
 
 我们也可以在Prometheus Web
-UI中的Graph页面中查询到node\_memory\_MemTotal\_bytes信息
+UI中的Graph页面中查询到node_memory_MemTotal_bytes信息
 
 由于与内存数据采集相关的metric太多了，在此我们就不一一列举说明，
 
-例如node\_memory\_MemAvailable\_bytes、node\_memory\_MemFree\_bytes、node\_memory\_SwapFree\_bytes等。
+例如node_memory_MemAvailable_bytes、node_memory_MemFree_bytes、node_memory_SwapFree_bytes等。
 
 然后配置grafana仪表盘，导入9276模板，即可采集。
 
@@ -252,45 +245,45 @@ UI中的Graph页面中查询到node\_memory\_MemTotal\_bytes信息
 
 ::
 
-    cat node_exporter.sh
+   cat node_exporter.sh
 
-    #!/bin/bash
-    wget https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
-    tar zxf node_exporter-0.17.0.linux-amd64.tar.gz
-    mv node_exporter-0.17.0.linux-amd64 /usr/local/node_exporter
+   #!/bin/bash
+   wget https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
+   tar zxf node_exporter-0.17.0.linux-amd64.tar.gz
+   mv node_exporter-0.17.0.linux-amd64 /usr/local/node_exporter
 
-    cat <<EOF >/usr/lib/systemd/system/node_exporter.service
-    [Unit]
-    Description=https://prometheus.io
+   cat <<EOF >/usr/lib/systemd/system/node_exporter.service
+   [Unit]
+   Description=https://prometheus.io
 
-    [Service]
-    Restart=on-failure
-    ExecStart=/usr/local/node_exporter/node_exporter
+   [Service]
+   Restart=on-failure
+   ExecStart=/usr/local/node_exporter/node_exporter
 
-    [Install]
-    WantedBy=multi-user.target
-    EOF
+   [Install]
+   WantedBy=multi-user.target
+   EOF
 
-    systemctl daemon-reload
-    systemctl enable node_exporter
-    systemctl restart node_exporter
+   systemctl daemon-reload
+   systemctl enable node_exporter
+   systemctl restart node_exporter
 
-批量安装node\_exporter脚本
+批量安装node_exporter脚本
 
 ::
 
-    # github地址：
-    https://github.com/zhuqiyang/install-node_exporter-shell
+   # github地址：
+   https://github.com/zhuqiyang/install-node_exporter-shell
 
 2 Windows主机监控
 ^^^^^^^^^^^^^^^^^
 
-下载页面地址：https://github.com/martinlindhe/wmi\_exporter/releases。选择当前最新版本：wmi\_exporter-0.5.0-amd64.msi下载到被监控主机。直接双击文件进行快速安装即可。wmi\_exporter会自动安装到C::raw-latex:`\ProgramFiles`:raw-latex:`\wmi`\_exporter目录下，安装程序将WMI
+下载页面地址：https://github.com/martinlindhe/wmi_exporter/releases。选择当前最新版本：wmi_exporter-0.5.0-amd64.msi下载到被监控主机。直接双击文件进行快速安装即可。wmi_exporter会自动安装到C::raw-latex:`\ProgramFiles`:raw-latex:`\wmi`\_exporter目录下，安装程序将WMI
 Exporter设置为Windows服务，并在Windows防火墙中创建入站规则“WMI
 Exporter（HTTP
-9182）”。WMIExporter自动启动运行后，可以启用Windows任务管理，在进程中找到wmi\_exporter.exe进程。
+9182）”。WMIExporter自动启动运行后，可以启用Windows任务管理，在进程中找到wmi_exporter.exe进程。
 
-在wmi\_exporter默认运行情况下，启用了cpu、cs、logical\_disk、net、os、service、system、textfile采集监控内容。其他默认没有启用的采集监控内容可以访问GitHub网站https://github.com/martinlindhe/wmi\_exporter/blob/v0.5.0/README.md页面进行查看。
+在wmi_exporter默认运行情况下，启用了cpu、cs、logical_disk、net、os、service、system、textfile采集监控内容。其他默认没有启用的采集监控内容可以访问GitHub网站https://github.com/martinlindhe/wmi_exporter/blob/v0.5.0/README.md页面进行查看。
 
 后续补充
 
@@ -302,191 +295,191 @@ Exporter（HTTP
 
 **1.软件下载与部署**
 
-在安装之前，可以在官方下载页面https://prometheus.io/download/中找到mysqld\_exporter列表，下载最新版本中特定平台的二进制文件。同样也可以直接在官方的Prometheus
-GitHub下载页面https://github.com/prometheus/mysqld\_exporter/releases中下载指定的mysqld\_exporter版本所对应特定平台的二进制文件。
+在安装之前，可以在官方下载页面https://prometheus.io/download/中找到mysqld_exporter列表，下载最新版本中特定平台的二进制文件。同样也可以直接在官方的Prometheus
+GitHub下载页面https://github.com/prometheus/mysqld_exporter/releases中下载指定的mysqld_exporter版本所对应特定平台的二进制文件。
 
 部署可分为以下6个步骤。
 
-1）下载mysqld\_exporter
+1）下载mysqld_exporter
 
 2）解压缩软件包到指定的安装目录。
 
-3）创建MySQL授权用户。连接到MySQL服务器，创建一个用户，例如“mysqld\_exporter”。该用户需要拥有PROCESS，SELECT，REPLICATION
+3）创建MySQL授权用户。连接到MySQL服务器，创建一个用户，例如“mysqld_exporter”。该用户需要拥有PROCESS，SELECT，REPLICATION
 CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设置最大连接限制。可以进行如下操作：
 
 ::
 
-    mysql> create user 'mysqld_exporter'@'localhost' IDENTIFIED BY 'OSChina@2021';
-    Query OK, 0 rows affected (0.05 sec)
+   mysql> create user 'mysqld_exporter'@'localhost' IDENTIFIED BY 'OSChina@2021';
+   Query OK, 0 rows affected (0.05 sec)
 
 
-    mysql> grant process, replication client,select on *.* to 'mysqld_exporter'@'localhost';
-    Query OK, 0 rows affected (0.00 sec)
+   mysql> grant process, replication client,select on *.* to 'mysqld_exporter'@'localhost';
+   Query OK, 0 rows affected (0.00 sec)
 
-    mysql> flush privileges;
-    Query OK, 0 rows affected (0.01 sec)
+   mysql> flush privileges;
+   Query OK, 0 rows affected (0.01 sec)
 
-    mysql> select host,user from mysql.user;
-    +-----------+------------------+
-    | host      | user             |
-    +-----------+------------------+
-    | %         | crm              |
-    | %         | gitee_production |
-    | %         | root             |
-    | %         | wiki             |
-    | %         | zentao           |
-    | localhost | gitee_production |
-    | localhost | mysql.session    |
-    | localhost | mysql.sys        |
-    | localhost | mysqld_exporter  |
-    | localhost | root             |
-    | localhost | wiki             |
-    | localhost | zentao           |
-    +-----------+------------------+
+   mysql> select host,user from mysql.user;
+   +-----------+------------------+
+   | host      | user             |
+   +-----------+------------------+
+   | %         | crm              |
+   | %         | gitee_production |
+   | %         | root             |
+   | %         | wiki             |
+   | %         | zentao           |
+   | localhost | gitee_production |
+   | localhost | mysql.session    |
+   | localhost | mysql.sys        |
+   | localhost | mysqld_exporter  |
+   | localhost | root             |
+   | localhost | wiki             |
+   | localhost | zentao           |
+   +-----------+------------------+
 
-4）配置数据库认证。mysqld\_exports需要连接数据库服务器的用户名和密码，这里可以通过两种方式向exporter提供此内容。
+4）配置数据库认证。mysqld_exports需要连接数据库服务器的用户名和密码，这里可以通过两种方式向exporter提供此内容。
 
-·使用环境变量。创建一个名为“DATA\_SOURCE\_NAME”的环境变量，格式如下：
-
-::
-
-    export DATA_SOURCE_NAME='user:password@(hostname:3306)/'
-
-·使用配置文件。创建一个文件“.mysqld\_exporter.cnf”，并在该文件中输入用户名和密码。格式如下：
+·使用环境变量。创建一个名为“DATA_SOURCE_NAME”的环境变量，格式如下：
 
 ::
 
-    user=xxxx
-    password=xxxx
+   export DATA_SOURCE_NAME='user:password@(hostname:3306)/'
 
-我们选择使用第二种方法，在与“mysqld\_exports”文件同目录下创建“.mysqld\_exporter.cnf”文件，并添加如下内容
+·使用配置文件。创建一个文件“.mysqld_exporter.cnf”，并在该文件中输入用户名和密码。格式如下：
 
 ::
 
-    [root@localhost mysql_exporter]# cat .mysqld_exporter.cnf
-    [client]
-    user=mysqld_exporter
-    password=OSChina@2021
+   user=xxxx
+   password=xxxx
+
+我们选择使用第二种方法，在与“mysqld_exports”文件同目录下创建“.mysqld_exporter.cnf”文件，并添加如下内容
+
+::
+
+   [root@localhost mysql_exporter]# cat .mysqld_exporter.cnf
+   [client]
+   user=mysqld_exporter
+   password=OSChina@2021
 
 查看目录结构
 
 ::
 
-    [root@localhost data]# tree -a mysqld_exporter/
-    mysql_exporter/
-    ├── LICENSE
-    ├── mysqld_exporter
-    └── .mysqld_exporter.cnf
+   [root@localhost data]# tree -a mysqld_exporter/
+   mysql_exporter/
+   ├── LICENSE
+   ├── mysqld_exporter
+   └── .mysqld_exporter.cnf
 
-5）启动mysqld\_exporter。
-
-::
-
-    [root@localhost mysqld_exporter]# ./mysqld_exporter --config.my-cnf=".mysqld_exporter.cnf"
-    INFO[0000] Starting mysqld_exporter (version=0.11.0, branch=HEAD, revision=5d7179615695a61ecc3b5bf90a2a7c76a9592cdd)  source="mysqld_exporter.go:206"
-    INFO[0000] Build context (go=go1.10.3, user=root@3d3ff666b0e4, date=20180629-15:00:35)  source="mysqld_exporter.go:207"
-    INFO[0000] Enabled scrapers:                             source="mysqld_exporter.go:218"
-    INFO[0000]  --collect.global_variables                   source="mysqld_exporter.go:222"
-    INFO[0000]  --collect.slave_status                       source="mysqld_exporter.go:222"
-    INFO[0000]  --collect.info_schema.tables                 source="mysqld_exporter.go:222"
-    INFO[0000]  --collect.global_status                      source="mysqld_exporter.go:222"
-    INFO[0000] Listening on :9104                            source="mysqld_exporter.go:232"
-
-6）添加mysqld\_exporter，为系统服务启动。
-
-创建系统服务启动配置文件mysqld\_exporter.service：
+5）启动mysqld_exporter。
 
 ::
 
-    [root@localhost mysql_exporter]# cat /usr/lib/systemd/system/mysqld_exporter.service
-    [Unit]
-    Description=Prometheus MySQL Exporter
-    After=network.target
-    User=root
-    Group=root
+   [root@localhost mysqld_exporter]# ./mysqld_exporter --config.my-cnf=".mysqld_exporter.cnf"
+   INFO[0000] Starting mysqld_exporter (version=0.11.0, branch=HEAD, revision=5d7179615695a61ecc3b5bf90a2a7c76a9592cdd)  source="mysqld_exporter.go:206"
+   INFO[0000] Build context (go=go1.10.3, user=root@3d3ff666b0e4, date=20180629-15:00:35)  source="mysqld_exporter.go:207"
+   INFO[0000] Enabled scrapers:                             source="mysqld_exporter.go:218"
+   INFO[0000]  --collect.global_variables                   source="mysqld_exporter.go:222"
+   INFO[0000]  --collect.slave_status                       source="mysqld_exporter.go:222"
+   INFO[0000]  --collect.info_schema.tables                 source="mysqld_exporter.go:222"
+   INFO[0000]  --collect.global_status                      source="mysqld_exporter.go:222"
+   INFO[0000] Listening on :9104                            source="mysqld_exporter.go:232"
 
-    [Service]
-    Type=simple
-    Restart=always
-    ExecStart=/data/mysqld_exporter/mysqld_exporter \
-    --config.my-cnf=/data/mysqld_exporter/.mysqld_exporter.cnf \
-    --collect.global_status \
-    --collect.auto_increment.columns \
-    --collect.info_schema.processlist \
-    --collect.binlog_size \
-    --collect.info_schema.tablestats \
-    --collect.global_variables \
-    --collect.info_schema.innodb_metrics \
-    --collect.info_schema.query_response_time \
-    --collect.info_schema.userstats \
-    --collect.info_schema.tables \
-    --collect.perf_schema.tablelocks \
-    --collect.perf_schema.file_events \
-    --collect.perf_schema.eventswaits \
-    --collect.perf_schema.indexiowaits \
-    --collect.perf_schema.tableiowaits \
-    --collect.slave_status \
-    --web.listen-address=0.0.0.0:9104
+6）添加mysqld_exporter，为系统服务启动。
 
-    [Install]
-    WantedBy=multi-user.target
-
-可以使用命令：#./mysqld\_exporter-h查看相关帮助信息，依据实际监控内容配置启动文件。最后可以通过systemctl命令进行各种操作，例如：
+创建系统服务启动配置文件mysqld_exporter.service：
 
 ::
 
-    systemctl daemon-reload
-    systemctl enable mysql_exporter.service
-    systemctl start mysqld_exporter.service
-    systemctl status mysqld_exporter.service
+   [root@localhost mysql_exporter]# cat /usr/lib/systemd/system/mysqld_exporter.service
+   [Unit]
+   Description=Prometheus MySQL Exporter
+   After=network.target
+   User=root
+   Group=root
 
-综上，我们完成了对mysqld\_exporter的下载安装，并对其进行了系统服务添加和开机启动设置。通过浏览器访问主机页面地址http://192.168.1.35:9104/metrics，可以看到此刻采集到的样本数据，mysql\_up的值为1，即MySQL为启动运行状态，版本信息为5.7.20，部分内容如下所示：
+   [Service]
+   Type=simple
+   Restart=always
+   ExecStart=/data/mysqld_exporter/mysqld_exporter \
+   --config.my-cnf=/data/mysqld_exporter/.mysqld_exporter.cnf \
+   --collect.global_status \
+   --collect.auto_increment.columns \
+   --collect.info_schema.processlist \
+   --collect.binlog_size \
+   --collect.info_schema.tablestats \
+   --collect.global_variables \
+   --collect.info_schema.innodb_metrics \
+   --collect.info_schema.query_response_time \
+   --collect.info_schema.userstats \
+   --collect.info_schema.tables \
+   --collect.perf_schema.tablelocks \
+   --collect.perf_schema.file_events \
+   --collect.perf_schema.eventswaits \
+   --collect.perf_schema.indexiowaits \
+   --collect.perf_schema.tableiowaits \
+   --collect.slave_status \
+   --web.listen-address=0.0.0.0:9104
+
+   [Install]
+   WantedBy=multi-user.target
+
+可以使用命令：#./mysqld_exporter-h查看相关帮助信息，依据实际监控内容配置启动文件。最后可以通过systemctl命令进行各种操作，例如：
 
 ::
 
-    # HELP mysql_up Whether the MySQL server is up.
-    # TYPE mysql_up gauge
-    mysql_up 1
-    # HELP mysql_version_info MySQL version and distribution.
-    # TYPE mysql_version_info gauge
-    mysql_version_info{innodb_version="5.7.32",version="5.7.32-log",version_comment="Source distribution"} 1
-    # HELP mysqld_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which mysqld_exporter was built.
-    # TYPE mysqld_exporter_build_info gauge
-    mysqld_exporter_build_info{branch="HEAD",goversion="go1.10.3",revision="5d7179615695a61ecc3b5bf90a2a7c76a9592cdd",version="0.11.0"} 1
-    # HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
-    # TYPE process_cpu_seconds_total counter
-    process_cpu_seconds_total 0
-    # HELP process_max_fds Maximum number of open file descriptors.
-    # TYPE process_max_fds gauge
-    process_max_fds 1024
-    # HELP process_open_fds Number of open file descriptors.
-    # TYPE process_open_fds gauge
-    process_open_fds 9
-    # HELP process_resident_memory_bytes Resident memory size in bytes.
-    # TYPE process_resident_memory_bytes gauge
-    process_resident_memory_bytes 5.021696e+06
-    # HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
-    # TYPE process_start_time_seconds gauge
-    process_start_time_seconds 1.61542929271e+09
-    # HELP process_virtual_memory_bytes Virtual memory size in bytes.
-    # TYPE process_virtual_memory_bytes gauge
-    process_virtual_memory_bytes 1.4667776e+07
+   systemctl daemon-reload
+   systemctl enable mysql_exporter.service
+   systemctl start mysqld_exporter.service
+   systemctl status mysqld_exporter.service
+
+综上，我们完成了对mysqld_exporter的下载安装，并对其进行了系统服务添加和开机启动设置。通过浏览器访问主机页面地址http://192.168.1.35:9104/metrics，可以看到此刻采集到的样本数据，mysql_up的值为1，即MySQL为启动运行状态，版本信息为5.7.20，部分内容如下所示：
+
+::
+
+   # HELP mysql_up Whether the MySQL server is up.
+   # TYPE mysql_up gauge
+   mysql_up 1
+   # HELP mysql_version_info MySQL version and distribution.
+   # TYPE mysql_version_info gauge
+   mysql_version_info{innodb_version="5.7.32",version="5.7.32-log",version_comment="Source distribution"} 1
+   # HELP mysqld_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which mysqld_exporter was built.
+   # TYPE mysqld_exporter_build_info gauge
+   mysqld_exporter_build_info{branch="HEAD",goversion="go1.10.3",revision="5d7179615695a61ecc3b5bf90a2a7c76a9592cdd",version="0.11.0"} 1
+   # HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
+   # TYPE process_cpu_seconds_total counter
+   process_cpu_seconds_total 0
+   # HELP process_max_fds Maximum number of open file descriptors.
+   # TYPE process_max_fds gauge
+   process_max_fds 1024
+   # HELP process_open_fds Number of open file descriptors.
+   # TYPE process_open_fds gauge
+   process_open_fds 9
+   # HELP process_resident_memory_bytes Resident memory size in bytes.
+   # TYPE process_resident_memory_bytes gauge
+   process_resident_memory_bytes 5.021696e+06
+   # HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
+   # TYPE process_start_time_seconds gauge
+   process_start_time_seconds 1.61542929271e+09
+   # HELP process_virtual_memory_bytes Virtual memory size in bytes.
+   # TYPE process_virtual_memory_bytes gauge
+   process_virtual_memory_bytes 1.4667776e+07
 
 **2.与Prometheus集成**
 
-在Prometheus的配置文件prometheus.yml中的static\_configs模块内，继续追加配置内容来采集mysqld\_exporter提供的数据。添加的参考配置内容如下：
+在Prometheus的配置文件prometheus.yml中的static_configs模块内，继续追加配置内容来采集mysqld_exporter提供的数据。添加的参考配置内容如下：
 
 ::
 
 
-      - job_name: 'mysqld_exporter_node'
-        scrape_interval: 10s
-        static_configs:
-        - targets: ['192.168.1.35:9104']
+     - job_name: 'mysqld_exporter_node'
+       scrape_interval: 10s
+       static_configs:
+       - targets: ['192.168.1.35:9104']
 
 **3.metrics**
 
-查看mysqld\_exporter服务正常运行时，通过浏览器访问被监控MySQL主机的页面地址http://192.168.1.35:9104/metrics，可以直接查看当前被监控MySQL的采集信息。对于数据库管理员来说，MySQL数据库的性能状态监控内容非常多，但通常必不可少的内容包括查询吞吐量（Query
+查看mysqld_exporter服务正常运行时，通过浏览器访问被监控MySQL主机的页面地址http://192.168.1.35:9104/metrics，可以直接查看当前被监控MySQL的采集信息。对于数据库管理员来说，MySQL数据库的性能状态监控内容非常多，但通常必不可少的内容包括查询吞吐量（Query
 throughput）、查询执行性能（Query execution
 performance）、连接情况（Connections）和缓冲池使用情况（Buffer pool
 usage）这四个与基本的性能和资源利用率相关的指标。
@@ -497,107 +490,107 @@ usage）这四个与基本的性能和资源利用率相关的指标。
 
 ::
 
-    mysql> show global status like "Questions";
-    +---------------+---------+
-    | Variable_name | Value   |
-    +---------------+---------+
-    | Questions     | 4154298 |
-    +---------------+---------+
-    1 row in set (0.00 sec)
+   mysql> show global status like "Questions";
+   +---------------+---------+
+   | Variable_name | Value   |
+   +---------------+---------+
+   | Questions     | 4154298 |
+   +---------------+---------+
+   1 row in set (0.00 sec)
 
-    对应mysqld_exporter采集后再返回的样本数据中，使用
-    mysql_global_status_questions展示当前的Questions大小
-    mysql_global_status_queries 4.153952e+06
-    # HELP mysql_global_status_questions Generic metric from SHOW GLOBAL STATUS.
-    # TYPE mysql_global_status_questions untyped
-    mysql_global_status_questions 4.153797e+06
+   对应mysqld_exporter采集后再返回的样本数据中，使用
+   mysql_global_status_questions展示当前的Questions大小
+   mysql_global_status_queries 4.153952e+06
+   # HELP mysql_global_status_questions Generic metric from SHOW GLOBAL STATUS.
+   # TYPE mysql_global_status_questions untyped
+   mysql_global_status_questions 4.153797e+06
 
 （2）查询执行性能
 
-关于查询执行性能表现方面，可以使用MySQL提供的Slow\_queries计数器，每当查询的执行时间超过long\_query\_time参数指定的秒数时，计数器就会增加。默认阈值为10秒。下面使用MySQL提供的命令进行查询：
+关于查询执行性能表现方面，可以使用MySQL提供的Slow_queries计数器，每当查询的执行时间超过long_query_time参数指定的秒数时，计数器就会增加。默认阈值为10秒。下面使用MySQL提供的命令进行查询：
 
 ::
 
-    mysql> show global status like "Slow_queries";
-    +---------------+-------+
-    | Variable_name | Value |
-    +---------------+-------+
-    | Slow_queries  | 0     |
-    +---------------+-------+
-    1 row in set (0.00 sec)
+   mysql> show global status like "Slow_queries";
+   +---------------+-------+
+   | Variable_name | Value |
+   +---------------+-------+
+   | Slow_queries  | 0     |
+   +---------------+-------+
+   1 row in set (0.00 sec)
 
-    对应mysqld_exporter采集后再返回的样本数据中，使用mysql_global_status_slow_queries来展示结果
-    mysql_global_status_slow_launch_threads 0
-    # HELP mysql_global_status_slow_queries Generic metric from SHOW GLOBAL STATUS.
-    # TYPE mysql_global_status_slow_queries untyped
-    mysql_global_status_slow_queries 0
+   对应mysqld_exporter采集后再返回的样本数据中，使用mysql_global_status_slow_queries来展示结果
+   mysql_global_status_slow_launch_threads 0
+   # HELP mysql_global_status_slow_queries Generic metric from SHOW GLOBAL STATUS.
+   # TYPE mysql_global_status_slow_queries untyped
+   mysql_global_status_slow_queries 0
 
-（3）连接情况为了防止MySQL服务器的过载运行，数据库管理员需要根据业务量进行预评估，以便限制客户端连接MySQL的数量。这里使用的MySQL5.7版本，在my.cnf文件配置了最大连接数max\_connections=512。使用MySQL提供的命令进行查询，如下所示：
+（3）连接情况为了防止MySQL服务器的过载运行，数据库管理员需要根据业务量进行预评估，以便限制客户端连接MySQL的数量。这里使用的MySQL5.7版本，在my.cnf文件配置了最大连接数max_connections=512。使用MySQL提供的命令进行查询，如下所示：
 
 ::
 
-    mysql> show variables like "max_connections";
-    +-----------------+-------+
-    | Variable_name   | Value |
-    +-----------------+-------+
-    | max_connections | 500   |
-    +-----------------+-------+
-    1 row in set (0.00 sec)
+   mysql> show variables like "max_connections";
+   +-----------------+-------+
+   | Variable_name   | Value |
+   +-----------------+-------+
+   | max_connections | 500   |
+   +-----------------+-------+
+   1 row in set (0.00 sec)
 
 
-    对应mysqld_exporter采集后再返回的样本数据中，mysql_global_variables_max_connections 来展示结果
-    mysql_global_variables_max_connections 500
+   对应mysqld_exporter采集后再返回的样本数据中，mysql_global_variables_max_connections 来展示结果
+   mysql_global_variables_max_connections 500
 
-    数据库管理需要查看MySQL当前实例的连接数，即Threads_connected数值，可使用MySQL提供的命令进行查询，如下所示：
-    mysql> show global status like "Threads_connected";
-    +-------------------+-------+
-    | Variable_name     | Value |
-    +-------------------+-------+
-    | Threads_connected | 1     |
-    +-------------------+-------+
-    1 row in set (0.00 sec)
+   数据库管理需要查看MySQL当前实例的连接数，即Threads_connected数值，可使用MySQL提供的命令进行查询，如下所示：
+   mysql> show global status like "Threads_connected";
+   +-------------------+-------+
+   | Variable_name     | Value |
+   +-------------------+-------+
+   | Threads_connected | 1     |
+   +-------------------+-------+
+   1 row in set (0.00 sec)
 
-    mysql_global_status_threads_connected 1
+   mysql_global_status_threads_connected 1
 
 当设置的所有可用连接都被占用完时，若再有客户端进行连接MySQL，就会出现连接数过多的错误提示信息。我们可以使用以下相关的监控指标进行核查：
 
 ::
 
-    # HELP mysql_global_status_connection_errors_total Total number of MySQL connection errors.
-    # TYPE mysql_global_status_connection_errors_total counter
-    mysql_global_status_connection_errors_total{error="accept"} 0
-    mysql_global_status_connection_errors_total{error="internal"} 0
-    mysql_global_status_connection_errors_total{error="max_connections"} 0
-    mysql_global_status_connection_errors_total{error="peer_address"} 0
-    mysql_global_status_connection_errors_total{error="select"} 0
-    mysql_global_status_connection_errors_total{error="tcpwrap"} 0
-    # HELP mysql_global_status_connections Generic metric from SHOW GLOBAL STATUS.
-    # TYPE mysql_global_status_connections untyped
-    mysql_global_status_connections 7476
+   # HELP mysql_global_status_connection_errors_total Total number of MySQL connection errors.
+   # TYPE mysql_global_status_connection_errors_total counter
+   mysql_global_status_connection_errors_total{error="accept"} 0
+   mysql_global_status_connection_errors_total{error="internal"} 0
+   mysql_global_status_connection_errors_total{error="max_connections"} 0
+   mysql_global_status_connection_errors_total{error="peer_address"} 0
+   mysql_global_status_connection_errors_total{error="select"} 0
+   mysql_global_status_connection_errors_total{error="tcpwrap"} 0
+   # HELP mysql_global_status_connections Generic metric from SHOW GLOBAL STATUS.
+   # TYPE mysql_global_status_connections untyped
+   mysql_global_status_connections 7476
 
-（4）缓存池使用情况当MySQL默认的存储引擎是InnoDB时，会使用缓冲池来缓存表和索引的数据。即便是初级数据库管理员，在部署MySQL实例时，也会提前预估并在my.cnf文件中配置参数innodb\_buffer\_pool\_size。这是InnoDB最重要的参数，主要作用是缓存innodb表的索引、数据和插入数据，默认值为128M。
+（4）缓存池使用情况当MySQL默认的存储引擎是InnoDB时，会使用缓冲池来缓存表和索引的数据。即便是初级数据库管理员，在部署MySQL实例时，也会提前预估并在my.cnf文件中配置参数innodb_buffer_pool_size。这是InnoDB最重要的参数，主要作用是缓存innodb表的索引、数据和插入数据，默认值为128M。
 
-通常，当我们查看Innodb\_buffer\_pool\_reads的数量时，使用MySQL提供的命令，如下所示：
+通常，当我们查看Innodb_buffer_pool_reads的数量时，使用MySQL提供的命令，如下所示：
 
 ::
 
-    mysql> show global status like "Innodb_buffer_pool_reads";
-    +--------------------------+-------+
-    | Variable_name            | Value |
-    +--------------------------+-------+
-    | Innodb_buffer_pool_reads | 1101  |
-    +--------------------------+-------+
-    1 row in set (0.01 sec)
+   mysql> show global status like "Innodb_buffer_pool_reads";
+   +--------------------------+-------+
+   | Variable_name            | Value |
+   +--------------------------+-------+
+   | Innodb_buffer_pool_reads | 1101  |
+   +--------------------------+-------+
+   1 row in set (0.01 sec)
 
-    对应mysqld_exporter中，可以通过mysql_global_status_innodb_buffer_pool_reads查看指标数量，如下所示：
-    # HELP mysql_global_status_innodb_buffer_pool_reads Generic metric from SHOW GLOBAL STATUS.
-    # TYPE mysql_global_status_innodb_buffer_pool_reads untyped
-    mysql_global_status_innodb_buffer_pool_reads 875
+   对应mysqld_exporter中，可以通过mysql_global_status_innodb_buffer_pool_reads查看指标数量，如下所示：
+   # HELP mysql_global_status_innodb_buffer_pool_reads Generic metric from SHOW GLOBAL STATUS.
+   # TYPE mysql_global_status_innodb_buffer_pool_reads untyped
+   mysql_global_status_innodb_buffer_pool_reads 875
 
 若MySQL
-server集成在Windows操作系统且64位版本时，可以下载对应的软件包，如mysqld\_exporter-0.11.0.windows-amd64.tar.gz。在Windows环境中使用可执行程序mysqld\_exporter.exe进行相关内容的操作。
+server集成在Windows操作系统且64位版本时，可以下载对应的软件包，如mysqld_exporter-0.11.0.windows-amd64.tar.gz。在Windows环境中使用可执行程序mysqld_exporter.exe进行相关内容的操作。
 
-总体与Linux操作系统下对MySQL数据的采集过程一样，即Prometheus使用mysqld\_exporter采集MySQL的数据，然后对Prometheus进行配置，再获取mysqld\_exporter采集到的各项监控指标，数据存放到Prometheus所在服务器的磁盘数据文件中。
+总体与Linux操作系统下对MySQL数据的采集过程一样，即Prometheus使用mysqld_exporter采集MySQL的数据，然后对Prometheus进行配置，再获取mysqld_exporter采集到的各项监控指标，数据存放到Prometheus所在服务器的磁盘数据文件中。
 
 参考文献：
 
@@ -612,86 +605,85 @@ server集成在Windows操作系统且64位版本时，可以下载对应的软�
 
 **1.软件下载与部署**
 
-1）下载redis\_exporter。
+1）下载redis_exporter。
 
-下载地址为https://github.com/oliver006/redis\_exporter/releases。选择当时最新版本redis\_exporter-v0.23.0.linux-amd64.tar.gz，对Redis
+下载地址为https://github.com/oliver006/redis_exporter/releases。选择当时最新版本redis_exporter-v0.23.0.linux-amd64.tar.gz，对Redis
 2.x，3.x，4.x，and 5.x版本均支持。
 
 2）解压缩软件包到指定的安装目录：
 
 ::
 
-    #进入安装目录下，在终端启动查看信息，成功启动，默认监听端口是9121
-    [root@localhost redis_exporter]# ./redis_exporter -redis.addr localhost:6379 
-    INFO[0000] Redis Metrics Exporter v0.23.0    build date: 2018-12-03-17:29:45    sha1: 10045b85b5aaa1c5fa35                                         ba38e3a1aee14f772b31    Go: go1.11.2
-    INFO[0000] Providing metrics at :9121/metrics
-    INFO[0000] Connecting to redis hosts: []string{"localhost:6379"}
-    INFO[0000] Using alias: []string{""}
+   #进入安装目录下，在终端启动查看信息，成功启动，默认监听端口是9121
+   [root@localhost redis_exporter]# ./redis_exporter -redis.addr localhost:6379 
+   INFO[0000] Redis Metrics Exporter v0.23.0    build date: 2018-12-03-17:29:45    sha1: 10045b85b5aaa1c5fa35                                         ba38e3a1aee14f772b31    Go: go1.11.2
+   INFO[0000] Providing metrics at :9121/metrics
+   INFO[0000] Connecting to redis hosts: []string{"localhost:6379"}
+   INFO[0000] Using alias: []string{""}
 
-3）添加redis\_exporter为系统服务开机启动配置文件redis\_exporter.service：
+3）添加redis_exporter为系统服务开机启动配置文件redis_exporter.service：
 
 ::
 
-    [root@localhost redis_exporter]# cat /usr/lib/systemd/system/redis_exporter.service
-    [Unit]
-    Description=Prometheus Redis Exporter
-    After=network.target
+   [root@localhost redis_exporter]# cat /usr/lib/systemd/system/redis_exporter.service
+   [Unit]
+   Description=Prometheus Redis Exporter
+   After=network.target
 
-    [Service]
-    Type=simple
-    Restart=always
-    ExecStart=/data/redis_exporter/redis_exporter\
-    -redis.addr localhost:6379
+   [Service]
+   Type=simple
+   Restart=always
+   ExecStart=/data/redis_exporter/redis_exporter\
+   -redis.addr localhost:6379
 
-    [Install]
-    WantedBy=multi-user.target
+   [Install]
+   WantedBy=multi-user.target
 
 Redis
-server若设置过密码登录，以上文件内容需要设置redis连接地址和密码。可以使用命令：#./redis\_exporter-h查看相关帮助信息，依据实际监控内容配置启动文件。
+server若设置过密码登录，以上文件内容需要设置redis连接地址和密码。可以使用命令：#./redis_exporter-h查看相关帮助信息，依据实际监控内容配置启动文件。
 
-同样，可以通过systemctl命令重新加载配置文件，并设置redis\_exporter.service为开机自启动后进行开启，查看状态、重启和停止服务操作。
-
-::
-
-    systemctl daemon-reload
-    systemctl enable redis_exporter.service
-    systemctl start redis_exporter.service
-    systemctl status redis_exporter.service
-
-综上，我们完成了对redis\_exporter的下载安装，使用浏览器访问主机页面地址http://192.168.1.35:9121/metrics，可以看到其运行状态为UP，如下所示：
+同样，可以通过systemctl命令重新加载配置文件，并设置redis_exporter.service为开机自启动后进行开启，查看状态、重启和停止服务操作。
 
 ::
 
-    # HELP redis_up upmetric
-    # TYPE redis_up gauge
-    redis_up{addr="localhost:6379",alias=""} 1
+   systemctl daemon-reload
+   systemctl enable redis_exporter.service
+   systemctl start redis_exporter.service
+   systemctl status redis_exporter.service
+
+综上，我们完成了对redis_exporter的下载安装，使用浏览器访问主机页面地址http://192.168.1.35:9121/metrics，可以看到其运行状态为UP，如下所示：
+
+::
+
+   # HELP redis_up upmetric
+   # TYPE redis_up gauge
+   redis_up{addr="localhost:6379",alias=""} 1
 
 **2.与Prometheus集成**
 
-在Prometheus的配置文件prometheus.yml中的static\_configs模块内，继续追加配置内容来采集redis\_exporter提供的数据。参考配置内容如下：
+在Prometheus的配置文件prometheus.yml中的static_configs模块内，继续追加配置内容来采集redis_exporter提供的数据。参考配置内容如下：
 
 ::
 
-      - job_name: 'redis_exporter'
-        scrape_interval: 10s
-        static_configs:
-        - targets: ['192.168.1.35:9121']
-          labels:
-            instance: bt-redis
+     - job_name: 'redis_exporter'
+       scrape_interval: 10s
+       static_configs:
+       - targets: ['192.168.1.35:9121']
+         labels:
+           instance: bt-redis
 
 配置完成后，仍然需要我们重新启动Prometheus或动态热加载，对配置文件进行加载生效操作。现在，可以在浏览器中输入Prometheus示例页面地址http://192.168.1.37:9090/targets，访问Prometheus
 Web
-UI提供的内容，可以看到在Targets页面列表中已经新增了redis\_exporter显示项，且redis\_exporter状态为“UP”。
+UI提供的内容，可以看到在Targets页面列表中已经新增了redis_exporter显示项，且redis_exporter状态为“UP”。
 
 **3. 配置 Grafana 的模板**
 
-redis\_exporter 在 Grafana 上为我们提供好了 Dashboard
+redis_exporter 在 Grafana 上为我们提供好了 Dashboard
 模板：\ `https://grafana.com/dashboards/763 <http://www.eryajf.net/go?url=https://grafana.com/dashboards/763>`__
 
 下载后在 Grafana 中导入 json 模板就可以看到官方这样的示例截图啦：
 
-.. figure:: ../_static/prometheus_redis202101.png
-   :alt: 
+.. image:: ../_static/prometheus_redis202101.png
 
 参考文献：
 
@@ -709,7 +701,7 @@ status模块，提供对虚拟主机状态信息的访问，它包含当前状�
 
 ::
 
-    ./configure --add-module=/path/to/nginx-module-vts
+   ./configure --add-module=/path/to/nginx-module-vts
 
 nginx-module-vts在Nginx官网上的第三方栏目中推荐下载页面地址https://github.com/vozlt/nginx-module-vts，也可以直接使用git进行clone操作git
 clone
@@ -717,27 +709,26 @@ git://github.com/vozlt/nginx-module-vts.git。若没有加载nginx-module-vts模
 
 ::
 
-    http {
-        vhost_traffic_status_zone;
+   http {
+       vhost_traffic_status_zone;
 
-        ...
+       ...
 
-        server {
+       server {
 
-            ...
+           ...
 
-            location /status {
-                vhost_traffic_status_bypass_stats on;
-                vhost_traffic_status_display;
-                vhost_traffic_status_display_format html;
-            }
-        }
-    }
+           location /status {
+               vhost_traffic_status_bypass_stats on;
+               vhost_traffic_status_display;
+               vhost_traffic_status_display_format html;
+           }
+       }
+   }
 
 正确添加后，重新加载Nginx配置文件使配置生效，通过浏览器访问/status，可以看到Nginx模块nginx-module-vts已经开始正常运行。
 
-.. figure:: ../_static/prometheus_vts-nginx01.png
-   :alt: 
+.. image:: ../_static/prometheus_vts-nginx01.png
 
 **1.软件下载与部署**
 
@@ -749,43 +740,43 @@ git://github.com/vozlt/nginx-module-vts.git。若没有加载nginx-module-vts模
 
 ::
 
-    # 默认监听端口9913
-    ./nginx-vts-exporter -nginx.scrape_uri http://localhost/status/format/json
+   # 默认监听端口9913
+   ./nginx-vts-exporter -nginx.scrape_uri http://localhost/status/format/json
 
 3）添加nginx-vts-exporter为系统服务开机启动配置文件nginx-vts-exporter.service：
 
 ::
 
-    [Unit]
-    Description=Prometheus Nginx VTS Exporter
-    After=network.target
-    User=nginx
-    Group=nginx
+   [Unit]
+   Description=Prometheus Nginx VTS Exporter
+   After=network.target
+   User=nginx
+   Group=nginx
 
-    [Service]
-    Type=simple
-    Restart=always
-    ExecStart=/data/nginx-vts-exporter/nginx-vts-exporter\
-    -nginx.scrape_uri http://localhost/status/format/json
+   [Service]
+   Type=simple
+   Restart=always
+   ExecStart=/data/nginx-vts-exporter/nginx-vts-exporter\
+   -nginx.scrape_uri http://localhost/status/format/json
 
-    [Install]
-    WantedBy=multi-user.target
+   [Install]
+   WantedBy=multi-user.target
 
-这里需要注意的是如果没有-nginx.scrape\_uri参数，默认访问的状态地址是http://localhost/status。如果想修改访问端口，使用参数-telemetry.addressstring即可。最后可以通过systemctl命令进行各种操作。
+这里需要注意的是如果没有-nginx.scrape_uri参数，默认访问的状态地址是http://localhost/status。如果想修改访问端口，使用参数-telemetry.addressstring即可。最后可以通过systemctl命令进行各种操作。
 
 综上，我们完成了对nginx-vts-exporter的下载安装，并对其进行了系统服务添加和开机启动设置。使用浏览器访问示例主机页面地址http://192.168.1.379913/metrics，可以查看所有采集数据信息。
 
 **2.与Prometheus集成**
 
-在Prometheus的配置文件prometheus.yml中继续追加static\_configs来采集redis\_exporter提供的数据。添加的参考配置内容如下：
+在Prometheus的配置文件prometheus.yml中继续追加static_configs来采集redis_exporter提供的数据。添加的参考配置内容如下：
 
 ::
 
-      - job_name: nginx-vts
-        static_configs:
-          - targets: ['192.168.1.37:9913']
-            labels:
-              instance: localhost-nginx-vts
+     - job_name: nginx-vts
+       static_configs:
+         - targets: ['192.168.1.37:9913']
+           labels:
+             instance: localhost-nginx-vts
 
 配置完成后，仍然需要我们重新启动Prometheus或动态热加载配置文件。现在，可以在浏览器中输入Prometheus示例页面地址http://192.168.24.17:9090，访问Prometheus
 Web
@@ -793,7 +784,7 @@ UI提供的页面内容，在Targets页面列表中已经新增了nginx-vts-expo
 
 ::
 
-    curl -X POST http://192.168.1.37:9090/-/reload
+   curl -X POST http://192.168.1.37:9090/-/reload
 
 参考文献：
 
@@ -811,133 +802,132 @@ Exporter无须安装在被监控的目标环境中，用户只需要将其安装
 
 **1.下载安装包**
 
-在安装之前，首先在官方下载页面https://prometheus.io/download/中找到blackbox\_exporter列表，下载最新版本中特定平台的二进制文件。
+在安装之前，首先在官方下载页面https://prometheus.io/download/中找到blackbox_exporter列表，下载最新版本中特定平台的二进制文件。
 
 或者直接在官方的Prometheus
-GitHub下载页面https://github.com/prometheus/blackbox\_exporter/releases中下载指定blackbox\_exporte版本所对应的特定平台的二进制文件。然后我们开始blackbox\_exporter在主机中的安装部署使用工作。
+GitHub下载页面https://github.com/prometheus/blackbox_exporter/releases中下载指定blackbox_exporte版本所对应的特定平台的二进制文件。然后我们开始blackbox_exporter在主机中的安装部署使用工作。
 
 **2.软件安装与部署**
 
-1）官网下载blackbox\_exporter
+1）官网下载blackbox_exporter
 
 2）解压缩软件包到指定的安装目录。
 
 ::
 
-    tar -zxvf blackbox_exporter-0.14.0.linux-amd64.tar.gz  -C /data/
+   tar -zxvf blackbox_exporter-0.14.0.linux-amd64.tar.gz  -C /data/
 
-    cd /data
-    ln -sv blackbox_exporter-0.14.0.linux-amd64 blackbox_exporter
+   cd /data
+   ln -sv blackbox_exporter-0.14.0.linux-amd64 blackbox_exporter
 
-3）添加blackbox\_exporter为系统服务开机启动。同样，为了维护方便，将blackbox\_exporter添加为系统服务且开机自启动。开始创建系统服务启动配置文件blackbox\_exporter.service：
+3）添加blackbox_exporter为系统服务开机启动。同样，为了维护方便，将blackbox_exporter添加为系统服务且开机自启动。开始创建系统服务启动配置文件blackbox_exporter.service：
 
 ::
 
-    [root@localhost blackbox_exporter]# cat /usr/lib/systemd/system/blackbox_exporter.service
-    [Unit]
-    Description=blackbox_exporter
-    After=network.target
+   [root@localhost blackbox_exporter]# cat /usr/lib/systemd/system/blackbox_exporter.service
+   [Unit]
+   Description=blackbox_exporter
+   After=network.target
 
-    [Service]
-    Type=simple
-    User=root
-    Group=root
-    ExecStart=/data/blackbox_exporter/blackbox_exporter \
-              --config.file "/data/blackbox_exporter/blackbox.yml" \
-              --web.listen-address ":9115"
-    Restart=on-failure
+   [Service]
+   Type=simple
+   User=root
+   Group=root
+   ExecStart=/data/blackbox_exporter/blackbox_exporter \
+             --config.file "/data/blackbox_exporter/blackbox.yml" \
+             --web.listen-address ":9115"
+   Restart=on-failure
 
-    [Install]
-    WantedBy=multi-user.target
+   [Install]
+   WantedBy=multi-user.target
 
 可以通过systemctl命令进行各种操作。
 
 ::
 
-    systemctl daemon-reload
-    systemctl enable blackbox_exporter.service
-    systemctl start blackbox_exporter.service
-    systemctl status blackbox_exporter.service
+   systemctl daemon-reload
+   systemctl enable blackbox_exporter.service
+   systemctl start blackbox_exporter.service
+   systemctl status blackbox_exporter.service
 
 ::
 
-    [root@localhost blackbox_exporter]# ps aux |grep blackbox_exporter
-    root      1657  0.0  0.0 112764  7956 ?        Ssl  01:19   0:00 /data/blackbox_exporter/blackbox_exporter --config.file /data/blackbox_exporter/blackbox.yml --web.listen-address :9115
-    root      1670  0.0  0.0 112808   972 pts/1    S+   01:19   0:00 grep --color=auto blackbox_exporter
+   [root@localhost blackbox_exporter]# ps aux |grep blackbox_exporter
+   root      1657  0.0  0.0 112764  7956 ?        Ssl  01:19   0:00 /data/blackbox_exporter/blackbox_exporter --config.file /data/blackbox_exporter/blackbox.yml --web.listen-address :9115
+   root      1670  0.0  0.0 112808   972 pts/1    S+   01:19   0:00 grep --color=auto blackbox_exporter
 
-其中配置文件直接使用了默认的blackbox.yml文件，blackbox\_exporter正常启动后，可以查看到服务状态为Active：active（running），并且开启默认端口9115进行监听。现在使用浏览器访问示例地址http://192.168.1.37:9115/，
+其中配置文件直接使用了默认的blackbox.yml文件，blackbox_exporter正常启动后，可以查看到服务状态为Active：active（running），并且开启默认端口9115进行监听。现在使用浏览器访问示例地址http://192.168.1.37:9115/，
 
-.. figure:: ../_static/prometheus_black_exporter001.png
-   :alt: 
+.. image:: ../_static/prometheus_black_exporter001.png
 
 Blackbox
 Exporter控制台包括允许监控自身的指标，可以点击“Metics”链接，如图中示例，访问地址http://192.168.1.37:9115/metrics可进行查看。控制台还包含最近执行的探测列表，它们的状态以及显示发生的事件的调试日志，这些对于调试探测很有用。
 
 ::
 
-    # HELP blackbox_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which blackbox_exporter was built.
-    # TYPE blackbox_exporter_build_info gauge
-    blackbox_exporter_build_info{branch="HEAD",goversion="go1.11.5",revision="bba7ef76193948a333a5868a1ab38b864f7d968a",version="0.14.0"} 1
-    # HELP blackbox_exporter_config_last_reload_success_timestamp_seconds Timestamp of the last successful configuration reload.
-    # TYPE blackbox_exporter_config_last_reload_success_timestamp_seconds gauge
-    blackbox_exporter_config_last_reload_success_timestamp_seconds 1.6154435566517625e+09
-    # HELP blackbox_exporter_config_last_reload_successful Blackbox exporter config loaded successfully.
-    # TYPE blackbox_exporter_config_last_reload_successful gauge
-    blackbox_exporter_config_last_reload_successful 1
-    # HELP go_gc_duration_seconds A summary of the GC invocation durations.
-    # TYPE go_gc_duration_seconds summary
-    go_gc_duration_seconds{quantile="0"} 0
-    go_gc_duration_seconds{quantile="0.25"} 0
-    go_gc_duration_seconds{quantile="0.5"} 0
-    go_gc_duration_seconds{quantile="0.75"} 0
-    go_gc_duration_seconds{quantile="1"} 0
-    go_gc_duration_seconds_sum 0
-    go_gc_duration_seconds_count 0
-    # HELP go_goroutines Number of goroutines that currently exist.
-    # TYPE go_goroutines gauge
+   # HELP blackbox_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which blackbox_exporter was built.
+   # TYPE blackbox_exporter_build_info gauge
+   blackbox_exporter_build_info{branch="HEAD",goversion="go1.11.5",revision="bba7ef76193948a333a5868a1ab38b864f7d968a",version="0.14.0"} 1
+   # HELP blackbox_exporter_config_last_reload_success_timestamp_seconds Timestamp of the last successful configuration reload.
+   # TYPE blackbox_exporter_config_last_reload_success_timestamp_seconds gauge
+   blackbox_exporter_config_last_reload_success_timestamp_seconds 1.6154435566517625e+09
+   # HELP blackbox_exporter_config_last_reload_successful Blackbox exporter config loaded successfully.
+   # TYPE blackbox_exporter_config_last_reload_successful gauge
+   blackbox_exporter_config_last_reload_successful 1
+   # HELP go_gc_duration_seconds A summary of the GC invocation durations.
+   # TYPE go_gc_duration_seconds summary
+   go_gc_duration_seconds{quantile="0"} 0
+   go_gc_duration_seconds{quantile="0.25"} 0
+   go_gc_duration_seconds{quantile="0.5"} 0
+   go_gc_duration_seconds{quantile="0.75"} 0
+   go_gc_duration_seconds{quantile="1"} 0
+   go_gc_duration_seconds_sum 0
+   go_gc_duration_seconds_count 0
+   # HELP go_goroutines Number of goroutines that currently exist.
+   # TYPE go_goroutines gauge
 
 配置文件
 
-blackbox\_exporter的默认配置文件是blackbox.yml，使用YAML格式，如果格式不符合语法要求，Blackbox
+blackbox_exporter的默认配置文件是blackbox.yml，使用YAML格式，如果格式不符合语法要求，Blackbox
 Exporter将无法启动。在配置过程中，首先需要在Blackbox
 Exporter的配置文件中定义监测模块内容，然后在Prometheus
 Server的配置文件中声明用对应的模块去探测相应的targets。默认配置文件中常用的几个监测模块信息如下.
 
 ::
 
-    modules:
-      http_2xx:
-        prober: http
-      http_post_2xx:
-        prober: http
-        http:
-          method: POST
-      tcp_connect:
-        prober: tcp
-      pop3s_banner:
-        prober: tcp
-        tcp:
-          query_response:
-          - expect: "^+OK"
-          tls: true
-          tls_config:
-            insecure_skip_verify: false
-      ssh_banner:
-        prober: tcp
-        tcp:
-          query_response:
-          - expect: "^SSH-2.0-"
-      irc_banner:
-        prober: tcp
-        tcp:
-          query_response:
-          - send: "NICK prober"
-          - send: "USER prober prober prober :prober"
-          - expect: "PING :([^ ]+)"
-            send: "PONG ${1}"
-          - expect: "^:[^ ]+ 001"
-      icmp:
-        prober: icmp
+   modules:
+     http_2xx:
+       prober: http
+     http_post_2xx:
+       prober: http
+       http:
+         method: POST
+     tcp_connect:
+       prober: tcp
+     pop3s_banner:
+       prober: tcp
+       tcp:
+         query_response:
+         - expect: "^+OK"
+         tls: true
+         tls_config:
+           insecure_skip_verify: false
+     ssh_banner:
+       prober: tcp
+       tcp:
+         query_response:
+         - expect: "^SSH-2.0-"
+     irc_banner:
+       prober: tcp
+       tcp:
+         query_response:
+         - send: "NICK prober"
+         - send: "USER prober prober prober :prober"
+         - expect: "PING :([^ ]+)"
+           send: "PONG ${1}"
+         - expect: "^:[^ ]+ 001"
+     icmp:
+       prober: icmp
 
 **1.http探测配置**
 
@@ -945,49 +935,49 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
 
 ::
 
-    modules:
-      http_2xx:
-        prober: http
-        timeout: 10s
-        http:
-          preferred_ip_protocol: "ip4"
-      http_post_2xx:
-        prober: http
-        http:
-          method: POST
-          preferred_ip_protocol: "ip4"
-      tcp_connect:
-        prober: tcp
-      pop3s_banner:
-        prober: tcp
-        tcp:
-          query_response:
-          - expect: "^+OK"
-          tls: true
-          tls_config:
-            insecure_skip_verify: false
-      ssh_banner:
-        prober: tcp
-        tcp:
-          query_response:
-          - expect: "^SSH-2.0-"
-      irc_banner:
-        prober: tcp
-        tcp:
-          query_response:
-          - send: "NICK prober"
-          - send: "USER prober prober prober :prober"
-          - expect: "PING :([^ ]+)"
-            send: "PONG ${1}"
-          - expect: "^:[^ ]+ 001"
-      icmp:
-        prober: icmp
+   modules:
+     http_2xx:
+       prober: http
+       timeout: 10s
+       http:
+         preferred_ip_protocol: "ip4"
+     http_post_2xx:
+       prober: http
+       http:
+         method: POST
+         preferred_ip_protocol: "ip4"
+     tcp_connect:
+       prober: tcp
+     pop3s_banner:
+       prober: tcp
+       tcp:
+         query_response:
+         - expect: "^+OK"
+         tls: true
+         tls_config:
+           insecure_skip_verify: false
+     ssh_banner:
+       prober: tcp
+       tcp:
+         query_response:
+         - expect: "^SSH-2.0-"
+     irc_banner:
+       prober: tcp
+       tcp:
+         query_response:
+         - send: "NICK prober"
+         - send: "USER prober prober prober :prober"
+         - expect: "PING :([^ ]+)"
+           send: "PONG ${1}"
+         - expect: "^:[^ ]+ 001"
+     icmp:
+       prober: icmp
 
 配置完成后通过重启BlackboxExporter服务或热加载方式：
 
 ::
 
-    curl -X POST http://192.168.1.37:9090/-/reload
+   curl -X POST http://192.168.1.37:9090/-/reload
 
 使得配置文件生效。
 
@@ -997,116 +987,113 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
 
 ::
 
-      - job_name: 'blackbox_http'
-        metrics_path: /probe
-        params:
-          module: [http_2xx]
-        static_configs:
-          - targets:
-            - www.12306.cn
-            - www.baidu.com
-        relabel_configs:
-          - source_labels: [__address__]
-            target_label: __param_target
-          - source_labels: [__param_target]
-            target_label: instance
-          - target_label: __address__
-            replacement: 192.168.1.37:9115    
+     - job_name: 'blackbox_http'
+       metrics_path: /probe
+       params:
+         module: [http_2xx]
+       static_configs:
+         - targets:
+           - www.12306.cn
+           - www.baidu.com
+       relabel_configs:
+         - source_labels: [__address__]
+           target_label: __param_target
+         - source_labels: [__param_target]
+           target_label: instance
+         - target_label: __address__
+           replacement: 192.168.1.37:9115    
 
 通过命令curl模拟http请求，可以看到输出的Metrics信息
 
 ::
 
-    [root@localhost conf]# curl "http://192.168.1.37:9115/probe?module=http_2xx&target=www.12306.cn"
-    .....
+   [root@localhost conf]# curl "http://192.168.1.37:9115/probe?module=http_2xx&target=www.12306.cn"
+   .....
 
-    # HELP probe_http_ssl Indicates if SSL was used for the final redirect
-    # TYPE probe_http_ssl gauge
-    probe_http_ssl 1
-    # HELP probe_http_status_code Response HTTP status code
-    # TYPE probe_http_status_code gauge
-    probe_http_status_code 200
-    # HELP probe_http_version Returns the version of HTTP of the probe response
-    # TYPE probe_http_version gauge
-    probe_http_version 1.1
-    # HELP probe_ip_protocol Specifies whether probe ip protocol is IP4 or IP6
-    # TYPE probe_ip_protocol gauge
-    probe_ip_protocol 4
-    # HELP probe_ssl_earliest_cert_expiry Returns earliest SSL cert expiry in unixtime
-    # TYPE probe_ssl_earliest_cert_expiry gauge
-    probe_ssl_earliest_cert_expiry 1.641513599e+09
-    # HELP probe_success Displays whether or not the probe was a success
-    # TYPE probe_success gauge
-    probe_success 1
+   # HELP probe_http_ssl Indicates if SSL was used for the final redirect
+   # TYPE probe_http_ssl gauge
+   probe_http_ssl 1
+   # HELP probe_http_status_code Response HTTP status code
+   # TYPE probe_http_status_code gauge
+   probe_http_status_code 200
+   # HELP probe_http_version Returns the version of HTTP of the probe response
+   # TYPE probe_http_version gauge
+   probe_http_version 1.1
+   # HELP probe_ip_protocol Specifies whether probe ip protocol is IP4 or IP6
+   # TYPE probe_ip_protocol gauge
+   probe_ip_protocol 4
+   # HELP probe_ssl_earliest_cert_expiry Returns earliest SSL cert expiry in unixtime
+   # TYPE probe_ssl_earliest_cert_expiry gauge
+   probe_ssl_earliest_cert_expiry 1.641513599e+09
+   # HELP probe_success Displays whether or not the probe was a success
+   # TYPE probe_success gauge
+   probe_success 1
 
-URL地址中使用的探针是通过其中的module参数来指定的，而target参数用来指定探测目标，探针所探测的结果通过Metrics的形式返回。从返回的样本中，用户可以获取站点的DNS解析耗时、响应时间、响应状态码、probe\_http\_ssl指示最终重定向是否使用SSL和指标probe\_success为1的成功状态等相关监控指标。
+URL地址中使用的探针是通过其中的module参数来指定的，而target参数用来指定探测目标，探针所探测的结果通过Metrics的形式返回。从返回的样本中，用户可以获取站点的DNS解析耗时、响应时间、响应状态码、probe_http_ssl指示最终重定向是否使用SSL和指标probe_success为1的成功状态等相关监控指标。
 
 我们可以使用浏览器访问示例地址http://192.168.1.37:9090/targets
 
-.. figure:: ../_static/prometheus-block-exporter002.png
-   :alt: 
+.. image:: ../_static/prometheus-block-exporter002.png
 
-如监控目标过多，prometheus.yml文件配置中的targets指定被探测目标地址时，就会使得配置文件过于“臃肿”。现在我们使用“file\_sd\_configs”重新对prometheus.yml进行配置，操作如下：
+如监控目标过多，prometheus.yml文件配置中的targets指定被探测目标地址时，就会使得配置文件过于“臃肿”。现在我们使用“file_sd_configs”重新对prometheus.yml进行配置，操作如下：
 
 ::
 
-    mkdir /data/PromStack/prometheus/conf/probes -p
-    vim /data/PromStack/prometheus/conf/probes/http_probes.json
-    [
-        {
-            "targets":[
-                "www.12306.cn",
-                "www.baidu.com",
-                "www.taobao.com",
-                "www.jd.com",
-                "www.qq.com"
-            ]
-        }
-    ]
+   mkdir /data/PromStack/prometheus/conf/probes -p
+   vim /data/PromStack/prometheus/conf/probes/http_probes.json
+   [
+       {
+           "targets":[
+               "www.12306.cn",
+               "www.baidu.com",
+               "www.taobao.com",
+               "www.jd.com",
+               "www.qq.com"
+           ]
+       }
+   ]
 
 vim prometheus.yml
 
 ::
 
-      - job_name: 'blackbox_http'
-        metrics_path: /probe
-        params:
-          module: [http_2xx]
-        file_sd_configs:
-          - files:
-            - '/etc/prometheus/probes/*.json'
-            refresh_interval: 5m
-        relabel_configs:
-          - source_labels: [__address__]
-            target_label: __param_target
-          - source_labels: [__param_target]
-            target_label: instance
-          - target_label: __address__
-            replacement: 192.168.1.37:9115
+     - job_name: 'blackbox_http'
+       metrics_path: /probe
+       params:
+         module: [http_2xx]
+       file_sd_configs:
+         - files:
+           - '/etc/prometheus/probes/*.json'
+           refresh_interval: 5m
+       relabel_configs:
+         - source_labels: [__address__]
+           target_label: __param_target
+         - source_labels: [__param_target]
+           target_label: instance
+         - target_label: __address__
+           replacement: 192.168.1.37:9115
 
 热加载使配置文件生效
 
 ::
 
-    curl -X POST http://192.168.1.37:9090/-/reload
+   curl -X POST http://192.168.1.37:9090/-/reload
 
 同样，使用浏览器访问http://192.168.1.37:9090/targets，可以查看被探测的目标的target实例
 
-.. figure:: ../_static/prometheus-black_exporter003.png
-   :alt: 
+.. image:: ../_static/prometheus-black_exporter003.png
 
-在blackbox.yml配置文件中，http\_2xx监测模块对http探测类型进行定义，除以上定义内容外，还可以使用headers定义相关的请求头信息，使用body定义请求内容，针对HTTPS类型的服务可以对证书进行自定义设置，有兴趣的读者可以访问官方提供的配置参考，自己进行相关配置，参考地址https://github.com/prometheus/blackbox\_exporter/blob/master/example.yml。
+在blackbox.yml配置文件中，http_2xx监测模块对http探测类型进行定义，除以上定义内容外，还可以使用headers定义相关的请求头信息，使用body定义请求内容，针对HTTPS类型的服务可以对证书进行自定义设置，有兴趣的读者可以访问官方提供的配置参考，自己进行相关配置，参考地址https://github.com/prometheus/blackbox_exporter/blob/master/example.yml。
 
 对于Blackbox
-Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监控的操作过程都与HTTP探测流程一样，我们这里不一一进行演示，实际环境中有需要的读者可以访问https://www.robustperception.io/tag/blackbox\_exporter，选择对应的模块内容，再结合官网提供的配置参考进行实际操作。
+Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监控的操作过程都与HTTP探测流程一样，我们这里不一一进行演示，实际环境中有需要的读者可以访问https://www.robustperception.io/tag/blackbox_exporter，选择对应的模块内容，再结合官网提供的配置参考进行实际操作。
 
-**3. grafana中加入blackbox\_exporter监控数据**
+**3. grafana中加入blackbox_exporter监控数据**
 
 此模板为9965号模板，数据源选择Prometheus 模板下载地址
 https://grafana.com/grafana/dashboards/9965
 
-.. figure:: ../_static/prometheus-block-exporter004.png
-   :alt: 
+.. image:: ../_static/prometheus-block-exporter004.png
 
 参考文献：
 
@@ -1115,7 +1102,7 @@ https://www.cnblogs.com/xiao987334176/p/12022482.html
 2.2.7 Docker监控
 ~~~~~~~~~~~~~~~~
 
-**监控一个容器服务(\ ``常用的监控指标有: 内存，CPU,硬盘，网络，状态``)**
+**监控一个容器服务(``常用的监控指标有: 内存，CPU,硬盘，网络，状态``)**
 
 cAdvisor (Container Advisor)
 用于收集正在允许的容器资源使用和性能信息。相当于zabbix-agent一样提供一个数据采集的接口
@@ -1126,16 +1113,16 @@ cAdvisor (Container Advisor)
 
 ::
 
-    docker run -d   \
-    --volume=/:/rootfs:ro \
-    --volume=/var/run:/var/run:ro  \
-    --volume=/sys:/sys:ro  \
-    --volume=/var/lib/docker/:/var/lib/docker:ro  \
-    --volume=/dev/disk/:/dev/disk:ro \
-    --publish=8890:8080 \
-    --detach=true \
-    --name=cadvisor \
-    google/cadvisor:latest
+   docker run -d   \
+   --volume=/:/rootfs:ro \
+   --volume=/var/run:/var/run:ro  \
+   --volume=/sys:/sys:ro  \
+   --volume=/var/lib/docker/:/var/lib/docker:ro  \
+   --volume=/dev/disk/:/dev/disk:ro \
+   --publish=8890:8080 \
+   --detach=true \
+   --name=cadvisor \
+   google/cadvisor:latest
 
 **访问该地址，就能看到实时采集到的数据**
 
@@ -1145,27 +1132,27 @@ http://192.168.1.25:8890/containers/
 
 http://192.168.1.25:8890/metrics
 
-去监控控制主机上修改prometheus的配置文件,复制一个job文件，job\_name
+去监控控制主机上修改prometheus的配置文件,复制一个job文件，job_name
 指名称，targets为cAdvisor服务器地址ip和端口
 
 ::
 
-      - job_name: "docker"
-        static_configs:
-        - targets: ['192.168.1.25:8890']
+     - job_name: "docker"
+       static_configs:
+       - targets: ['192.168.1.25:8890']
 
 开启内核路由转发
 
 ::
 
-    echo -e "net.ipv4.ip_forward = 1\nnet.ipv4.conf.default.rp_filter = 0 \nnet.ipv4.conf.all.rp_filter = 0" >> /etc/sysctl.conf
-    sysctl -p
+   echo -e "net.ipv4.ip_forward = 1\nnet.ipv4.conf.default.rp_filter = 0 \nnet.ipv4.conf.all.rp_filter = 0" >> /etc/sysctl.conf
+   sysctl -p
 
 热加载使配置文件生效
 
 ::
 
-    curl -X POST http://192.168.1.37:9090/-/reload
+   curl -X POST http://192.168.1.37:9090/-/reload
 
 http://192.168.1.37:9090/targets 可以看到监控指标说明获取数据成功
 
@@ -1173,12 +1160,11 @@ http://192.168.1.37:9090/targets 可以看到监控指标说明获取数据成�
 
 .. code:: text
 
-    https://grafana.com/grafana/download    #该地址下载grafana模板
+   https://grafana.com/grafana/download    #该地址下载grafana模板
 
 使用193模板即可
 
-.. figure:: ../_static/prometheus_docker_monitor01.png
-   :alt: 
+.. image:: ../_static/prometheus_docker_monitor01.png
 
 本章小结
 --------
@@ -1186,8 +1172,8 @@ http://192.168.1.37:9090/targets 可以看到监控指标说明获取数据成�
 Prometheus监控环境中，具有更好的跨平台和可读性的基于文本的数据格式。
 
 -  Node Exporter对Linux主机进行数据监控采
--  wmi\_exporter对Windows主机进行数据监控采集
--  mysqld\_exporter对MySQL数据库进行数据监控采集
--  redis\_exporter对Redis进行数据监控采集
+-  wmi_exporter对Windows主机进行数据监控采集
+-  mysqld_exporter对MySQL数据库进行数据监控采集
+-  redis_exporter对Redis进行数据监控采集
 -  nginx-vts-exporter对nginx服务进行数据监控采集
 -  Prometheus的黑盒监控，通过对http的探测示例操作，为其他黑盒探测的使用提供了帮助。

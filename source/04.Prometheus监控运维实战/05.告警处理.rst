@@ -21,8 +21,7 @@ server端定义的，告警规则被触发后，才会将信息发送给独立�
 server采集各类监控指标，然后基于PromQL对这些指标定义阈值告警规则（Rules）。Prometheus
 server对告警规则周期性地进行计算，如果满足告警触发条件，便生成一条告警信息，并将其推送到Alertmanager组件。收到告警信息后，Alertmanager会处理告警，进行分组（grouping）并将它们路由（routing）到正确的接收器（receiver），如Email、PagerDuty和HipChat等，最终把异常事件的通知发送给接收者。
 
-.. figure:: ../_static/prometheus_gaojing01.png
-   :alt: 
+.. image:: ../_static/prometheus_gaojing01.png
 
 1.1 1.告警分组
 ~~~~~~~~~~~~~~
@@ -53,25 +52,25 @@ GitHub下载页面https://github.com/prometheus/alertmanager/releases中选择�
 
 ::
 
-    [root@localhost app]# sha256sum alertmanager-0.16.2.linux-amd64.tar.gz
-    73708254747162731737c4ac367ba52e68117a0d7e4580fbbd4bb5ca919909e7  alertmanager-0.16.2.linux-amd64.tar.gz
+   [root@localhost app]# sha256sum alertmanager-0.16.2.linux-amd64.tar.gz
+   73708254747162731737c4ac367ba52e68117a0d7e4580fbbd4bb5ca919909e7  alertmanager-0.16.2.linux-amd64.tar.gz
 
 2）解压缩软件包到指定的安装目录。
 
 ::
 
-    [root@localhost app]# tar zxvf alertmanager-0.16.2.linux-amd64.tar.gz -C /data/
-    alertmanager-0.16.2.linux-amd64/
-    alertmanager-0.16.2.linux-amd64/LICENSE
-    alertmanager-0.16.2.linux-amd64/alertmanager.yml
-    alertmanager-0.16.2.linux-amd64/alertmanager
-    alertmanager-0.16.2.linux-amd64/amtool
-    alertmanager-0.16.2.linux-amd64/NOTI
+   [root@localhost app]# tar zxvf alertmanager-0.16.2.linux-amd64.tar.gz -C /data/
+   alertmanager-0.16.2.linux-amd64/
+   alertmanager-0.16.2.linux-amd64/LICENSE
+   alertmanager-0.16.2.linux-amd64/alertmanager.yml
+   alertmanager-0.16.2.linux-amd64/alertmanager
+   alertmanager-0.16.2.linux-amd64/amtool
+   alertmanager-0.16.2.linux-amd64/NOTI
 
-    [root@localhost app]# cd /data/
-    [root@localhost data]# chown -R root:root alertmanager-0.16.2.linux-amd64/
-    [root@localhost data]# ln -sv alertmanager-0.16.2.linux-amd64 alertmanager
-    ‘alertmanager’ -> ‘alertmanager-0.16.2.linux-amd64’
+   [root@localhost app]# cd /data/
+   [root@localhost data]# chown -R root:root alertmanager-0.16.2.linux-amd64/
+   [root@localhost data]# ln -sv alertmanager-0.16.2.linux-amd64 alertmanager
+   ‘alertmanager’ -> ‘alertmanager-0.16.2.linux-amd64’
 
 3）添加Prometheus为系统服务开机启动。
 
@@ -83,37 +82,36 @@ vim /usr/lib/systemd/system/alertmanager.service
 
 ::
 
-    [Unit]
-    Description=Prometheus Alertmanager Service daemon
-    After=network.target
+   [Unit]
+   Description=Prometheus Alertmanager Service daemon
+   After=network.target
 
-    [Service]
-    Type=simple
-    User=root
-    Group=root
-    ExecStart=/data/alertmanager/alertmanager \
-              --config.file "/data/alertmanager/alertmanager.yml" \
-              --storage.path="/data/alertmanager/data/" \
-              --data.retention=120h \
-              --web.external-url "http://192.168.1.37:9093" \
+   [Service]
+   Type=simple
+   User=root
+   Group=root
+   ExecStart=/data/alertmanager/alertmanager \
+             --config.file "/data/alertmanager/alertmanager.yml" \
+             --storage.path="/data/alertmanager/data/" \
+             --data.retention=120h \
+             --web.external-url "http://192.168.1.37:9093" \
 
-              --web.listen-address=":9093"
-    Restart=on-failure
+             --web.listen-address=":9093"
+   Restart=on-failure
 
-    [Install]
-    WantedBy=multi-user.target
+   [Install]
+   WantedBy=multi-user.target
 
 ::
 
-    systemctl disable alertmanager.service
-    systemctl enable alertmanager.service
-    systemctl status alertmanager.service
-    systemctl restart alertmanager.service
+   systemctl disable alertmanager.service
+   systemctl enable alertmanager.service
+   systemctl status alertmanager.service
+   systemctl restart alertmanager.service
 
 现在可以通过浏览器访问示例地址http://192.168.1.37:9093/#/status，会看到Alertmanager运行时的状态或集群状态、版本信息和默认的配置文件信息
 
-.. figure:: ../_static/alertmanager001.png
-   :alt: 
+.. image:: ../_static/alertmanager001.png
 
 1.1.5 使用Docker安装
 ~~~~~~~~~~~~~~~~~~~~
@@ -122,29 +120,29 @@ vim /usr/lib/systemd/system/alertmanager.service
 
 ::
 
-    docker pull prom/alertmanager
+   docker pull prom/alertmanager
 
 2）添加Alertmanager使用的配置文件。可以下载Prometheus
 github中提供的简单示例文件，或者使用二进制安装包中的默认配置：https://github.com/prometheus/alertmanager/blob/master/doc/examples/simple.yml，这里有快速部署演示，复制使用二进制安装包中默认的alertmanager.yml文件，文件路径为示例安装位置：
 
 ::
 
-    /data/alertmanager/simple.yml
+   /data/alertmanager/simple.yml
 
 3）运行Alertmanager镜像：
 
 ::
 
-    [root@localhost alertmanager]# docker run -d -p 9093:9093 -v /data/alertmanager/alertmanager.yml:/etc/alertmanager/config.yml --name alertmanager prom/alertmanager
-    eb6ab18b985177c8e282914a285db86d5bd40086967a63eb45cf2e742d7ad5fb
+   [root@localhost alertmanager]# docker run -d -p 9093:9093 -v /data/alertmanager/alertmanager.yml:/etc/alertmanager/config.yml --name alertmanager prom/alertmanager
+   eb6ab18b985177c8e282914a285db86d5bd40086967a63eb45cf2e742d7ad5fb
 
 到此，我们完成了使用Docker安装AlertManager，查看alertmanager已经正常运行：
 
 ::
 
-    [root@localhost alertmanager]# docker ps
-    CONTAINER ID   IMAGE                       COMMAND                  CREATED          STATUS          PORTS                                                                           NAMES
-    eb6ab18b9851   prom/alertmanager           "/bin/alertmanager -…"   29 seconds ago   Up 28 seconds   0.0.0.0:9093->9093/tcp                 
+   [root@localhost alertmanager]# docker ps
+   CONTAINER ID   IMAGE                       COMMAND                  CREATED          STATUS          PORTS                                                                           NAMES
+   eb6ab18b9851   prom/alertmanager           "/bin/alertmanager -…"   29 seconds ago   Up 28 seconds   0.0.0.0:9093->9093/tcp                 
 
 2. Alertmanager配置
 -------------------
@@ -152,16 +150,16 @@ github中提供的简单示例文件，或者使用二进制安装包中的默�
 2.1 global
 ~~~~~~~~~~
 
-即全局配置，在Alertmanager配置文件中，只要全局配置项中配置的选项内容均为公共设置，便可以作为其他配置项的默认值，也可以被其他配置项中的设置覆盖掉。其中resolve\_timeout用于设置处理超时时间，是声明告警状态为已解决的时间，它的时长设定有可能影响到告警恢复通知的接收时间，需要根据日常生产环境总结出适合自己的时长进行定义，默认为5分钟。如果每一次告警均需要通过电子邮件接收，可以设置用于发送电子邮件的SMTP服务器信息和通知服务，其中对应的配置内容如下：
+即全局配置，在Alertmanager配置文件中，只要全局配置项中配置的选项内容均为公共设置，便可以作为其他配置项的默认值，也可以被其他配置项中的设置覆盖掉。其中resolve_timeout用于设置处理超时时间，是声明告警状态为已解决的时间，它的时长设定有可能影响到告警恢复通知的接收时间，需要根据日常生产环境总结出适合自己的时长进行定义，默认为5分钟。如果每一次告警均需要通过电子邮件接收，可以设置用于发送电子邮件的SMTP服务器信息和通知服务，其中对应的配置内容如下：
 
 ::
 
-    ·smtp_smarthost，邮箱SMTP服务器代理地址。
-    ·smtp_from，发送邮件的名称。
-    ·smtp_auth_username，邮箱用户名称。
-    ·smtp_auth_password，邮箱授权密码。
+   ·smtp_smarthost，邮箱SMTP服务器代理地址。
+   ·smtp_from，发送邮件的名称。
+   ·smtp_auth_username，邮箱用户名称。
+   ·smtp_auth_password，邮箱授权密码。
 
-同时也可以使用smtp\_require\_tls来设置TLS协议使用状况，如果使用TLS则设置为true且为默认项，如果不使用则设置为false。
+同时也可以使用smtp_require_tls来设置TLS协议使用状况，如果使用TLS则设置为true且为默认项，如果不使用则设置为false。
 
 2.2 templates
 ~~~~~~~~~~~~~
@@ -170,7 +168,7 @@ github中提供的简单示例文件，或者使用二进制安装包中的默�
 
 ::
 
-    templates:
-    - '/data/alertmanager/template/*.tmpl'
+   templates:
+   - '/data/alertmanager/template/*.tmpl'
 
 Alertmanager启动时加载该路径下的模板文件。可以自己定义告警模板。
