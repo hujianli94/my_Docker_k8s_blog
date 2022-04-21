@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deployment控制器 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="DaemonSet控制器" href="2.DaemonSet%E6%8E%A7%E5%88%B6%E5%99%A8.html" />
+    <link rel="prev" title="5.控制器" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">5.控制器</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Deployment控制器</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">1.Deployment控制器的基本操作</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">2.Deployment控制器的模板</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">3.Deployment控制器的伸缩</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">4.Deployment控制器的更新</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="2.DaemonSet%E6%8E%A7%E5%88%B6%E5%99%A8.html">DaemonSet控制器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="3.Job%E4%B8%8ECronJob%E6%8E%A7%E5%88%B6%E5%99%A8.html">1.Job控制器的基本操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="3.Job%E4%B8%8ECronJob%E6%8E%A7%E5%88%B6%E5%99%A8.html#id4">2. Job的异常处理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="3.Job%E4%B8%8ECronJob%E6%8E%A7%E5%88%B6%E5%99%A8.html#cronjob">3.CronJob控制器的基本操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4.StatefulSet%E6%8E%A7%E5%88%B6%E5%99%A8.html">StatefulSet控制器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="5.%E5%85%B6%E4%BB%96%E6%8E%A7%E5%88%B6%E5%99%A8.html">其他控制器</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html">7.存储与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html">8.Kubernetes资源的管理及调度</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">5.控制器</a> &raquo;</li>
+      <li>Deployment控制器</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/5.控制器/1.Deployment控制器.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#deployment" id="id7">Deployment控制器</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id8">1.Deployment控制器的基本操作</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id9">2.Deployment控制器的模板</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id10">3.Deployment控制器的伸缩</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id11">4.Deployment控制器的更新</a></p>
+<ul>
+<li><p><a class="reference internal" href="#recreate" id="id12">4.1 Recreate方式</a></p></li>
+<li><p><a class="reference internal" href="#rollingupdate" id="id13">4.2 RollingUpdate方式</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id14">4.3 更新的暂停与恢复</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id15">4.4 Deployment控制器的回滚</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="deployment">
+<h1><a class="toc-backref" href="#id7">Deployment控制器</a><a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
+<p>Deployment控制器可能是最常用的工作负载对象之一。</p>
+<p>在使用Kubernetes时，通常要管理的是由多个相同Pod所组成的Pod集合，而不是单个Pod。</p>
+<p>通过Deployment控制器，可以定义Pod模板，并设置相应控制参数以实现水平伸缩，以调节正在运行的相同Pod数。</p>
+<p>Deployment控制器保证在集群中部署的Pod数量与配置中的Pod数量一致。如果Pod或主机出现故障，则会自动启用新的Pod进行补充。</p>
+<p>Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增加了更灵活的生命周期管理功能，</p>
+<p>例如，滚动更新和回滚</p>
+<p>Deployment控制器与ReplicaSet控制器</p>
+<img alt="../../_images/image-20220411174133773.png" src="../../_images/image-20220411174133773.png" />
+<p>Deployment控制器旨在简化Pod的生命周期管理。只需要简单更改Deployment控制器的配置文件，Kubernetes就会自动调节ReplicaSet控制器，管理应用程序不同版本之间的切换，还可以实现自动维护事件历史记录及自动回滚等功能。</p>
+<blockquote>
+<div><p><strong>ReplicaSet控制器基本上已不会直接使用，目前常规的Pod管理则直接使用更高一层的Deployment控制器。</strong></p>
+</div></blockquote>
+<section id="id1">
+<h2><a class="toc-backref" href="#id8">1.Deployment控制器的基本操作</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">exampleDeploymentv1.</span> <span class="pre">yml</span></code>的模板文件</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployment</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>该模板的含义如下。</p>
+<ul class="simple">
+<li><p>apiVersion表示使用的API版本，apps/v1表示使用Kubernetes
+API的稳定版本。</p></li>
+<li><p>kind表示要创建的资源对象，这里使用关键字Deployment。</p></li>
+<li><p>metadata表示该资源对象的元数据。一个资源对象可拥有多个元数据，其中一项是name，它表示当前资源的命名。</p></li>
+<li><p>spec表示该资源对象的具体设置。</p></li>
+<li><p>replicas：表示在控制器下托管的Pod需要保持的副本数量。</p></li>
+<li><p>selector/matchLabels：用于定义一个或多个自定义标签（label），其形式为键值对。它对Pod起筛选作用，会选
+择与标签定义相匹配的Pod。这在后续章节会详细解说，因为它是必填字段，所以这里填写了一个示例值。</p></li>
+<li><p>template：Pod模板</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleDeploymentv1.yml --record
+</pre></div>
+</div>
+<blockquote>
+<div><p>注意：这里一定要带参数–record，这样会把每次修改
+Deployment控制器时所使用的命令记录到备注字段中，以便在查看
+Deployment控制器变更历史或进行回滚时可以辨别每次修改的内容。</p>
+</div></blockquote>
+<p>创建成功后，可通过以下命令查询当前运行的所有Deployment控制器。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$  kubectl get deployments
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+exampledeployment   <span class="m">3</span>/3     <span class="m">3</span>            <span class="m">3</span>           78s
+
+$ kubectl get pods
+NAME                                 READY   STATUS    RESTARTS   AGE
+exampledeployment-656c6d8f4c-dxfpm   <span class="m">1</span>/1     Running   <span class="m">0</span>          2m2s
+exampledeployment-656c6d8f4c-jt4sd   <span class="m">1</span>/1     Running   <span class="m">0</span>          2m2s
+exampledeployment-656c6d8f4c-kvkjw   <span class="m">1</span>/1     Running   <span class="m">0</span>          2m2s
+</pre></div>
+</div>
+<p>随着时间的推移，3个Pod均创建完，READY字段变成3/3，AVAILABLE字段变成3。</p>
+<p>要查询更详细的信息（包括状态、生命周期和执行情况等），可以用<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">describe</span></code>命令</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl describe deployment exampledeployment
+</pre></div>
+</div>
+<p>一般来说我们是根本不需要关注ReplicaSet控制器的，</p>
+<p>可以用以下命令查看Deployment控制器对应的ReplicaSet控制器。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get replicasets
+NAME                           DESIRED   CURRENT   READY   AGE
+exampledeployment-656c6d8f4c   <span class="m">3</span>         <span class="m">3</span>         <span class="m">3</span>       4m
+</pre></div>
+</div>
+<p>现在来做一些破坏性操作，用于验证Deployment控制器的稳定性。</p>
+<p>将其中一个Pod直接删除</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl delete pod/exampledeployment-656c6d8f4c-dxfpm
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+exampledeployment   <span class="m">2</span>/3     <span class="m">3</span>            <span class="m">2</span>           3m41s
+
+$ kubectl get deployment
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+exampledeployment   <span class="m">3</span>/3     <span class="m">3</span>            <span class="m">3</span>           5m23s
+</pre></div>
+</div>
+<p>此时用<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pods</span></code>命令查看，会发现已经启用了一个名为wt9fk的Pod来代替原先被删除的Pod</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods
+NAME                                 READY   STATUS    RESTARTS   AGE
+exampledeployment-656c6d8f4c-jt4sd   <span class="m">1</span>/1     Running   <span class="m">0</span>          6m3s
+exampledeployment-656c6d8f4c-kvkjw   <span class="m">1</span>/1     Running   <span class="m">0</span>          6m3s
+exampledeployment-656c6d8f4c-z4grf   <span class="m">1</span>/1     Running   <span class="m">0</span>          106s
+</pre></div>
+</div>
+<p>刚才只假定Pod被错误删除，现在假设某台Node机器出现异常死机。</p>
+<p>先查看pod所在的node节点</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods -o wide
+NAME                                 READY   STATUS    RESTARTS   AGE     IP           NODE            NOMINATED NODE   READIN          ESS GATES
+exampledeployment-656c6d8f4c-jt4sd   <span class="m">1</span>/1     Running   <span class="m">0</span>          5m19s   <span class="m">10</span>.0.19.7    gitee-k8s-w01   &lt;none&gt;           &lt;none&gt;
+exampledeployment-656c6d8f4c-kvkjw   <span class="m">1</span>/1     Running   <span class="m">0</span>          5m19s   <span class="m">10</span>.0.19.42   gitee-k8s-w01   &lt;none&gt;           &lt;none&gt;
+exampledeployment-656c6d8f4c-z4grf   <span class="m">1</span>/1     Running   <span class="m">0</span>          62s     <span class="m">10</span>.0.6.217   gitee-k8s-w27   &lt;none&gt;           &lt;none&gt;
+</pre></div>
+</div>
+<p>如果关机node物理机，node上的pod会在其他可用空间足够的node上重新创建。</p>
+<blockquote>
+<div><p>Deployment控制器保证在集群中部署的Pod数量与配置中的Pod数量一致。如果Pod或主机出现故障，会自动启用新的Pod进行补充。</p>
+</div></blockquote>
+</section>
+<section id="id2">
+<h2><a class="toc-backref" href="#id9">2.Deployment控制器的模板</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>yaml模板</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>      <span class="c1">#必填，版本号</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Depolyment</span>     <span class="c1">#必填，资源类型</span>
+<span class="nt">metadata</span><span class="p">:</span>       <span class="c1">#必填，元数据</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;-deploy</span>     <span class="c1">#必填，资源名称</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;namespace&gt;</span>    <span class="c1">#Pod所属的命名空间</span>
+  <span class="nt">labels</span><span class="p">:</span>      <span class="c1">#自定义标签</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>     <span class="c1">#自定义标签名字&lt;key: value&gt;</span>
+<span class="nt">spec</span><span class="p">:</span>         <span class="c1">#必填，部署的详细定义</span>
+  <span class="nt">selector</span><span class="p">:</span> <span class="c1">#必填，标签选择</span>
+    <span class="nt">matchLabels</span><span class="p">:</span> <span class="c1">#必填，标签匹配</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;</span> <span class="c1">#必填，通过此标签匹配对应pod&lt;key: value&gt;</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;number&gt;</span> <span class="c1">#必填，副本数量</span>
+  <span class="nt">minReadySeconds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1">#新创建的Pod状态为Ready持续的时间</span>
+  <span class="nt">revisionHistoryLimit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1">#保留的历史版本个数，默认是10</span>
+  <span class="nt">minAvailable</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1">#Pod自愿中断的场景中，至少要保证可用的Pod对象数量或比例，要阻止任何Pod对象发生自愿中断，可将其设置为100%。</span>
+  <span class="nt">maxUnavailable</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1">#Pod自愿中断的场景中，最多可转换为不可用状态的Pod对象数量或比例，0值意味着不允许Pod对象进行自愿中断；此字段与minAvailable互斥</span>
+  <span class="nt">strategy</span><span class="p">:</span> <span class="c1">#版本更新控制</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">RollingUpdate</span> <span class="c1">#更新策略，滚动更新（也可以是Recreate 重建更新）</span>
+    <span class="nt">rollingUpdate</span><span class="p">:</span> <span class="c1">#滚动更新配置</span>
+      <span class="nt">maxSurge</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1">#升级期间存在的总Pod对象数量最多不超过多少（百分比）</span>
+      <span class="nt">maxUnavailable</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1">#升级期间正常可用的Pod副本数（包括新旧版本）不低于多少（百分比）</span>
+  <span class="nt">template</span><span class="p">:</span> <span class="c1">#必填，应用容器模版定义</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;</span> <span class="c1">#必填，与上面matchLabels的标签相同</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span> <span class="c1">#此处参考pod的containers</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>yaml示例：以grafana
+alert举例。指定容器监听端口，配置存活就绪检测，设置资源限制，挂载宿主机本机目录存储，</p></li>
+</ul>
+<blockquote>
+<div><p>建议生产环境为资源添加limit和liveness</p>
+</div></blockquote>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">grafana-alert-deploy</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">grafana-alert-deploy</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">grafanaAlert</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">grafanaAlert</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">grafana-alert</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">grafana_alert:cm_v2</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;python3.8&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-u&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-m&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;flask&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;run&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-h&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;0.0.0.0&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-p&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;9999&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9999</span>
+          <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+        <span class="nt">volumeMounts</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">grafana-alert-log</span>
+          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/opt/grafanaAlert/log</span>
+        <span class="nt">readinessProbe</span><span class="p">:</span>
+          <span class="nt">tcpSocket</span><span class="p">:</span>
+            <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9999</span>
+        <span class="nt">livenessProbe</span><span class="p">:</span>
+          <span class="nt">tcpSocket</span><span class="p">:</span>
+            <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9999</span>
+        <span class="nt">resources</span><span class="p">:</span>
+          <span class="nt">limits</span><span class="p">:</span>
+            <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+            <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">100Mi</span>
+          <span class="nt">requests</span><span class="p">:</span>
+            <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">100m</span>
+            <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10Mi</span>
+      <span class="nt">volumes</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">grafana-alert-log</span>
+        <span class="nt">hostPath</span><span class="p">:</span>
+          <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/var/log/grafana-alert</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Directory</span>
+      <span class="nt">affinity</span><span class="p">:</span>
+        <span class="nt">nodeAffinity</span><span class="p">:</span>
+          <span class="nt">requiredDuringSchedulingIgnoredDuringExecution</span><span class="p">:</span>
+            <span class="nt">nodeSelectorTerms</span><span class="p">:</span>
+              <span class="p p-Indicator">-</span> <span class="nt">matchExpressions</span><span class="p">:</span>
+                  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">role</span>
+                    <span class="nt">operator</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">In</span>
+                    <span class="nt">values</span><span class="p">:</span>
+                      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">removable</span>
+      <span class="nt">dnsPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterFirst</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Always</span>
+</pre></div>
+</div>
+<p>还可以使用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">explain</span> <span class="pre">deployment</span></code>命令详细查看Deployment控制器中资源支持的所有字段的详细说明。</p>
+<p>如果想了解一个正在运行的Pod的配置，可以通过以下命令获取。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment <span class="o">{</span>deployment名称<span class="o">}</span> -o yaml
+示例
+$ kubectl get deployment exampledeployment -o yaml
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id10">3.Deployment控制器的伸缩</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>之前的示例中，设置的Pod副本数为3</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+exampledeployment   <span class="m">3</span>/3     <span class="m">3</span>            <span class="m">3</span>           10m
+</pre></div>
+</div>
+<p>假设现在有业务变更，需要将Pod副本数设置为5。我们先打开<code class="docutils literal notranslate"><span class="pre">exampleDeploymentv1.yml</span></code>模板文件，命令如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">exampledeployment</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">replicas</span><span class="p">:</span> <span class="mi">5</span>
+  <span class="n">selector</span><span class="p">:</span>
+  <span class="o">.....</span>
+</pre></div>
+</div>
+<p>运行以下命令，应用模板文件。执行成功后的结果</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleDeploymentv1.yml --record
+</pre></div>
+</div>
+<p>接下来，会进入Pod创建过程。待Pod创建完成，通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">deployments</span></code>命令查看状态。可以看到READY变成5/5，</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+exampledeployment   <span class="m">5</span>/5     <span class="m">5</span>            <span class="m">5</span>           12m
+</pre></div>
+</div>
+<p>再通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pods</span> <span class="pre">-o</span> <span class="pre">wide</span></code>命令查看，可以看到已经成功部署了另外两个Pod，它们均匀分布到其他有可用空间的node上</p>
+<p>通过同样的办法，也可以将Deployment控制器的Pod副本数量减少，比如从现在的5个恢复到之前设置的3个。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleDeploymentv1.yml --record
+</pre></div>
+</div>
+<p>提示：默认情况下，Pod不会调度到Master节点上。如果希望将Master节点也当作Node来使用，可以执行以下命令。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl taint node master node-role.Kubernetes.io/master-
+</pre></div>
+</div>
+<p>如果要恢复成只作为Master节点来使用，则可以执行以下命令。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl taint node master node-
+role.Kubernetes.io/master<span class="o">=</span><span class="s2">&quot;&quot;</span>:NoSchedule
+</pre></div>
+</div>
+<p><strong>一般情况下，不应将Master节点当作Node来使用。</strong></p>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id11">4.Deployment控制器的更新</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>Deployment控制器有两种更新方式。</p>
+<ul class="simple">
+<li><p>Recreate：所有现有的Pod都会在创建新的Pod之前被终止。</p></li>
+<li><p>RollingUpdate：表示以滚动更新方式更新Pod，并可以通过maxUnavailable和maxSurge参数来控制滚动更新过程。</p></li>
+</ul>
+<section id="recreate">
+<h3><a class="toc-backref" href="#id12">4.1 Recreate方式</a><a class="headerlink" href="#recreate" title="Permalink to this headline">¶</a></h3>
+<p>在之前的示例中，我们指定Nginx镜像的版本号是1.7.9。</p>
+<p>假设现在有业务需要，计划将所有副本的Nginx镜像版本升级到1.8.1。</p>
+<p>我们先新建<code class="docutils literal notranslate"><span class="pre">exampleDeploymentv2.yml</span></code>模板文件。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployment</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.8.1</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">strategy</span><span class="p">:</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Recreate</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleDeploymentv2.yml --record
+deployment.apps/exampledeployment configured
+
+$ kubectl get deployment
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+exampledeployment   <span class="m">0</span>/3     <span class="m">0</span>            <span class="m">0</span>           34m
+</pre></div>
+</div>
+<p>此时再执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">deployments</span></code>命令，可以看到READY为0/3，AVAILABLE为0，这表示此Deployment控制器下面的所有
+Pod都暂时不可用。而UP-TO-DATE为0，表示没有任何一个Pod完成更新.</p>
+<p>此时再通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pods</span> <span class="pre">-o</span> <span class="pre">wide</span></code>命令进行查看，可以看到原先的3个Pod正在终止</p>
+<p>通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pods</span> <span class="pre">{Pod名称}</span></code>命令查看Pod的详细信息，可以发现镜像版本已更
+新为1.8.1</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl describe pod/exampledeployment-5974df6f9d-2j2kh
+Name:         exampledeployment-5974df6f9d-2j2kh
+Namespace:    default
+Priority:     <span class="m">0</span>
+Node:         gitee-k8s-w27/192.168.1.22
+Start Time:   Mon, <span class="m">11</span> Apr <span class="m">2022</span> <span class="m">18</span>:46:28 +0800
+Labels:       <span class="nv">example</span><span class="o">=</span>deploymentfornginx
+              pod-template-hash<span class="o">=</span>5974df6f9d
+Annotations:  &lt;none&gt;
+Status:       Running
+IP:           <span class="m">10</span>.0.6.225
+IPs:
+  IP:           <span class="m">10</span>.0.6.225
+Controlled By:  ReplicaSet/exampledeployment-5974df6f9d
+Containers:
+  nginx:
+    Container ID:   containerd://38c425a10da4af359ff3a8bef9b44319c9f347cfac326cb0bb4af7fda0f4a0d1
+    Image:          nginx:1.8.1
+</pre></div>
+</div>
+<p>通过命令<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">rs</span> <span class="pre">-o</span> <span class="pre">wide</span></code>查看ReplicaSet控制器的变化情况。可以看到1.7.9的那个版本已停止使用</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get rs -o wide
+NAME                           DESIRED   CURRENT   READY   AGE    CONTAINERS   IMAGES        SELECTOR
+exampledeployment-5974df6f9d   <span class="m">3</span>         <span class="m">3</span>         <span class="m">3</span>       4m1s   nginx        nginx:1.8.1   <span class="nv">example</span><span class="o">=</span>deploymentfornginx,pod-template-hash<span class="o">=</span>5974df6f9d
+exampledeployment-656c6d8f4c   <span class="m">0</span>         <span class="m">0</span>         <span class="m">0</span>       38m    nginx        nginx:1.7.9   <span class="nv">example</span><span class="o">=</span>deploymentfornginx,pod-template-hash<span class="o">=</span>656c6d8f4c
+</pre></div>
+</div>
+<p>可以看到这种更新方式相当直接，会直接删除当前Deployment制器下所有的Pod，即删除旧的ReplicaSet控制器下的所有Pod，只保
+留旧的ReplicaSet控制器的定义，但不再投入使用，之后新建更新后的ReplicaSet控制器及Pod。</p>
+<p>Recreate更新方式</p>
+<img alt="../../_images/image-20220411185130534.png" src="../../_images/image-20220411185130534.png" />
+<p>但在实际使用过程中，一般我们会用这些Pod来提供长期稳定且不
+间断的服务，<strong>很少有终止所有Pod再等候全部重新创建来提供服务的情况</strong>。</p>
+<p><strong>如果要让Pod能提供不间断的服务，平滑升级，则需要使用RollingUpdate更新方式。</strong></p>
+</section>
+<section id="rollingupdate">
+<h3><a class="toc-backref" href="#id13">4.2 RollingUpdate方式</a><a class="headerlink" href="#rollingupdate" title="Permalink to this headline">¶</a></h3>
+<p>RollingUpdate其实在人为不干预的情况下，<strong>属于一种蓝绿发布模式，</strong></p>
+<p>即：新旧的版本共存，有新版发布也有旧版发布，访问部分用户旧版，部分用户新版本。</p>
+<p>Deployment控制器的另一种更新方式就是RollingUpdate（滚动更新）。</p>
+<p>这种更新方式更实用，是一种比较平滑的升级方式，不会中断整个Pod集群提供的服务。在具体介绍滚动更新之前，需要先了解滚动
+更新策略使用的两个参数。</p>
+<ul class="simple">
+<li><p>maxUnavailable：表示在更新过程中能够进入不可用状态的Pod
+的最大值或相对于总副本数的最大百分比。</p></li>
+<li><p>maxSurge：表示能够额外创建的Pod数或相对于总副本数的百分比。</p></li>
+</ul>
+<p>假设现在有业务需要，计划将所有副本的Nginx镜像版本升级到1.9.0，但这一次要求平滑过渡，服务不能中断。</p>
+<p>我们先新建<code class="docutils literal notranslate"><span class="pre">exampleDeploymentv3.yml</span></code>模板文件。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployment</span>
+
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.9.0</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">strategy</span><span class="p">:</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">RollingUpdate</span>
+    <span class="nt">rollingUpdate</span><span class="p">:</span>
+      <span class="nt">maxSurge</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+      <span class="nt">maxUnavailable</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+<p>运行以下命令，应用模板文件。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleDeploymentv3.yml --record
+</pre></div>
+</div>
+<p>在不同时间点执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">deployments</span></code>命令，会得到不同的结果</p>
+<p>在不同时间点执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pods</span> <span class="pre">-o</span> <span class="pre">wide</span></code>命令，会得到不同的结果</p>
+<img alt="../../_images/image-20220411185706602.png" src="../../_images/image-20220411185706602.png" />
+<p>可以看到，在执行滚动更新时，因为设置了maxUnavailable=1，表示最多只允许1个Pod不可用，所以会先终止1个Pod，使另外两个Pod处于运行状态。</p>
+<p>AVAILABLE为2，表示有两个Pod可用（其中有1个是新Pod）；</p>
+<p>UP-TO-DATE为2，表示有两个更新的Pod。</p>
+<p>由于设置了maxSurge=0，表示最多创建0个额外的Pod副本，更新过程中有1个正在创建的Pod以及两个正在运行的Pod（正好为3个），因此符合3个副本与0个额外副本的设置。此时READY为2/3，AVAILABLE为2，表示有两个旧Pod可用；UP-TO-DATE为1，表示有1个更新的Pod。</p>
+<p>最后，全部新Pod创建成功，代替旧Pod提供服务。整个升级过程如图所示，它保持平滑过渡，逐步替代，持续让Pod提供稳定服务。</p>
+<p>RollingUpdate方式</p>
+<img alt="../../_images/image-20220411185941806.png" src="../../_images/image-20220411185941806.png" />
+<p>最后升级后的deployment内容如下：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment -o wide
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES        SELECTOR
+exampledeployment   <span class="m">3</span>/3     <span class="m">3</span>            <span class="m">3</span>           49m   nginx        nginx:1.9.0   <span class="nv">example</span><span class="o">=</span>deploymentfornginx
+
+$ kubectl get rs
+NAME                           DESIRED   CURRENT   READY   AGE
+exampledeployment-556b4d9fc4   <span class="m">3</span>         <span class="m">3</span>         <span class="m">3</span>       14h
+exampledeployment-5974df6f9d   <span class="m">0</span>         <span class="m">0</span>         <span class="m">0</span>       14h
+exampledeployment-656c6d8f4c   <span class="m">0</span>         <span class="m">0</span>         <span class="m">0</span>       15h
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3><a class="toc-backref" href="#id14">4.3 更新的暂停与恢复</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>目前无论是直接更新还是滚动更新，都会一直持续更新，直到结
+束，但如果更新后的版本有问题怎么办？是否可以只尝试发布一个最
+新的Pod，待这个Pod验证无误后，再更新剩余的Pod？</p>
+<p>答案是肯定的，Kubernetes提供的暂停与恢复更新功能可以实现上述功能。</p>
+<p>假设现在有业务需要，计划将所有副本的Nginx镜像版本升级到1.9.1，这一次不仅要求平滑过渡，还要求进行<strong>金丝雀发布</strong>，即确认其
+中一个Pod没有问题后再进行剩余的更新。</p>
+<p>即：<strong>人工干预进行更新暂停，金丝雀发布，出现问题及时回滚。</strong></p>
+<p>暂停与恢复也可以用yml文件来实现，但相对比较复杂，这里用比较简单的命令进行说明。暂停与恢复的命令如下所示。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl rollout pause deploy <span class="o">{</span>Deployment名称<span class="o">}</span>
+$ kubectl rollout resume deploy <span class="o">{</span>Deployment名称<span class="o">}</span>
+</pre></div>
+</div>
+<p>以之前示例中创建的Deployment控制器为例，连续执行以下命令。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl <span class="nb">set</span> image deploy exampledeployment <span class="nv">nginx</span><span class="o">=</span>nginx:1.9.1 --record
+<span class="c1"># 暂停更新</span>
+$ kubectl rollout pause deploy exampledeployment
+</pre></div>
+</div>
+<p>该命令会升级exampledeployment中的Nginx版本，但紧接着执行的暂停命令会使更新第1个Pod的时候就停止后续操作。</p>
+<p>通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pods</span> <span class="pre">-o</span> <span class="pre">wide</span></code>命令，可以看到如下结果，原先的3个版本为1.9.0的Pod被终止了1个，然后启动了1个新的版本为1.9.1的Pod。更新完1个Pod后就停止后续更新了</p>
+<p>通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">deployments</span></code>命令进行查看，可以发现READY和AVAILABLE都是3，但是最新版本的<strong>UP-TO-DATE只有1</strong></p>
+<p>此时只更新了一个pod为最新的版本。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+exampledeployment   <span class="m">3</span>/3     <span class="m">1</span>            <span class="m">3</span>           15h
+</pre></div>
+</div>
+<p>此时可以验证刚才创建的新版本Pod，直到验证没有问题后，就可以结束暂停了，让剩余的Pod继续更新为最新版，使用的命令如下。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 恢复更新</span>
+$ kubectl rollout resume deploy exampledeployment
+</pre></div>
+</div>
+<p>此时会继续更新剩余两个Pod。因为配置的是滚动更新，所以不同时段的结果和上一节一致，可以看到所有的Pod都更新为最新版。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>root@ci-base ~<span class="o">]</span><span class="c1"># kubectl get deployment -o wide -w</span>
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES        SELECTOR
+exampledeployment   <span class="m">2</span>/3     <span class="m">3</span>            <span class="m">2</span>           15h   nginx        nginx:1.9.1   <span class="nv">example</span><span class="o">=</span>deploymentfornginx
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3><a class="toc-backref" href="#id15">4.4 Deployment控制器的回滚</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>如果更新之后，发现新版本的Pod有严重问题，需要回滚到之前版本，则可以先使用以下命令查看历史变更记录。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl rollout history deployment {Deployment名称}
+</pre></div>
+</div>
+<p>本例中的命令如下。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl rollout <span class="nb">history</span> deployment exampledeployment
+deployment.apps/exampledeployment
+REVISION  CHANGE-CAUSE
+<span class="m">1</span>         kubectl apply --filename<span class="o">=</span>exampleDeploymentv1.yml --record<span class="o">=</span><span class="nb">true</span>
+<span class="m">2</span>         kubectl apply --filename<span class="o">=</span>exampleDeploymentv2.yml --record<span class="o">=</span><span class="nb">true</span>
+<span class="m">3</span>         kubectl apply --filename<span class="o">=</span>exampleDeploymentv3.yml --record<span class="o">=</span><span class="nb">true</span>
+<span class="m">4</span>         kubectl <span class="nb">set</span> image deploy exampledeployment <span class="nv">nginx</span><span class="o">=</span>nginx:1.9.1 --record<span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>提示：前面提示过一定要带参数–record，只有这样才会记录每次修改Deployment控制器时所使用的命令，记录的位置就是现在我
+们看到的CHANGE-CAUSE字段。如果没有带–record，CHANGE-CAUSE记录将为。</p>
+</div></blockquote>
+<p>保存历史记录的本质是保留每次修改所创建的ReplicaSet控制器，而<strong>回滚的本质其实是切换到对应版本的ReplicaSet控制器</strong>。
+<em>Deployment控制器是通过ReplicaSet控制器来管理Pod的</em>。</p>
+<p>保存历史记录的本质</p>
+<img alt="../../_images/image-20220412092818385.png" src="../../_images/image-20220412092818385.png" />
+<p>可以通过以下命令查看这个Deployment控制器下所有的ReplicaSet控制器。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get rs -o wide
+NAME                           DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES        SELECTOR
+exampledeployment-556b4d9fc4   <span class="m">0</span>         <span class="m">0</span>         <span class="m">0</span>       14h   nginx        nginx:1.9.0   <span class="nv">example</span><span class="o">=</span>deploymentfornginx,pod-template-hash<span class="o">=</span>556b4d9fc4
+exampledeployment-5974df6f9d   <span class="m">0</span>         <span class="m">0</span>         <span class="m">0</span>       14h   nginx        nginx:1.8.1   <span class="nv">example</span><span class="o">=</span>deploymentfornginx,pod-template-hash<span class="o">=</span>5974df6f9d
+exampledeployment-656c6d8f4c   <span class="m">0</span>         <span class="m">0</span>         <span class="m">0</span>       15h   nginx        nginx:1.7.9   <span class="nv">example</span><span class="o">=</span>deploymentfornginx,pod-template-hash<span class="o">=</span>656c6d8f4c
+exampledeployment-89899ddf7    <span class="m">3</span>         <span class="m">3</span>         <span class="m">3</span>       10m   nginx        nginx:1.9.1   <span class="nv">example</span><span class="o">=</span>deploymentfornginx,pod-template-hash<span class="o">=</span>89899ddf7
+</pre></div>
+</div>
+<p>可以看到目前使用的是1.9.1版本的ReplicaSet控制器。</p>
+<p>回滚命令如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl rollout undo deployment {Deployment名称} --to-revision={REVISION编号}
+</pre></div>
+</div>
+<p>假设现在我们想退回到CHANGE-CAUSE “kubectl apply –filename=example
+Deploymentv2.yml
+–record=true”这个版本，由于其版本编号为2，因此可以使用以下命令进行回滚。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl rollout undo deployment exampledeployment --to-revision<span class="o">=</span><span class="m">2</span>
+deployment.apps/exampledeployment rolled back
+</pre></div>
+</div>
+<p>使用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">rollout</span> <span class="pre">history</span> <span class="pre">deployment</span> <span class="pre">exampledeployment</span></code>命令再次查看历史记录，可以发现REVISION
+2 已经消失，取而代之的是新加的REVISION 5，</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl rollout <span class="nb">history</span> deployment exampledeployment
+deployment.apps/exampledeployment
+REVISION  CHANGE-CAUSE
+<span class="m">1</span>         kubectl apply --filename<span class="o">=</span>exampleDeploymentv1.yml --record<span class="o">=</span><span class="nb">true</span>
+<span class="m">3</span>         kubectl apply --filename<span class="o">=</span>exampleDeploymentv3.yml --record<span class="o">=</span><span class="nb">true</span>
+<span class="m">4</span>         kubectl <span class="nb">set</span> image deploy exampledeployment <span class="nv">nginx</span><span class="o">=</span>nginx:1.9.1 --record<span class="o">=</span><span class="nb">true</span>
+<span class="m">5</span>         kubectl apply --filename<span class="o">=</span>exampleDeploymentv2.yml --record<span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+<p>之前提到回滚的本质其实是切换到对应版本的ReplicaSet控制器，可以通过
+kubectl get rs -o wide命令来再次查看 ReplicaSet控制器的启用情况。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get rs -o wide
+NAME                           DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES        SELECTOR
+exampledeployment-556b4d9fc4   <span class="m">0</span>         <span class="m">0</span>         <span class="m">0</span>       14h   nginx        nginx:1.9.0   <span class="nv">example</span><span class="o">=</span>deploymentfornginx,pod-template-hash<span class="o">=</span>556b4d9fc4
+exampledeployment-5974df6f9d   <span class="m">3</span>         <span class="m">3</span>         <span class="m">3</span>       14h   nginx        nginx:1.8.1   <span class="nv">example</span><span class="o">=</span>deploymentfornginx,pod-template-hash<span class="o">=</span>5974df6f9d
+exampledeployment-656c6d8f4c   <span class="m">0</span>         <span class="m">0</span>         <span class="m">0</span>       15h   nginx        nginx:1.7.9   <span class="nv">example</span><span class="o">=</span>deploymentfornginx,pod-template-hash<span class="o">=</span>656c6d8f4c
+exampledeployment-89899ddf7    <span class="m">0</span>         <span class="m">0</span>         <span class="m">0</span>       14m   nginx        nginx:1.9.1   <span class="nv">example</span><span class="o">=</span>deploymentfornginx,pod-template-hash<span class="o">=</span>89899ddf7
+</pre></div>
+</div>
+<p>可以发现，1.9.1版本的ReplicaSet控制器目前已没有Pod副本，之前1.8.1版本的ReplicaSet控制器再度启用并且拥有3个Pod副本。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="5.控制器" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="2.DaemonSet%E6%8E%A7%E5%88%B6%E5%99%A8.html" class="btn btn-neutral float-right" title="DaemonSet控制器" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

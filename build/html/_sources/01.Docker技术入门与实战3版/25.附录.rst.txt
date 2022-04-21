@@ -81,8 +81,24 @@
    docker rmi $(docker images | grep "none" | awk '{print $3}')            //删除镜像
 
 
+
+
    # docker 删除所有none的镜像
    docker images|grep none|awk '{print $3}'|xargs docker rmi
+
+   # ~/.bash_aliases
+
+   # 杀死所有正在运行的容器.
+   alias dockerkill='docker kill $(docker ps -a -q)'
+
+   # 删除所有已经停止的容器.
+   alias dockercleanc='docker rm $(docker ps -a -q)'
+
+   # 删除所有未打标签的镜像.
+   alias dockercleani='docker rmi $(docker images -q -f dangling=true)'
+
+   # 删除所有已经停止的容器和未打标签的镜像.
+   alias dockerclean='dockercleanc || true && dockercleani'
 
 删除所有未打 tag 的镜像
 
@@ -283,6 +299,11 @@ docker导入镜像
      docker rmi "$image"
    done
 
+12. Docker存储位置修改
+^^^^^^^^^^^^^^^^^^^^^^
+
+https://blog.youqiqi.cn/archives/docker-cun-chu-wei-zhi-xiu-gai
+
 容器相关
 ~~~~~~~~
 
@@ -331,6 +352,8 @@ https://zhuanlan.zhihu.com/p/100793598
 迁移/var/lib/docker目录
 
 https://blog.csdn.net/weixin_32820767/article/details/81196250
+
+https://www.lemonlzy.cn/2020/05/24/Docker%E6%96%87%E4%BB%B6%E6%B8%85%E7%90%86/
 
 7.给运行中的docker容器添加端口映射
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

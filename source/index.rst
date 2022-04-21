@@ -25,7 +25,7 @@ Devops学院【Docker|Kubernetes】专栏四
     02.Kubernetes实战指南/index
     03.Docker经典实例/index
     04.Prometheus监控运维实战/index
-
+    05.Kubernetes入门到实践/index
 
 
 

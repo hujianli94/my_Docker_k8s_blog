@@ -268,8 +268,11 @@ Centos 7安装
 
    #建立docker组：
    $ sudo groupadd docker
+
    将当前用户加入  docker  组：
    $ sudo usermod -aG docker $USER
+   $ sudo gpasswd -a $USER docker 
+   $ newgrp docker
 
 最后记得安装加速器，DockerHub在国外，访问可能比较慢，要使用国内的DaoCloud，非常快
 
@@ -322,8 +325,7 @@ Ubuntu安装
      $(lsb_release -cs) \
      stable"
      
-    安装 Docker
-
+    # 安装 Docker
    $ sudo apt-get update
    $ sudo apt-get install docker-ce
 
@@ -727,19 +729,19 @@ docker初始优化
        "max-file":"3"
      }
    }
-   EOFCopy to clipboardErrorCopied
+   EOF
 
 修改启动参数：
 
 .. code:: bash
 
-   vim /usr/lib/systemd/system/docker.serviceCopy to clipboardErrorCopied
+   vim /usr/lib/systemd/system/docker.service
 
 内容如下：删除掉启动参数后面的部分
 
 .. code:: bash
 
-   ExecStart=/usr/bin/dockerdCopy to clipboardErrorCopied
+   ExecStart=/usr/bin/dockerd
 
 此时重启 docker：
 

@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Service &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Ingress" href="2.Ingress.html" />
+    <link rel="prev" title="6.Service和Ingress" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../5.%E6%8E%A7%E5%88%B6%E5%99%A8/index.html">5.控制器</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">6.Service和Ingress</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Service</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">1. 3个向外发布服务方式</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">2.2 个向内发布服务方式</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">3. 服务发现</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">4.其他配置方式</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kubernets-pod">5. kubernets Pod的四种网络模式</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="2.Ingress.html">Ingress</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html">7.存储与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html">8.Kubernetes资源的管理及调度</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">6.Service和Ingress</a> &raquo;</li>
+      <li>Service</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/6.Service和Ingress/1.Service.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#service" id="id12">Service</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id13">1. 3个向外发布服务方式</a></p>
+<ul>
+<li><p><a class="reference internal" href="#clusterip" id="id14">1.1 通过ClusterIP发布</a></p></li>
+<li><p><a class="reference internal" href="#nodeport" id="id15">1.2 通过NodePort发布</a></p></li>
+<li><p><a class="reference internal" href="#loadbalancer" id="id16">1.3 通过LoadBalancer发布</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id4" id="id17">2.2 个向内发布服务方式</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id5" id="id18">2.1 通过无头Service</a></p></li>
+<li><p><a class="reference internal" href="#externalname" id="id19">2.2 通过ExternalName</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id6" id="id20">3. 服务发现</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id7" id="id21">3.1 环境变量</a></p></li>
+<li><p><a class="reference internal" href="#dns" id="id22">3.2 DNS</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id10" id="id23">4.其他配置方式</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id11" id="id24">4.1 未设置选择器的Service</a></p></li>
+<li><p><a class="reference internal" href="#ip" id="id25">4.2 配置外部IP地址</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#kubernets-pod" id="id26">5. kubernets Pod的四种网络模式</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="service">
+<h1><a class="toc-backref" href="#id12">Service</a><a class="headerlink" href="#service" title="Permalink to this headline">¶</a></h1>
+<p>在Kubernetes中，Service是充当基础内部负载均衡器的一种组件。</p>
+<p>Service会将相同功能的Pod在逻辑上组合到一起，一般会采用标签选择器进行组合，让它们表现得如同单个实体。</p>
+<p>Service与Pod</p>
+<img alt="../../_images/image-20220413095554569.png" src="../../_images/image-20220413095554569.png" />
+<p>Service可以发布服务，可以跟踪并路由到所有指定类型的后端容器。</p>
+<p>内部使用者只需要知道Service提供的稳定端点即可进行访问。另外，Service抽象可以根据需要来伸缩或替换后端的工作单位，无论
+Service具体路由到哪个Pod，其IP地址都保持稳定。通过Service，我们可以轻松获得服务发现的能力。</p>
+<p>Service可以定义一组Pod的访问策略，供Kubernetes集群内部使用，或供集群外的机器使用。Service还可以将集群外所提供的服务抽
+象化，有组织地给内部Pod使用。</p>
+<p>和Pod一样，在Kubernetes中Service也属于虚拟网络，只有Master节点和Node属于实体网络，</p>
+<p>Pod和Service的IP地址只在Kubernetes集群（即Master和Node）内能访问，集群外部的机器是无法访问的。</p>
+<p>如果要想让外部机器能访问，对于Pod，可通过之前讲过的将Pod映射到<strong>HostPort上的方法来实现</strong>；</p>
+<p>而对于Service，通常的办法是<strong>配置NodePort或LoadBalancer的Service</strong>，或者给Service配置ExternalIP，以便将Service映射到Master或Node上，供外部机器访问。</p>
+<p>Kubernetes网络</p>
+<img alt="../../_images/image-20220413102102239.png" src="../../_images/image-20220413102102239.png" />
+<p>Service的模板如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span> <span class="c1">#元数据</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">string</span> <span class="c1">#Service的名称</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">string</span> <span class="c1">#Service所属的命名空间</span>
+  <span class="n">labels</span><span class="p">:</span> <span class="c1">#Service的标签</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">string</span>
+  <span class="n">annotations</span><span class="p">:</span> <span class="c1">#Service的注解</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">string</span>
+
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">selector</span><span class="p">:</span> <span class="p">[</span> <span class="p">]</span> <span class="c1">#标签选择器，将选择具有指定标签的Pod作为管理范围</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">string</span> <span class="c1">#Service的类型，分为clusterIP、NodePort、LoadBalancer、ExternalName</span>
+  <span class="n">clusterIP</span><span class="p">:</span> <span class="n">string</span> <span class="c1">#虚拟服务的地址</span>
+  <span class="n">sessionAffinity</span><span class="p">:</span> <span class="n">string</span> <span class="c1">#指定是否支持session，[ClientIP|None] 表示将同一个客户端的访问请</span>
+  <span class="c1">#求都转发到同一个后端</span>
+  <span class="n">ports</span><span class="p">:</span> <span class="c1">#Service需要暴露的端口</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">string</span> <span class="c1">#端口名称，区分不同应用的端口</span>
+    <span class="n">protocol</span><span class="p">:</span> <span class="n">string</span> <span class="c1">#使用的协议</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="c1">#Service监听的端口</span>
+    <span class="n">targetPort</span><span class="p">:</span> <span class="nb">int</span> <span class="c1">#发送到后端应用的端口</span>
+    <span class="n">nodePort</span><span class="p">:</span> <span class="nb">int</span> <span class="c1">#当spec.type=NodePort时，指定映射到物理机的端口</span>
+<span class="n">status</span><span class="p">:</span> <span class="c1">#当spec.type=LoadBalancer时，设置外部负载均衡器的地址</span>
+  <span class="n">loadBalancer</span><span class="p">:</span>
+    <span class="n">ingress</span><span class="p">:</span>
+      <span class="n">ip</span><span class="p">:</span> <span class="n">string</span> <span class="c1">#外部负载的IP地址</span>
+       <span class="n">hostname</span><span class="p">:</span> <span class="n">string</span> <span class="c1">#外部负载均衡的主机名</span>
+</pre></div>
+</div>
+<p>Service目前可定义为5个大类。通过spec.type属性可定义</p>
+<p><code class="docutils literal notranslate"><span class="pre">ClusterIP</span></code>、<code class="docutils literal notranslate"><span class="pre">NodePort</span></code>、<code class="docutils literal notranslate"><span class="pre">LoadBalancer</span></code>、<code class="docutils literal notranslate"><span class="pre">ExternalName</span></code>这4类Service。</p>
+<p>而ClusterIP类服务还可以分为<code class="docutils literal notranslate"><span class="pre">普通Service</span></code>和<code class="docutils literal notranslate"><span class="pre">无头Service</span></code>两类，所以总共分为5类。</p>
+<section id="id1">
+<h2><a class="toc-backref" href="#id13">1. 3个向外发布服务方式</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>3种向外发布的方式分别如下。</p>
+<ul class="simple">
+<li><p>ClusterIP-普通Service:这是默认方式，使用时可以不填写<code class="docutils literal notranslate"><span class="pre">spec.type</span></code>。在Kubernetes集群内部发布服务时，会为Service分配一个集群内部可以访问的固定虚拟IP（即ClusterIP）地址。集群中的机器（即Master和Node）以及集群中的Pod都可以访问这个IP地址。</p></li>
+<li><p>NodePort:这种方式基于ClusterIP方式，先生成一个ClusterIP地址，然后将这个IP地址及端口映射到各个集群机器（即Master
+和Node）的指定端口上。这样，Kubernetes集群外部的机器就可以通过“NodeIP:Node端口”方式访问Service。</p></li>
+<li><p>LoadBalancer：这种方式基于ClusterIP方式和NodePort方式，除此以外，还会申请使用外部负载均衡器，由负载均衡器映射到各
+个“NodeIP:端口”上。这样，Kubernetes集群外部的机器就可以通过负载均衡器访问Service。</p></li>
+</ul>
+<p>定义模板文件，创建一个名为<code class="docutils literal notranslate"><span class="pre">exampledeployforservice.yml</span></code>的模板文件</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployforservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pythonservice</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python:3.7</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;&lt;p&gt;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&lt;/p&gt;&quot;</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">index.html;</span><span class="nv"> </span><span class="s">python</span><span class="nv"> </span><span class="s">-m</span><span class="nv"> </span><span class="s">http.server</span><span class="nv"> </span><span class="s">80&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http</span>
+          <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>各个Pod的标签为“example:
+exampleforservice”，后续建立Service时会用到这个标签。</p>
+<p>通过模板创建Deployment</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampledeployforservice.yml
+</pre></div>
+</div>
+<p>Deployment控制器创建完毕后，先通过<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pod</span> <span class="pre">-o</span> <span class="pre">wide</span></code>命令查看部署情况。可以看到各个Pod都已经创建，它们都有自
+己独立的虚拟IP地址。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod -o wide
+NAME                                       READY   STATUS    RESTARTS   AGE     IP            NODE            NOMINATED NODE   READINESS GATES
+exampledeployforservice-65cd75b4bb-4z4rv   <span class="m">1</span>/1     Running   <span class="m">0</span>          2m39s   <span class="m">10</span>.0.15.74    gitee-k8s-w10   &lt;none&gt;           &lt;none&gt;
+exampledeployforservice-65cd75b4bb-ff797   <span class="m">1</span>/1     Running   <span class="m">0</span>          2m39s   <span class="m">10</span>.0.18.149   gitee-k8s-w25   &lt;none&gt;           &lt;none&gt;
+exampledeployforservice-65cd75b4bb-vjkvs   <span class="m">1</span>/1     Running   <span class="m">0</span>          2m39s   <span class="m">10</span>.0.18.73    gitee-k8s-w25   &lt;none&gt;           &lt;none&gt;
+</pre></div>
+</div>
+<p>我们创建了3个Pod，分别对应于3个IP地址。以第一个Pod为例，因为在这个Pod中已经搭建了一个Web服务（端口为80，虚拟IP地址为
+10.0.15.74）</p>
+<p>所以在node或者master上通过访问这个地址就可以访问这个Pod中的服务，如执行以下命令</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>root@gitee-k8s-w04 ~<span class="o">]</span><span class="c1"># curl 192.168.1.35</span>
+</pre></div>
+</div>
+<p>前面已经提过，因为Pod的IP地址不是固定的，而且直接访问Pod的IP地址也无法实现负载均衡，所以会以Service作为入口，提供稳定的IP地址及负载均衡功能，供集群内外使用。</p>
+<section id="clusterip">
+<h3><a class="toc-backref" href="#id14">1.1 通过ClusterIP发布</a><a class="headerlink" href="#clusterip" title="Permalink to this headline">¶</a></h3>
+<section id="id2">
+<h4>普通Service<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">exampleclusteripservice.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleclusteripservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>type表示Service的类型。该Service的类型为ClusterIP，可以通过<code class="docutils literal notranslate"><span class="pre">spec.clusterIP</span></code>属性自定义ClusterIP虚拟地址，但在本
+例中没有设置这个属性，Kubernetes会随机分配一个ClusterIP虚拟地址。</p></li>
+<li><p>selector表示标签选择器。Service会寻找匹配“example:exampleforservice”的所有Pod，并将它们组织到一个Service
+中。之前我们已经创建了3个这样的Pod。</p></li>
+<li><p>ports表示Service发布端口的设置。</p></li>
+<li><p>protocol表示使用的协议。</p></li>
+<li><p>port表示Service对外提供的端口，可以通过“ClusterIP:端口”访问服务。</p></li>
+<li><p>targetPort表示对应的后端应用（即Pod）的端口。</p></li>
+</ul>
+<p>运行以下命令，通过模板创建Service。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleclusteripservice.yml
+</pre></div>
+</div>
+<p>Service创建成功后，可以通过以下命令查看Service。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get service
+NAME                      TYPE        CLUSTER-IP     EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>    AGE
+exampleclusteripservice   ClusterIP   <span class="m">10</span>.97.98.205   &lt;none&gt;        <span class="m">8080</span>/TCP   &lt;invalid&gt;
+kubernetes                ClusterIP   <span class="m">10</span>.96.0.1      &lt;none&gt;        <span class="m">443</span>/TCP    168d
+</pre></div>
+</div>
+<p>可以看到，Service已成功创建，自动生成的ClusterIP虚拟地址为10.97.98.205
+，端口为8080。可以通过10.97.98.205 :8080访问各个Pod所提供的服务。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>root@gitee-k8s-w04 ~<span class="o">]</span><span class="c1"># for i in {1..10};do curl 10.97.98.205:8080  ;done</span>
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-ff797&lt;/p&gt;
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-4z4rv&lt;/p&gt;
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-vjkvs&lt;/p&gt;
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-vjkvs&lt;/p&gt;
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-4z4rv&lt;/p&gt;
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-vjkvs&lt;/p&gt;
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-vjkvs&lt;/p&gt;
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-4z4rv&lt;/p&gt;
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-ff797&lt;/p&gt;
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-4z4rv&lt;/p&gt;
+</pre></div>
+</div>
+<p>可以看到，通过“ClusterIP:端口”可以成功访问各个Pod上的Web服务，无须关注具体的Pod地址。另外，Service已经实现了负载均
+衡功能，访问时会按比例随机分配到3个Pod中的1个。</p>
+<p>通过以下命令可以查看Service的具体信息。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl describe service {Service名称}
+</pre></div>
+</div>
+<p>在本例中使用了<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">servic</span> <span class="pre">eexampleclusteripservice</span></code>命令，可以看到这个Service的各个信息。</p>
+<p>其中最重要的信息是Endpoints属性，可以看到这里列出了所有Pod的IP地址与公布的端口。</p>
+<p>当调用Service时，会按比例随机转发到Endpoints后面列出的一个地址上面。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl describe svc exampleclusteripservice
+Name:              exampleclusteripservice
+Namespace:         default
+Labels:            &lt;none&gt;
+Annotations:       &lt;none&gt;
+Selector:          <span class="nv">example</span><span class="o">=</span>exampleforservice
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                <span class="m">10</span>.97.98.205
+IPs:               <span class="m">10</span>.97.98.205
+Port:              &lt;unset&gt;  <span class="m">8080</span>/TCP
+TargetPort:        <span class="m">80</span>/TCP
+Endpoints:         <span class="m">10</span>.0.15.74:80,10.0.18.149:80,10.0.18.73:80
+Session Affinity:  None
+Events:            &lt;none&gt;
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h4>Service访问及负载均衡原理<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>为什么在给这3个Pod设置了Service以后，就可以实现负载均衡了呢？在每个节点中都有一个叫作kube-proxy的组件，这个组件识别Service和Pod的动态变化，并将变化的地址信息写入本地的IPTables中。而IPTables使用NAT等技术将virtualIP的流量转至Endpoint。默认情况下，Kubernetes使用的是IPTables模式</p>
+<img alt="../../_images/image-20220413114947962.png" src="../../_images/image-20220413114947962.png" />
+<p>我们可以进入任意一台Kubernetes机器（Master或者Node），运行以下命令查看IPTables的配置</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo iptables -L -v -n -t nat
+</pre></div>
+</div>
+<p>kube-proxy底层是修改iptables规则进行的Server和Pod之间的网络数据转发。每个nat表中有server和pod对应的链，可以看到每条链都有对应的数字，表示被转发的概率，这样实现了流量的负载均衡。</p>
+<p>我的kubernets集群网络插件使用的Cilium 。</p>
+<p>代码开源在 <a class="reference external" href="https://github.com/cilium/cilium">https://github.com/cilium/cilium</a>。</p>
+<p>参考：</p>
+<p>Cilium 网络概述</p>
+<p><a class="reference external" href="https://www.koenli.com/fcdddb4a.html">https://www.koenli.com/fcdddb4a.html</a></p>
+<p>Cilium 的官方文档</p>
+<p><a class="reference external" href="https://docs.cilium.io/en/v1.11/">https://docs.cilium.io/en/v1.11/</a></p>
+<p>其他参考文献</p>
+<p><a class="reference external" href="https://www.jianshu.com/p/090c3d32c2be">https://www.jianshu.com/p/090c3d32c2be</a></p>
+</section>
+</section>
+<section id="nodeport">
+<h3><a class="toc-backref" href="#id15">1.2 通过NodePort发布</a><a class="headerlink" href="#nodeport" title="Permalink to this headline">¶</a></h3>
+<p>通过NodePort发布的方式基于通过ClusterIP发布的方式，先生成一个ClusterIP，然后将这个虚拟IP地址及端口映射到各个集群机器
+（即Master和Node）的指定端口上，这样，Kubernetes集群外部的机器就可以通过“NodeIP:端口”方式访问Service。</p>
+<p><code class="docutils literal notranslate"><span class="pre">examplenode-portservice.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenodeportservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">ports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+    <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+    <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+    <span class="nt">nodePort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30001</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NodePort</span>
+</pre></div>
+</div>
+<p>除了更改type属性之外，这里还添加了nodePort:
+30001属性，它表示将ClusterIP及port属性（本例中为port:8080）映射到集群中各个机器的30001端口上，这样可以通过“NodeIP:端口”访问Service。</p>
+<blockquote>
+<div><p>提示：nodeport的取值范围为30000～32767。</p>
+</div></blockquote>
+<p>运行以下命令，通过模板创建Service。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplenode-portservice.yml
+service/examplenodeportservice created
+</pre></div>
+</div>
+<p>Service创建成功后，可以通过以下命令查看Service。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get svc
+NAME                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>          AGE
+examplenodeportservice   NodePort    <span class="m">10</span>.111.156.147   &lt;none&gt;        <span class="m">8080</span>:30001/TCP   50m
+</pre></div>
+</div>
+<p>由于NodePort方式会基于ClusterIP方式，因此在集群内部还是可以通过ClusterIP进行端口访问的。</p>
+<p>集群外部直接通过NodeIP:30001访问，现在已经可以通过集群外部的机器使用“NodeIP:端口”方式访问Service了</p>
+<img alt="../../_images/image-20220413152445119.png" src="../../_images/image-20220413152445119.png" />
+</section>
+<section id="loadbalancer">
+<h3><a class="toc-backref" href="#id16">1.3 通过LoadBalancer发布</a><a class="headerlink" href="#loadbalancer" title="Permalink to this headline">¶</a></h3>
+<p>LoadBalancer方式基于ClusterIP方式和NodePort方式来创建服务，除此以外，还会申请使用外部负载均衡器，由负载均衡器映射到
+各个“NodeIP:端口”上。</p>
+<p>这样，Kubernetes集群外部的机器就可以通过负载均衡器访问Service。</p>
+<p>以下的yaml示例中，通过设置LoadBalancer映射到云服务商提供的LoadBalancer地址，以请求底层云平台创建一个负载均衡器，并将
+每个Node作为后端进行服务分发。该模式需要底层云平台（如GCE）的支持。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">my</span><span class="o">-</span><span class="n">service</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">MyApp</span>
+  <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">9376</span>
+      <span class="n">nodePort</span><span class="p">:</span> <span class="mi">30061</span>
+  <span class="n">clusterIP</span><span class="p">:</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">171.12</span>
+  <span class="n">loadBalancerIP</span><span class="p">:</span> <span class="mf">78.11</span><span class="o">.</span><span class="mf">42.19</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">loadBalancer</span>
+<span class="n">status</span><span class="p">:</span>
+  <span class="n">loadBalancer</span><span class="p">:</span>
+    <span class="n">ingress</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">ip</span><span class="p">:</span> <span class="mf">146.147</span><span class="o">.</span><span class="mf">12.155</span> <span class="c1">#这个是云服务商提供的负载IP</span>
+</pre></div>
+</div>
+<p>然而，Kubernetes没有为私有集群提供网络负载均衡器（类型为LoadBalancer的Service）的实现。</p>
+<p>如果你的Kubernetes集群没有在公有云的IaaS平台（GCP、AWS、Azure等）上运行，则LoadBalancer将在创建时无限期地处于“Pending”状态。</p>
+<p><strong>也就是说，只有公有云厂商的Kubernetes支持LoadBalancer。</strong></p>
+<section id="metallb-load-balancer">
+<h4>MetalLB实现 Load Balancer 负载均衡<a class="headerlink" href="#metallb-load-balancer" title="Permalink to this headline">¶</a></h4>
+<p>我们使用的是MetalLB，它为不在公有云平台上运行的私有Kubernetes集群提供网络负载均衡器实现，从而有效地在任何集群中使用LoadBalancer
+Service。</p>
+<p>MetalLB官网：<a class="reference external" href="https://metallb.org/">https://metallb.org/</a></p>
+<p>相比Traefik而言</p>
+<p>Traefik和metallb使用的场景是不一样的，</p>
+<ul class="simple">
+<li><p>traefik用在7层的LB</p></li>
+<li><p>metallb是2/3层的LB</p></li>
+</ul>
+<p>MetalLB会在Kubernetes内运行，监控服务对象的变化。一旦察觉有新的LoadBalancer
+Service在运行，并且没有可申请的负载均衡器 之后，就会完成以下两部分工作。</p>
+<ul class="simple">
+<li><p>地址分配：MetalLB将会把在用户配置的地址池中选取的地址分配给Service。</p></li>
+<li><p>地址广播：根据不同配置，MetalLB会以二层（ARP/NDP）或者BGP方式进行地址广播</p></li>
+</ul>
+<p>MetalLB的原理</p>
+<img alt="../../_images/image-20220413153604568.png" src="../../_images/image-20220413153604568.png" />
+<p>首先，为了安装MetalLB，直接执行以下命令即可。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
+</pre></div>
+</div>
+<p>MetalLB的相关资源都会安装到metallb-system这个命名空间（namespace）下。</p>
+<p>配置生效后，可以通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pods</span> <span class="pre">-n</span> <span class="pre">metallb-system</span></code>命令进行查看。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods -n metallb-system
+</pre></div>
+</div>
+<p>其中包含一个名为“controller”的Deployment控制器和一个名为“speaker”的DaemonSet控制器。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">kubectl</span> <span class="n">get</span> <span class="n">pods</span> <span class="o">-</span><span class="n">n</span> <span class="n">metallb</span><span class="o">-</span><span class="n">system</span>
+<span class="n">NAME</span>                          <span class="n">READY</span>   <span class="n">STATUS</span>              <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">controller</span><span class="o">-</span><span class="mi">66445</span><span class="n">f859d</span><span class="o">-</span><span class="n">pj6qb</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">2</span><span class="n">q9pk</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">2</span><span class="n">v5c9</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">4</span><span class="n">h2kl</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">4</span><span class="n">h8pf</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">569</span><span class="n">vp</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">5</span><span class="n">k9lp</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">5</span><span class="n">wnjx</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">6</span><span class="n">k6ts</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">85</span><span class="n">bgw</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">88</span><span class="n">v5m</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">8</span><span class="n">rvqv</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="n">speaker</span><span class="o">-</span><span class="mi">944</span><span class="n">wx</span>                 <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>             <span class="mi">0</span>          <span class="mi">119</span><span class="n">s</span>
+<span class="o">....</span>
+</pre></div>
+</div>
+<p>然后，还需要创建一个配置文件发送给MetalLB，以提供对应的集群IP地址及相关协议配置。</p>
+<p><code class="docutils literal notranslate"><span class="pre">metallb-config.yaml</span></code></p>
+<p>编辑地址池，以把自己的集群地址配置进去。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metallb-system</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">config</span>
+<span class="nt">data</span><span class="p">:</span>
+  <span class="nt">config</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+    <span class="no">address-pools:</span>
+    <span class="no">- name: default</span>
+      <span class="no">protocol: layer2</span>
+      <span class="no">addresses:</span>
+      <span class="no">- 192.168.1.251-192.168.1.253</span>
+      <span class="no"># - 192.168.1.0/28</span>
+</pre></div>
+</div>
+<p>接下来，执行以下命令，让配置生效。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f metallb-config.yaml
+</pre></div>
+</div>
+<p>此时，MetalLB的安装与配置就完成了。
+为了创建对应的Service，先执行以下命令。</p>
+<p><code class="docutils literal notranslate"><span class="pre">exampleloadbalancerservice.yaml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleloadbalancerservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">ports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+    <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+    <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">LoadBalancer</span>
+</pre></div>
+</div>
+<p>通过模板创建Service</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleloadbalancerservice.yaml
+service/exampleloadbalancerservice created
+</pre></div>
+</div>
+<p>Service创建成功后，可以通过以下命令查看Service。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get service
+NAME                         TYPE           CLUSTER-IP     EXTERNAL-IP     PORT<span class="o">(</span>S<span class="o">)</span>          AGE
+exampleloadbalancerservice   LoadBalancer   <span class="m">10</span>.108.17.98   <span class="m">192</span>.168.1.251   <span class="m">8080</span>:30982/TCP   2m25s
+kubernetes                   ClusterIP      <span class="m">10</span>.96.0.1      &lt;none&gt;          <span class="m">443</span>/TCP          168d
+</pre></div>
+</div>
+<p>因为LoadBalancer类型的Service也基于ClusterIP（10.108.17.98:
+8080）和NodePort（NodeIP:30982），所以也可以通过这两种形式来访问。</p>
+<p>对于这个Service，可以通过ClusterIP方式进行访问，也可以通过NodePort方式进行访问。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl <span class="m">10</span>.108.17.98:8080
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-4z4rv&lt;/p&gt;
+</pre></div>
+</div>
+<p>通过NodePort方式访问的结果如图</p>
+<img alt="../../_images/image-20220413164505526.png" src="../../_images/image-20220413164505526.png" />
+<p>除此之外，Service还有一个EXTERNAL-IP地址，这个IP地址就是LoadBalancer对外的IP地址，可以由外部机器访问。</p>
+<p>因为在Service创建时spec.ports.port属性为8080，所以LoadBalancer的端口为8080。</p>
+<p>在本例中，因为LoadBalancer的对外IP为192.168.1.251，端口为8080，所以外部机器也可以通过LoadBalancer地址进行访问。打开
+浏览器访问192.168.1.251:8080</p>
+<img alt="../../_images/image-20220413165244896.png" src="../../_images/image-20220413165244896.png" />
+<p>参考文献</p>
+<blockquote>
+<div><p>MetalLB 负载均衡器使用介绍</p>
+<p><a class="reference external" href="https://www.xiexianbin.cn/kubernetes/network/metallb/index.html?to_index=1">https://www.xiexianbin.cn/kubernetes/network/metallb/index.html?to_index=1</a></p>
+</div></blockquote>
+</section>
+<section id="openelb-load-balancer">
+<h4>OpenELB实现 Load Balancer 负载均衡<a class="headerlink" href="#openelb-load-balancer" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>参考文献：</p>
+<p><a class="reference external" href="https://www.qikqiak.com/post/service-use-openelb/">https://www.qikqiak.com/post/service-use-openelb/</a></p>
+</div></blockquote>
+</section>
+</section>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id17">2.2 个向内发布服务方式</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>2种向内发布的方式分别如下。</p>
+<ul class="simple">
+<li><p>ClusterIP-无头Service（headless
+service）：这种方式不会分配ClusterIP地址，也不通过kube-proxy进行反向代理和负载均
+衡，而是通过DNS提供稳定的网络ID来进行访问。DNS会将无头Service的后端直接解析为Pod的IP地址列表。这种类型的Service
+只能在集群内的Pod中访问，集群中的机器无法直接访问。<strong>这种方式主要供StatefulSet使用。</strong></p></li>
+<li><p>ExternalName：和上面提到的3种向外发布的方式不太一样，在那3种方式中都将Kubernetes集群内部的服务发布出去，而ExternalName则将外部服务引入进来，通过一定格式映射到Kubernetes集群，从而为集群内部提供服务。</p></li>
+</ul>
+<section id="id5">
+<h3><a class="toc-backref" href="#id18">2.1 通过无头Service</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>无头Service（headless service）是一种特殊的Service类型。</p>
+<p><strong>通过无头Service发布，不会分配任何ClusterIP地址，也不通过kube-proxy进行反向代理和负载均衡。</strong></p>
+<p><em>无头Service是通过DNS提供稳定的网络ID来进行访问的，DNS会将无头Service的后端直接解析为Pod的IP地址列表，通过标签选择器将后端的Pod列表返回给调用的客户端。</em></p>
+<p>这种类型的Service只能在集群内的Pod中访问，集群内的机器（即Master和Node）无法直接访问，集群外的机器也无法访问。</p>
+<p><em>无头Service主要供StatefulSet使用。</em></p>
+<p>因为无头Service不提供负载均衡功能，也没有单独的Service
+IP地址，所以开发人员可以自己控制负载均衡策略，降低与Kubernetes
+系统的耦合性。</p>
+<p><code class="docutils literal notranslate"><span class="pre">exampledeployforservice.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployforservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pythonservice</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python:3.7</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;&lt;p&gt;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&lt;/p&gt;&quot;</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">index.html;</span><span class="nv"> </span><span class="s">python</span><span class="nv"> </span><span class="s">-m</span><span class="nv"> </span><span class="s">http.server</span><span class="nv"> </span><span class="s">80&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http</span>
+          <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">exampleheadlessservice.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleheadlessservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">clusterIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">None</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
+</pre></div>
+</div>
+<p>和上一个示例不同的是，这里指定了一个属性<code class="docutils literal notranslate"><span class="pre">clusterIP:None</span></code>，它表示不分配任何虚拟IP地址。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleheadlessservice.yml
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get service
+NAME                     TYPE        CLUSTER-IP   EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>    AGE
+exampleheadlessservice   ClusterIP   None         &lt;none&gt;        <span class="m">8080</span>/TCP   49s
+</pre></div>
+</div>
+<p>相对于上一个示例中创建的Service，无头Service的CLUSTER-IP属性为None，即无法通过IP地址访问。</p>
+<p>由于这个Service无法由集群内外的机器直接访问，因此只能由Pod访问，而且需要通过DNS形式进行访问。</p>
+<p>具体访问形式为<code class="docutils literal notranslate"><span class="pre">{ServiceName}.{Namespace}.svc.{ClusterDomain}</span></code>，</p>
+<p>其中svc是Service的缩写（固定格式）；</p>
+<p>ClusterDomain表示集群域，本例中默认的集群域为cluster.local；</p>
+<p>前面两段文字则是根据Service定义决定的，这个例子中ServiceName为exampleheadlessservice，</p>
+<p>而Namespace没有在yml文件中指定，默认值为Default。</p>
+<p>为了访问这个地址，先创建一个测试用的Pod，用它来尝试访问Service。命令如下。</p>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodforheadlessservice.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforheadlessservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testcontainer</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.io/appropriate/curl</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;test</span><span class="nv"> </span><span class="s">pod</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">headless</span><span class="nv"> </span><span class="s">service!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>这个Pod并没有什么特别之处，其镜像为appropriate/curl。该Pod是一种工具箱，里面存放了一些测试网络和DNS使用的工具（例
+如，curl和nslookup等），正好用于测试现在的Service。执行sleep
+3600命令，可让该容器长期处于运行状态。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforheadlessservice.yml
+</pre></div>
+</div>
+<p>进入容器内部后，可以执行nslookup命令查询DNS信息，获得DNS下面的IP列表。</p>
+<p>之前已经提到，Kubernetes中的DNS资源访问方式为<code class="docutils literal notranslate"><span class="pre">{ServiceName}.{Namespace}.svc.</span> <span class="pre">{ClusterDomain}</span></code>，</p>
+<p>所以本例中的具体命令如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl exec -ti examplepodforheadlessservice -- /bin/sh
+/ # nslookup exampleheadlessservice.default.svc.cluster.local
+nslookup: can&#39;t resolve &#39;(null)&#39;: Name does not resolve
+
+Name:      exampleheadlessservice.default.svc.cluster.local
+Address 1: 10.0.32.186 10-0-32-186.exampleheadlessservice.default.svc.cluster.local
+Address 2: 10.0.23.137 10-0-23-137.exampleheadlessservice.default.svc.cluster.local
+Address 3: 10.0.36.243 10-0-36-243.exampleheadlessservice.default.svc.cluster.local
+</pre></div>
+</div>
+<p>可以通过crul命令来测试可访问性。执行以下命令测试是否可以访问Pod上的Web服务。</p>
+<p>可以看到，Pod上的Web服务可以成功访问。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/ <span class="c1"># curl exampleheadlessservice.default.svc.cluster.local</span>
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-wljkl&lt;/p&gt;
+
+/ <span class="c1"># curl exampleheadlessservice.default.svc.cluster.local</span>
+&lt;p&gt;The host is exampledeployforservice-65cd75b4bb-pfcwm&lt;/p&gt;
+
+<span class="c1"># 如果在同一个名称空间下，还可以用如下方式访问</span>
+/ <span class="c1"># curl exampleheadlessservice</span>
+</pre></div>
+</div>
+<p>除了直接调用该域名访问服务之外，还可以通过解析域名并根据自定义需求来决定具体要访问哪个Pod的ID地址。</p>
+<p>这种方式更适用于由StatefulSet产生的有状态Pod。</p>
+</section>
+<section id="externalname">
+<h3><a class="toc-backref" href="#id19">2.2 通过ExternalName</a><a class="headerlink" href="#externalname" title="Permalink to this headline">¶</a></h3>
+<p>向外发布方式都将Kubernetes集群内部的服务发布出去，而ExternalName恰恰相反，将外部服务引入进来，通过一定格式映射到Kubernetes集群，从而为集群内部提供服务。</p>
+<p>也就是说，ExternalName类型的Service没有选择器，也没有定义任何的端口和端点。</p>
+<p>相反，对于运行在集群外部的服务，通过返回外部服务别名这种方式来提供服务。</p>
+<p><code class="docutils literal notranslate"><span class="pre">exampleexternalnameservice.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleexternalnameservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ExternalName</span>
+  <span class="nt">externalName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">www.baidu.com</span>
+</pre></div>
+</div>
+<p>ExternalName类型的Service所需要的属性很简单，只需要指定type，并通过ExternalName引入外部服务的地址即可，这里直接将百
+度的网址引入进来。</p>
+<p>运行以下命令，通过模板创建Service。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleexternalnameservice.yml
+</pre></div>
+</div>
+<p>Service创建成功后，可以通过以下命令查看Service。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get service
+NAME                         TYPE           CLUSTER-IP   EXTERNAL-IP     PORT<span class="o">(</span>S<span class="o">)</span>   AGE
+exampleexternalnameservice   ExternalName   &lt;none&gt;       www.baidu.com   &lt;none&gt;    37s
+</pre></div>
+</div>
+<p>可以看到，这个Service非常特殊，没有<code class="docutils literal notranslate"><span class="pre">CLUSTER-IP</span></code>，就像无头Service一样，同时也没有对应的<code class="docutils literal notranslate"><span class="pre">PORT(S)</span></code>。</p>
+<p>由于该Service和无头Service类似，因此如果需要访问，需要在Pod内通过DNS解析方式进行访问。</p>
+<p>我们已经创建了一个专门用于测试Service的Pod，现在继续使用它，通过以下命令进入Pod内部，在Pod内部执行命令行。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl <span class="nb">exec</span> -ti examplepodforheadlessservice -- /bin/sh
+
+<span class="c1">## 一共解析出两个IP地址。其具体访问方式和无头Service几乎一致</span>
+/ <span class="c1"># nslookup exampleexternalnameservice.default.svc.cluster.local</span>
+nslookup: can<span class="s1">&#39;t resolve &#39;</span><span class="o">(</span>null<span class="o">)</span><span class="s1">&#39;: Name does not resolve</span>
+
+
+<span class="s1">Name:      exampleexternalnameservice.default.svc.cluster.local</span>
+<span class="s1">Address 1: 14.215.177.39</span>
+<span class="s1">Address 2: 14.215.177.38</span>
+
+<span class="s1">#这两个IP地址其实就是百度的访问地址，可以发现解析出的IP地址和上面是一样的</span>
+<span class="s1">/ # nslookup www.baidu.com</span>
+<span class="s1">nslookup: can&#39;</span>t resolve <span class="s1">&#39;(null)&#39;</span>: Name does not resolve
+
+Name:      www.baidu.com
+Address <span class="m">1</span>: <span class="m">14</span>.215.177.39
+Address <span class="m">2</span>: <span class="m">14</span>.215.177.38
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id20">3. 服务发现</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>Kubernetes支持两种基本的服务发现模式—通过环境变量和通过DNS。通过这两种方式，可以在Pod中发现这些服务。</p>
+<section id="id7">
+<h3><a class="toc-backref" href="#id21">3.1 环境变量</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>在配置的这些环境变量中，<code class="docutils literal notranslate"><span class="pre">{ServiceName}_SERVICE_HOST</span></code>和
+<code class="docutils literal notranslate"><span class="pre">{ServiceName}_</span> <span class="pre">SERVICE_PORT</span></code>格式的变量表示KubernetesService的环境变量（{ServiceName}全转换为大写，横线转换为下
+划线），而其他类型格式则是Docker Link形式的环境变量。</p>
+<p>之前我们已经创建了专用于测试Service的Pod，可以通过以下命令进入Pod内部，以便在Pod内执行命令行。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl <span class="nb">exec</span> -ti examplepodforheadlessservice -- /bin/sh
+</pre></div>
+</div>
+<p>进入Pod后，执行以下命令。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ printenv <span class="p">|</span> grep EXAMPLE
+</pre></div>
+</div>
+<p>该命令的作用是查询所带“EXAMPLE”关键字的环境变量，之前我们所创建的所有Service都有这个前缀。</p>
+<p>这种方式存在一定的局限性。它要求按一定的顺序执行，即先创建<code class="docutils literal notranslate"><span class="pre">Service</span></code>，之后创建的Pod才会有这些环境变量，否则环境变量不会
+有值（除非重启）。</p>
+<p>除此以外，还要求Service和Pod在同一命名空间中，其他命名空间中的变量不会配置到Pod中。</p>
+</section>
+<section id="dns">
+<h3><a class="toc-backref" href="#id22">3.2 DNS</a><a class="headerlink" href="#dns" title="Permalink to this headline">¶</a></h3>
+<p>其具体格式如下。</p>
+<p>{ServiceName}.{Namespace}svc.{ClusterDomain}</p>
+<p>各个动态字段的配置说明如下。</p>
+<ul class="simple">
+<li><p>ServiceName：创建Service时的Name属性。</p></li>
+<li><p>Namespace：创建Service时的Namespace属性，如果没有设置，默认值为Default。</p></li>
+<li><p>ClusterDomain：集群的域名，默认的集群域为cluster.local。</p></li>
+</ul>
+<p>对于普通Service和无头Service，DNS的解析会略有区别。</p>
+<section id="id8">
+<h4>1. 无头Service<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<p>在解析DNS时，会直接将其解析为相关Pod的IP地址及Pod域名列表，以便客户端通过自己的规则动态地使用这些地址</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl exec -ti examplepodforheadlessservice -- /bin/sh
+/ # nslookup exampleheadlessservice.default.svc.cluster.local
+nslookup: can&#39;t resolve &#39;(null)&#39;: Name does not resolve
+
+Name:      exampleheadlessservice.default.svc.cluster.local
+Address 1: 10.0.32.186 10-0-32-186.exampleheadlessservice.default.svc.cluster.local
+Address 2: 10.0.23.137 10-0-23-137.exampleheadlessservice.default.svc.cluster.local
+Address 3: 10.0.36.243 10-0-36-243.exampleheadlessservice.default.svc.cluster.local
+</pre></div>
+</div>
+</section>
+<section id="service-1">
+<span id="id9"></span><h4>2.普通Service<a class="headerlink" href="#service-1" title="Permalink to this headline">¶</a></h4>
+<p>在解析DNS时会将其解析为Service的ClusterIP地址，不会直接获取Pod的各个地址.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleclusteripservice.yml
+
+$ kubectl get service
+NAME                      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+exampleclusteripservice   ClusterIP   10.109.135.25   &lt;none&gt;        8080/TCP   3s
+kubernetes                ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP    171d
+
+$ kubectl apply -f examplepodforheadlessservice.yml
+
+$ kubectl exec -ti examplepodforheadlessservice -- /bin/sh
+/ # nslookup exampleclusteripservice.default.svc.cluster.local
+nslookup: can&#39;t resolve &#39;(null)&#39;: Name does not resolve
+
+Name:      exampleclusteripservice.default.svc.cluster.local
+Address 1: 10.109.135.25 exampleclusteripservice.default.svc.cluster.local
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="id10">
+<h2><a class="toc-backref" href="#id23">4.其他配置方式</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<section id="id11">
+<h3><a class="toc-backref" href="#id24">4.1 未设置选择器的Service</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>Service是对Pod进行访问时最常用的抽象，还可以在以下情况下抽象其他类型的后端。</p>
+<ul class="simple">
+<li><p>如果希望在生产环境中使用外部数据库，但在测试环境中使用自己的数据库。</p></li>
+<li><p>将服务指向不同命名空间下的服务，或者其他集群中的服务。</p></li>
+<li><p>正在做Kubernetes迁移，计划将一部分工作负载迁移到Kubernetes，但现在正在评估，只打算先运行一部分。</p></li>
+</ul>
+<p>在这些情况下，都可以使用没有设置选择器的Service，并自定义Endpoint类型。</p>
+<p><code class="docutils literal notranslate"><span class="pre">examplenoselectorservice.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenoselectorservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>可以发现，这个Service里面没有关于选择器的配置，无法与Pod产生关联。</p>
+<p>运行以下命令，通过模板创建Service。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplenoselectorservice.yml
+</pre></div>
+</div>
+<p>Service创建成功后，可以通过以下命令查看Service。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get service
+NAME                       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>    AGE
+examplenoselectorservice   ClusterIP   <span class="m">10</span>.99.109.46   &lt;none&gt;        <span class="m">8080</span>/TCP   21s
+</pre></div>
+</div>
+<p>此时，可以使用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">service</span> <span class="pre">examplenoselectorservice</span></code>命令查看Service的详细信息。可以
+发现此时Endpoints属性为<code class="docutils literal notranslate"><span class="pre">&lt;none&gt;</span></code>，即没有任何设置</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl describe service examplenoselectorservice
+Name:              examplenoselectorservice
+Namespace:         default
+Labels:            &lt;none&gt;
+Annotations:       &lt;none&gt;
+Selector:          &lt;none&gt;
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                <span class="m">10</span>.99.109.46
+IPs:               <span class="m">10</span>.99.109.46
+Port:              &lt;unset&gt;  <span class="m">8080</span>/TCP
+TargetPort:        <span class="m">80</span>/TCP
+Endpoints:         &lt;none&gt;
+</pre></div>
+</div>
+<p>如果此时通过ClusterIP与端口方式访问Service，可以发现无法连接，</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl 10.99.109.46:8080
+curl: (7) Failed connect to 10.99.109.46:8080; Connection timed out
+</pre></div>
+</div>
+<p>接着，创建Endpoints，让它与刚才创建的Service产生关联。</p>
+<p>接下来，通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">vim</span> <span class="pre">examplenoselectorendpoint.yml</span></code>命令创建模板文件。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod -o wide
+NAME                                 READY   STATUS    RESTARTS   AGE   IP            NODE            NOMINATED NODE   READINESS GATES
+exampledeployment-656c6d8f4c-lww4h   <span class="m">1</span>/1     Running   <span class="m">0</span>          75s   <span class="m">10</span>.0.36.160   gitee-k8s-w08   &lt;none&gt;           &lt;none&gt;
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Endpoints</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenoselectorservice</span>
+<span class="nt">subsets</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">addresses</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">ip</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10.0.36.160</span>
+    <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>这里的IP地址和port可以设置为Kubernetes集群内Pod的IP地址和端口，也可以是Node的IP地址和端口，甚至可以配置成外部集群或外
+网的IP地址和端口。</p>
+<p>这非常灵活，可根据需要配置。这里配置的是10.0.36.160,是一个nginx的容器的IP地址。</p>
+<p>注意，这里Endpoints的name属性需要和Service保持一致，否则无法关联。在本例中，它们的名称都是<code class="docutils literal notranslate"><span class="pre">examplenoselectorservice</span></code>。</p>
+<p>运行以下命令，通过模板创建Endpoints。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplenoselectorendpoint.yml
+</pre></div>
+</div>
+<p>此时再使用<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">service</span> <span class="pre">examplenoselectorservice</span></code>命令，查看Service的详细信息，可
+以发现此时Endpoints已经有信息了，其值为10.0.36.160:80</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl describe service examplenoselectorservice
+Name:              examplenoselectorservice
+Namespace:         default
+Labels:            &lt;none&gt;
+Annotations:       &lt;none&gt;
+Selector:          &lt;none&gt;
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                <span class="m">10</span>.99.109.46
+IPs:               <span class="m">10</span>.99.109.46
+Port:              &lt;unset&gt;  <span class="m">8080</span>/TCP
+TargetPort:        <span class="m">80</span>/TCP
+Endpoints:         <span class="m">10</span>.0.36.160:80
+</pre></div>
+</div>
+<p>此时如果再通过ClusterIP加端口的方式访问Service，可以看到已经成功访问Pod提供的服务。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl <span class="m">10</span>.99.109.46:8080
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+....
+</pre></div>
+</div>
+</section>
+<section id="ip">
+<h3><a class="toc-backref" href="#id25">4.2 配置外部IP地址</a><a class="headerlink" href="#ip" title="Permalink to this headline">¶</a></h3>
+<p><strong>externalIPs 通过svc创建,在指定的node上监听端口</strong></p>
+<p>如果要让Kubernetes集群之外的机器访问集群内部的服务，另一种方式是配置外部IP地址。</p>
+<p>Kubernetes的Service会由externalIP地址发布出去，这样集群之外的机器就可以通过这个外部IP地址来访问Service。</p>
+<p>externalIP可以用在任何类型的发布方式（即ClusterIP、NodePort、LoadBalancer、External
+Name）中。</p>
+<p>举例说明</p>
+<p><code class="docutils literal notranslate"><span class="pre">nginxdeployment.yaml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployment</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80[</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">exampleexternalipservice.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleexternalipservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8081</span>
+      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">externalIPs</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">192.168.1.80</span>
+</pre></div>
+</div>
+<p>这个Service其实就是简单的ClusterIP
+Service，Pod端口为80，而向外映射的端口为8081，这个端口会同时映射到ClusterIP和
+externalIP。我们设置的外部IP地址为192.168.1.80，集群外的机器可以通过这个地址访问集群内的服务。</p>
+<blockquote>
+<div><p>注意：externalIPs
+是一个node节点的IP，NodePort是发布所有的Node的服务，externalIPs
+是发布单个Node的服务</p>
+<p>适用场景:
+想通过svc来负载,但要求某台指定的node上监听,而非像nodeport所有节点监听</p>
+</div></blockquote>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f nginxdeployment.yaml
+$ kubectl apply -f exampleexternalipservice.yml
+</pre></div>
+</div>
+<p>Service创建成功后，可以通过以下命令查看Service。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get service
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP     PORT<span class="o">(</span>S<span class="o">)</span>    AGE
+exampleexternalipservice   ClusterIP   <span class="m">10</span>.107.200.177   <span class="m">192</span>.168.1.101   <span class="m">8081</span>/TCP   48s
+
+$ kubectl describe service exampleexternalipservice
+....
+Endpoints:         <span class="m">10</span>.0.36.190:80
+</pre></div>
+</div>
+<p>可以看到这里多了EXTERNAL-IP属性，它正是我们设置的地址。</p>
+<p>在集群之外的机器上，通过<code class="docutils literal notranslate"><span class="pre">“外部IP地址:端口”</span></code>，就可以访问Pod中的服务。</p>
+<p>从外部机器访问的结果</p>
+<img alt="../../_images/image-20220416145901303.png" src="../../_images/image-20220416145901303.png" />
+</section>
+</section>
+<section id="kubernets-pod">
+<h2><a class="toc-backref" href="#id26">5. kubernets Pod的四种网络模式</a><a class="headerlink" href="#kubernets-pod" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>参考文献：</p>
+<p><a class="reference external" href="https://www.cnblogs.com/iiiiher/p/8051947.html">https://www.cnblogs.com/iiiiher/p/8051947.html</a></p>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="6.Service和Ingress" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="2.Ingress.html" class="btn btn-neutral float-right" title="Ingress" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Server的基本操作 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API Server的身份认证、授权、准入控制" href="2.API-Server%E7%9A%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E3%80%81%E6%8E%88%E6%9D%83%E3%80%81%E5%87%86%E5%85%A5%E6%8E%A7%E5%88%B6.html" />
+    <link rel="prev" title="9.API-Server" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../5.%E6%8E%A7%E5%88%B6%E5%99%A8/index.html">5.控制器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html">7.存储与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html">8.Kubernetes资源的管理及调度</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">9.API-Server</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">API Server的基本操作</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">1 写操作</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">2 读操作</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">3 独有操作</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">4 状态操作</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="2.API-Server%E7%9A%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E3%80%81%E6%8E%88%E6%9D%83%E3%80%81%E5%87%86%E5%85%A5%E6%8E%A7%E5%88%B6.html">API Server的身份认证、授权、准入控制</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">9.API-Server</a> &raquo;</li>
+      <li>API Server的基本操作</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/9.API-Server/1.API-Server的基本操作.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#api-server" id="id16">API Server的基本操作</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id17">1 写操作</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id18">1.1 创建资源</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id19">1.2 替换资源</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id20">1.3 更新资源</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id21">1.4 删除资源</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id6" id="id22">2 读操作</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id7" id="id23">2.1 查询资源</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id24">2.2 监控资源</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id9" id="id25">3 独有操作</a></p>
+<ul>
+<li><p><a class="reference internal" href="#pod" id="id26">3.1 Pod的日志读取操作</a></p></li>
+<li><p><a class="reference internal" href="#deployment-statefulset" id="id27">3.2 Deployment/StatefulSet的伸缩操作</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id12" id="id28">4 状态操作</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id13" id="id29">4.1 查询状态</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id30">4.2 替换状态</a></p></li>
+<li><p><a class="reference internal" href="#id15" id="id31">4.3 更新状态</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="api-server">
+<h1><a class="toc-backref" href="#id16">API Server的基本操作</a><a class="headerlink" href="#api-server" title="Permalink to this headline">¶</a></h1>
+<p>Kubernetes 中的资源访问类型有两种。</p>
+<ul class="simple">
+<li><p>一种是由 Pod
+提供的服务资源，它可通过Service或Ingress发布以供外部访问，这种访问不需要经过API
+Server的认证。</p></li>
+<li><p>另一种是对集群内部资源的操作，它需要通过API
+Server访问，而且要经过一定的认证授权才能进行操作。</p></li>
+</ul>
+<p>API Server提供了对Kubernetes中各类资源对象进行增删改查等操作的HTTP
+REST接口。对资源执行的任何操作，都需要由API Server 处理。</p>
+<p>在之前所有的演示中，我们是通过命令行工具kubectl客户端来访问API
+Server的，<strong>kubectl客户端将把命令行转换为对API Server的</strong> <strong>REST
+API调用。</strong>如果要对Kubernetes的功能进行自定义扩展或二次开发，则需要直接调用API
+Server的REST API。</p>
+<p>我们先在Master节点上打开kubectl反向代理，通过使kubectl反向代理API
+Server，可以直接使用kubectl命令的认证授权来访问API Server。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl proxy --port<span class="o">=</span><span class="m">8080</span>
+Starting to serve on <span class="m">127</span>.0.0.1:8080
+</pre></div>
+</div>
+<p>API Server支持的操作非常多，可以通过以下命令获取API的Swagger
+Json定义，它对每个API都进行了详细说明。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/openapi/v2
+</pre></div>
+</div>
+<p>由于API众多，本节并不打算介绍所有的API，每一个API的具体使用方法可以参见官方文档，或访问API
+Server的路径/openapi/v2（在
+本例中为http://localhost:8080/openapi/v2）来获取Swagger.json格式的详细说明。</p>
+<section id="id1">
+<h2><a class="toc-backref" href="#id17">1 写操作</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="id2">
+<h3><a class="toc-backref" href="#id18">1.1 创建资源</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>创建资源的API调用方式如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTTP请求</span>
+    <span class="n">POST</span>
+    <span class="o">/</span><span class="p">{</span><span class="n">apiVersion</span><span class="p">}</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="p">{</span><span class="n">namespace</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">资源类型</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>创建资源的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>api
+Version</p></td>
+<td><p>与yaml模
+板中填写的apiVersion属性类似，区别在于加了api或apis前缀。
+例如，Pod的apiVersion为api/v1，Deployment控制器的apiVer
+sion为apis/apps/v1，Job控制器的apiVersion为apis/batch/v1等</p></td>
+</tr>
+<tr class="row-odd"><td><p>na
+mespace</p></td>
+<td><p>命名空间，如果没有特定命名空间可使用“default”</p></td>
+</tr>
+<tr class="row-even"><td><p>资
+源类型</p></td>
+<td><p>资源类型使用复数形式，例如，pods、deployments、daemons
+ets、services、ingresses、configmaps、limitranges、nodes等</p></td>
+</tr>
+</tbody>
+</table>
+<p>创建资源的API的请求体只有一个参数——资源类型Json对象，它表示使用Json方式描述的资源对象，等同于之前介绍的yaml模板，只
+是这里用Json表现方式传入。</p>
+<p>创建资源的API的返回值</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 46%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>状态码</p></th>
+<th class="head"><p>返回消息体</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>202</p></td>
+<td><p>创建后的资源类型Json对象</p></td>
+<td><p>请求已接受（accepted）</p></td>
+</tr>
+<tr class="row-odd"><td><p>200</p></td>
+<td><p>创建后的资源类型Json对象</p></td>
+<td><p>请求成功（OK）</p></td>
+</tr>
+<tr class="row-even"><td><p>201</p></td>
+<td><p>创建后的资源类型Json对象</p></td>
+<td><p>请求已创建（created）</p></td>
+</tr>
+</tbody>
+</table>
+<p>例如，要创建一个Pod对象，执行以下命令。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods -H <span class="s2">&quot;Content-Type:application/json&quot;</span> -X <span class="se">\</span>
+        POST -d <span class="s1">&#39;{</span>
+<span class="s1">        &quot;apiVersion&quot;: &quot;v1&quot;,</span>
+<span class="s1">        &quot;kind&quot;: &quot;Pod&quot;,</span>
+<span class="s1">        &quot;metadata&quot;: {</span>
+<span class="s1">        &quot;name&quot;: &quot;examplepod&quot;</span>
+<span class="s1">        },</span>
+<span class="s1">    &quot;spec&quot;: {</span>
+<span class="s1">    &quot;containers&quot;: [</span>
+<span class="s1">        {</span>
+<span class="s1">        &quot;name&quot;: &quot;examplepod-container&quot;,</span>
+<span class="s1">        &quot;image&quot;: &quot;busybox&quot;,</span>
+<span class="s1">        &quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,</span>
+<span class="s1">        &quot;command&quot;: [&quot;sh&quot;,&quot;-c&quot;],</span>
+<span class="s1">        &quot;args&quot;: [&quot;echo \&quot;Hello Kubernetes!\&quot;; sleep 3600&quot;]</span>
+<span class="s1">        }</span>
+<span class="s1">      ]</span>
+<span class="s1">    }</span>
+<span class="s1">}&#39;</span>
+</pre></div>
+</div>
+<p>本例中使用curl命令来执行http请求，请求地址为http://localhost:8080/api/v1/namespaces/default/pods，命名空间为default。-H参数表示增加请求的Header，在本例中为“Content-Type:application/json”；-X参数表示要使用的HttpMethod，在本例中为POST请求；-d参数表示要传入的请求体，在本例中为Pod模板的Json形式，模板字符串包含在一对单引号当中。</p>
+<p>若通过$ kubectl get pod命令查看Pod列表，可以看到Pod已成功创建</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod
+NAME         READY   STATUS    RESTARTS   AGE
+examplepod   <span class="m">1</span>/1     Running   <span class="m">0</span>          &lt;invalid&gt;
+</pre></div>
+</div>
+<p>其余资源（如控制器、Service、PVC、ConfigMap等）也可以使用这种方式创建。</p>
+</section>
+<section id="id3">
+<h3><a class="toc-backref" href="#id19">1.2 替换资源</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>替换资源的API调用方式如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTTP请求</span>
+    <span class="n">PUT</span>
+    <span class="o">/</span><span class="p">{</span><span class="n">apiVersion</span><span class="p">}</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="p">{</span><span class="n">namespace</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">资源类型</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">name</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>替换资源的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>api
+Version</p></td>
+<td><p>与yaml模
+板中填写的apiVersion属性类似，区别在于加了api或apis前缀。
+例如，Pod的apiVersion为api/v1，Deployment控制器的apiVer
+sion为apis/apps/v1，Job控制器的apiVersion为apis/batch/v1等</p></td>
+</tr>
+<tr class="row-odd"><td><p>na
+mespace</p></td>
+<td><p>命名空间，如果没有特定命名空间可使用“default”</p></td>
+</tr>
+<tr class="row-even"><td><p>资
+源类型</p></td>
+<td><p>资源类型使用复数形式，例如，pods、deployments、daemons
+ets、services、ingresses、configmaps、limitranges、nodes等</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>资源名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>替换资源的API的请求体只有一个参数——资源类型Json对象，它表示使用Json方式描述的资源对象，等同于之前介绍的yaml模板，只
+是这里用Json表现方式传入。</p>
+<p>替换资源的API的返回值如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 47%" />
+<col style="width: 41%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>状态码</p></th>
+<th class="head"><p>返回消息体</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>200</p></td>
+<td><p>替换后的资源类型Json对象</p></td>
+<td><p>请求成功（OK）</p></td>
+</tr>
+<tr class="row-odd"><td><p>201</p></td>
+<td><p>替换后的资源类型Json对象</p></td>
+<td><p>请求已创建（created）</p></td>
+</tr>
+</tbody>
+</table>
+<p>我们修改之前示例中定义的Pod，为其增加标签（label），即key1:
+value1。可以使用API修改之前创建的Pod，但这种更新相对
+死板，需要先通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">curl</span> <span class="pre">http://localhost:8080/api/v1/namespaces/default/pods/examplepod</span></code>获取当前的Pod信息，然后粘贴status属性之前的所有片段以作为请求体的基础，并添加标签信息。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod -H <span class="se">\</span>
+<span class="s2">&quot;Content-Type:application/json&quot;</span> -X PUT -d <span class="s1">&#39;{</span>
+<span class="s1">    &quot;kind&quot;: &quot;Pod&quot;,</span>
+<span class="s1">    &quot;apiVersion&quot;: &quot;v1&quot;,</span>
+<span class="s1">    &quot;metadata&quot;: {</span>
+<span class="s1">        &quot;name&quot;: &quot;examplepod&quot;,</span>
+<span class="s1">        &quot;namespace&quot;: &quot;default&quot;,</span>
+<span class="s1">        &quot;selfLink&quot;: &quot;/api/v1/namespaces/default/pods/examplepod&quot;,</span>
+<span class="s1">        &quot;uid&quot;: &quot;17a4a6e2-91ff-43b9-b9bc-ed37e8176a64&quot;,</span>
+<span class="s1">        &quot;resourceVersion&quot;: &quot;82851536&quot;,</span>
+<span class="s1">        &quot;creationTimestamp&quot;: &quot;2022-04-20T05:40:20Z&quot;,</span>
+<span class="s1">        &quot;labels&quot;: {</span>
+<span class="s1">            &quot;key1&quot;: &quot;value1&quot;</span>
+<span class="s1">        },</span>
+<span class="s1">        &quot;managedFields&quot;: [</span>
+<span class="s1">            {</span>
+<span class="s1">                &quot;manager&quot;: &quot;curl&quot;,</span>
+<span class="s1">                &quot;operation&quot;: &quot;Update&quot;,</span>
+<span class="s1">                &quot;apiVersion&quot;: &quot;v1&quot;,</span>
+<span class="s1">                &quot;time&quot;: &quot;2022-04-20T05:40:20Z&quot;,</span>
+<span class="s1">                &quot;fieldsType&quot;: &quot;FieldsV1&quot;,</span>
+<span class="s1">                &quot;fieldsV1&quot;: {</span>
+<span class="s1">                    &quot;f:spec&quot;: {</span>
+<span class="s1">                        &quot;f:containers&quot;: {</span>
+<span class="s1">                            &quot;k:{\&quot;name\&quot;:\&quot;examplepod-container\&quot;}&quot;: {</span>
+<span class="s1">                                &quot;.&quot;: {},</span>
+<span class="s1">                                &quot;f:args&quot;: {},</span>
+<span class="s1">                                &quot;f:command&quot;: {},</span>
+<span class="s1">                                &quot;f:image&quot;: {},</span>
+<span class="s1">                                &quot;f:imagePullPolicy&quot;: {},</span>
+<span class="s1">                                &quot;f:name&quot;: {},</span>
+<span class="s1">                                &quot;f:resources&quot;: {},</span>
+<span class="s1">                                &quot;f:terminationMessagePath&quot;: {},</span>
+<span class="s1">                                &quot;f:terminationMessagePolicy&quot;: {}</span>
+<span class="s1">                            }</span>
+<span class="s1">                        },</span>
+<span class="s1">                        &quot;f:dnsPolicy&quot;: {},</span>
+<span class="s1">                        &quot;f:enableServiceLinks&quot;: {},</span>
+<span class="s1">                        &quot;f:restartPolicy&quot;: {},</span>
+<span class="s1">                        &quot;f:schedulerName&quot;: {},</span>
+<span class="s1">                        &quot;f:securityContext&quot;: {},</span>
+<span class="s1">                        &quot;f:terminationGracePeriodSeconds&quot;: {}</span>
+<span class="s1">                    }</span>
+<span class="s1">                }</span>
+<span class="s1">            },</span>
+<span class="s1">            {</span>
+<span class="s1">                &quot;manager&quot;: &quot;kubelet&quot;,</span>
+<span class="s1">                &quot;operation&quot;: &quot;Update&quot;,</span>
+<span class="s1">                &quot;apiVersion&quot;: &quot;v1&quot;,</span>
+<span class="s1">                &quot;time&quot;: &quot;2022-04-20T05:40:22Z&quot;,</span>
+<span class="s1">                &quot;fieldsType&quot;: &quot;FieldsV1&quot;,</span>
+<span class="s1">                &quot;fieldsV1&quot;: {</span>
+<span class="s1">                    &quot;f:status&quot;: {</span>
+<span class="s1">                        &quot;f:conditions&quot;: {</span>
+<span class="s1">                            &quot;k:{\&quot;type\&quot;:\&quot;ContainersReady\&quot;}&quot;: {</span>
+<span class="s1">                                &quot;.&quot;: {},</span>
+<span class="s1">                                &quot;f:lastProbeTime&quot;: {},</span>
+<span class="s1">                                &quot;f:lastTransitionTime&quot;: {},</span>
+<span class="s1">                                &quot;f:status&quot;: {},</span>
+<span class="s1">                                &quot;f:type&quot;: {}</span>
+<span class="s1">                            },</span>
+<span class="s1">                            &quot;k:{\&quot;type\&quot;:\&quot;Initialized\&quot;}&quot;: {</span>
+<span class="s1">                                &quot;.&quot;: {},</span>
+<span class="s1">                                &quot;f:lastProbeTime&quot;: {},</span>
+<span class="s1">                                &quot;f:lastTransitionTime&quot;: {},</span>
+<span class="s1">                                &quot;f:status&quot;: {},</span>
+<span class="s1">                                &quot;f:type&quot;: {}</span>
+<span class="s1">                            },</span>
+<span class="s1">                            &quot;k:{\&quot;type\&quot;:\&quot;Ready\&quot;}&quot;: {</span>
+<span class="s1">                                &quot;.&quot;: {},</span>
+<span class="s1">                                &quot;f:lastProbeTime&quot;: {},</span>
+<span class="s1">                                &quot;f:lastTransitionTime&quot;: {},</span>
+<span class="s1">                                &quot;f:status&quot;: {},</span>
+<span class="s1">                                &quot;f:type&quot;: {}</span>
+<span class="s1">                            }</span>
+<span class="s1">                        },</span>
+<span class="s1">                        &quot;f:containerStatuses&quot;: {},</span>
+<span class="s1">                        &quot;f:hostIP&quot;: {},</span>
+<span class="s1">                        &quot;f:phase&quot;: {},</span>
+<span class="s1">                        &quot;f:podIP&quot;: {},</span>
+<span class="s1">                        &quot;f:podIPs&quot;: {</span>
+<span class="s1">                            &quot;.&quot;: {},</span>
+<span class="s1">                            &quot;k:{\&quot;ip\&quot;:\&quot;10.0.6.212\&quot;}&quot;: {</span>
+<span class="s1">                                &quot;.&quot;: {},</span>
+<span class="s1">                                &quot;f:ip&quot;: {}</span>
+<span class="s1">                            }</span>
+<span class="s1">                        },</span>
+<span class="s1">                        &quot;f:startTime&quot;: {}</span>
+<span class="s1">                    }</span>
+<span class="s1">                }</span>
+<span class="s1">            }</span>
+<span class="s1">        ]</span>
+<span class="s1">    },</span>
+<span class="s1">    &quot;spec&quot;: {</span>
+<span class="s1">        &quot;volumes&quot;: [</span>
+<span class="s1">            {</span>
+<span class="s1">                &quot;name&quot;: &quot;kube-api-access-dzpd6&quot;,</span>
+<span class="s1">                &quot;projected&quot;: {</span>
+<span class="s1">                    &quot;sources&quot;: [</span>
+<span class="s1">                        {</span>
+<span class="s1">                            &quot;serviceAccountToken&quot;: {</span>
+<span class="s1">                                &quot;expirationSeconds&quot;: 3607,</span>
+<span class="s1">                                &quot;path&quot;: &quot;token&quot;</span>
+<span class="s1">                            }</span>
+<span class="s1">                        },</span>
+<span class="s1">                        {</span>
+<span class="s1">                            &quot;configMap&quot;: {</span>
+<span class="s1">                                &quot;name&quot;: &quot;kube-root-ca.crt&quot;,</span>
+<span class="s1">                                &quot;items&quot;: [</span>
+<span class="s1">                                    {</span>
+<span class="s1">                                        &quot;key&quot;: &quot;ca.crt&quot;,</span>
+<span class="s1">                                        &quot;path&quot;: &quot;ca.crt&quot;</span>
+<span class="s1">                                    }</span>
+<span class="s1">                                ]</span>
+<span class="s1">                            }</span>
+<span class="s1">                        },</span>
+<span class="s1">                        {</span>
+<span class="s1">                            &quot;downwardAPI&quot;: {</span>
+<span class="s1">                                &quot;items&quot;: [</span>
+<span class="s1">                                    {</span>
+<span class="s1">                                        &quot;path&quot;: &quot;namespace&quot;,</span>
+<span class="s1">                                        &quot;fieldRef&quot;: {</span>
+<span class="s1">                                            &quot;apiVersion&quot;: &quot;v1&quot;,</span>
+<span class="s1">                                            &quot;fieldPath&quot;: &quot;metadata.namespace&quot;</span>
+<span class="s1">                                        }</span>
+<span class="s1">                                    }</span>
+<span class="s1">                                ]</span>
+<span class="s1">                            }</span>
+<span class="s1">                        }</span>
+<span class="s1">                    ],</span>
+<span class="s1">                    &quot;defaultMode&quot;: 420</span>
+<span class="s1">                }</span>
+<span class="s1">            }</span>
+<span class="s1">        ],</span>
+<span class="s1">        &quot;containers&quot;: [</span>
+<span class="s1">            {</span>
+<span class="s1">                &quot;name&quot;: &quot;examplepod-container&quot;,</span>
+<span class="s1">                &quot;image&quot;: &quot;busybox&quot;,</span>
+<span class="s1">                &quot;command&quot;: [</span>
+<span class="s1">                    &quot;sh&quot;,</span>
+<span class="s1">                    &quot;-c&quot;</span>
+<span class="s1">                ],</span>
+<span class="s1">                &quot;args&quot;: [</span>
+<span class="s1">                    &quot;echo \&quot;Hello Kubernetes!\&quot;; sleep 3600&quot;</span>
+<span class="s1">                ],</span>
+<span class="s1">                &quot;resources&quot;: {},</span>
+<span class="s1">                &quot;volumeMounts&quot;: [</span>
+<span class="s1">                    {</span>
+<span class="s1">                        &quot;name&quot;: &quot;kube-api-access-dzpd6&quot;,</span>
+<span class="s1">                        &quot;readOnly&quot;: true,</span>
+<span class="s1">                        &quot;mountPath&quot;: &quot;/var/run/secrets/kubernetes.io/serviceaccount&quot;</span>
+<span class="s1">                    }</span>
+<span class="s1">                ],</span>
+<span class="s1">                &quot;terminationMessagePath&quot;: &quot;/dev/termination-log&quot;,</span>
+<span class="s1">                &quot;terminationMessagePolicy&quot;: &quot;File&quot;,</span>
+<span class="s1">                &quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;</span>
+<span class="s1">            }</span>
+<span class="s1">        ],</span>
+<span class="s1">        &quot;restartPolicy&quot;: &quot;Always&quot;,</span>
+<span class="s1">        &quot;terminationGracePeriodSeconds&quot;: 30,</span>
+<span class="s1">        &quot;dnsPolicy&quot;: &quot;ClusterFirst&quot;,</span>
+<span class="s1">        &quot;serviceAccountName&quot;: &quot;default&quot;,</span>
+<span class="s1">        &quot;serviceAccount&quot;: &quot;default&quot;,</span>
+<span class="s1">        &quot;nodeName&quot;: &quot;gitee-k8s-w27&quot;,</span>
+<span class="s1">        &quot;securityContext&quot;: {},</span>
+<span class="s1">        &quot;schedulerName&quot;: &quot;default-scheduler&quot;,</span>
+<span class="s1">        &quot;tolerations&quot;: [</span>
+<span class="s1">            {</span>
+<span class="s1">                &quot;key&quot;: &quot;node.kubernetes.io/not-ready&quot;,</span>
+<span class="s1">                &quot;operator&quot;: &quot;Exists&quot;,</span>
+<span class="s1">                &quot;effect&quot;: &quot;NoExecute&quot;,</span>
+<span class="s1">                &quot;tolerationSeconds&quot;: 300</span>
+<span class="s1">            },</span>
+<span class="s1">            {</span>
+<span class="s1">                &quot;key&quot;: &quot;node.kubernetes.io/unreachable&quot;,</span>
+<span class="s1">                &quot;operator&quot;: &quot;Exists&quot;,</span>
+<span class="s1">                &quot;effect&quot;: &quot;NoExecute&quot;,</span>
+<span class="s1">                &quot;tolerationSeconds&quot;: 300</span>
+<span class="s1">            }</span>
+<span class="s1">        ],</span>
+<span class="s1">        &quot;priority&quot;: 0,</span>
+<span class="s1">        &quot;enableServiceLinks&quot;: true,</span>
+<span class="s1">        &quot;preemptionPolicy&quot;: &quot;PreemptLowerPriority&quot;</span>
+<span class="s1">    }</span>
+<span class="s1">}&#39;</span>
+</pre></div>
+</div>
+<p>可以看到，整个请求体里面包含了非常多不相关的文本，这就是直接使用PUT请求的弊端。</p>
+</section>
+<section id="id4">
+<h3><a class="toc-backref" href="#id20">1.3 更新资源</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>上述方式使用的是完全更新，还可以实现局部更新，其调用方式如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTTP请求</span>
+    <span class="n">PATCH</span>
+    <span class="o">/</span><span class="p">{</span><span class="n">apiVersion</span><span class="p">}</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="p">{</span><span class="n">namespace</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">资源类型</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">name</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>更新资源的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>api
+Version</p></td>
+<td><p>与yaml模
+板中填写的apiVersion属性类似，区别在于加了api或apis前缀。
+例如，Pod的apiVersion为api/v1，Deployment控制器的apiVer
+sion为apis/apps/v1，Job控制器的apiVersion为apis/batch/v1等</p></td>
+</tr>
+<tr class="row-odd"><td><p>na
+mespace</p></td>
+<td><p>命名空间，如果没有特定命名空间可使用“default”</p></td>
+</tr>
+<tr class="row-even"><td><p>资
+源类型</p></td>
+<td><p>资源类型使用复数形式，例如，pods、deployments、daemons
+ets、services、ingresses、configmaps、limitranges、nodes等</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>资源名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>更新资源的API的请求体只有一个参数——局部更新的对象，这表示使用Json方式描述的对象，相当于Json模板中的某个片段对象。</p>
+<p>更新资源的API的返回值只有一个状态码200，表示请求成功（OK），返回的消息体表示更新资源类型后完整的Json对象。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod -H <span class="se">\</span>
+    <span class="s2">&quot;Content-Type:application/merge-patch+json&quot;</span> -X PATCH -d <span class="s1">&#39;{</span>
+<span class="s1">    &quot;metadata&quot;: {</span>
+<span class="s1">        &quot;labels&quot;: {</span>
+<span class="s1">            &quot;key1&quot;: &quot;value2&quot;</span>
+<span class="s1">        }</span>
+<span class="s1">    }</span>
+<span class="s1">}&#39;</span>
+</pre></div>
+</div>
+<p>本例中的局部更新效果和之前全局更新的效果一致。区别在于，在局部更新时，Header的Content-Type为application/merge-
+patch+json，同时请求体中只需要传入模板片段，只写需要添加或更新的部分即可。</p>
+</section>
+<section id="id5">
+<h3><a class="toc-backref" href="#id21">1.4 删除资源</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>删除资源的API调用方式如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>HTTP请求
+    删除单个指定资源：DELETE
+    /{apiVersion}/namespaces/{namespace}/{资源类型}/{name}
+
+    删除命名空间下的整类资源对象：DELETE
+    /{apiVersion}/namespaces/{namespace}/{资源类型}
+</pre></div>
+</div>
+<p>删除资源的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>api
+Version</p></td>
+<td><p>与yaml模
+板中填写的apiVersion属性类似，区别在于加了api或apis前缀。
+例如，Pod的apiVersion为api/v1，Deployment控制器的apiVer
+sion为apis/apps/v1，Job控制器的apiVersion为apis/batch/v1等</p></td>
+</tr>
+<tr class="row-odd"><td><p>na
+mespace</p></td>
+<td><p>命名空间，如果没有特定命名空间可使用“default”</p></td>
+</tr>
+<tr class="row-even"><td><p>资
+源类型</p></td>
+<td><p>资源类型使用复数形式，例如，pods、deployments、daemons
+ets、services、ingresses、configmaps、limitranges、nodes等</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>资源名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>删除资源的API的请求体只有一个参数——DeleteOption对象，它表示删除时的一些参数设置，默认可以不传入。</p>
+<p>删除资源的API的返回值</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 26%" />
+<col style="width: 58%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>状态码</p></th>
+<th class="head"><p>返回消息体</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>200</p></td>
+<td><p>Status对象</p></td>
+<td><p>请求成功（OK）</p></td>
+</tr>
+<tr class="row-odd"><td><p>202</p></td>
+<td><p>Status对象</p></td>
+<td><p>请求已接受（accepted）</p></td>
+</tr>
+</tbody>
+</table>
+<p>在本例中，删除单个Pod的命令如下。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod -X DELETE
+</pre></div>
+</div>
+<p>此时再使用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">curl</span> <span class="pre">http://localhost:8080/api/v1/namespaces/default/pods/examplepod</span></code>命令查询Pod，可以发现对应Pod已删除，并将会返回查询失败的信息。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod
+<span class="o">{</span>
+  <span class="s2">&quot;kind&quot;</span>: <span class="s2">&quot;Status&quot;</span>,
+  <span class="s2">&quot;apiVersion&quot;</span>: <span class="s2">&quot;v1&quot;</span>,
+  <span class="s2">&quot;metadata&quot;</span>: <span class="o">{</span>
+
+  <span class="o">}</span>,
+  <span class="s2">&quot;status&quot;</span>: <span class="s2">&quot;Failure&quot;</span>,
+  <span class="s2">&quot;message&quot;</span>: <span class="s2">&quot;pods \&quot;examplepod\&quot; not found&quot;</span>,
+  <span class="s2">&quot;reason&quot;</span>: <span class="s2">&quot;NotFound&quot;</span>,
+  <span class="s2">&quot;details&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;examplepod&quot;</span>,
+    <span class="s2">&quot;kind&quot;</span>: <span class="s2">&quot;pods&quot;</span>
+  <span class="o">}</span>,
+  <span class="s2">&quot;code&quot;</span>: <span class="m">404</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod
+NAME         READY   STATUS        RESTARTS   AGE
+examplepod   <span class="m">1</span>/1     Terminating   <span class="m">0</span>          34m
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id22">2 读操作</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>可以对各个资源执行单个查询或列表查询，以及监控等操作。</p>
+<p>除了部分极其特殊的资源之外，其他资源具备该操作类型。主要的读操作方式有以下几种。</p>
+<section id="id7">
+<h3><a class="toc-backref" href="#id23">2.1 查询资源</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>查询资源的API调用方式如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>HTTP请求
+    查询命名空间下的资源列表：GET
+    /{apiVersion}/namespaces/{namespace}/{资源类型}
+
+    查询单个指定资源：GET
+    /{apiVersion}/namespaces/{namespace}/{资源类型}/{name}
+</pre></div>
+</div>
+<p>查询资源的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>api
+Version</p></td>
+<td><p>与yaml模
+板中填写的apiVersion属性类似，区别在于加了api或apis前缀。
+例如，Pod的apiVersion为api/v1，Deployment控制器的apiVer
+sion为apis/apps/v1，Job控制器的apiVersion为apis/batch/v1等</p></td>
+</tr>
+<tr class="row-odd"><td><p>na
+mespace</p></td>
+<td><p>命名空间，如果没有特定命名空间可使用“default”</p></td>
+</tr>
+<tr class="row-even"><td><p>资
+源类型</p></td>
+<td><p>资源类型使用复数形式，例如，pods、deployments、daemons
+ets、services、ingresses、configmaps、limitranges、nodes等</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>资源名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>查询资源的 API 的返回值是状态码 200，这表示请求成功（OK）。</p>
+<p>对于/api/v1/
+namespaces/{namespace}/{资源类型}来说，返回的消息体是使用Json方式描述的资源对象列表。</p>
+<p>而对于/api/v1/namespaces/{namespace}/{资源类型}/{name}来说，返回的消息体是使用Json方式描述的资源对象，等同于之前介绍
+的yaml模板，只是这里使用Json表现方式。</p>
+<p>在本例中，查询Pod列表的命令如下。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods
+<span class="o">{</span>
+  <span class="s2">&quot;kind&quot;</span>: <span class="s2">&quot;PodList&quot;</span>,
+  <span class="s2">&quot;apiVersion&quot;</span>: <span class="s2">&quot;v1&quot;</span>,
+  <span class="s2">&quot;metadata&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;selfLink&quot;</span>: <span class="s2">&quot;/api/v1/namespaces/default/pods&quot;</span>,
+    <span class="s2">&quot;resourceVersion&quot;</span>: <span class="s2">&quot;82851741&quot;</span>
+  <span class="o">}</span>,
+  <span class="s2">&quot;items&quot;</span>: <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">&quot;metadata&quot;</span>: <span class="o">{</span>
+        <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;examplepod&quot;</span>,
+......
+</pre></div>
+</div>
+<p>返回值中的kind字段为PodList，表示Pod列表；刚才创建的examplepod已显示在列表中，位于items数组中。</p>
+<p>在本例中，查询单个Pod的命令如下。</p>
+<p>API直接返回了单个Pod的信息。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod
+<span class="o">{</span>
+  <span class="s2">&quot;kind&quot;</span>: <span class="s2">&quot;Pod&quot;</span>,
+  <span class="s2">&quot;apiVersion&quot;</span>: <span class="s2">&quot;v1&quot;</span>,
+  <span class="s2">&quot;metadata&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;examplepod&quot;</span>,
+    <span class="s2">&quot;namespace&quot;</span>: <span class="s2">&quot;default&quot;</span>,
+    <span class="s2">&quot;selfLink&quot;</span>: <span class="s2">&quot;/api/v1/namespaces/default/pods/examplepod&quot;</span>,
+    <span class="s2">&quot;uid&quot;</span>: <span class="s2">&quot;17a4a6e2-91ff-43b9-b9bc-ed37e8176a64&quot;</span>,
+    <span class="s2">&quot;resourceVersion&quot;</span>: <span class="s2">&quot;82851536&quot;</span>,
+    <span class="s2">&quot;creationTimestamp&quot;</span>: <span class="s2">&quot;2022-04-20T05:40:20Z&quot;</span>,
+......
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3><a class="toc-backref" href="#id24">2.2 监控资源</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>通过以下方式监控资源的API。当使用监控API时，将会与服务器建立长连接，持续刷新Pod的当前动态。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>HTTP请求
+    监控命名空间下的资源列表：GET
+    /{apiVersion}/watch/namespaces/{namespace}/{资源类型}
+
+    监控单个指定资源：GET
+    /{apiVersion}/watch/namespaces/{namespace}/{资源类型}/{name}
+</pre></div>
+</div>
+<p>查询资源的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>api
+Version</p></td>
+<td><p>与yaml模
+板中填写的apiVersion属性类似，区别在于加了api或apis前缀。
+例如，Pod的apiVersion为api/v1，Deployment控制器的apiVer
+sion为apis/apps/v1，Job控制器的apiVersion为apis/batch/v1等</p></td>
+</tr>
+<tr class="row-odd"><td><p>na
+mespace</p></td>
+<td><p>命名空间，如果没有特定命名空间可使用“default”</p></td>
+</tr>
+<tr class="row-even"><td><p>资
+源类型</p></td>
+<td><p>资源类型使用复数形式，例如，pods、deployments、daemons
+ets、services、ingresses、configmaps、limitranges、nodes等</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>资源名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>查询资源的 API 的返回值是状态码 200，它表示请求成功（OK）。</p>
+<p>返回的消息体是WatchEvent对象，WatchEvent对象的格式如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{
+    &quot;type&quot;: &quot;操作类型，例如ADDED&quot;,
+    &quot;object&quot;: {
+        资源类型的Json对象，等同于之前介绍的yaml模板，只是这里用Json表
+        现方式
+    }
+}
+</pre></div>
+</div>
+<p>在本例中，监控Pod的命令如下。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/watch/namespaces/default/pods/examplepod
+<span class="o">{</span><span class="s2">&quot;type&quot;</span>:<span class="s2">&quot;ADDED&quot;</span>,<span class="s2">&quot;object&quot;</span>:<span class="o">{</span><span class="s2">&quot;kind&quot;</span>:<span class="s2">&quot;Pod&quot;</span>,<span class="s2">&quot;apiVersion&quot;</span>:<span class="s2">&quot;v1&quot;</span>,<span class="s2">&quot;metadata&quot;</span>:<span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;examplepod&quot;</span>,<span class="s2">&quot;namespace&quot;</span>:<span class="s2">&quot;default&quot;</span>,<span class="s2">&quot;selfLink&quot;</span>:<span class="s2">&quot;/api/v1/namespaces/default/pods/examplepod&quot;</span>,<span class="s2">&quot;uid&quot;</span>:<span class="s2">&quot;17a4a6e2-91ff-43b9-b9bc-ed37e8176a64&quot;</span>,<span class="s2">&quot;resourceVersion&quot;</span>:<span class="s2">&quot;82851536&quot;</span>,<span class="s2">&quot;creationTimestamp&quot;</span>:<span class="s2">&quot;2022-04-20T05:40:20Z&quot;</span>,<span class="s2">&quot;managedFields&quot;</span>:<span class="o">[{</span><span class="s2">&quot;manager&quot;</span>:<span class="s2">&quot;curl&quot;</span>,<span class="s2">&quot;operation&quot;</span>:<span class="s2">&quot;Update&quot;</span>,<span class="s2">&quot;apiVersion&quot;</span>:<span class="s2">&quot;v1&quot;</span>,<span class="s2">&quot;time&quot;</span>:<span class="s2">&quot;2022-04-20T05:40:20Z&quot;</span>,<span class="s2">&quot;fieldsType&quot;</span>:<span class="s2">&quot;FieldsV1&quot;</span>,<span class="s2">&quot;fieldsV1&quot;</span>:<span class="o">{</span><span class="s2">&quot;f:spec&quot;</span>:<span class="o">{</span><span class="s2">&quot;f:containers&quot;</span>:<span class="o">{</span><span class="s2">&quot;k:{\&quot;name\&quot;:\&quot;examplepod-container\&quot;}&quot;</span>:<span class="o">{</span><span class="s2">&quot;.&quot;</span>:<span class="o">{}</span>,<span class="s2">&quot;f:args&quot;</span>:<span class="o">{}</span>,<span class="s2">&quot;f:command&quot;</span>:<span class="o">{}</span>,<span class="s2">&quot;f:image&quot;</span>:<span class="o">{}</span>,<span class="s2">&quot;f:imagePullPolicy&quot;</span>:<span class="o">{}</span>,<span class="s2">&quot;f:name&quot;</span>:<span class="o">{}</span>,<span class="s2">&quot;f:resources&quot;</span>:<span class="o">{}</span>,<span class="s2">&quot;f:terminationMessagePath&quot;</span>:<span class="o">{}</span>,....
+</pre></div>
+</div>
+<p>可以发现第一个操作为ADDED，这表示添加Pod，目前它的标签键值（key1）为value1。</p>
+<p>因为现在curl命令已经与API建立了长连接，所以命令的执行不会结束。</p>
+<p>此时若通过其他命令窗口修改Pod的标签，将标签键值key1修改为value2，可以发现正在监控的命令窗口中的内容已经发生变化，出现
+了第二条操作信息，其类型为MODIFIED，如图9-11所示，表示通过API已经成功监控到Pod所发生的变化。</p>
+<p>将标签键值key1修改为value3</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod -H \
+    &quot;Content-Type:application/merge-patch+json&quot; -X PATCH -d &#39;{
+    &quot;metadata&quot;: {
+        &quot;labels&quot;: {
+            &quot;key1&quot;: &quot;value3&quot;
+        }
+    }
+}&#39;
+</pre></div>
+</div>
+<p>出现了第二条操作信息，其类型为MODIFIED，如下图所示，表示通过API已经成功监控到Pod所发生的变化。</p>
+<img alt="../../_images/image-20220420141028630.png" src="../../_images/image-20220420141028630.png" />
+</section>
+</section>
+<section id="id9">
+<h2><a class="toc-backref" href="#id25">3 独有操作</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>独有操作表示某类资源独有的操作。例如，Pod 可以读取日志，而
+Deployment/StatefulSet控制器可以通过设置Scale控制伸缩。接
+下来将分别介绍相关内容。</p>
+<section id="pod">
+<h3><a class="toc-backref" href="#id26">3.1 Pod的日志读取操作</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h3>
+<p>对于之前示例中创建的Pod，在容器配置中有一行启动命令echo “Hello
+Kubernetes!”，该命令会输出一行文本“Hello
+Kubernetes!”。可以通过日志API查询Pod的输出。</p>
+<p>查询Pod日志的API调用方式如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTTP请求</span>
+    <span class="n">GET</span>
+    <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="p">{</span><span class="n">namespace</span><span class="p">}</span><span class="o">/</span><span class="n">pods</span><span class="o">/</span><span class="p">{</span><span class="n">name</span><span class="p">}</span><span class="o">/</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>查询Pod日志的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>namespace</p></td>
+<td><p>命名空间，如果没有特定命名空间，可使用default</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>Pod名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>查询Pod日志的API的返回值是状态码200，它表示请求成功（OK）。返回的消息体是字符串。
+在本例中，查询日志的命令如下。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod/log
+Hello Kubernetes!
+</pre></div>
+</div>
+</section>
+<section id="deployment-statefulset">
+<h3><a class="toc-backref" href="#id27">3.2 Deployment/StatefulSet的伸缩操作</a><a class="headerlink" href="#deployment-statefulset" title="Permalink to this headline">¶</a></h3>
+<p>在开始介绍API之前，先创建一个基本的Deployment控制器，用它来执行伸缩操作。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/apis/apps/v1/namespaces/default/deployments -H <span class="se">\</span>
+    <span class="s2">&quot;Content-Type:application/json&quot;</span> -X POST -d <span class="s1">&#39;{</span>
+<span class="s1">    &quot;apiVersion&quot;: &quot;apps/v1&quot;,</span>
+<span class="s1">    &quot;kind&quot;: &quot;Deployment&quot;,</span>
+<span class="s1">    &quot;metadata&quot;: {</span>
+<span class="s1">        &quot;name&quot;: &quot;exampledeployment&quot;</span>
+<span class="s1">    },</span>
+<span class="s1">    &quot;spec&quot;: {</span>
+<span class="s1">    &quot;replicas&quot;: 3,</span>
+<span class="s1">    &quot;selector&quot;: {</span>
+<span class="s1">        &quot;matchLabels&quot;: {</span>
+<span class="s1">        &quot;example&quot;: &quot;deploymentfornginx&quot;</span>
+<span class="s1">        }</span>
+<span class="s1">    },</span>
+<span class="s1">    &quot;template&quot;: {</span>
+<span class="s1">        &quot;metadata&quot;: {</span>
+<span class="s1">            &quot;labels&quot;: {</span>
+<span class="s1">            &quot;example&quot;: &quot;deploymentfornginx&quot;</span>
+<span class="s1">            }</span>
+<span class="s1">        },</span>
+<span class="s1">    &quot;spec&quot;: {</span>
+<span class="s1">        &quot;containers&quot;: [</span>
+<span class="s1">        {</span>
+<span class="s1">            &quot;name&quot;: &quot;nginx&quot;,</span>
+<span class="s1">            &quot;image&quot;: &quot;nginx:1.7.9&quot;,</span>
+<span class="s1">        &quot;ports&quot;: [</span>
+<span class="s1">            {</span>
+<span class="s1">                &quot;containerPort&quot;: 80</span>
+<span class="s1">            }</span>
+<span class="s1">            ]</span>
+<span class="s1">          }</span>
+<span class="s1">        ]</span>
+<span class="s1">      }</span>
+<span class="s1">    }</span>
+<span class="s1">  }</span>
+<span class="s1">}&#39;</span>
+</pre></div>
+</div>
+<p>本例中创建了一个名为exampledeployment的Deployment控制器，它拥有3个Pod。命令执行后可以查到对应的Deployment控制器</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+exampledeployment   <span class="m">3</span>/3     <span class="m">3</span>            <span class="m">3</span>           81s
+</pre></div>
+</div>
+<section id="id10">
+<h4>读取伸缩信息<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<p>可以通过API读取Deployment控制器的当前伸缩信息，其调用方式如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTTP请求</span>
+    <span class="n">GET</span>
+    <span class="o">/</span><span class="n">apis</span><span class="o">/</span><span class="n">apps</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="p">{</span><span class="n">namespace</span><span class="p">}</span><span class="o">/</span><span class="n">deployments</span><span class="o">/</span><span class="p">{</span><span class="n">name</span><span class="p">}</span><span class="o">/</span><span class="n">scale</span>
+</pre></div>
+</div>
+<p>读取伸缩信息的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>namespace</p></td>
+<td><p>命名空间，如果没有特定命名空间，可使用default</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>Pod名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>读取伸缩信息的API的返回值是状态码200，它表示请求成功（OK）。返回的消息体是使用Json方式描述的伸缩对象。</p>
+<p>在本例中，查询伸缩信息的命令如下。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/apis/apps/v1/namespaces/default/deployments/exampledeployment/scale
+<span class="o">{</span>
+  <span class="s2">&quot;kind&quot;</span>: <span class="s2">&quot;Scale&quot;</span>,
+  <span class="s2">&quot;apiVersion&quot;</span>: <span class="s2">&quot;autoscaling/v1&quot;</span>,
+  <span class="s2">&quot;metadata&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;exampledeployment&quot;</span>,
+    <span class="s2">&quot;namespace&quot;</span>: <span class="s2">&quot;default&quot;</span>,
+    <span class="s2">&quot;selfLink&quot;</span>: <span class="s2">&quot;/apis/apps/v1/namespaces/default/deployments/exampledeployment/scale&quot;</span>,
+    <span class="s2">&quot;uid&quot;</span>: <span class="s2">&quot;f20edd07-dd69-43b5-85d3-a664d656bd4d&quot;</span>,
+    <span class="s2">&quot;resourceVersion&quot;</span>: <span class="s2">&quot;82868258&quot;</span>,
+    <span class="s2">&quot;creationTimestamp&quot;</span>: <span class="s2">&quot;2022-04-20T06:17:54Z&quot;</span>
+  <span class="o">}</span>,
+  <span class="s2">&quot;spec&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;replicas&quot;</span>: <span class="m">3</span>
+  <span class="o">}</span>,
+  <span class="s2">&quot;status&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;replicas&quot;</span>: <span class="m">3</span>,
+    <span class="s2">&quot;selector&quot;</span>: <span class="s2">&quot;example=deploymentfornginx&quot;</span>
+  <span class="o">}</span>
+</pre></div>
+</div>
+<p>查询结果如上所示，API返回了Deployment控制器的当前伸缩信息。</p>
+</section>
+<section id="id11">
+<h4>更新伸缩信息<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<p>可以通过API更新Deployment的伸缩信息，其调用方式如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTTP请求</span>
+    <span class="n">PATCH</span>
+    <span class="o">/</span><span class="n">apis</span><span class="o">/</span><span class="n">apps</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="p">{</span><span class="n">namespace</span><span class="p">}</span><span class="o">/</span><span class="n">deployments</span><span class="o">/</span><span class="p">{</span><span class="n">name</span><span class="p">}</span><span class="o">/</span><span class="n">scale</span>
+</pre></div>
+</div>
+<p>更新伸缩信息的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>namespace</p></td>
+<td><p>命名空间，如果没有特定命名空间，可使用default</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>Pod名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>更新伸缩信息的API的请求体参数是局部更新对象，它表示使用Json方式描述的对象，相当于Json模板中的某个片段对象。</p>
+<p>更新伸缩信息的API的返回值是状态码200，它表示请求成功（OK）。返回的消息体是更新后伸缩类型的完整Json对象。</p>
+<p>现在我们使用API修改之前的伸缩信息，将其设置为4，需要执行以下命令。</p>
+<p>本例中Header的Content-Type为application/merge-patch+json，同时请求体中只需要传入模板片段，填写需要更新的部分即可。命令执行后，结果如下所示，API返回了更新后的Scale类型的Json对象。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/apis/apps/v1/namespaces/default/deployments/exampledeployment/scale -H  <span class="s2">&quot;Content-Type:application/merge-patch+json&quot;</span> -X PATCH -d <span class="se">\</span>
+    <span class="s1">&#39;{</span>
+<span class="s1">    &quot;spec&quot;: {</span>
+<span class="s1">        &quot;replicas&quot;: 4</span>
+<span class="s1">    }</span>
+<span class="s1">}&#39;</span>
+
+<span class="o">{</span>
+  <span class="s2">&quot;kind&quot;</span>: <span class="s2">&quot;Scale&quot;</span>,
+  <span class="s2">&quot;apiVersion&quot;</span>: <span class="s2">&quot;autoscaling/v1&quot;</span>,
+  <span class="s2">&quot;metadata&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;exampledeployment&quot;</span>,
+    <span class="s2">&quot;namespace&quot;</span>: <span class="s2">&quot;default&quot;</span>,
+    <span class="s2">&quot;selfLink&quot;</span>: <span class="s2">&quot;/apis/apps/v1/namespaces/default/deployments/exampledeployment/scale&quot;</span>,
+    <span class="s2">&quot;uid&quot;</span>: <span class="s2">&quot;f20edd07-dd69-43b5-85d3-a664d656bd4d&quot;</span>,
+    <span class="s2">&quot;resourceVersion&quot;</span>: <span class="s2">&quot;82870725&quot;</span>,
+    <span class="s2">&quot;creationTimestamp&quot;</span>: <span class="s2">&quot;2022-04-20T06:17:54Z&quot;</span>
+  <span class="o">}</span>,
+  <span class="s2">&quot;spec&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;replicas&quot;</span>: <span class="m">4</span>
+  <span class="o">}</span>,
+  <span class="s2">&quot;status&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;replicas&quot;</span>: <span class="m">3</span>,
+    <span class="s2">&quot;selector&quot;</span>: <span class="s2">&quot;example=deploymentfornginx&quot;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>此时再查看Deployment的基本信息，可以看到已经发生变化，如下</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+exampledeployment   <span class="m">4</span>/4     <span class="m">4</span>            <span class="m">4</span>           8m36s
+</pre></div>
+</div>
+<p>伸缩信息还可以使用 API
+来执行替换操作。因为伸缩信息可设置的有意义的属性只有replicas一个，所以下面的API没有必要。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PUT</span>
+<span class="o">/</span><span class="n">apis</span><span class="o">/</span><span class="n">apps</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="p">{</span><span class="n">namespace</span><span class="p">}</span><span class="o">/</span><span class="n">deployments</span><span class="o">/</span><span class="p">{</span><span class="n">name</span><span class="p">}</span><span class="o">/</span><span class="n">scale</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="id12">
+<h2><a class="toc-backref" href="#id28">4 状态操作</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>状态类API可以更新或读取资源的状态。工作负载对象（Pod和控制器）、服务对象（Service和Ingress）、存储对象（PVC和PV）、主
+机对象（Node）、管理类型对象（Namespace、ResourceQuota）都具有这类操作，其他类型对象只有少部分拥有该类操作。</p>
+<p>一般来说，状态应该只用来查询，由Kubernetes自行控制各个资源的状态，只有在极特殊情况下，才会查询、替换、更新资源的状
+态。</p>
+<section id="id13">
+<h3><a class="toc-backref" href="#id29">4.1 查询状态</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>查询状态的 API 调用方式如下。它和查询资源的命令很相似，都返回整个资源的
+Json描述。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTTP请求</span>
+    <span class="n">GET</span>
+    <span class="o">/</span><span class="p">{</span><span class="n">apiVersion</span><span class="p">}</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="p">{</span><span class="n">namespace</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">资源类型</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">name</span><span class="p">}</span><span class="o">/</span><span class="n">status</span>
+</pre></div>
+</div>
+<p>查询状态的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>api
+Version</p></td>
+<td><p>与yaml模
+板中填写的apiVersion属性类似，区别在于加了api或apis前缀。
+例如，Pod的apiVersion为api/v1，Deployment控制器的apiVer
+sion为apis/apps/v1，Job控制器的apiVersion为apis/batch/v1等</p></td>
+</tr>
+<tr class="row-odd"><td><p>na
+mespace</p></td>
+<td><p>命名空间，如果没有特定命名空间可使用“default”</p></td>
+</tr>
+<tr class="row-even"><td><p>资
+源类型</p></td>
+<td><p>资源类型使用复数形式，例如，pods、deployments、daemons
+ets、services、ingresses、configmaps、limitranges、nodes等</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>资源名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>查询状态的API的返回值是状态码200，它表示成功（OK）。返回的消息体是使用Json方式描述的资源对象，等同于之前介绍的yaml模
+板，只是这里使用Json表现方式。</p>
+<p>在本例中，查询Pod状态的命令如下。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod/status
+</pre></div>
+</div>
+<p>查询结果如下所示，API直接返回了Pod的状态信息。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">m1</span> <span class="o">~</span><span class="p">]</span><span class="c1"># curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod/status</span>
+<span class="p">{</span>
+  <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;Pod&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;apiVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;v1&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;examplepod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;selfLink&quot;</span><span class="p">:</span> <span class="s2">&quot;/api/v1/namespaces/default/pods/examplepod/status&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="s2">&quot;4b7276a3-9724-4ac3-8378-92de72c350b7&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;resourceVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;82873324&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;creationTimestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2022-04-20T06:30:47Z&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;managedFields&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;manager&quot;</span><span class="p">:</span> <span class="s2">&quot;curl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="s2">&quot;Update&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;apiVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;v1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;2022-04-20T06:30:47Z&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fieldsType&quot;</span><span class="p">:</span> <span class="s2">&quot;FieldsV1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fieldsV1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;f:spec&quot;</span><span class="p">:{</span><span class="s2">&quot;f:containers&quot;</span><span class="p">:{</span><span class="s2">&quot;k:{</span><span class="se">\&quot;</span><span class="s2">name</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">examplepod-container</span><span class="se">\&quot;</span><span class="s2">}&quot;</span><span class="p">:{</span><span class="s2">&quot;.&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:args&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:command&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:image&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:imagePullPolicy&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:name&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:resources&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:terminationMessagePath&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:terminationMessagePolicy&quot;</span><span class="p">:{}}},</span><span class="s2">&quot;f:dnsPolicy&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:enableServiceLinks&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:restartPolicy&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:schedulerName&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:securityContext&quot;</span><span class="p">:{},</span><span class="s2">&quot;f:terminationGracePeriodSeconds&quot;</span><span class="p">:{}}}</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;manager&quot;</span><span class="p">:</span> <span class="s2">&quot;kubelet&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="s2">&quot;Update&quot;</span><span class="p">,</span>
+        <span class="o">.......</span>
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h3><a class="toc-backref" href="#id30">4.2 替换状态</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p>替换状态的API调用方式如下。 HTTP请求</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PUT</span>
+<span class="o">/</span><span class="p">{</span><span class="n">apiVersion</span><span class="p">}</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="p">{</span><span class="n">namespace</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">资源类型</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">name</span><span class="p">}</span><span class="o">/</span><span class="n">status</span>
+</pre></div>
+</div>
+<p>替换状态的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>api
+Version</p></td>
+<td><p>与yaml模
+板中填写的apiVersion属性类似，区别在于加了api或apis前缀。
+例如，Pod的apiVersion为api/v1，Deployment控制器的apiVer
+sion为apis/apps/v1，Job控制器的apiVersion为apis/batch/v1等</p></td>
+</tr>
+<tr class="row-odd"><td><p>na
+mespace</p></td>
+<td><p>命名空间，如果没有特定命名空间可使用“default”</p></td>
+</tr>
+<tr class="row-even"><td><p>资
+源类型</p></td>
+<td><p>资源类型使用复数形式，例如，pods、deployments、daemons
+ets、services、ingresses、configmaps、limitranges、nodes等</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>资源名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>替换状态的API的请求体参数是资源类型Json对象，它表示使用Json方式描述的资源对象，等同于之前介绍的yaml模板，只是这里使
+用Json表现方式传入。</p>
+<p>替换状态的API的返回值如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 47%" />
+<col style="width: 41%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>状态码</p></th>
+<th class="head"><p>返回消息体</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>200</p></td>
+<td><p>替换后的资源类型Json对象</p></td>
+<td><p>请求成功（OK）</p></td>
+</tr>
+<tr class="row-odd"><td><p>201</p></td>
+<td><p>替换后的资源类型Json对象</p></td>
+<td><p>请求已创建（created）</p></td>
+</tr>
+</tbody>
+</table>
+<p>这种更新相对死板，我们修改之前示例中定义的 Pod 状态。需要
+先通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">curl</span> <span class="pre">http://localhost:8080/api/v1/namespaces/default/pods/examplepod/status</span></code>获取当前Pod的状态信息，然后粘贴整个status属性片段以作为请求体的基础，之后在此基础上修改。</p>
+<p>在本例中，我们将其restartCount属性修改为999，具体命令如下所示。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod/status -H <span class="se">\</span>
+<span class="s2">&quot;Content-Type:application/json&quot;</span> -X PUT -d <span class="s1">&#39;{</span>
+<span class="s1">  &quot;kind&quot;: &quot;Pod&quot;,</span>
+<span class="s1">  &quot;apiVersion&quot;: &quot;v1&quot;,</span>
+<span class="s1">  &quot;metadata&quot;: {</span>
+<span class="s1">    &quot;name&quot;: &quot;examplepod&quot;,</span>
+<span class="s1">    &quot;namespace&quot;: &quot;default&quot;,</span>
+<span class="s1">    &quot;selfLink&quot;: &quot;/api/v1/namespaces/default/pods/examplepod/status&quot;,</span>
+<span class="s1">    &quot;uid&quot;: &quot;4b7276a3-9724-4ac3-8378-92de72c350b7&quot;,</span>
+<span class="s1">    &quot;resourceVersion&quot;: &quot;82876375&quot;,</span>
+<span class="s1">    &quot;creationTimestamp&quot;: &quot;2022-04-20T06:30:47Z&quot;,</span>
+<span class="s1">    &quot;managedFields&quot;: [</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;manager&quot;: &quot;curl&quot;,</span>
+<span class="s1">        &quot;operation&quot;: &quot;Update&quot;,</span>
+<span class="s1">        &quot;apiVersion&quot;: &quot;v1&quot;,</span>
+<span class="s1">        &quot;time&quot;: &quot;2022-04-20T06:36:13Z&quot;,</span>
+<span class="s1">        &quot;fieldsType&quot;: &quot;FieldsV1&quot;,</span>
+<span class="s1">        &quot;fieldsV1&quot;: {&quot;f:spec&quot;:{&quot;f:containers&quot;:{&quot;k:{\&quot;name\&quot;:\&quot;examplepod-container\&quot;}&quot;:{&quot;.&quot;:{},&quot;f:args&quot;:{},&quot;f:command&quot;:{},&quot;f:image&quot;:{},&quot;f:imagePullPolicy&quot;:{},&quot;f:name&quot;:{},&quot;f:resources&quot;:{},&quot;f:terminationMessagePath&quot;:{},&quot;f:terminationMessagePolicy&quot;:{}}},&quot;f:dnsPolicy&quot;:{},&quot;f:enableServiceLinks&quot;:{},&quot;f:restartPolicy&quot;:{},&quot;f:schedulerName&quot;:{},&quot;f:securityContext&quot;:{},&quot;f:terminationGracePeriodSeconds&quot;:{}}}</span>
+<span class="s1">      },</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;manager&quot;: &quot;kubelet&quot;,</span>
+<span class="s1">        &quot;operation&quot;: &quot;Update&quot;,</span>
+<span class="s1">        &quot;apiVersion&quot;: &quot;v1&quot;,</span>
+<span class="s1">        &quot;time&quot;: &quot;2022-04-20T06:37:50Z&quot;,</span>
+<span class="s1">        &quot;fieldsType&quot;: &quot;FieldsV1&quot;,</span>
+<span class="s1">        &quot;fieldsV1&quot;: {&quot;f:status&quot;:{&quot;f:conditions&quot;:{&quot;k:{\&quot;type\&quot;:\&quot;ContainersReady\&quot;}&quot;:{&quot;.&quot;:{},&quot;f:lastProbeTime&quot;:{},&quot;f:lastTransitionTime&quot;:{},&quot;f:status&quot;:{},&quot;f:type&quot;:{}},&quot;k:{\&quot;type\&quot;:\&quot;Initialized\&quot;}&quot;:{&quot;.&quot;:{},&quot;f:lastProbeTime&quot;:{},&quot;f:lastTransitionTime&quot;:{},&quot;f:status&quot;:{},&quot;f:type&quot;:{}},&quot;k:{\&quot;type\&quot;:\&quot;Ready\&quot;}&quot;:{&quot;.&quot;:{},&quot;f:lastProbeTime&quot;:{},&quot;f:lastTransitionTime&quot;:{},&quot;f:status&quot;:{},&quot;f:type&quot;:{}}},&quot;f:containerStatuses&quot;:{},&quot;f:hostIP&quot;:{},&quot;f:phase&quot;:{},&quot;f:podIP&quot;:{},&quot;f:podIPs&quot;:{&quot;.&quot;:{},&quot;k:{\&quot;ip\&quot;:\&quot;10.0.25.238\&quot;}&quot;:{&quot;.&quot;:{},&quot;f:ip&quot;:{}}},&quot;f:startTime&quot;:{}}}</span>
+<span class="s1">      }</span>
+<span class="s1">    ]</span>
+<span class="s1">  },</span>
+<span class="s1">  &quot;spec&quot;: {</span>
+<span class="s1">    &quot;volumes&quot;: [</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;name&quot;: &quot;kube-api-access-hcfqq&quot;,</span>
+<span class="s1">        &quot;projected&quot;: {</span>
+<span class="s1">          &quot;sources&quot;: [</span>
+<span class="s1">            {</span>
+<span class="s1">              &quot;serviceAccountToken&quot;: {</span>
+<span class="s1">                &quot;expirationSeconds&quot;: 3607,</span>
+<span class="s1">                &quot;path&quot;: &quot;token&quot;</span>
+<span class="s1">              }</span>
+<span class="s1">            },</span>
+<span class="s1">            {</span>
+<span class="s1">              &quot;configMap&quot;: {</span>
+<span class="s1">                &quot;name&quot;: &quot;kube-root-ca.crt&quot;,</span>
+<span class="s1">                &quot;items&quot;: [</span>
+<span class="s1">                  {</span>
+<span class="s1">                    &quot;key&quot;: &quot;ca.crt&quot;,</span>
+<span class="s1">                    &quot;path&quot;: &quot;ca.crt&quot;</span>
+<span class="s1">                  }</span>
+<span class="s1">                ]</span>
+<span class="s1">              }</span>
+<span class="s1">            },</span>
+<span class="s1">            {</span>
+<span class="s1">              &quot;downwardAPI&quot;: {</span>
+<span class="s1">                &quot;items&quot;: [</span>
+<span class="s1">                  {</span>
+<span class="s1">                    &quot;path&quot;: &quot;namespace&quot;,</span>
+<span class="s1">                    &quot;fieldRef&quot;: {</span>
+<span class="s1">                      &quot;apiVersion&quot;: &quot;v1&quot;,</span>
+<span class="s1">                      &quot;fieldPath&quot;: &quot;metadata.namespace&quot;</span>
+<span class="s1">                    }</span>
+<span class="s1">                  }</span>
+<span class="s1">                ]</span>
+<span class="s1">              }</span>
+<span class="s1">            }</span>
+<span class="s1">          ],</span>
+<span class="s1">          &quot;defaultMode&quot;: 420</span>
+<span class="s1">        }</span>
+<span class="s1">      }</span>
+<span class="s1">    ],</span>
+<span class="s1">    &quot;containers&quot;: [</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;name&quot;: &quot;examplepod-container&quot;,</span>
+<span class="s1">        &quot;image&quot;: &quot;busybox&quot;,</span>
+<span class="s1">        &quot;command&quot;: [</span>
+<span class="s1">          &quot;sh&quot;,</span>
+<span class="s1">          &quot;-c&quot;</span>
+<span class="s1">        ],</span>
+<span class="s1">        &quot;args&quot;: [</span>
+<span class="s1">          &quot;echo \&quot;Hello Kubernetes!\&quot;; sleep 3600&quot;</span>
+<span class="s1">        ],</span>
+<span class="s1">        &quot;resources&quot;: {</span>
+
+<span class="s1">        },</span>
+<span class="s1">        &quot;volumeMounts&quot;: [</span>
+<span class="s1">          {</span>
+<span class="s1">            &quot;name&quot;: &quot;kube-api-access-hcfqq&quot;,</span>
+<span class="s1">            &quot;readOnly&quot;: true,</span>
+<span class="s1">            &quot;mountPath&quot;: &quot;/var/run/secrets/kubernetes.io/serviceaccount&quot;</span>
+<span class="s1">          }</span>
+<span class="s1">        ],</span>
+<span class="s1">        &quot;terminationMessagePath&quot;: &quot;/dev/termination-log&quot;,</span>
+<span class="s1">        &quot;terminationMessagePolicy&quot;: &quot;File&quot;,</span>
+<span class="s1">        &quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;</span>
+<span class="s1">      }</span>
+<span class="s1">    ],</span>
+<span class="s1">    &quot;restartPolicy&quot;: &quot;Always&quot;,</span>
+<span class="s1">    &quot;terminationGracePeriodSeconds&quot;: 30,</span>
+<span class="s1">    &quot;dnsPolicy&quot;: &quot;ClusterFirst&quot;,</span>
+<span class="s1">    &quot;serviceAccountName&quot;: &quot;default&quot;,</span>
+<span class="s1">    &quot;serviceAccount&quot;: &quot;default&quot;,</span>
+<span class="s1">    &quot;nodeName&quot;: &quot;gitee-k8s-w17&quot;,</span>
+<span class="s1">    &quot;securityContext&quot;: {</span>
+
+<span class="s1">    },</span>
+<span class="s1">    &quot;schedulerName&quot;: &quot;default-scheduler&quot;,</span>
+<span class="s1">    &quot;tolerations&quot;: [</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;key&quot;: &quot;node.kubernetes.io/not-ready&quot;,</span>
+<span class="s1">        &quot;operator&quot;: &quot;Exists&quot;,</span>
+<span class="s1">        &quot;effect&quot;: &quot;NoExecute&quot;,</span>
+<span class="s1">        &quot;tolerationSeconds&quot;: 300</span>
+<span class="s1">      },</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;key&quot;: &quot;node.kubernetes.io/unreachable&quot;,</span>
+<span class="s1">        &quot;operator&quot;: &quot;Exists&quot;,</span>
+<span class="s1">        &quot;effect&quot;: &quot;NoExecute&quot;,</span>
+<span class="s1">        &quot;tolerationSeconds&quot;: 300</span>
+<span class="s1">      }</span>
+<span class="s1">    ],</span>
+<span class="s1">    &quot;priority&quot;: 0,</span>
+<span class="s1">    &quot;enableServiceLinks&quot;: true,</span>
+<span class="s1">    &quot;preemptionPolicy&quot;: &quot;PreemptLowerPriority&quot;</span>
+<span class="s1">  },</span>
+<span class="s1">  &quot;status&quot;: {</span>
+<span class="s1">    &quot;phase&quot;: &quot;Running&quot;,</span>
+<span class="s1">    &quot;conditions&quot;: [</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;type&quot;: &quot;Initialized&quot;,</span>
+<span class="s1">        &quot;status&quot;: &quot;True&quot;,</span>
+<span class="s1">        &quot;lastProbeTime&quot;: null,</span>
+<span class="s1">        &quot;lastTransitionTime&quot;: &quot;2022-04-20T06:30:45Z&quot;</span>
+<span class="s1">      },</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;type&quot;: &quot;Ready&quot;,</span>
+<span class="s1">        &quot;status&quot;: &quot;True&quot;,</span>
+<span class="s1">        &quot;lastProbeTime&quot;: null,</span>
+<span class="s1">        &quot;lastTransitionTime&quot;: &quot;2022-04-20T06:30:47Z&quot;</span>
+<span class="s1">      },</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;type&quot;: &quot;ContainersReady&quot;,</span>
+<span class="s1">        &quot;status&quot;: &quot;True&quot;,</span>
+<span class="s1">        &quot;lastProbeTime&quot;: null,</span>
+<span class="s1">        &quot;lastTransitionTime&quot;: &quot;2022-04-20T06:30:47Z&quot;</span>
+<span class="s1">      },</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;type&quot;: &quot;PodScheduled&quot;,</span>
+<span class="s1">        &quot;status&quot;: &quot;True&quot;,</span>
+<span class="s1">        &quot;lastProbeTime&quot;: null,</span>
+<span class="s1">        &quot;lastTransitionTime&quot;: &quot;2022-04-20T06:29:12Z&quot;</span>
+<span class="s1">      }</span>
+<span class="s1">    ],</span>
+<span class="s1">    &quot;hostIP&quot;: &quot;192.168.1.126&quot;,</span>
+<span class="s1">    &quot;podIP&quot;: &quot;10.0.25.238&quot;,</span>
+<span class="s1">    &quot;podIPs&quot;: [</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;ip&quot;: &quot;10.0.25.238&quot;</span>
+<span class="s1">      }</span>
+<span class="s1">    ],</span>
+<span class="s1">    &quot;startTime&quot;: &quot;2022-04-20T06:30:45Z&quot;,</span>
+<span class="s1">    &quot;containerStatuses&quot;: [</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;name&quot;: &quot;examplepod-container&quot;,</span>
+<span class="s1">        &quot;state&quot;: {</span>
+<span class="s1">          &quot;running&quot;: {</span>
+<span class="s1">            &quot;startedAt&quot;: &quot;2022-04-20T06:30:46Z&quot;</span>
+<span class="s1">          }</span>
+<span class="s1">        },</span>
+<span class="s1">        &quot;lastState&quot;: {</span>
+
+<span class="s1">        },</span>
+<span class="s1">        &quot;ready&quot;: true,</span>
+<span class="s1">        &quot;restartCount&quot;: 999,</span>
+<span class="s1">        &quot;image&quot;: &quot;docker.io/library/busybox:latest&quot;,</span>
+<span class="s1">        &quot;imageID&quot;: &quot;docker.io/library/busybox@sha256:5acba83a746c7608ed544dc1533b87c737a0b0fb730301639a0179f9344b1678&quot;,</span>
+<span class="s1">        &quot;containerID&quot;: &quot;containerd://7f49bba436afa5cc194aa10c208f200c0eea1d318c7b58782be21ba84371435d&quot;,</span>
+<span class="s1">        &quot;started&quot;: true</span>
+<span class="s1">      }</span>
+<span class="s1">    ],</span>
+<span class="s1">    &quot;qosClass&quot;: &quot;BestEffort&quot;</span>
+<span class="s1">  }</span>
+<span class="s1">}&#39;</span>
+</pre></div>
+</div>
+<p>可以看到，整个请求体里面包含了非常多不相关的文本，这就是直接使用PUT请求的弊端。</p>
+<p>执行结果如下所示，可以看到重启次数已修改为999。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.....</span>
+        <span class="s2">&quot;lastState&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+        <span class="p">},</span>
+        <span class="s2">&quot;ready&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+        <span class="s2">&quot;restartCount&quot;</span><span class="p">:</span> <span class="mi">999</span><span class="p">,</span>
+        <span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="s2">&quot;docker.io/library/busybox:latest&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;imageID&quot;</span><span class="p">:</span> <span class="s2">&quot;docker.io/library/busybox@sha256:5acba83a746c7608ed544dc1533b87c737a0b0fb730301639a0179f9344b1678&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;containerID&quot;</span><span class="p">:</span> <span class="s2">&quot;containerd://7f49bba436afa5cc194aa10c208f200c0eea1d318c7b58782be21ba84371435d&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;started&quot;</span><span class="p">:</span> <span class="n">true</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;qosClass&quot;</span><span class="p">:</span> <span class="s2">&quot;BestEffort&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>这种替换方式并不推荐，一般使用PATCH进行局部更新，除非要对状态进行大量更新。</p>
+</section>
+<section id="id15">
+<h3><a class="toc-backref" href="#id31">4.3 更新状态</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<p>通过API，可以实现局部状态更新，其调用方式如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTTP请求</span>
+    <span class="n">PATCH</span>
+    <span class="o">/</span><span class="p">{</span><span class="n">apiVersion</span><span class="p">}</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="p">{</span><span class="n">namespace</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">资源类型</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">name</span><span class="p">}</span><span class="o">/</span><span class="n">status</span>
+</pre></div>
+</div>
+<p>更新状态的API的URL参数如表</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>api
+Version</p></td>
+<td><p>与yaml模
+板中填写的apiVersion属性类似，区别在于加了api或apis前缀。
+例如，Pod的apiVersion为api/v1，Deployment控制器的apiVer
+sion为apis/apps/v1，Job控制器的apiVersion为apis/batch/v1等</p></td>
+</tr>
+<tr class="row-odd"><td><p>na
+mespace</p></td>
+<td><p>命名空间，如果没有特定命名空间可使用“default”</p></td>
+</tr>
+<tr class="row-even"><td><p>资
+源类型</p></td>
+<td><p>资源类型使用复数形式，例如，pods、deployments、daemons
+ets、services、ingresses、configmaps、limitranges、nodes等</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>资源名称</p></td>
+</tr>
+</tbody>
+</table>
+<p>更新状态的API的请求体参数是局部更新对象，它表示使用Json方式描述的对象，相当于Json模板中的某个片段对象。
+更新状态的API的返回值是状态码200，这表示请求成功（OK）。返回的消息体表示更新后的资源类型的完整Json对象。</p>
+<p>在对示例进行操作之前，我们先看看当前 Pod 的状态，如下所示，其 IP
+地址为10.0.25.238，状态为Running。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod -o wide
+NAME         READY   STATUS    RESTARTS   AGE   IP            NODE            NOMINATED NODE   READINESS GATES
+examplepod   <span class="m">1</span>/1     Running   <span class="m">0</span>          18m   <span class="m">10</span>.0.25.238   gitee-k8s-w17   &lt;none&gt;           &lt;none&gt;
+</pre></div>
+</div>
+<p>为了使用API修改之前创建的Pod的状态，执行以下命令。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8080/api/v1/namespaces/default/pods/examplepod/status -H <span class="se">\</span>
+    <span class="s2">&quot;Content-Type:application/merge-patch+json&quot;</span> -X PATCH -d <span class="s1">&#39;{</span>
+<span class="s1">    &quot;status&quot;: {</span>
+<span class="s1">        &quot;podIP&quot;: &quot;10.0.25.239&quot;,</span>
+<span class="s1">        &quot;phase&quot;: &quot;Pending&quot;</span>
+<span class="s1">    }</span>
+<span class="s1">}&#39;</span>
+</pre></div>
+</div>
+<p>本例中Header的Content-Type为application/merge-patch+json，同时请求体中只需要传入模板片段，写入需要更新的
+部分即可。我们将Pod的IP地址修改为10.0.25.239，状态修改为Pending。</p>
+<p>此时再查看Pod的状态，可以看到已经发生变化。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod -o wide
+NAME         READY   STATUS    RESTARTS   AGE   IP            NODE            NOMINATED NODE   READINESS GATES
+examplepod   <span class="m">1</span>/1     Pending   <span class="m">0</span>          21m   <span class="m">10</span>.0.25.239   gitee-k8s-w17   &lt;none&gt;           &lt;none&gt;
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="9.API-Server" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="2.API-Server%E7%9A%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E3%80%81%E6%8E%88%E6%9D%83%E3%80%81%E5%87%86%E5%85%A5%E6%8E%A7%E5%88%B6.html" class="btn btn-neutral float-right" title="API Server的身份认证、授权、准入控制" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

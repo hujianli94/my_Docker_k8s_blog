@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>配置存储卷 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="8.Kubernetes资源的管理及调度" href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html" />
+    <link rel="prev" title="StorageClass" href="4.StorageClass.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../5.%E6%8E%A7%E5%88%B6%E5%99%A8/index.html">5.控制器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">7.存储与配置</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="1.%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8%E5%8D%B7.html">本地存储卷</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2.%E7%BD%91%E7%BB%9C%E5%AD%98%E5%82%A8%E5%8D%B7.html">网络存储卷</a></li>
+<li class="toctree-l3"><a class="reference internal" href="3.%E6%8C%81%E4%B9%85%E5%AD%98%E5%82%A8%E5%8D%B7.html">持久存储卷</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4.StorageClass.html">StorageClass</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">配置存储卷</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configmap">1. ConfigMap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#secret">2. Secret</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#downward-api">3. Downward API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html">8.Kubernetes资源的管理及调度</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">7.存储与配置</a> &raquo;</li>
+      <li>配置存储卷</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/7.存储与配置/5.配置存储卷.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id12">配置存储卷</a></p>
+<ul>
+<li><p><a class="reference internal" href="#configmap" id="id13">1. ConfigMap</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id14">1.1 环境变量引用方式</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id15">1.2 存储卷引用方式</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#secret" id="id16">2. Secret</a></p>
+<ul>
+<li><p><a class="reference internal" href="#opaquesecret" id="id17">2.1 OpaqueSecret</a></p></li>
+<li><p><a class="reference internal" href="#imagepullsecret" id="id18">2.2 ImagePullSecret</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#downward-api" id="id19">3. Downward API</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id8" id="id20">3.1 环境变量引用方式</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id21">3.2 存储卷引用方式</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="id1">
+<h1><a class="toc-backref" href="#id12">配置存储卷</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Kubernetes还拥有一些存储卷，但它们并不是用来进行容器间交互或Pod间数据共享的，而是用于向各个Pod的容器中注入配置信息
+的。它们的使用方式大同小异，Pod可以通过环境变量或者存储卷访问这些配置信息。</p>
+<p>目前这类存储卷主要分为3种。</p>
+<ul class="simple">
+<li><p>ConfigMap：可传递普通的配置信息。</p></li>
+<li><p>Secret：可传递敏感的、加密的配置信息。</p></li>
+<li><p>DownwardAPI：可传递Pod和容器自身的运行信息。</p></li>
+</ul>
+<section id="configmap">
+<h2><a class="toc-backref" href="#id13">1. ConfigMap</a><a class="headerlink" href="#configmap" title="Permalink to this headline">¶</a></h2>
+<p>在企业运营中，一般都会有多个部署环境，如开发环境、测试环境、预发布环境、生产环境等，这几种环境的配置也各有不同。如果
+在Pod模板中直接配置，会发现管理非常困难，每个环境都要准备不同的模板。</p>
+<p>利用 ConfigMap
+可以解耦部署与配置之间的关系，只需要在各个环境的机器上预先完成不同的配置即可，也就是配置ConfigMap。</p>
+<p>而对于同一个应用部署，Pod模板无须变化，只要将明文编写的配置设置为对ConfigMap的引用，就可以降低环境管理和部署的复杂度，</p>
+<p>利用ConfigMap解耦部署与配置间的关系 如图所示</p>
+<img alt="../../_images/image-20220419095433455.png" src="../../_images/image-20220419095433455.png" />
+<p>ConfigMap主要是以键值对的方式来存储配置信息的。首先，创建一个ConfigMap。和之前一样，通过以下命令创建模板
+文件。</p>
+<p><code class="docutils literal notranslate"><span class="pre">exampleconfigmap.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span>
+<span class="nt">data</span><span class="p">:</span>
+  <span class="nt">exampleHostName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">www.testk8s.com</span>
+  <span class="nt">exampleBusinessMode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleMode</span>
+</pre></div>
+</div>
+<p>运行以下命令，通过模板创建ConfigMap。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleconfigmap.yml
+</pre></div>
+</div>
+<p>创建完成后，可以通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">configmap</span></code>命令来查看创建情况</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get cm
+NAME               DATA   AGE
+exampleconfigmap   <span class="m">2</span>      83s
+</pre></div>
+</div>
+<p>查看ConfigMap的详情。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl describe cm exampleconfigmap
+Name:         exampleconfigmap
+Namespace:    default
+Labels:       &lt;none&gt;
+Annotations:  &lt;none&gt;
+
+<span class="nv">Data</span>
+<span class="o">====</span>
+exampleBusinessMode:
+----
+exampleMode
+exampleHostName:
+----
+www.testk8s.com
+Events:  &lt;none&gt;
+</pre></div>
+</div>
+<p>ConfigMap创建完成后就可以在Pod中引用了。接下来分别介绍ConfigMap的两种引用方式。</p>
+<section id="id2">
+<h3><a class="toc-backref" href="#id14">1.1 环境变量引用方式</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodforenvconfig.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforenvconfig</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforenv</span>
+      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+      <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+      <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+      <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;EnvParaHostName:</span><span class="nv"> </span><span class="s">${EnvParaHostName}</span><span class="nv"> </span><span class="s">EnvParaBusinessMode:</span><span class="nv"> </span><span class="s">${EnvParaBusinessMode}&quot;;</span><span class="nv"> </span><span class="s">printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">EnvPara;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+      <span class="nt">env</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaHostName</span>
+          <span class="nt">valueFrom</span><span class="p">:</span>
+            <span class="nt">configMapKeyRef</span><span class="p">:</span>
+              <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span>
+              <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleHostName</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaBusinessMode</span>
+          <span class="nt">valueFrom</span><span class="p">:</span>
+            <span class="nt">configMapKeyRef</span><span class="p">:</span>
+              <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span>
+              <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleBusinessMode</span>
+</pre></div>
+</div>
+<p>通过valueFrom、configMapKeyRef、name、key等属性，我们可以指定具体要引用哪些环境变量。</p>
+<p>在 env
+属性中，我们先定义了环境变量的名称（在本例中分别为EnvParaHostName和EnvParaBusinessMode）。</p>
+<p>和之前引用环境变量的不同之处在于，这里使用valueFrom属性来定义，表示环境变量的值来自外部引用，
+关键字configMapKeyRef表示从ConfigMap中引用；
+configMapKeyRef.name属性表示要引用的ConfigMap的名称；而configMapKeyRef.key表示要引用的键值对的键名，它的值会映射
+到环境变量上。这里我们使用之前创建的两个键值对。</p>
+<p>在容器的命令参数中，我们会先通过命令行参数直接输出定义的参数，然后通过$
+printenv | grep EnvPara命令输出Pod中包含
+“EnvPara”字符串的环境变量（因为其他环境变量较多，所以通过grep来筛选），查看定义的参数是否已注入Pod的环境变量中。</p>
+<p>运行以下命令，通过模板创建Pod。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforenvconfig.yml
+</pre></div>
+</div>
+<p>创建完成后，通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">logs</span> <span class="pre">examplepodforenvconfig</span></code>命令可以查看Pod输出的信息</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl logs pod/examplepodforenvconfig
+EnvParaHostName: www.testk8s.com EnvParaBusinessMode: exampleMode
+<span class="nv">EnvParaHostName</span><span class="o">=</span>www.testk8s.com
+<span class="nv">EnvParaBusinessMode</span><span class="o">=</span>exampleMode
+</pre></div>
+</div>
+<p>环境变量已经成功引用ConfigMap中设置的值。</p>
+<p>有些时候，ConfigMap中设置的键值对可能会非常多，一个个配置到Pod模板中会相当麻烦。</p>
+<p>Kubernetes还提供了一种简易的方式，即将ConfigMap中的所有键值对直接配置到Pod中。</p>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodforenvconfigv2.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforenvconfigv2</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforenv</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">example;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">envFrom</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">configMapRef</span><span class="p">:</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span>
+</pre></div>
+</div>
+<p>本例中直接使用envFrom属性，表示整个环境变量都是从外部文件引用的；引用方式为configMapRef，表示从ConfigMap中引用；
+configMapRef.name属性表示ConfigMap的名称。</p>
+<p>接下来，利用容器命令参数printenv | grep
+example输出Pod中包含“example”字符串的环境变量（因为其他环境变量较多，
+所以通过grep筛选出指定条目来查看）。</p>
+<p>运行以下命令，通过模板创建Pod。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforenvconfigv2.yml
+</pre></div>
+</div>
+<p>创建完成后，可以查看Pod输出的信息</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl logs pod/examplepodforenvconfigv2
+<span class="nv">HOSTNAME</span><span class="o">=</span>examplepodforenvconfigv2
+<span class="nv">exampleHostName</span><span class="o">=</span>www.testk8s.com
+<span class="nv">exampleBusinessMode</span><span class="o">=</span>exampleMode
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h3><a class="toc-backref" href="#id15">1.2 存储卷引用方式</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>因为ConfigMap本身是一种特殊的存储卷，所以也可以通过存储卷方式配置到Pod中。不同于环境变量的引用方式，这种引用方式会将每
+个键值对都转换成对应的实体文件。</p>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodforvolumeconfig.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforvolumeconfig</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforvolume</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;files:&quot;;</span><span class="nv"> </span><span class="s">ls</span><span class="nv"> </span><span class="s">/config/allvalues;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumeconfig</span>
+      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/config/allvalues</span>
+
+  <span class="nt">volumes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumeconfig</span>
+    <span class="nt">configMap</span><span class="p">:</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span>
+</pre></div>
+</div>
+<p>本例中创建的存储卷名称为volumeconfig，这个名称会被容器设置中的数据卷引用。存储卷的类型是configMap，其name属性为
+exampleconfigmap，引用之前我们创建的ConfigMap。</p>
+<p>本例中创建的名为containerforvolume容器会引用volumeconfig存储卷，并将其映射到容器的/config/allvalues目录下，然后通过ls
+命令，输出/config/allvalues目录下的所有文件。</p>
+<p>运行以下命令，通过模板创建Pod。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforvolumeconfig.yml
+</pre></div>
+</div>
+<p>在容器的/config/allvalues
+目录下，分别有名为exampleBusinessMode和exampleHostName的两个文件，它们分别对应
+ConfigMap中的两个键值对。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl logs pod/examplepodforvolumeconfig
+files:
+exampleBusinessMode
+exampleHostName
+</pre></div>
+</div>
+<p>通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">exec</span> <span class="pre">-ti</span> <span class="pre">examplepodforvolumeconfig</span> <span class="pre">--</span> <span class="pre">/bin/sh</span></code>命令进入Pod内部，然后分别输出这两个文件的内容（分
+别通过<code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">/config/allvalues/exampleBusinessMode</span></code>和<code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">/config/allvalues/exampleHostName</span></code>命令），可以看到这两
+个文件中的内容正是ConfigMap中各个键对应的实际值</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl <span class="nb">exec</span> -it pod/examplepodforvolumeconfig -- /bin/sh
+/ <span class="c1"># cat config/allvalues/exampleBusinessMode</span>
+exampleMode/ <span class="c1">#</span>
+
+/ <span class="c1"># cat config/allvalues/exampleHostName</span>
+www.testk8s.com/ <span class="c1">#</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="secret">
+<h2><a class="toc-backref" href="#id16">2. Secret</a><a class="headerlink" href="#secret" title="Permalink to this headline">¶</a></h2>
+<p>如果说 ConfigMap 用于传递普通的配置信息，那么 Secret
+则用于传递敏感的、加密的配置信息，例如，用户名和密码等敏感信息。</p>
+<p>话虽如此，实际上Secret的安全性并不高，因为它本质上通过base64格式对信息进行编码，连加密都算不上，这些编码后的信息只
+需要解码就可以变回原始值。对于重要信息，建议采用其他自定义方式进行加密并在Pod中按自定义算法进行解密。</p>
+<p>Secret主要有3种类型。</p>
+<ul class="simple">
+<li><p>OpaqueSecret：使用base64编码格式，用来存储密码、密钥等。</p></li>
+<li><p>ImagePullSecret：用来存储私有Docker Registry的认证信息。</p></li>
+<li><p>ServiceAccountSecret：主要用来访问Kubernetes
+API。它会被ServiceAccount引用。在 ServiceAccount 创建时，Kubernetes
+会默认创建对应的 Secret。Pod
+如果使用了ServiceAccount，则对应的Secret会自动挂载到Pod的/run/secrets/Kubernetes.io/
+serviceaccount目录下，后续章节会详述这种Secret。</p></li>
+</ul>
+<p>接下来将主要介绍OpaqueSecret和ImagePullSecret的基本使用方式。</p>
+<section id="opaquesecret">
+<h3><a class="toc-backref" href="#id17">2.1 OpaqueSecret</a><a class="headerlink" href="#opaquesecret" title="Permalink to this headline">¶</a></h3>
+<p>OpaqueSecret完全就是ConfigMap的翻版，它们的定义方式和使用方式类似，都是使用键值对形式，但区别在于，OpaqueSecret中各个键对应的值必须通过base64进行编码才能配置。</p>
+<p>现在创建一个OpaqueSecret。假设我们要用OpaqueSecret来存储自定义的用户名和密码，在本例中用户名为superuser，密码为
+abc12345。首先，需要对用户名和密码进行base64编码。</p>
+<p>需要执行的命令如下。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">echo</span> -n <span class="s2">&quot;superuser&quot;</span> <span class="p">|</span> base64
+c3VwZXJ1c2Vy
+
+$ <span class="nb">echo</span> -n <span class="s2">&quot;abc123456&quot;</span> <span class="p">|</span> base64
+YWJjMTIzNDU2
+</pre></div>
+</div>
+<p>用户名和密码的base64编码结果已经产生，现在先记录这些编码后的值，稍后将这些值配置到Secret中。</p>
+<p>创建模板文件<code class="docutils literal notranslate"><span class="pre">examplesecret.yml</span></code></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>apiVersion: v1
+kind: Secret
+metadata:
+  name: examplesecret
+type: Opaque
+data:
+  exampleusername: c3VwZXJ1c2Vy
+  examplepassword: <span class="nv">YWJjMTIzNDU</span><span class="o">=</span>
+</pre></div>
+</div>
+<p>运行以下命令，通过模板创建ConfigMap。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplesecret.yml
+</pre></div>
+</div>
+<p>创建完成后，查看创建情况</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get secret
+NAME                                 TYPE                                  DATA   AGE
+examplesecret                        Opaque                                <span class="m">2</span>      32s
+</pre></div>
+</div>
+<p>也可以通过以下命令查看Secret的详情，具体命令如下。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl describe secret/examplesecret
+Name:         examplesecret
+Namespace:    default
+Labels:       &lt;none&gt;
+Annotations:  &lt;none&gt;
+
+Type:  Opaque
+
+<span class="nv">Data</span>
+<span class="o">====</span>
+examplepassword:  <span class="m">8</span> bytes
+exampleusername:  <span class="m">9</span> bytes
+</pre></div>
+</div>
+<p>执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">secret</span> <span class="pre">examplesecret</span> <span class="pre">-o</span> <span class="pre">yaml</span></code>命令，将会以yaml格式输出这个Secret的信息，输出的信息中已显示出所配置的键值对。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get secret examplesecret -o yaml
+apiVersion: v1
+data:
+  examplepassword: <span class="nv">YWJjMTIzNDU</span><span class="o">=</span>
+  exampleusername: c3VwZXJ1c2Vy
+kind: Secret
+metadata:
+  name: examplesecret
+  namespace: default
+type: Opaque
+</pre></div>
+</div>
+<p>从这里就可以看出，Secret其实一点都不安全，很轻松就可以获取配置值，只要稍微解码就可以得到原始值。在本例中，解码命令为</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">echo</span> <span class="s2">&quot;c3VwZXJ1c2Vy&quot;</span><span class="p">|</span> base64 --decode
+superuser
+</pre></div>
+</div>
+<p>Secret创建完成后就可以在Pod中引用了。Secret和ConfigMap的引用方式大同小异。接下来分别介绍Secret的两种引用方式。</p>
+<section id="id4">
+<span id="id5"></span><h4>1.环境变量引用方式<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodforenvsecret.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforenvsecret</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforenv</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;EnvParaUserName:</span><span class="nv"> </span><span class="s">${EnvParaUserName}</span><span class="nv"> </span><span class="s">EnvParaPassword:</span><span class="nv"> </span><span class="s">${EnvParaPassword}&quot;;</span><span class="nv"> </span><span class="s">printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">EnvPara;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">env</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaUserName</span>
+        <span class="nt">valueFrom</span><span class="p">:</span>
+          <span class="nt">secretKeyRef</span><span class="p">:</span>
+            <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplesecret</span>
+            <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleusername</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaPassword</span>
+        <span class="nt">valueFrom</span><span class="p">:</span>
+          <span class="nt">secretKeyRef</span><span class="p">:</span>
+            <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplesecret</span>
+            <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepassword</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f  examplepodforenvsecret.yml
+</pre></div>
+</div>
+<p>创建完成后，可以查看Pod输出的信息,环境变量已经成功引用了Secret中设置的值，且这些值已经解码成明文。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl logs pod/examplepodforenvsecret
+EnvParaUserName: superuser EnvParaPassword: abc12345
+<span class="nv">EnvParaUserName</span><span class="o">=</span>superuser
+<span class="nv">EnvParaPassword</span><span class="o">=</span>abc12345
+</pre></div>
+</div>
+<p>和ConfigMap一样，Secret中设置的键值对可能会非常多，一个个配置到Pod模板中会非常麻烦。</p>
+<p>Kubernetes提供了一种简易方式，用于将Secret中的所有键值对直接配置到Pod中。</p>
+<p>为了使用示例来介绍直接引用Secret整个文件的方法，首先，定义模板文件，创建一个名为<code class="docutils literal notranslate"><span class="pre">examplepodforenvsecretv2.yml</span></code>的模板文
+件。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforenvsecretv2</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforenv</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">example;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">envFrom</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">secretRef</span><span class="p">:</span>
+          <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplesecret</span>
+</pre></div>
+</div>
+<p>本例中直接使用envFrom属性，表示整个环境变量都是从外部文件引用的；引用方式为secretRef，表示从Secret中引用；</p>
+<p>secretRef.name属性表示Secret的名称。接下来，通过容器命令参数printenv |
+grep example输出Pod中包含“example”字符串的环境变量。</p>
+<p>模板创建Pod</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforenvsecretv2.yml
+</pre></div>
+</div>
+<p>建完成后，可以查看Pod输出的信息。可以看到Secret中的所有键值对都已经按环境变量的方式配置到Pod当中，且这些值已经解码成明文。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl logs pod/examplepodforenvsecretv2
+<span class="nv">HOSTNAME</span><span class="o">=</span>examplepodforenvsecretv2
+<span class="nv">examplepassword</span><span class="o">=</span>abc12345
+<span class="nv">exampleusername</span><span class="o">=</span>superuser
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<span id="id7"></span><h4>2.存储卷引用方式<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<p>因为Secret本身是一种特殊的存储卷，所以也可以通过存储卷方式配置到Pod中。</p>
+<p>不同于环境变量的引用方式，这种引用方式会将每个键值对都转换成对应的实体文件。</p>
+<p>为了通过存储卷方式引用
+Secret，首先，定义模板文件，创建一个名为<code class="docutils literal notranslate"><span class="pre">examplepodforvolumesecret.yml</span></code>的模板文件。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforvolumesecret</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforvolume</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;files:&quot;;</span><span class="nv"> </span><span class="s">ls</span><span class="nv"> </span><span class="s">/secret/allvalues;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumesecret</span>
+      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/secret/allvalues</span>
+  <span class="nt">volumes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumesecret</span>
+    <span class="nt">secret</span><span class="p">:</span>
+      <span class="nt">secretName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplesecret</span>
+</pre></div>
+</div>
+<p>本例中创建的存储卷名称为volumesecret，这个名称会被容器设置中的数据卷引用。存储卷的类型是Secret，其name属性为
+examplesecret，即引用之前我们创建的Secret。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforvolumesecret.yml
+</pre></div>
+</div>
+<p>例中创建的名为containerforvolume的容器会引用volumesecret存储卷，并将其映射到容器的/secret/allvalues目
+录下，然后通过ls命令，输出/secret/allvalues目录下的所有文件。</p>
+<p>通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">exec</span> <span class="pre">-ti</span> <span class="pre">examplepodforvolumesecret</span> <span class="pre">--</span> <span class="pre">/bin/sh</span></code>命令进入Pod内部，然后分别输出这两个文件的内容</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl <span class="nb">exec</span> -ti examplepodforvolumesecret -- /bin/sh
+/ <span class="c1"># cat secret/allvalues/exampleusername</span>
+superuser/ <span class="c1">#</span>
+
+/ <span class="c1"># cat secret/allvalues/examplepassword</span>
+abc12345/ <span class="c1">#</span>
+</pre></div>
+</div>
+<p>可以看到这两个文件的内容正是Secret中各个键对应的实际值，且这些值已经解码成明文。</p>
+</section>
+</section>
+<section id="imagepullsecret">
+<h3><a class="toc-backref" href="#id18">2.2 ImagePullSecret</a><a class="headerlink" href="#imagepullsecret" title="Permalink to this headline">¶</a></h3>
+<p>ImagePullSecret主要用来存储私有Docker
+Registry的认证信息。在设置Pod模板时，如果需要从私有仓库中拉取镜像，可以设置
+imagePullSecrets属性为此类型的Secret，以作为仓库的登录密钥。</p>
+<p>可以直接使用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">create</span> <span class="pre">secret</span></code>命令来创建ImagePullSecret。具体命令如下所示。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create secret docker-registry myregistrykey --docker-server<span class="o">=</span>DOCKER_REGISTRY_SERVER --docker-username<span class="o">=</span>DOCKER_USER --docker-password<span class="o">=</span>DOCKER_PASSWORD --docker-email<span class="o">=</span>DOCKER_EMAIL
+</pre></div>
+</div>
+<p>本例中创建了一个名为myregistrykey的Secret。注意，这里需要将命令中的<code class="docutils literal notranslate"><span class="pre">DOCKER_</span> <span class="pre">REGISTRY_SERVER</span></code>、<code class="docutils literal notranslate"><span class="pre">DOCKER_USER</span></code>、
+<code class="docutils literal notranslate"><span class="pre">DOCKER_PASSWORD</span></code>、<code class="docutils literal notranslate"><span class="pre">DOCKER_EMAIL</span></code>替换为对应环境中的值。</p>
+<p>也可以通过直接读取.dockercfg中的内容来创建Secret，具体命令如下所示。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create secret docker-registry myregistrykey --from-file<span class="o">=</span><span class="s2">&quot;~/.dockercfg&quot;</span>
+</pre></div>
+</div>
+<p>Secret创建后，可以通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">secretmyregistrykey</span></code>命令查询具体信息。</p>
+<p>可以看到Secret中有一个名为.dockerconfigjson的键值对。</p>
+<p>执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">secret</span> <span class="pre">myregistrykey</span> <span class="pre">-o</span> <span class="pre">yaml</span></code>命令，将会以yaml格式输出这个Secret的具体信息。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">$ kubectl get secret registry-pull-secret -n ci-gitee-10523 -o yaml</span>
+<span class="l l-Scalar l-Scalar-Plain">apiVersion</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">data</span><span class="p">:</span>
+  <span class="nt">.dockerconfigjson</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eyJhdXRocyI6IHsiaHViLmdpdGVlLmNjIjogeyJhdXRoIjogIloybDBaV1U2VDNOamFHbHVZVEV5TXc9PSJ9fX0=</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Secret</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">app.kubernetes.io/managed-by</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Helm</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">registry-pull-secret</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ci-gitee-10523</span>
+<span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes.io/dockerconfigjson</span>
+</pre></div>
+</div>
+<p>在输出的信息中已显示出配置的键值对。</p>
+<p>复制.dockerconfigjson的值，通过以下命令进行解码。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span> $ <span class="nb">echo</span> <span class="s2">&quot;eyJhdXRocyI6IHsiaHViLmdpdGVlLmNjIjogeyJhdXRoIjogIloybDBaV1U2VDNOamFHbHVZVEV5TXc9PSJ9fX0=&quot;</span> <span class="p">|</span> base64 --decode
+<span class="o">{</span><span class="s2">&quot;auths&quot;</span>: <span class="o">{</span><span class="s2">&quot;hub.gitee.cc&quot;</span>: <span class="o">{</span><span class="s2">&quot;auth&quot;</span>: <span class="s2">&quot;Z2xxxxxxxxxxw==&quot;</span><span class="o">}}}</span>
+</pre></div>
+</div>
+<p>解码结果如上所示，.dockerconfigjson中的内容已经以明文形式展示出来。本示例再一次证明了Secret实际上并不怎么名副其实。</p>
+<p>Secret创建完成后就可以在Pod中引用了，将Secret名称配置到<strong>spec.imagePullSecrets</strong>属性中即可。具体代码如下所示。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleSecret</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleContainer</span>
+      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mydocker/myapp:v1</span>
+  <span class="nt">imagePullSecrets</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myregistrykey</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="downward-api">
+<h2><a class="toc-backref" href="#id19">3. Downward API</a><a class="headerlink" href="#downward-api" title="Permalink to this headline">¶</a></h2>
+<p>有时候，容器可能需要获得有关自身的信息，但不能与Kubernetes过于耦合。这时Downward
+API就派上用场了，它的主要作
+用是向Pod中运行的容器暴露Pod自身的信息，Downward
+API允许容器在不使用Kubernetes客户端或API
+Server的情况下获取有关自身或集群的信息。</p>
+<p>在目前版本中，通过Downward API可以获取大量信息。</p>
+<p>下面列出可以同时通过环境变量或存储卷获得的信息。</p>
+<p>使用fieldRef属性可获取的信息如下。</p>
+<ul class="simple">
+<li><p>metadata.name：Pod的名称。</p></li>
+<li><p>metadata.namespace：Pod的命名空间。</p></li>
+<li><p>metadata.uid：Pod的UID。</p></li>
+<li><p>metadata.labels[‘{KEY}’]：Pod标签{KEY}的值（例如metadata. labels
+[‘mylabel’]）。</p></li>
+<li><p>metadata.annotations[‘{KEY}’]：Pod注解{KEY}的值（例如metadata.
+annotations[‘myannotation’]）。</p></li>
+</ul>
+<p>使用resourceFieldRef属性可获取的信息如下。</p>
+<p>如果没有为容器指定CPU和内存限制，则Downward
+API获取节点上CPU和内存默认的可分配值。</p>
+<ul class="simple">
+<li><p>limits.cpu：容器的CPU限制。</p></li>
+<li><p>requests.cpu：容器的CPU请求。</p></li>
+<li><p>limits.memory：容器的内存限制。</p></li>
+<li><p>requests.memory：容器的内存请求。</p></li>
+<li><p>limits.ephemeral-storage：容器的临时存储限制。</p></li>
+<li><p>requests.ephemeral-storage：容器的临时存储请求。</p></li>
+</ul>
+<p>以下信息可通过fieldRef属性批量获取。</p>
+<ul class="simple">
+<li><p>metadata.labels：所有的 Pod 标签，格式为 label-key=“escaped-label-
+value”，每行一个标签。</p></li>
+<li><p>metadata.annotations：所有的Pod注解，格式为annotation-key= “escaped-
+annotation-value”，每行一个注解。</p></li>
+</ul>
+<p>只能通过环境变量获得的信息如下。</p>
+<ul class="simple">
+<li><p>status.podIP：Pod的IP地址。</p></li>
+<li><p>spec.serviceAccountName：Pod的ServiceAccount名称。</p></li>
+<li><p>spec.nodeName：节点的名称。</p></li>
+<li><p>status.hostIP：节点的IP。</p></li>
+</ul>
+<section id="id8">
+<span id="id9"></span><h3><a class="toc-backref" href="#id20">3.1 环境变量引用方式</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodfordownward.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodfordownward</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforenv</span>
+      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+      <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+      <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+      <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;EnvParaPodName:</span><span class="nv"> </span><span class="s">${EnvParaPodName}</span><span class="nv"> </span><span class="s">EnvParaPodIP:</span><span class="nv"> </span><span class="s">${EnvParaPodIP}</span><span class="nv"> </span><span class="s">EnvParaNodeName:</span><span class="nv"> </span><span class="s">${EnvParaNodeName}&quot;;</span><span class="nv"> </span><span class="s">printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">EnvPara;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+      <span class="nt">env</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaPodName</span>
+        <span class="nt">valueFrom</span><span class="p">:</span>
+          <span class="nt">fieldRef</span><span class="p">:</span>
+            <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.name</span>
+
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaPodIP</span>
+          <span class="nt">valueFrom</span><span class="p">:</span>
+            <span class="nt">fieldRef</span><span class="p">:</span>
+              <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">status.podIP</span>
+
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaNodeName</span>
+          <span class="nt">valueFrom</span><span class="p">:</span>
+            <span class="nt">fieldRef</span><span class="p">:</span>
+              <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">spec.nodeName</span>
+</pre></div>
+</div>
+<p>通过valueFrom、fieldRef、fieldPath等属性，我们可以指定具体要引用哪些环境变量。</p>
+<p>在env属性中，我们先定义了环境变量的名称。使用valueFrom属性进行定义，以表示环境变量的值来自外部引用；</p>
+<p>关键字fieldRef表示从Downward API中引用；fieldPath表示要引用的Downward
+API键值对的键名，它的值会映射
+到环境变量上。这里我们分别使用metadata.name、status.podIP、spec.nodeName来获取Pod名称、Pod
+IP地址以及 调度到的节点名称。</p>
+<p>在容器的命令参数中，我们先通过命令行参数直接输出定义的参数，然后通过printenv
+| grep EnvPara命令输出Pod中包含
+“EnvPara”字符串的环境变量，查看我们定义的参数是否已注入Pod的环境变量中。</p>
+<p>运行以下命令，通过模板创建Pod。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodfordownward.yml
+</pre></div>
+</div>
+<p>创建完成后，通过<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">logs</span> <span class="pre">examplepodfordownward</span></code>命令可以查看Pod输出的信息，环境变量已经成功引用Downward
+API中设置的值。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl logs pod/examplepodfordownward
+EnvParaPodName: examplepodfordownward EnvParaPodIP: <span class="m">10</span>.0.37.102 EnvParaNodeName: gitee-k8s-w09
+<span class="nv">EnvParaPodName</span><span class="o">=</span>examplepodfordownward
+<span class="nv">EnvParaPodIP</span><span class="o">=</span><span class="m">10</span>.0.37.102
+<span class="nv">EnvParaNodeName</span><span class="o">=</span>gitee-k8s-w09
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<span id="id11"></span><h3><a class="toc-backref" href="#id21">3.2 存储卷引用方式</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>因为Downward
+API本身是一种特殊的存储卷，所以也可以通过存储卷方式配置到Pod中。这种引用方式会将每个键值对都转换成对应的
+实体文件。</p>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodforvolumedownward.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforvolumedownward</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforvolume</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;files:&quot;;</span><span class="nv"> </span><span class="s">ls</span><span class="nv"> </span><span class="s">/config/alldownward;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumedownward</span>
+        <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/config/alldownward</span>
+  <span class="nt">volumes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumedownward</span>
+    <span class="nt">downwardAPI</span><span class="p">:</span>
+      <span class="nt">items</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="s">&quot;PodName&quot;</span>
+        <span class="nt">fieldRef</span><span class="p">:</span>
+          <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.name</span>
+      <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="s">&quot;PodUID&quot;</span>
+        <span class="nt">fieldRef</span><span class="p">:</span>
+          <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.uid</span>
+      <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="s">&quot;PodNameSpace&quot;</span>
+        <span class="nt">fieldRef</span><span class="p">:</span>
+          <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.namespace</span>
+</pre></div>
+</div>
+<p>本例中创建的存储卷名称为volumedownward，这个名称会被容器设置中的数据卷引用。</p>
+<p>存储卷的类型是downwardAPI，分别引用了metadata.name、metadata.uid，metadata.
+namespace来表
+示Pod的名称、UID以及命名空间，然后分别将其重命名到指定路径的PodName、PodUID、PodNameSpace。</p>
+<p>本例中创建的名为containerforvolume的容器会引用volumedownward存储卷，并将其映射到容器的/config/alldownward目录下，然后通过ls命令，输出/config/alldownward目录下的所有文件</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforvolumedownward.yml
+</pre></div>
+</div>
+<p>在容器的/config/alldownward目录下，分别有名为PodName、PodUID、PodNameSpace的3个文件，它们分别对应Downward
+API中的3个键值对。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl logs pod/examplepodforvolumedownward
+files:
+PodName
+PodNameSpace
+PodUID
+</pre></div>
+</div>
+<p>查看容器内的内容</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl <span class="nb">exec</span> -it pod/examplepodforvolumedownward -- /bin/sh
+
+/ <span class="c1"># ls /config/alldownward/</span>
+PodName       PodNameSpace  PodUID
+
+/ <span class="c1"># cat  /config/alldownward/PodName</span>
+examplepodforvolumedownward/
+
+/ <span class="c1"># cat  /config/alldownward/PodNameSpace</span>
+default/
+
+/ <span class="c1"># cat  /config/alldownward/PodUID</span>
+309065d2-c980-4e5c-a92b-de34497ca910
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="4.StorageClass.html" class="btn btn-neutral float-left" title="StorageClass" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html" class="btn btn-neutral float-right" title="8.Kubernetes资源的管理及调度" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

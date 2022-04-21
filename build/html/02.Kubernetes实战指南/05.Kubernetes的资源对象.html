@@ -65,7 +65,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#id27">远程连接容器</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id28">kubernetes的资源对象</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#kubernetes-1">kubernetes的资源对象</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id29">1. 工作负载型资源</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id30">2. 发现与负载均衡</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id31">3. 配置与存储</a></li>
@@ -79,23 +79,31 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#kubectl">kubectl-备忘单</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id35">Kubectl 自动补全</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kubernets-node">kubernets node标签操作</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#kubectl-context-and-configuration">Kubectl Context and Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#creating-objects">Creating Objects</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#viewing-finding-resources">Viewing, Finding Resources</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id36">应用部署、运行与管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id40">常用的清理 Kubernetes 集群资源命令</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id41">应用部署、运行与管理</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="06.Serveice.html">Serveice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Ingress.html">Ingress</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.Kubernetest%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Kubernetest数据管理</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09.kubernetes%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">Kubernetes实战案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Kubernetes%E7%9B%91%E6%8E%A7.html">Kubernetes监控</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.%E9%9B%86%E7%BE%A4%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F.html">集群日志系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.%E4%BD%BF%E7%94%A8EFKLK%E6%90%AD%E5%BB%BAKubernetes%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E5%B7%A5%E5%85%B7%E6%A0%88.html">使用EFKLK搭建Kubernetes日志收集工具栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.Kubernetes%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E4%BB%8EDocker%E5%88%87%E6%8D%A2%E6%88%90Containerd.html">Kubernetes容器运行时从Docker切换成Containerd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.%E6%95%B4%E7%90%86%E5%85%A8%E7%BD%91%E6%9C%80%E5%85%A8K8S%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7-%E5%B9%B3%E5%8F%B0.html">整理全网最全K8S集群管理工具-平台</a></li>
 <li class="toctree-l2"><a class="reference internal" href="20.Helm%E7%AE%80%E5%8C%96Kubernetes%E9%83%A8%E7%BD%B2.html">Helm简化Kubernetes部署</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05.Kubernetes%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/index.html">05.Kubernetes入门到实践</a></li>
 </ul>
 
         </div>
@@ -126,61 +134,63 @@
   <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#kubernetes" id="id37">Kubernetes的资源对象</a></p>
+<li><p><a class="reference internal" href="#kubernetes" id="id42">Kubernetes的资源对象</a></p>
 <ul>
-<li><p><a class="reference internal" href="#pod" id="id38">Pod</a></p>
+<li><p><a class="reference internal" href="#pod" id="id43">Pod</a></p>
 <ul>
-<li><p><a class="reference internal" href="#hello-world" id="id39">国际惯例的Hello World</a></p></li>
-<li><p><a class="reference internal" href="#id1" id="id40">Pod的基本管理</a></p></li>
-<li><p><a class="reference internal" href="#id6" id="id41">小结</a></p></li>
-<li><p><a class="reference internal" href="#id7" id="id42">Pod与容器</a></p></li>
-<li><p><a class="reference internal" href="#id13" id="id43">Pod的网络</a></p></li>
-<li><p><a class="reference internal" href="#id14" id="id44">Pod的重启策略</a></p></li>
-<li><p><a class="reference internal" href="#id15" id="id45">Pod资源限制</a></p></li>
-<li><p><a class="reference internal" href="#id16" id="id46">Pod的状态和生命周期</a></p></li>
-<li><p><a class="reference internal" href="#id20" id="id47">自定义检查Pod</a></p></li>
-<li><p><a class="reference internal" href="#id23" id="id48">Pod的调度约束</a></p></li>
-<li><p><a class="reference internal" href="#id24" id="id49">问题定位指南</a></p></li>
-<li><p><a class="reference internal" href="#id26" id="id50">Pod的临终遗言</a></p></li>
-<li><p><a class="reference internal" href="#id27" id="id51">远程连接容器</a></p></li>
+<li><p><a class="reference internal" href="#hello-world" id="id44">国际惯例的Hello World</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id45">Pod的基本管理</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id46">小结</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id47">Pod与容器</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id48">Pod的网络</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id49">Pod的重启策略</a></p></li>
+<li><p><a class="reference internal" href="#id15" id="id50">Pod资源限制</a></p></li>
+<li><p><a class="reference internal" href="#id16" id="id51">Pod的状态和生命周期</a></p></li>
+<li><p><a class="reference internal" href="#id20" id="id52">自定义检查Pod</a></p></li>
+<li><p><a class="reference internal" href="#id23" id="id53">Pod的调度约束</a></p></li>
+<li><p><a class="reference internal" href="#id24" id="id54">问题定位指南</a></p></li>
+<li><p><a class="reference internal" href="#id26" id="id55">Pod的临终遗言</a></p></li>
+<li><p><a class="reference internal" href="#id27" id="id56">远程连接容器</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id28" id="id52">kubernetes的资源对象</a></p>
+<li><p><a class="reference internal" href="#kubernetes-1" id="id57">kubernetes的资源对象</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id29" id="id53">1. 工作负载型资源</a></p></li>
-<li><p><a class="reference internal" href="#id30" id="id54">2. 发现与负载均衡</a></p></li>
-<li><p><a class="reference internal" href="#id31" id="id55">3. 配置与存储</a></p></li>
-<li><p><a class="reference internal" href="#id32" id="id56">4.集群型资源</a></p></li>
+<li><p><a class="reference internal" href="#id29" id="id58">1. 工作负载型资源</a></p></li>
+<li><p><a class="reference internal" href="#id30" id="id59">2. 发现与负载均衡</a></p></li>
+<li><p><a class="reference internal" href="#id31" id="id60">3. 配置与存储</a></p></li>
+<li><p><a class="reference internal" href="#id32" id="id61">4.集群型资源</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id33" id="id57">名称空间</a></p>
+<li><p><a class="reference internal" href="#id33" id="id62">名称空间</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id34" id="id58">名称空间的作用</a></p></li>
-<li><p><a class="reference internal" href="#namespace" id="id59">管理Namespace资源</a></p></li>
+<li><p><a class="reference internal" href="#id34" id="id63">名称空间的作用</a></p></li>
+<li><p><a class="reference internal" href="#namespace" id="id64">管理Namespace资源</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#kubectl" id="id60">kubectl-备忘单</a></p>
+<li><p><a class="reference internal" href="#kubectl" id="id65">kubectl-备忘单</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id35" id="id61">Kubectl 自动补全</a></p></li>
-<li><p><a class="reference internal" href="#kubectl-context-and-configuration" id="id62">Kubectl Context and Configuration</a></p></li>
-<li><p><a class="reference internal" href="#creating-objects" id="id63">Creating Objects</a></p></li>
-<li><p><a class="reference internal" href="#viewing-finding-resources" id="id64">Viewing, Finding Resources</a></p></li>
+<li><p><a class="reference internal" href="#id35" id="id66">Kubectl 自动补全</a></p></li>
+<li><p><a class="reference internal" href="#kubernets-node" id="id67">kubernets node标签操作</a></p></li>
+<li><p><a class="reference internal" href="#kubectl-context-and-configuration" id="id68">Kubectl Context and Configuration</a></p></li>
+<li><p><a class="reference internal" href="#creating-objects" id="id69">Creating Objects</a></p></li>
+<li><p><a class="reference internal" href="#viewing-finding-resources" id="id70">Viewing, Finding Resources</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id36" id="id65">应用部署、运行与管理</a></p></li>
+<li><p><a class="reference internal" href="#id40" id="id71">常用的清理 Kubernetes 集群资源命令</a></p></li>
+<li><p><a class="reference internal" href="#id41" id="id72">应用部署、运行与管理</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
 <section id="kubernetes">
-<h1><a class="toc-backref" href="#id37">Kubernetes的资源对象</a><a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id42">Kubernetes的资源对象</a><a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h1>
 <section id="pod">
-<h2><a class="toc-backref" href="#id38">Pod</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id43">Pod</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h2>
 <p>Pod是Kubernetes的基本操作单元，也是应用运行的载体。整个Kubernetes系统都是围绕着Pod展开的，比如如何部署运行Pod、如何保证Pod的可靠性、如何访问Pod等。另外，Pod是一个或多个相关容器的集合，这可以说是一大创新点，提供了一种容器组合的模型，当然也使得在Pod的操作和生命周期管理上稍有不同。</p>
 <p>同一Pod中，这些共享PID、IPC、Network和UTS名称空间的容器彼此间可通过IPC通信，共享使用主机名和网络接口、IP地址、端口和路由等各种网络资源，因而各容器进程能够通过lo网络接口通信且不能使用相同的网络套接字地址。</p>
 <p>尽管可以把Pod类比为物理机或虚拟机，但一个Pod内通常仅应该运行具有强耦合关系的容器，否则除了pause以外，只应该存在单个容器，或者只存在单个主容器和一个以上的辅助类容器（例如服务网格中的Sidecar容器等），这也更符合单进程应用容器的设计初衷。</p>
 <section id="hello-world">
-<h3><a class="toc-backref" href="#id39">国际惯例的Hello World</a><a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id44">国际惯例的Hello World</a><a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">hello-world-pod.yaml</span></code></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
 <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
@@ -214,7 +224,7 @@ pod <span class="s2">&quot;hello-world&quot;</span> deleted
 </div>
 </section>
 <section id="id1">
-<h3><a class="toc-backref" href="#id40">Pod的基本管理</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id45">Pod的基本管理</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <section id="id2">
 <h4>创建Pod<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p>如果Pod的定义存在错误，kubectl
@@ -327,7 +337,7 @@ replace命令设置<code class="docutils literal notranslate"><span class="pre">
 </section>
 </section>
 <section id="id6">
-<h3><a class="toc-backref" href="#id41">小结</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id46">小结</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>基本管理：
 # 创建pod资源
 kubectl create -f pod.yaml
@@ -343,7 +353,7 @@ kubectl delete pod pod-test
 </div>
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id42">Pod与容器</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id47">Pod与容器</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <section id="id8">
 <h4>镜像<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 <p>运行容器必须先指定镜像，镜像的名称则遵循Docker的命名规范。运行容器前需要本地存在对应的镜像，如果镜像不存在，会从Docker镜像仓库下载。Kubernetes中可以选择镜像的下载策略，支持的策略如下。</p>
@@ -553,7 +563,7 @@ Hello World
 </section>
 </section>
 <section id="id13">
-<h3><a class="toc-backref" href="#id43">Pod的网络</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id48">Pod的网络</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 在Pod运行后，查询Pod的PodIP</span>
 $ kubectl get pod redis-master-trlnk --template<span class="o">={{</span>.status.podIP<span class="o">}}</span>
 <span class="m">192</span>.168.1.92
@@ -590,7 +600,7 @@ pod/my-app created
 </div>
 </section>
 <section id="id14">
-<h3><a class="toc-backref" href="#id44">Pod的重启策略</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id49">Pod的重启策略</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <p>Pod的重启策略指的是当Pod中的容器终止退出后，重启容器的策略。需要注意的是，因为Docker容器的轻量级，重启容器的做法实际上是直接重建容器，所以容器中的数据将会丢失，如有需要持久化的数据，那么需要使用数据卷进行持久化设置。</p>
 <p>重启策略是通过Pod定义中的.spec.restartPolicy进行设置的，目前支持以下3种策略。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Always：当容器终止退出后，总是重启容器，默认策略。
@@ -633,7 +643,7 @@ container:4
 </div>
 </section>
 <section id="id15">
-<h3><a class="toc-backref" href="#id45">Pod资源限制</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id50">Pod资源限制</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <p>官方文档：<a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/">https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/</a></p>
 <p>Pod和Container的资源请求和限制：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">spec</span><span class="o">.</span><span class="n">containers</span><span class="p">[]</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">limits</span><span class="o">.</span><span class="n">cpu</span>
@@ -685,36 +695,35 @@ container:4
 </div>
 <p>4、Node 跑的Pod资源利用率</p>
 <p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">nodes</span> <span class="pre">192.168.1.111</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.....
- Kube-Proxy Version:         v1.12.1
-Non-terminated Pods:         (4 in total)
-  Namespace                  Name                               CPU Requests  CPU Limits  Memory Requests  Memory Limits
-  ---------                  ----                               ------------  ----------  ---------------  -------------
-  default                    frontend                           500m (12%)    1 (25%)     128Mi (9%)       256Mi (18%)
-  default                    nginx-7b67cfbf9f-p8d69             0 (0%)        0 (0%)      0 (0%)           0 (0%)
-  default                    nginx-7b67cfbf9f-xlvnz             0 (0%)        0 (0%)      0 (0%)           0 (0%)
-  default                    nginx-deployment-d55b94fd-rpsgm    0 (0%)        0 (0%)      0 (0%)           0 (0%)
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.....</span>
+ <span class="n">Kube</span><span class="o">-</span><span class="n">Proxy</span> <span class="n">Version</span><span class="p">:</span>         <span class="n">v1</span><span class="o">.</span><span class="mf">12.1</span>
+<span class="n">Non</span><span class="o">-</span><span class="n">terminated</span> <span class="n">Pods</span><span class="p">:</span>         <span class="p">(</span><span class="mi">4</span> <span class="ow">in</span> <span class="n">total</span><span class="p">)</span>
+  <span class="n">Namespace</span>                  <span class="n">Name</span>                               <span class="n">CPU</span> <span class="n">Requests</span>  <span class="n">CPU</span> <span class="n">Limits</span>  <span class="n">Memory</span> <span class="n">Requests</span>  <span class="n">Memory</span> <span class="n">Limits</span>
+  <span class="o">---------</span>                  <span class="o">----</span>                               <span class="o">------------</span>  <span class="o">----------</span>  <span class="o">---------------</span>  <span class="o">-------------</span>
+  <span class="n">default</span>                    <span class="n">frontend</span>                           <span class="mi">500</span><span class="n">m</span> <span class="p">(</span><span class="mi">12</span><span class="o">%</span><span class="p">)</span>    <span class="mi">1</span> <span class="p">(</span><span class="mi">25</span><span class="o">%</span><span class="p">)</span>     <span class="mi">128</span><span class="n">Mi</span> <span class="p">(</span><span class="mi">9</span><span class="o">%</span><span class="p">)</span>       <span class="mi">256</span><span class="n">Mi</span> <span class="p">(</span><span class="mi">18</span><span class="o">%</span><span class="p">)</span>
+  <span class="n">default</span>                    <span class="n">nginx</span><span class="o">-</span><span class="mi">7</span><span class="n">b67cfbf9f</span><span class="o">-</span><span class="n">p8d69</span>             <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>        <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>      <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>           <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>
+  <span class="n">default</span>                    <span class="n">nginx</span><span class="o">-</span><span class="mi">7</span><span class="n">b67cfbf9f</span><span class="o">-</span><span class="n">xlvnz</span>             <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>        <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>      <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>           <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>
+  <span class="n">default</span>                    <span class="n">nginx</span><span class="o">-</span><span class="n">deployment</span><span class="o">-</span><span class="n">d55b94fd</span><span class="o">-</span><span class="n">rpsgm</span>    <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>        <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>      <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>           <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>
+<span class="n">Allocated</span> <span class="n">resources</span><span class="p">:</span>
+  <span class="p">(</span><span class="n">Total</span> <span class="n">limits</span> <span class="n">may</span> <span class="n">be</span> <span class="n">over</span> <span class="mi">100</span> <span class="n">percent</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="p">,</span> <span class="n">overcommitted</span><span class="o">.</span><span class="p">)</span>
 
-# 限制说明
-  Resource                       Requests    Limits
-  --------                       --------    ------
-  cpu                            500m (12%)  1 (25%)
-  memory                         128Mi (9%)  256Mi (18%)
-  attachable-volumes-azure-disk  0           0
-Events:                          &lt;none&gt;
-
-注：limits是对资源的总限制、requests是最低分配的资源。requests一般要比limits要小一些。
-
-注：250m/单核CPU的白分之25/0.25
-
-注：资源限制 cpu可以直接设置为数字 “1”为1核“2”为2核。
+<span class="c1"># 限制说明</span>
+  <span class="n">Resource</span>                       <span class="n">Requests</span>    <span class="n">Limits</span>
+  <span class="o">--------</span>                       <span class="o">--------</span>    <span class="o">------</span>
+  <span class="n">cpu</span>                            <span class="mi">500</span><span class="n">m</span> <span class="p">(</span><span class="mi">12</span><span class="o">%</span><span class="p">)</span>  <span class="mi">1</span> <span class="p">(</span><span class="mi">25</span><span class="o">%</span><span class="p">)</span>
+  <span class="n">memory</span>                         <span class="mi">128</span><span class="n">Mi</span> <span class="p">(</span><span class="mi">9</span><span class="o">%</span><span class="p">)</span>  <span class="mi">256</span><span class="n">Mi</span> <span class="p">(</span><span class="mi">18</span><span class="o">%</span><span class="p">)</span>
+  <span class="n">attachable</span><span class="o">-</span><span class="n">volumes</span><span class="o">-</span><span class="n">azure</span><span class="o">-</span><span class="n">disk</span>  <span class="mi">0</span>           <span class="mi">0</span>
+<span class="n">Events</span><span class="p">:</span>                          <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>注：limits是对资源的总限制、requests是最低分配的资源。requests一般要比limits要小一些。</p>
+<p>注：250m/单核CPU的白分之25/0.25</p>
+<p>注：资源限制 cpu可以直接设置为数字 “1”为1核“2”为2核。</p>
+</div></blockquote>
 </section>
 <section id="id16">
-<h3><a class="toc-backref" href="#id46">Pod的状态和生命周期</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id51">Pod的状态和生命周期</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <section id="id17">
 <h4>容器状态<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
 <p>Kubernetes中对于Pod中的容器进行了状态的记录，其中每种状态下包含的信息如下所示。</p>
@@ -867,7 +876,7 @@ scheme：请求的协议，可选项，默认是HTTP。</p>
 </section>
 </section>
 <section id="id20">
-<h3><a class="toc-backref" href="#id47">自定义检查Pod</a><a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id52">自定义检查Pod</a><a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
 <p>我们需要更加精确的检查机制来判断Pod和容器是否准备就绪，从而让Kubernetes判断是否分发请求给Pod。</p>
 <p>针对这些需求，Kubernetes中提供了Probe机制，有以下两种类型的Probe。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Liveness Probe：用于容器的自定义健康检查，如果Liveness Probe检查失败，Kubernetes将杀死容器，然后根据Pod的重启策略来决定是否重启容器。
@@ -1077,7 +1086,7 @@ readiness-exec-pod   <span class="m">0</span>/1        Running   <span class="m"
 </section>
 </section>
 <section id="id23">
-<h3><a class="toc-backref" href="#id48">Pod的调度约束</a><a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id53">Pod的调度约束</a><a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
 <p>Pod的调度指的是Pod在创建之后分配到哪一个Node上，调度算法分为两个步骤，第一步筛选出符合条件的Node，第二步选择最优的Node。</p>
 <p>Pod在正式上线前，需要先在测试的Node上运行，测试完成再发布到生产环境的Node上运行。这时候就可以用到Node
 Selector，通过Node的Label进行选择。</p>
@@ -1135,7 +1144,7 @@ nginx   <span class="m">1</span>/1     Running   <span class="m">0</span>       
 <p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/11413002.html">https://www.cnblogs.com/xiangsikai/p/11413002.html</a></p>
 </section>
 <section id="id24">
-<h3><a class="toc-backref" href="#id49">问题定位指南</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id54">问题定位指南</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
 <p>Pod是应用的承载体，当Pod运行异常的时候，可能是Kubernetes系统问题，也可能是应用本身的问题，那么就需要提供足够的信息用于问题定位，Kubernetes针对Pod提供的事件记录、日志查询和远程调试功能进行问题定位。</p>
 <p>Kubernetes从Pod的创建开始，在Pod的生命周期内会产生各种事件信息，比如Pod完成调度、下载镜像完成等。在Pod运行异常的时候，通过排除相关事件可以了解是否是由于Kubernetes的原因导致Pod异常。</p>
 <p>事件查询可以先查询所有的事件：</p>
@@ -1203,7 +1212,7 @@ container2: 2015-11-21 14:53:37.377629086+00:00
 </section>
 </section>
 <section id="id26">
-<h3><a class="toc-backref" href="#id50">Pod的临终遗言</a><a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id55">Pod的临终遗言</a><a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
 <p>前面我们提到过容器停止前的日志价值更高，能够获取最后的错误异常消息、调用栈等，我们可以把这些信息形象地称为临终遗言，临终遗言对于问题定位是很有帮助的。在Kubernetes中为Pod提供了一个持久化文件，用来保存临终遗言。</p>
 <p>Pod的定义中通过<code class="docutils literal notranslate"><span class="pre">.spec.containers[].terminationMessagePath</span></code>指定在容器中的临终遗言日志文件的路径，默认值是/dev/termination-log。这个文件在Pod的整个生命周期内都会保存，每次新建一个Pod，都会在宿主机上创建一个文件，然后挂载到Pod的容器中，这些文件不会因为容器的销毁而丢失，所以容器可以把临终遗言写入这个文件，方便问题排错。</p>
 <p>现在创建一个Pod，其中的容器将写入临终遗言，Pod的定义文件<code class="docutils literal notranslate"><span class="pre">w-message-pod.yaml</span></code>：</p>
@@ -1237,7 +1246,7 @@ w-message-pod   <span class="m">0</span>/1     CrashLoopBackOff   <span class="m
 </div>
 </section>
 <section id="id27">
-<h3><a class="toc-backref" href="#id51">远程连接容器</a><a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id56">远程连接容器</a><a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
 <p>问题定位时往往需要连接到应用的运行环境进行操作，相比于传统的SSH方式，Docker提供了docker
 attach和docker
 exec两个命令可以连接容器进行操作。同样的，Kubernetes对应地提供了kubectl
@@ -1251,17 +1260,18 @@ Wed Jan  <span class="m">6</span> <span class="m">18</span>:19:07 CST <span clas
 <p>或者直接进入Pod的容器中：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl <span class="nb">exec</span> -ti my-pod /bin/bash
 <span class="o">[</span>root@ my-pod /<span class="o">]</span><span class="c1">#</span>
-
-提示 kubectl exec命令需要在Kubernetes Node上安装nsenter。
 </pre></div>
 </div>
+<blockquote>
+<div><p>提示 kubectl exec命令需要在Kubernetes Node上安装nsenter。</p>
+</div></blockquote>
 </section>
 </section>
-<section id="id28">
-<h2><a class="toc-backref" href="#id52">kubernetes的资源对象</a><a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h2>
+<section id="kubernetes-1">
+<span id="id28"></span><h2><a class="toc-backref" href="#id57">kubernetes的资源对象</a><a class="headerlink" href="#kubernetes-1" title="Permalink to this headline">¶</a></h2>
 <p>以资源的主要功能作为分类标准，Kubernetes的API对象大体可分为工作负载、发现与负载均衡、配置与存储、集群和元数据几个类别。它们基本都是围绕一个核心目的而设计：如何更好地运行和丰富Pod资源，从而为容器化应用提供更灵活和更完善的操作与管理组件。</p>
 <section id="id29">
-<h3><a class="toc-backref" href="#id53">1. 工作负载型资源</a><a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id58">1. 工作负载型资源</a><a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
 <p>应用程序分为无状态和有状态两种类型</p>
 <ul class="simple">
 <li><p>无状态应用：ReplicationController、ReplicaSet和Deployment负责管理无状态应用</p></li>
@@ -1291,19 +1301,19 @@ Wed Jan  <span class="m">6</span> <span class="m">18</span>:19:07 CST <span clas
 </div>
 </section>
 <section id="id30">
-<h3><a class="toc-backref" href="#id54">2. 发现与负载均衡</a><a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id59">2. 发现与负载均衡</a><a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
 <p>Service是Kubernetes标准的资源类型之一，用于为工作负载实例提供固定的访问入口及负载均衡服务，它把每个可用后端实例定义为Endpoint资源对象，通过IP地址和端口等属性映射至Pod实例或相应的服务端点。</p>
 <p>Ingress资源则为工作负载提供7层（HTTP/HTTPS）代理及负载均衡功能。</p>
 </section>
 <section id="id31">
-<h3><a class="toc-backref" href="#id55">3. 配置与存储</a><a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id60">3. 配置与存储</a><a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes支持众多类型的存储设备或存储系统，例如GlusterFS、Ceph
 RBD和Flocker等，还可通过FlexVolume及CSI（Container Storage
 Interface）存储接口扩展支持更多类型的存储系统。</p>
 <p>Kubernetes的ConfigMap资源能够以环境变量或存储卷的方式接入Pod资源的容器中，并可被多个同类的Pod共享引用，从而做到“一次修改，多处生效”。不过，这种方式不适用于存储敏感数据，例如证书、私钥和密码等，那是另一个资源类型Secret的功能。</p>
 </section>
 <section id="id32">
-<h3><a class="toc-backref" href="#id56">4.集群型资源</a><a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id61">4.集群型资源</a><a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes还存在一些用于定义集群自身配置信息的资源类型，它们不属于任何名称空间且仅应该由集群管理员操作。常用的集群型资源有如下几种。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>▪Namespace：名称空间，为资源对象的名称提供了限定条件或作用范围，它为使用同一集群的多个团队或项目提供了逻辑上的隔离机制，降低或消除了资源对象名称冲突的可能性。
 
@@ -1321,9 +1331,9 @@ Interface）存储接口扩展支持更多类型的存储系统。</p>
 </section>
 </section>
 <section id="id33">
-<h2><a class="toc-backref" href="#id57">名称空间</a><a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id62">名称空间</a><a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h2>
 <section id="id34">
-<h3><a class="toc-backref" href="#id58">名称空间的作用</a><a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id63">名称空间的作用</a><a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
 <p>名称空间的核心功能在于限制集群上对象名称的作用域：同一类型的资源对象名称在同一个名称空间中必须唯一，但不同名称空间却可为同一类型的资源使用相同的名称。对于某些场景，这种功能有着非常实用的价值，例如名称空间可用于分隔不同应用程序的生命周期环境（例如开发、预发和生产等），从而能够在每个环境中维护具有相同名称的同一类型的资源对象。名称空间本身并不具有网络隔离和访问限制等功能，但它可以作为网络访问控制策略（NetworkPolicy）、授权策略（RBAC）、资源限制策略（ResourceQuota）和Pod安全策略（PodSecurityPolicy）等管理逻辑的承载组件，这也是支撑集群“多租户”机制</p>
 <p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">namespaces</span></code>命令可以查看系统上的namespaces资源：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get ns</span>
@@ -1343,11 +1353,12 @@ Interface）存储接口扩展支持更多类型的存储系统。</p>
 </div>
 </section>
 <section id="namespace">
-<h3><a class="toc-backref" href="#id59">管理Namespace资源</a><a class="headerlink" href="#namespace" title="Permalink to this headline">¶</a></h3>
-<ol class="arabic simple">
-<li><p>命令式对象</p></li>
-</ol>
+<h3><a class="toc-backref" href="#id64">管理Namespace资源</a><a class="headerlink" href="#namespace" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>命令式对象</p>
 <p>管理通常是针对集群上的活动对象直接进行，用户或管理员针对指定的资源运行create、get、describe、edit和delete命令即能完成资源的创建、查看、编辑和删除等基础管理操作。</p>
+</li>
+</ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">create</span> <span class="n">namespace</span> <span class="n">myns</span>
 </pre></div>
 </div>
@@ -1388,33 +1399,71 @@ Interface）存储接口扩展支持更多类型的存储系统。</p>
 </section>
 </section>
 <section id="kubectl">
-<h2><a class="toc-backref" href="#id60">kubectl-备忘单</a><a class="headerlink" href="#kubectl" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id65">kubectl-备忘单</a><a class="headerlink" href="#kubectl" title="Permalink to this headline">¶</a></h2>
 <section id="id35">
-<h3><a class="toc-backref" href="#id61">Kubectl 自动补全</a><a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id66">Kubectl 自动补全</a><a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
 <p>Linux</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">bash</span><span class="o">-</span><span class="n">completion</span>
-<span class="n">source</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">bash</span><span class="o">-</span><span class="n">completion</span><span class="o">/</span><span class="n">bash_completion</span>
-<span class="n">source</span> <span class="o">&lt;</span><span class="p">(</span><span class="n">kubectl</span> <span class="n">completion</span> <span class="n">bash</span><span class="p">)</span>
-<span class="n">echo</span> <span class="s2">&quot;source &lt;(kubectl completion bash)&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bashrc</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>yum install -y bash-completion
+<span class="nb">source</span> /usr/share/bash-completion/bash_completion
+<span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion bash<span class="o">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;source &lt;(kubectl completion bash)&quot;</span> &gt;&gt; ~/.bashrc
 
 
 <span class="c1">#添加kubectl的k别名</span>
-<span class="n">vim</span>   <span class="o">~/.</span><span class="n">bashrc</span>
-<span class="n">alias</span> <span class="n">k</span><span class="o">=</span><span class="s1">&#39;kubectl&#39;</span>
+vim   ~/.bashrc
+<span class="nb">alias</span> <span class="nv">k</span><span class="o">=</span><span class="s1">&#39;kubectl&#39;</span>
 
 <span class="c1">#tab命令只在使用完整的kubectl 命令起作用，使用别名k 时不起作用，修补：</span>
-<span class="n">source</span> <span class="o">&lt;</span><span class="p">(</span> <span class="n">kubectl</span> <span class="n">completion</span> <span class="n">bash</span> <span class="o">|</span> <span class="n">sed</span> <span class="s1">&#39;s/kubectl/k/g&#39;</span> <span class="p">)</span>  <span class="c1">#写入 .bashrc</span>
+<span class="nb">source</span> &lt;<span class="o">(</span> kubectl completion bash <span class="p">|</span> sed <span class="s1">&#39;s/kubectl/k/g&#39;</span> <span class="o">)</span>  <span class="c1">#写入 .bashrc</span>
 </pre></div>
 </div>
 <p>mac</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ brew install bash-completion
-$ source $(brew --prefix)/etc/bash_completion
-$ source &lt;(kubectl completion bash)
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ brew install bash-completion
+$ <span class="nb">source</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/bash_completion
+$ <span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion bash<span class="o">)</span>
 </pre></div>
 </div>
 </section>
+<section id="kubernets-node">
+<h3><a class="toc-backref" href="#id67">kubernets node标签操作</a><a class="headerlink" href="#kubernets-node" title="Permalink to this headline">¶</a></h3>
+<section id="id36">
+<h4>1.添加<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl label nodes kube-node <span class="nv">label_name</span><span class="o">=</span>label_value
+
+示例：
+<span class="c1"># 对k8s-test01添加标签：</span>
+$ kubectl label nodes k8s-test01 <span class="nv">gpu</span><span class="o">=</span><span class="nb">true</span>
+node/k8s-test01 labeled
+</pre></div>
+</div>
+</section>
+<section id="id37">
+<h4>2.查询<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看所有标签</span>
+$ kubectl get nodes --show-labels
+
+<span class="c1"># 或者</span>
+$ kubectl describe nodes k8s-test01
+</pre></div>
+</div>
+</section>
+<section id="id38">
+<h4>3.删除<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h4>
+<p>删除一个label，只需在命令行最后指定label的key名并与一个减号相连即可：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl label nodes k8s-test01 gpu-
+</pre></div>
+</div>
+</section>
+<section id="id39">
+<h4>4.修改<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h4>
+<p>修改一个label的值，需要加上–overwrite参数：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl label nodes k8s-test01 <span class="nv">gpu</span><span class="o">=</span><span class="nb">false</span> --overwrite
+</pre></div>
+</div>
+</section>
+</section>
 <section id="kubectl-context-and-configuration">
-<h3><a class="toc-backref" href="#id62">Kubectl Context and Configuration</a><a class="headerlink" href="#kubectl-context-and-configuration" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id68">Kubectl Context and Configuration</a><a class="headerlink" href="#kubectl-context-and-configuration" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">config</span> <span class="n">view</span> <span class="c1"># Show Merged kubeconfig settings.</span>
 
 <span class="c1"># use multiple kubeconfig files at the same time and view merged config</span>
@@ -1445,7 +1494,7 @@ $ source &lt;(kubectl completion bash)
 </div>
 </section>
 <section id="creating-objects">
-<h3><a class="toc-backref" href="#id63">Creating Objects</a><a class="headerlink" href="#creating-objects" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id69">Creating Objects</a><a class="headerlink" href="#creating-objects" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes manifests can be defined in json or yaml. The file extension
 <code class="docutils literal notranslate"><span class="pre">.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">.yml</span></code>, and <code class="docutils literal notranslate"><span class="pre">.json</span></code> can be used.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>kubectl apply -f ./my-manifest.yaml           # create resource(s)
@@ -1497,7 +1546,7 @@ EOF
 </div>
 </section>
 <section id="viewing-finding-resources">
-<h3><a class="toc-backref" href="#id64">Viewing, Finding Resources</a><a class="headerlink" href="#viewing-finding-resources" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id70">Viewing, Finding Resources</a><a class="headerlink" href="#viewing-finding-resources" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Get commands with basic output
 kubectl get services                          # List all services in the namespace
 kubectl get pods --all-namespaces             # List all pods in all namespaces
@@ -1560,13 +1609,20 @@ kubectl get deploy -o=custom-columns=NAME:&#39;.metadata.name&#39;,IMAGES:&#39;.
 kubectl get deploy -o=custom-columns-file=$HOME/.kube/columns/test
 </pre></div>
 </div>
-<hr class="docutils" />
+<p>……</p>
+<p>更多参考内容：</p>
+<p><a class="reference external" href="https://www.devopstory.cn/archives/kubernetes/kubernetes日常操作命令（持续更新）/">Kubernetes日常操作命令（持续更新）</a></p>
 <p>参考</p>
 <p><a class="reference external" href="https://cs.leops.cn/#/cheatsheet/container/kubectl">https://cs.leops.cn/#/cheatsheet/container/kubectl</a></p>
 </section>
 </section>
-<section id="id36">
-<h2><a class="toc-backref" href="#id65">应用部署、运行与管理</a><a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h2>
+<section id="id40">
+<h2><a class="toc-backref" href="#id71">常用的清理 Kubernetes 集群资源命令</a><a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h2>
+<p>参考：</p>
+<p><a class="reference external" href="https://mp.weixin.qq.com/s/yPX882-XHH8Rp-QWKhjP6A">https://mp.weixin.qq.com/s/yPX882-XHH8Rp-QWKhjP6A</a></p>
+</section>
+<section id="id41">
+<h2><a class="toc-backref" href="#id72">应用部署、运行与管理</a><a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h2>
 <p>一个综合案例</p>
 <p>下面的示例中有一个初始化容器和两个应用容器，其中sidecar-proxy为Sidecar容器，负责为主容器demo代理服务客户端请求。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">create</span> <span class="n">ns</span> <span class="n">dev</span>

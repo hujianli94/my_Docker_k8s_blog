@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>资源管理-标签、选择器及注解 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="资源调度-Pod调度策略详解" href="4.%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6-Pod%E8%B0%83%E5%BA%A6%E7%AD%96%E7%95%A5%E8%AF%A6%E8%A7%A3.html" />
+    <link rel="prev" title="资源管理-命名空间" href="2.%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../5.%E6%8E%A7%E5%88%B6%E5%99%A8/index.html">5.控制器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html">7.存储与配置</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">8.Kubernetes资源的管理及调度</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="1.%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6-%E4%B8%BAPod%E8%AE%BE%E7%BD%AE%E8%AE%A1%E7%AE%97%E8%B5%84%E6%BA%90.html">资源调度-为Pod设置计算资源</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2.%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4.html">资源管理-命名空间</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">资源管理-标签、选择器及注解</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">1. 标签</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">2. 选择器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">3. 注解</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="4.%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6-Pod%E8%B0%83%E5%BA%A6%E7%AD%96%E7%95%A5%E8%AF%A6%E8%A7%A3.html">资源调度-Pod调度策略详解</a></li>
+<li class="toctree-l3"><a class="reference internal" href="5.%E4%BC%98%E5%85%88%E7%BA%A7%E4%B8%8E%E6%8A%A2%E5%8D%A0%E5%BC%8F%E8%B0%83%E5%BA%A6.html">优先级与抢占式调度</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">8.Kubernetes资源的管理及调度</a> &raquo;</li>
+      <li>资源管理-标签、选择器及注解</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/8.Kubernetes资源的管理及调度/3.资源管理-标签、选择器及注解.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id5">资源管理-标签、选择器及注解</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id6">1. 标签</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id7">2. 选择器</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id8">3. 注解</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="id1">
+<h1><a class="toc-backref" href="#id5">资源管理-标签、选择器及注解</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>上面我们讨论了命名空间，它主要用于实现多租户的资源隔离。</p>
+<p>在同一个命名空间下，还可以对资源进行更细粒度的划分，对各个资源的身份进行标识（例如，可以区分各个应用的版本、层级、环境等），可以使用标签（label）来区分这些资源。</p>
+<p>通过标签选择器（selector），我们可以快速查找具备指定标签值的资源，或者将某些高层Kubernetes资源通过标签条件关联到低层资源。</p>
+<p>注解（annotation）也是一种类似标签的机制。相比标签，注解更自由，可以包含少量结构化数据。一般来说，注解只是向对象中添加更多信息的一种方式，并没有实际功能。</p>
+<section id="id2">
+<h2><a class="toc-backref" href="#id6">1. 标签</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Kubernetes中的标签是一种语义化标记标签，可以附加到Kubernetes对象上，并对它们进行标记或划分。如果要针对不同的实例进行管理或路由，就可以用标签来进行选择。</p>
+<p>标签的形式是键值对，每个资源对象都可以拥有多个标签，但每个资源对象对于每个键都只能拥有一个值。</p>
+<p>标签的使用非常灵活，可以使用开发阶段、可访问性级别、应用程序版本等标准对各个对象进行分类。</p>
+<p>对于每一种资源对象，都可以设置标签。方法是在模板中的metadata属性中设置，如下所示。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span><span class="p">:</span>
+  <span class="n">labels</span><span class="p">:</span> <span class="c1">#标签列表，可定义多个标签的键/值对</span>
+    <span class="n">key1</span><span class="p">:</span> <span class="n">value1</span>
+    <span class="n">key2</span><span class="p">:</span> <span class="n">value2</span>
+    <span class="o">......</span>
+    <span class="n">keyN</span><span class="p">:</span> <span class="n">valueN</span>
+</pre></div>
+</div>
+<p>对于已有资源，可以通过以下命令为其创建或删除标签。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl label {资源类型} {资源名称} {标签名}={标签值}
+$ kubectl label {资源类型} {资源名称} {标签名}-
+</pre></div>
+</div>
+<p>以下是一些标签的应用场景。</p>
+<ul class="simple">
+<li><p>根据发布版本划分为release: beta、release: stable、release:canary。</p></li>
+<li><p>根据环境划分为 environment: dev、environment: qa、environment:
+production。</p></li>
+<li><p>根据应用层级划分为tier: frontend、tier: backend、tier: cache。</p></li>
+<li><p>根据用户群划分为partition: customerA、partition: customerB。</p></li>
+<li><p>根据维护频率划分为track: daily、track: weekly。</p></li>
+</ul>
+<p>为了定义一个带标签的Pod，首先，通过以下命令创建<code class="docutils literal notranslate"><span class="pre">examplepodforlabel.yml</span></code>文件。</p>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodforlabel.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforlabel</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">environment</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">production</span>
+    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+    <span class="nt">release</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">stable</span>
+    <span class="nt">tire</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">backend</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span>
+      <span class="nt">ports</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>运行以下命令，通过模板创建Pod。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforlabel.yml
+</pre></div>
+</div>
+<p>接下来，通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pod</span> <span class="pre">examplepodforlabel</span></code>命令查看Pod的详细信息，可以发现Pod已成功指定标签</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl describe pod examplepodforlabel
+Name:         examplepodforlabel
+Namespace:    default
+Priority:     <span class="m">0</span>
+Node:         gitee-k8s-w17/192.168.1.126
+Start Time:   Tue, <span class="m">19</span> Apr <span class="m">2022</span> <span class="m">15</span>:16:23 +0800
+Labels:       <span class="nv">app</span><span class="o">=</span>nginx
+              <span class="nv">environment</span><span class="o">=</span>production
+              <span class="nv">release</span><span class="o">=</span>stable
+              <span class="nv">tire</span><span class="o">=</span>backend
+......
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id7">2. 选择器</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>通过标签选择器，可以快速查找具备指定标签值的资源，如通过命令查找指定资源。在查询时应带上“-l”参数，后面带上选择器表达式。</p>
+<p>在查询时可以使用=（或==）、!=操作符，使用逗号可分隔并连接多个表达式以进行匹配。</p>
+<p>例如，<strong>可以使用以下命令查询environment标签不为dev、tire标签为backend的所有Pod。</strong></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods -l environment!<span class="o">=</span>dev,tire<span class="o">=</span>backend
+NAME                 READY   STATUS    RESTARTS   AGE
+examplepodforlabel   <span class="m">1</span>/1     Running   <span class="m">0</span>          89s
+</pre></div>
+</div>
+<p>还可以使用in、notin等方式进行查询。在使用这种方式时需要将选择器表达式放置在单引号之间，使用逗号分隔并连接多个表达式进行匹配。例如，<strong>可以使用以下命令查询environment标签的取值在production和dev之间且tire标签取值不在frontend中的所有Pod。</strong></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods -l <span class="s1">&#39;environment in (production,dev),tire notin (frontend)&#39;</span>
+NAME                 READY   STATUS    RESTARTS   AGE
+examplepodforlabel   <span class="m">1</span>/1     Running   <span class="m">0</span>          4m3s
+</pre></div>
+</div>
+<p>还可以使用!{label}、{label}等方式进行查询。如果使用!{label}，需要将选择器表达式放置在单引号之间，使用逗号分隔并连接多个表达式进行匹配。例如，<strong>可以使用以下命令查询带environment标签（任何值皆可）但不带deadline标签的所有Pod。</strong></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods -l <span class="s1">&#39;environment,!deadline&#39;</span>
+NAME                 READY   STATUS    RESTARTS   AGE
+examplepodforlabel   <span class="m">1</span>/1     Running   <span class="m">0</span>          3m22s
+</pre></div>
+</div>
+<p>如果查询时标签与资源不匹配，则查询结果为空</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods -l <span class="nv">a</span><span class="o">=</span>b,b<span class="o">=</span>c,<span class="s1">&#39;evn in (abc)&#39;</span>
+No resources found <span class="k">in</span> default namespace.
+</pre></div>
+</div>
+<p>标签选择器也可以将某些高层Kubernetes资源通过标签条件关联到低层资源。接下来分别介绍这些场景的用法。</p>
+<p>每种基于控制器的对象都可以使用标签来识别需要操作的Pod。Job、Deployment及DaemonSet等控制器可以在控制器模板的spec属性中指定选择器，以查找符合条件的Pod。示例如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">selector</span><span class="p">:</span>
+  <span class="n">matchLabels</span><span class="p">:</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">jekins</span>
+    <span class="n">release</span><span class="p">:</span> <span class="n">stable</span>
+  <span class="n">matchExpressions</span><span class="p">:</span>
+    <span class="o">-</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">tier</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">In</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="p">[</span><span class="n">backend</span><span class="p">]}</span>
+    <span class="o">-</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">environment</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">NotIn</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="p">[</span><span class="n">dev</span><span class="p">,</span><span class="n">qa</span><span class="p">]}</span>
+    <span class="o">-</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">track</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">Exists</span><span class="p">}</span>
+    <span class="o">-</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">deadline</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">DoesNotExist</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>配置上述选择器的控制器将会选取的Pod满足以下条件。</p>
+<p>app标签为jekins，release标签为stable，tier标签在backend中取值，environment标签取值不介于dev和qa，存在track标签以及不存在deadline标签。</p>
+<p>除了控制器外，Service还必须使用标签选择器才能确定应该将请求路由到哪些后端Pod。示例如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">servicedemo</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">PRD</span>
+  <span class="n">ports</span><span class="p">:</span>
+<span class="o">....</span>
+</pre></div>
+</div>
+<p>如图所示，这个Service将会定位所有标签满足evn=PRD的Pod，将其添加到自己的Endpoint列表中，无论是单个Pod还是由控制器托管的Pod。</p>
+<p>Service通过标签匹配Endpoint</p>
+<img alt="../../_images/image-20220419152447161.png" src="../../_images/image-20220419152447161.png" />
+<p>在创建PVC时，除了可以用storageClassName以外，还可以用标签来匹配对应的PV。示例如下。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">PersistentVolume</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testPV</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">pvnumber</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pv001</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">capacity</span><span class="p">:</span>
+    <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1Gi</span>
+  <span class="nt">accessModes</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+  <span class="nt">storageClassName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testing</span>
+
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">PersistentVolumeClaim</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testPVC</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">accessModes</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+  <span class="nt">resources</span><span class="p">:</span>
+    <span class="nt">requests</span><span class="p">:</span>
+      <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1Gi</span>
+  <span class="nt">storageClassName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testing</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">pvnumber</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pv001</span>
+</pre></div>
+</div>
+<p>在创建PVC时会自动寻找storageClassName为testing且pvnumber标签为pv001的PV并进行绑定。</p>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id8">3. 注解</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>注解也是一种类似标签的机制。相对于标签，注解更自由，可以包含少量结构化数据。注解不用于识别和选择对象，只是向对象中添加更多信息的一种方式，<strong>只起说明作用并没有实际功能。</strong></p>
+<p>同标签一样，对于每一种资源对象都可以设置注解，在模板的metadata属性中设置即可。</p>
+<p>为了定义一个带注解的Pod，首先，通过命令创建examplepodforannotation.yml文件。</p>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodforannotation.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforannotation</span>
+  <span class="nt">annotations</span><span class="p">:</span>
+    <span class="nt">devteam</span><span class="p">:</span> <span class="s">&#39;Tiger</span><span class="nv"> </span><span class="s">Team&#39;</span>
+    <span class="nt">phone</span><span class="p">:</span> <span class="s">&#39;999-888-77777&#39;</span>
+    <span class="nt">howtouse</span><span class="p">:</span> <span class="s">&#39;plz</span><span class="nv"> </span><span class="s">open</span><span class="nv"> </span><span class="s">this</span><span class="nv"> </span><span class="s">app</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">click....&#39;</span>
+    <span class="nt">Gitrepository</span><span class="p">:</span> <span class="s">&#39;https://github.com/xxxxx/project.git&#39;</span>
+    <span class="nt">email</span><span class="p">:</span> <span class="s">&#39;tigerteam@company.com&#39;</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span>
+    <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>运行以下命令，通过模板创建Pod。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforannotation.yml
+</pre></div>
+</div>
+<p>接下来，通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pod</span> <span class="pre">examplepodforannotation</span></code>命令查看Pod的详细信息，可以发现Pod已成功指定注解</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl describe pod examplepodforannotation
+Name:         examplepodforannotation
+Namespace:    default
+Priority:     <span class="m">0</span>
+Node:         gitee-k8s-w02/192.168.1.36
+Start Time:   Tue, <span class="m">19</span> Apr <span class="m">2022</span> <span class="m">15</span>:49:11 +0800
+Labels:       &lt;none&gt;
+Annotations:  Gitrepository: https://github.com/xxxxx/project.git
+              devteam: Tiger Team
+              email: tigerteam@company.com
+              howtouse: plz open this app and click....
+              phone: <span class="m">999</span>-888-77777
+Status:       Running
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="2.%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4.html" class="btn btn-neutral float-left" title="资源管理-命名空间" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="4.%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6-Pod%E8%B0%83%E5%BA%A6%E7%AD%96%E7%95%A5%E8%AF%A6%E8%A7%A3.html" class="btn btn-neutral float-right" title="资源调度-Pod调度策略详解" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -46,11 +46,11 @@ class Conversion:
         return self.__js_file
 
     def write_json(self, file, data):
-        '''
+        """
         :param file: json文件名称
         :param data: 写入数据
         :return:
-        '''
+        """
         with open(file, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 

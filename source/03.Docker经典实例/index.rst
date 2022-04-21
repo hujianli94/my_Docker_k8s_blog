@@ -24,3 +24,5 @@
     15.部署Docker-Harbor仓库
     16.基于Docker搭建prometheus+Grafana
     17.consul服务注册
+    18.Docker完美部署Gitea
+    19.使用CoreDNS作为数据中心内网DNS

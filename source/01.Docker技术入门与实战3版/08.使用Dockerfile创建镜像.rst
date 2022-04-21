@@ -69,6 +69,12 @@ https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=724
 -  `添加HEALTHCHECK <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section42461157193810>`__
 -  `编写.dockerignore文件 <https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&topicId=7248a2e6#section1890015265187>`__
 
+..
+
+   Dockerfile 实践
+
+https://www.bococ.cn/Docker/106.html
+
 查看在运行容器的Dockerfile的工具
 --------------------------------
 
@@ -198,8 +204,8 @@ Hub上两个热门镜像nginx和Go的Dockerfile的例子，通过这两个例子
    EXPOSE 80
    CMD ["./sbin/nginx", "-g", "daemon off;"]
 
-dockerfile拷贝目录的一个坑
---------------------------
+Dockerfile拷贝目录的一个坑
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
    拷贝文件不需要写目标
 
@@ -220,17 +226,21 @@ dockerfile拷贝目录的一个坑
    COPY mysql /usr/local/mysql
 
 Dockerfile指令说明
-------------------
+~~~~~~~~~~~~~~~~~~
 
 Dockerfile中指令的一般格式为INSTRUCTION
 arguments，包括“配置指令”（配置镜像信息）和“操作指令”（具体执行操作），参见表
+
+   Docker Dockerfile
+
+   https://www.runoob.com/docker/docker-dockerfile.html
 
 Dockerfile中的指令及说明
 
 .. image:: ../_static/dockerfile001.png
 
 配置指令
---------
+~~~~~~~~
 
 可参考文献：
 
@@ -238,7 +248,7 @@ Dockerfile中的指令及说明
 参考文档 <https://juejin.cn/post/6844903958532587533#heading-25>`__
 
 1.ARG
-~~~~~
+^^^^^
 
 定义创建镜像过程中使用的变量。
 
@@ -250,7 +260,7 @@ build时，可以通过-build-arg[=]来为变量赋值。当镜像编译成功�
 Docker内置了一些镜像创建变量，用户可以直接使用而无须声明，包括（不区分大小写）HTTP_PROXY、HTTPS_PROXY、FTP_PROXY、NO_PROXY。
 
 2.FROM
-~~~~~~
+^^^^^^
 
 指定所创建镜像的基础镜像。
 
@@ -280,7 +290,7 @@ Docker内置了一些镜像创建变量，用户可以直接使用而无须声�
    .....
 
 3.LABEL
-~~~~~~~
+^^^^^^^
 
 LABEL指令可以为生成的镜像添加元数据标签信息。这些信息可以用来辅助过滤出特定镜像。
 
@@ -315,7 +325,7 @@ LABEL指令可以为生成的镜像添加元数据标签信息。这些信息可
    LABEL maintainer="SvenDowideit@home.org.au"
 
 4.EXPOSE
-~~~~~~~~
+^^^^^^^^
 
 声明镜像内服务监听的端口。
 
@@ -333,7 +343,7 @@ LABEL指令可以为生成的镜像添加元数据标签信息。这些信息可
 HOST_PORT：CONTAINER_PORT参数（具体指定所映射的本地端口）。
 
 5.ENV
-~~~~~
+^^^^^
 
 指定环境变量，在镜像生成过程中会被后续RUN指令使用，在镜像启动的容器中也会存在。
 
@@ -370,7 +380,7 @@ key2=value2：
    ENV key1=value1 key2=${key1}
 
 6.ENTRYPOINT
-~~~~~~~~~~~~
+^^^^^^^^^^^^
 
 指定镜像的默认入口命令，该入口命令会在启动容器时作为根命令执行，所有传入值作为该命令的参数。
 
@@ -387,14 +397,14 @@ key2=value2：
 run–entrypoint。
 
 7.VOLUME
-~~~~~~~~
+^^^^^^^^
 
 创建一个数据卷挂载点。 格式为\ ``VOLUME ["/data"]``\ 。
 
 运行容器时可以从本地主机或其他容器挂载数据卷，一般用来存放数据库和需要保持的数据等。
 
 8.USER
-~~~~~~
+^^^^^^
 
 指定运行容器时的用户名或UID，后续的RUN等指令也会使用指定的用户身份。
 
@@ -409,7 +419,7 @@ run–entrypoint。
 要临时获取管理员权限可以使用gosu命令。
 
 9.WORKDIR
-~~~~~~~~~
+^^^^^^^^^
 
 ``WORKDIR`` 指令为 ``Dockerfile`` 中的任何 ``RUN`` 、 ``CMD`` 、
 ``ENTRYPOINT`` 、 ``COPY`` 和 ``ADD``
@@ -444,7 +454,7 @@ run–entrypoint。
 这里的最终路径是 ``/path/$DIRNAME``
 
 10.ONBUILD
-~~~~~~~~~~
+^^^^^^^^^^
 
 指定当基于所生成镜像创建子镜像时，自动执行的操作指令。
 
@@ -480,7 +490,7 @@ ParentImage），会首先执行ParentImage中配置的ONBUILD指令：
 ONBUILD指令在创建专门用于自动编译、检查等操作的基础镜像时，十分有用。
 
 11.STOPSIGNAL
-~~~~~~~~~~~~~
+^^^^^^^^^^^^^
 
 指定所创建镜像启动的容器接收退出的信号值：
 
@@ -489,7 +499,7 @@ ONBUILD指令在创建专门用于自动编译、检查等操作的基础镜像�
    STOPSIGNAL signal
 
 12.HEALTHCHECK
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^
 
 配置所启动容器如何进行健康检查（如何判断健康与否），自Docker
 1.12开始支持。
@@ -513,7 +523,7 @@ OPTION支持如下参数：
    ·-retries=N（default：3）：如果失败了，重试几次才最终确定失败。
 
 13.SHELL
-~~~~~~~~
+^^^^^^^^
 
 指定其他命令使用shell时的默认shell类型：
 
@@ -729,11 +739,17 @@ COPY与ADD指令功能类似，当使用本地目录为源目录时，推荐使�
 
 要指定生成镜像的标签信息，可以通过-t选项。该选项可以重复使用多次为镜像一次添加多个名称。
 
-例如，上下文路径为/tmp/docker_builder/，并且希望生成镜像标签为builder/first_image:1.0.0，可以使用下面的命令：
+例如，上下文路径为\ ``/tmp/docker_builder/``\ ，并且希望生成镜像标签为\ ``builder/first_image:1.0.0``\ ，可以使用下面的命令：
 
 ::
 
    $ docker build -t builder/first_image:1.0.0 /tmp/docker_builder/
+
+..
+
+   Docker build 命令参考文献：
+
+   https://www.runoob.com/docker/docker-build-command.html
 
 命令选项
 ~~~~~~~~

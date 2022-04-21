@@ -298,6 +298,49 @@ search[option]keyword。支持的命令选项主要包括：
    # 清理无容器使用的镜像
    docker image prune -a
 
+Docker清理删除未被使用的镜像
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+描述 cicd
+持久化部署节点越来越多的镜像，磁盘空间越来越不够，这时需要做一个定时清理没有使用的镜像。
+
+::
+
+   选项
+   参数  描述
+   --all , -a  Remove all unused images, not just dangling ones -----删除所有未使用的映像，而不仅仅是悬空映像
+   --filter    Provide filter values (e.g. ‘until=') -----提供过滤值（例如'until =“）
+   --force , -f    Do not prompt for confirmation -----不要提示确认
+   until           仅删除在给定时间戳之前创建的映像
+
+Ubuntu 系统添加定时任务
+^^^^^^^^^^^^^^^^^^^^^^^
+
+清理10天前创建且当前无容器实例使用的镜像
+
+::
+
+   cat >> /var/spool/cron/crontabs/root << EOF
+   # 每周一清理无效镜像
+   * * * * 1 /usr/bin/docker image prune -a --force --filter "until=240h" 2>&1
+   EOF
+
+Centos 系统添加定时任务
+^^^^^^^^^^^^^^^^^^^^^^^
+
+清理10天前创建且当前无容器实例使用的镜像
+
+::
+
+   cat >> /var/spool/cron/root << EOF
+   # 每周一清理无效镜像
+   * * * * 1 /usr/bin/docker image prune -a --force --filter "until=240h" 2>&1
+   EOF
+
+参考文献：
+
+https://www.akiraka.net/linux/docker/502.html
+
 使用Docker一段时间后，系统中可能会遗留一些临时的镜像文件，以及一些没有被使用的镜像，可以通过docker
 image prune命令来进行清理。
 

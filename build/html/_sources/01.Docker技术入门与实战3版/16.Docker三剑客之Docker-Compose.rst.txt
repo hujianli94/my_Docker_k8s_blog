@@ -255,7 +255,17 @@ Compose既然是一个Python应用，自然也可以直接用容器来执行它�
 
    http://get.daocloud.io/
 
-4.卸载
+4.安装docker compose v2
+~~~~~~~~~~~~~~~~~~~~~~~
+
+目前 Docker 官方用 GO 语言 重写 了 Docker Compose，并将其作为了 docker
+cli 的子命令，称为 Compose V2。
+
+   参考文献：
+
+   https://www.iszy.cc/posts/linux-install-docker-compose-v2/
+
+5.卸载
 ~~~~~~
 
 如果是二进制包方式安装的，删除二进制文件即可：
@@ -340,6 +350,29 @@ Compose模板文件
 .. image:: ../_static/docker_compose_cmd00001.png
 
 .. image:: ../_static/docker_compose_cmd_00002.png
+
+Dockerfile中配置时区
+
+::
+
+   FROM docker.io/centos
+   MAINTAINER DAVID
+
+   # 使用RUN命令设置时区
+   RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai'>/etc/timezone
+
+docker-compose.yaml设置中国时区
+
+::
+
+   方式一：
+   environment:
+     - SET_CONTAINER_TIMEZONE=true
+     - CONTAINER_TIMEZONE=Asia/Shanghai
+         
+   方式二：
+   environment:
+     - TZ=Asia/Shanghai
 
 Compose 文件格式有几个版本——1、2、2.x 和3. x
 
@@ -2364,6 +2397,22 @@ Compose应用案例七：Django框架部署
    Starting django-demo_app_1 ... done
 
 打开浏览器输入地址进行访问http://ip:8100.至此django项目在docker-compose上部署完毕。
+
+参考文献：
+
+   Dockerfile部署Django应用
+
+   https://www.cnblogs.com/52-qq/p/14251369.html
+
+   https://www.jb51.net/article/211019.htm
+
+   使用 Docker-compose 离线部署Django应用
+
+   https://juejin.cn/post/6844903794187173901
+
+   Django REST framework Docker 部署
+
+   https://juejin.cn/post/6977693601094434830
 
 compose应用案例八：Flask框架部署，将数值记入Redis
 -------------------------------------------------

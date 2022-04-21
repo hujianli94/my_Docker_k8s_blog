@@ -1,0 +1,230 @@
+.. contents::
+   :depth: 3
+..
+
+StorageClass
+============
+
+之前介绍了PV及PVC的使用方式，读者从中可以发现，这是一种静态创建PV的方法，先要创建各种固定大小的PV，而这些PV都是手动创
+建的，过程非常麻烦。有时开发人员在申请PVC资源时，不一定有匹配条件的PV可用，这又带来了新的问题。
+
+为了解决这类问题，Kubernetes提供了StorageClass抽象来动态创建PV，StorageClass大大简化了PV的创建过程。
+
+当申请PVC资源时，如果匹配到满足条件的StorageClass，就会自动为PVC创建对应大小的PV并进行绑定。
+
+StorageClass是通过存储分配器（provisioner）来动态分配PV的，但是Kubernetes官方内置的存储分配器并不支持NFS，所以需要额
+外安装NFS存储分配器。
+
+NFS 存储分配器的安装过程并不复杂。首先，执行以下命令，下载 NFS
+存储分配器的deployment.yaml配置。
+
+.. code:: shell
+
+   $ git clone https://github.com/kubernetes-retired/external-storage.git
+   $ cd external-storage/nfs-client/deploy/
+
+下载完成后，使用以下命令编辑yaml配置文件。修改文件中的部分配置，然后保存，具体修改内容参见下方粗体
+代码。
+
+.. code:: yaml
+
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: nfs-client-provisioner
+     labels:
+       app: nfs-client-provisioner
+     # replace with namespace where provisioner is deployed
+     namespace: default
+   spec:
+     replicas: 1
+     strategy:
+       type: Recreate
+     selector:
+       matchLabels:
+         app: nfs-client-provisioner
+     template:
+       metadata:
+         labels:
+           app: nfs-client-provisioner
+       spec:
+         serviceAccountName: nfs-client-provisioner
+         containers:
+           - name: nfs-client-provisioner
+             image: quay.io/external_storage/nfs-client-provisioner:latest
+             volumeMounts:
+               - name: nfs-client-root
+                 mountPath: /persistentvolumes
+             env:
+               - name: PROVISIONER_NAME
+                 value: fuseim.pri/ifs
+               - name: NFS_SERVER
+                 value: 192.168.1.60
+               - name: NFS_PATH
+                 value: /nfstest
+         volumes:
+           - name: nfs-client-root
+             nfs:
+               server: 192.168.1.60
+               path: /nfstest
+
+在env属性中，PROVISIONER_NAME表示存储分配器的名称，nfs-gitee-test。
+
+NFS_SERVER表示NFS服务器地址，在本例中为之前配置的192.168.1.60。
+
+NFS_PATH表示NFS共享目录地址，在本例中为/nfstest。在volumes属性中，也将server与path改为之前配置的NFS服务器地址和共享目录。
+
+``class.yaml``\ 中的provisioner要与\ ``deployment.yaml``\ 中一致
+
+安装完成后可以创建StorageClass了。首先，创建\ ``class.yaml``\ 文件。
+
+.. code:: yaml
+
+   apiVersion: storage.k8s.io/v1
+   kind: StorageClass
+   metadata:
+     name: managed-nfs-storage
+   provisioner: fuseim.pri/ifs # or choose another name, must match deployment's env PROVISIONER_NAME'
+   parameters:
+     archiveOnDelete: "false"
+
+该模板的主要含义如下。
+
+-  apiVersion表示使用的API版本，storage.k8s.io/v1表示使用Kubernetes
+   API的稳定版本。
+-  kind表示要创建的资源对象，这里使用关键字StorageClass。
+-  metadata中的name属性定义了当前资源的名称。
+-  provisioner表示存储分配器的名称。这里需要使用之前在Deployment模板中配置的PROVISIONER_NAME，即
+   fuseim.pri/ifs。
+-  parameters表示该资源对象的参数。若archiveOnDelete为false，表示与之关联的PVC在删除时，它所绑定的PV不会被存储
+   分配器保留；若为true，则相反
+
+接下来修改测试pvc和pod，用于验证
+
+``test-claim.yaml``
+
+.. code:: yaml
+
+   kind: PersistentVolumeClaim
+   apiVersion: v1
+   metadata:
+     name: test-claim
+     annotations:
+       volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
+   spec:
+     accessModes:
+       - ReadWriteMany
+     resources:
+       requests:
+         storage: 1Mi
+
+``test-pod.yaml``
+
+.. code:: yaml
+
+   kind: Pod
+   apiVersion: v1
+   metadata:
+     name: test-pod
+   spec:
+     containers:
+     - name: test-pod
+       image: busybox:latest
+       command:
+         - "/bin/sh"
+       args:
+         - "-c"
+         - "touch /mnt/SUCCESS && exit 0 || exit 1"
+       volumeMounts:
+         - name: nfs-pvc
+           mountPath: "/mnt"
+     restartPolicy: "Never"
+     volumes:
+       - name: nfs-pvc
+         persistentVolumeClaim:
+           claimName: test-claim
+
+接下来，执行以下命令，创建StorageClass。
+
+.. code:: shell
+
+   $ kubectl apply -f external-storage/nfs-client/deploy/
+
+创建完成后，可以通过以下命令查看StorageClass
+
+.. code:: shell
+
+   $ kubectl get sc|grep managed-nfs-storage
+   managed-nfs-storage           fuseim.pri/ifs                                           Delete          Immediate           false                  55s
+
+   $ kubectl get pvc
+   NAME         STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS          AGE
+   test-claim   Bound    pvc-86a26712-ea2e-4c92-9075-6dc38343247e   1Mi        RWX            managed-nfs-storage   2m32s
+
+   $ kubectl get deployment
+   NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+   nfs-client-provisioner   1/1     1            1           2m4s
+
+   $ kubectl get pod
+   NAME                                      READY   STATUS      RESTARTS   AGE
+   nfs-client-provisioner-6794dc7784-7frn7   1/1     Running     0          2m55s
+   test-pod                                  0/1     Completed   0          2m54s
+
+使用以下命令，可以查询StorageClass资源的详情。
+
+.. code:: shell
+
+   $ kubectl describe sc managed-nfs-storage
+   Name:            managed-nfs-storage
+   IsDefaultClass:  No
+   Annotations:     kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{},"name":"managed-nfs-storage"},"parameters":{"archiveOnDelete":"false"},"provisioner":"fuseim.pri/ifs"}
+
+   Provisioner:           fuseim.pri/ifs
+   Parameters:            archiveOnDelete=false
+   AllowVolumeExpansion:  <unset>
+   MountOptions:          <none>
+   ReclaimPolicy:         Delete
+   VolumeBindingMode:     Immediate
+   Events:                <none>
+
+此时可通过\ ``$ kubectl describe pv``\ 命令查看详情。可以看到该动态PV在NFS服务器的共享目录上创建了一个专属于它的子目录，
+
+::
+
+   $ kubectl describe pv pvc-86a26712-ea2e-4c92-9075-6dc38343247e
+   Name:            pvc-86a26712-ea2e-4c92-9075-6dc38343247e
+   Labels:          <none>
+   Annotations:     pv.kubernetes.io/provisioned-by: fuseim.pri/ifs
+   Finalizers:      [kubernetes.io/pv-protection]
+   StorageClass:    managed-nfs-storage
+   Status:          Bound
+   Claim:           default/test-claim
+   Reclaim Policy:  Delete
+   Access Modes:    RWX
+   VolumeMode:      Filesystem
+   Capacity:        1Mi
+   Node Affinity:   <none>
+   Message:
+   Source:
+       Type:      NFS (an NFS mount that lasts the lifetime of a pod)
+       Server:    192.168.1.60
+       Path:      /nfstest/default-test-claim-pvc-86a26712-ea2e-4c92-9075-6dc38343247e
+       ReadOnly:  false
+   Events:        <none>
+
+在本例中为/nfstest/default-test-claim-pvc-86a26712-ea2e-4c92-9075-6dc38343247e
+
+我们查看nfs的数据如下
+
+.. code:: shell
+
+   $ ll /data/nfs/nfstest/default-test-claim-pvc-86a26712-ea2e-4c92-9075-6dc38343247e/SUCCESS
+   -rw-r--r-- 1 root root 0 Apr 17 20:39 /data/nfs/nfstest/default-test-claim-pvc-86a26712-ea2e-4c92-9075-6dc38343247e/SUCCESS
+
+接下来，删除PVC。先执行\ ``$ kubectl delete pvc exampleforstorageclass``\ 命令，然后再执行\ ``$ kubectl get pv``\ 命令获取PV。可以发现，当删除PVC时，它所绑定的动态PV也会自动删除。
+
+.. code:: shell
+
+   $ kubectl delete -f external-storage/nfs-client/deploy/
+
+删除动态PV后，NFS服务器的共享目录上创建的专属子目录也会被删除。

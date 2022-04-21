@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="03.Docker经典实例" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html" />
-    <link rel="prev" title="Kubernetes实战案例" href="09.kubernetes%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html" /> 
+    <link rel="prev" title="整理全网最全K8S集群管理工具-平台" href="14.%E6%95%B4%E7%90%86%E5%85%A8%E7%BD%91%E6%9C%80%E5%85%A8K8S%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7-%E5%B9%B3%E5%8F%B0.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,6 +53,11 @@
 <li class="toctree-l2"><a class="reference internal" href="07.Ingress.html">Ingress</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.Kubernetest%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Kubernetest数据管理</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09.kubernetes%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">Kubernetes实战案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Kubernetes%E7%9B%91%E6%8E%A7.html">Kubernetes监控</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.%E9%9B%86%E7%BE%A4%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F.html">集群日志系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.%E4%BD%BF%E7%94%A8EFKLK%E6%90%AD%E5%BB%BAKubernetes%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E5%B7%A5%E5%85%B7%E6%A0%88.html">使用EFKLK搭建Kubernetes日志收集工具栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.Kubernetes%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E4%BB%8EDocker%E5%88%87%E6%8D%A2%E6%88%90Containerd.html">Kubernetes容器运行时从Docker切换成Containerd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.%E6%95%B4%E7%90%86%E5%85%A8%E7%BD%91%E6%9C%80%E5%85%A8K8S%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7-%E5%B9%B3%E5%8F%B0.html">整理全网最全K8S集群管理工具-平台</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Helm简化Kubernetes部署</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#helm">Helm基础</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#helm-3-v3">Helm 3 v3 变化</a><ul>
@@ -93,18 +98,21 @@
 <li class="toctree-l4"><a class="reference internal" href="#id27">2. 创建子Chart</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id28">3.调试</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id34">4. 安装</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id35">5.优化</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id36">5.优化</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id38">常见命令</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id39">搭建私有helm仓库及图形界面</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id40">参考文献</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id39">常见命令</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#helm3">Helm3内置对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kubernetes-k8s-helm-efk">Kubernetes（k8s）Helm 部署 EFK 集群</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id40">搭建私有helm仓库及图形界面</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id41">参考文献</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05.Kubernetes%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/index.html">05.Kubernetes入门到实践</a></li>
 </ul>
 
         </div>
@@ -135,64 +143,66 @@
   <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#helmkubernetes" id="id41">Helm简化Kubernetes部署</a></p>
+<li><p><a class="reference internal" href="#helmkubernetes" id="id42">Helm简化Kubernetes部署</a></p>
 <ul>
-<li><p><a class="reference internal" href="#helm" id="id42">Helm基础</a></p></li>
-<li><p><a class="reference internal" href="#helm-3-v3" id="id43">Helm 3 v3 变化</a></p>
+<li><p><a class="reference internal" href="#helm" id="id43">Helm基础</a></p></li>
+<li><p><a class="reference internal" href="#helm-3-v3" id="id44">Helm 3 v3 变化</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id44">Helm的核心术语</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id45">Helm的核心术语</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#helm-3" id="id45">Helm 3快速入门</a></p></li>
-<li><p><a class="reference internal" href="#id2" id="id46">安装</a></p>
+<li><p><a class="reference internal" href="#helm-3" id="id46">Helm 3快速入门</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id47">安装</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id3" id="id47">安装方式1</a></p></li>
-<li><p><a class="reference internal" href="#id4" id="id48">安装方式2</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id48">安装方式1</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id49">安装方式2</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#charts" id="id49">查看Charts仓库信息</a></p></li>
-<li><p><a class="reference internal" href="#id5" id="id50">常见操作</a></p></li>
-<li><p><a class="reference internal" href="#stable-redisns-redis" id="id51">安装stable/redis在ns=redis中</a></p></li>
-<li><p><a class="reference internal" href="#id6" id="id52">helm包检查项目</a></p></li>
-<li><p><a class="reference internal" href="#id7" id="id53">Helm安装和卸载</a></p></li>
-<li><p><a class="reference internal" href="#helmdemo" id="id54">使用Helm部署Demo</a></p>
+<li><p><a class="reference internal" href="#charts" id="id50">查看Charts仓库信息</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id51">常见操作</a></p></li>
+<li><p><a class="reference internal" href="#stable-redisns-redis" id="id52">安装stable/redis在ns=redis中</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id53">helm包检查项目</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id54">Helm安装和卸载</a></p></li>
+<li><p><a class="reference internal" href="#helmdemo" id="id55">使用Helm部署Demo</a></p>
 <ul>
-<li><p><a class="reference internal" href="#chart" id="id55">chart 的基本结构</a></p></li>
-<li><p><a class="reference internal" href="#helm-create" id="id56">helm create</a></p></li>
-<li><p><a class="reference internal" href="#helm-package" id="id57">helm package</a></p></li>
-<li><p><a class="reference internal" href="#helm-search" id="id58">helm search</a></p></li>
-<li><p><a class="reference internal" href="#helm-inspect" id="id59">helm inspect</a></p></li>
-<li><p><a class="reference internal" href="#id8" id="id60">Chart 模板示例</a></p></li>
-<li><p><a class="reference internal" href="#id10" id="id61">编写一个简单的 Chart 示例</a></p></li>
+<li><p><a class="reference internal" href="#chart" id="id56">chart 的基本结构</a></p></li>
+<li><p><a class="reference internal" href="#helm-create" id="id57">helm create</a></p></li>
+<li><p><a class="reference internal" href="#helm-package" id="id58">helm package</a></p></li>
+<li><p><a class="reference internal" href="#helm-search" id="id59">helm search</a></p></li>
+<li><p><a class="reference internal" href="#helm-inspect" id="id60">helm inspect</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id61">Chart 模板示例</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id62">编写一个简单的 Chart 示例</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id13" id="id62">Chart 模板开发指南</a></p>
+<li><p><a class="reference internal" href="#id13" id="id63">Chart 模板开发指南</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id14" id="id63">1 先创建模板</a></p></li>
-<li><p><a class="reference internal" href="#chart-yaml-values-yaml" id="id64">2 修改 Chart.yaml，Values.yaml</a></p></li>
-<li><p><a class="reference internal" href="#id21" id="id65">3 模板和值</a></p></li>
-<li><p><a class="reference internal" href="#id22" id="id66">4. 自定义Charts</a></p></li>
-<li><p><a class="reference internal" href="#id25" id="id67">5. 打包及分享</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id64">1 先创建模板</a></p></li>
+<li><p><a class="reference internal" href="#chart-yaml-values-yaml" id="id65">2 修改 Chart.yaml，Values.yaml</a></p></li>
+<li><p><a class="reference internal" href="#id21" id="id66">3 模板和值</a></p></li>
+<li><p><a class="reference internal" href="#id22" id="id67">4. 自定义Charts</a></p></li>
+<li><p><a class="reference internal" href="#id25" id="id68">5. 打包及分享</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#helm3-chart" id="id68">Helm3 Chart多依赖微服务构建案例</a></p>
+<li><p><a class="reference internal" href="#helm3-chart" id="id69">Helm3 Chart多依赖微服务构建案例</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id26" id="id69">1. 创建父chart</a></p></li>
-<li><p><a class="reference internal" href="#id27" id="id70">2. 创建子Chart</a></p></li>
-<li><p><a class="reference internal" href="#id28" id="id71">3.调试</a></p></li>
-<li><p><a class="reference internal" href="#id34" id="id72">4. 安装</a></p></li>
-<li><p><a class="reference internal" href="#id35" id="id73">5.优化</a></p></li>
+<li><p><a class="reference internal" href="#id26" id="id70">1. 创建父chart</a></p></li>
+<li><p><a class="reference internal" href="#id27" id="id71">2. 创建子Chart</a></p></li>
+<li><p><a class="reference internal" href="#id28" id="id72">3.调试</a></p></li>
+<li><p><a class="reference internal" href="#id34" id="id73">4. 安装</a></p></li>
+<li><p><a class="reference internal" href="#id36" id="id74">5.优化</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id38" id="id74">常见命令</a></p></li>
-<li><p><a class="reference internal" href="#id39" id="id75">搭建私有helm仓库及图形界面</a></p></li>
-<li><p><a class="reference internal" href="#id40" id="id76">参考文献</a></p></li>
+<li><p><a class="reference internal" href="#id39" id="id75">常见命令</a></p></li>
+<li><p><a class="reference internal" href="#helm3" id="id76">Helm3内置对象</a></p></li>
+<li><p><a class="reference internal" href="#kubernetes-k8s-helm-efk" id="id77">Kubernetes（k8s）Helm 部署 EFK 集群</a></p></li>
+<li><p><a class="reference internal" href="#id40" id="id78">搭建私有helm仓库及图形界面</a></p></li>
+<li><p><a class="reference internal" href="#id41" id="id79">参考文献</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
 <section id="helmkubernetes">
-<h1><a class="toc-backref" href="#id41">Helm简化Kubernetes部署</a><a class="headerlink" href="#helmkubernetes" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id42">Helm简化Kubernetes部署</a><a class="headerlink" href="#helmkubernetes" title="Permalink to this headline">¶</a></h1>
 <p>Helm是Kubernetes生态系统中的一个软件包管理工具，有点类似于Linux操作系统里面的“apt-get”和“yum”。</p>
 <p>对Kubernetes集群进行部署应用时，我们将面临以下问题：</p>
 <ul class="simple">
@@ -212,7 +222,7 @@ Chart是用来封装Kubernetes原生应用程序的一系列YAML文件。我们�
 </pre></div>
 </div>
 <section id="helm">
-<h2><a class="toc-backref" href="#id42">Helm基础</a><a class="headerlink" href="#helm" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id43">Helm基础</a><a class="headerlink" href="#helm" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Helm</p></li>
 </ul>
@@ -240,12 +250,10 @@ Chart是用来封装Kubernetes原生应用程序的一系列YAML文件。我们�
 install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到的Release和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。在同一个集群中，一个Chart可以使用不同的配置（Config）安装多次，每次安装都会创建一个Release。</p>
 </section>
 <section id="helm-3-v3">
-<h2><a class="toc-backref" href="#id43">Helm 3 v3 变化</a><a class="headerlink" href="#helm-3-v3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id44">Helm 3 v3 变化</a><a class="headerlink" href="#helm-3-v3" title="Permalink to this headline">¶</a></h2>
 <p>2019 年 11 月 13 日， Helm 团队发布 Helm v3 的第一个稳定版本。
 该版本主要变化如下： 架构变化：</p>
-<figure class="align-default">
-<img alt="" src="../_images/k8s-helmv30001.png" />
-</figure>
+<img alt="../_images/k8s-helmv30001.png" src="../_images/k8s-helmv30001.png" />
 <ol class="arabic simple">
 <li><p>最明显的变化是 Tiller 的删除</p></li>
 <li><p>Release 名称可以在不同命名空间重用</p></li>
@@ -254,7 +262,7 @@ install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到�
 <li><p>其他</p></li>
 </ol>
 <section id="id1">
-<h3><a class="toc-backref" href="#id44">Helm的核心术语</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id45">Helm的核心术语</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Helm将Kubernetes应用的相关配置组织为Charts，并通过它完成应用的常规管理操作。通常来说，使用Charts管理应用的流程包括从0开始创建Charts、将Charts及其相关的文件打包为归档格式、将Charts存储于仓库（repository）中并与之交互、在Kubernetes集群中安装或卸载Charts以及管理经Helm安装的应用的版本发行周期。因此，对Helm来说，它具有以下几个关键概念。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·Charts：即一个Helm程序包，它包含了运行一个Kubernetes应用所需要的镜像、依赖关系和资源定义等，必要时还会包含Service的定义；它类似于APT的dpkg文件或者yum的rpm文件。
 
@@ -268,7 +276,7 @@ install命令在Kubernetes集群中部署的Chart称为Release。Helm中提到�
 </section>
 </section>
 <section id="helm-3">
-<h2><a class="toc-backref" href="#id45">Helm 3快速入门</a><a class="headerlink" href="#helm-3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id46">Helm 3快速入门</a><a class="headerlink" href="#helm-3" title="Permalink to this headline">¶</a></h2>
 <p>Helm的版本v2和版本v3目前处于维护当中，考虑了轻量、安全等特性，这里选择只介绍较新的版本v3的部署和使用，版本v2需要额外部署Tiller，而客户端的使用方法大多数都与版本v3相同。</p>
 <p>Helm的每个发行版都提供了主流操作系统的专用版本，主要包括Linux、Mac
 OS和Windows，用户安装前按需下载合用的平台上的相关发行版本即可。</p>
@@ -276,9 +284,9 @@ OS和Windows，用户安装前按需下载合用的平台上的相关发行版�
 。</p>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id46">安装</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id47">安装</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <section id="id3">
-<h3><a class="toc-backref" href="#id47">安装方式1</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id48">安装方式1</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>下载最新的helm 3安装脚本</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 </pre></div>
@@ -305,7 +313,7 @@ OS和Windows，用户安装前按需下载合用的平台上的相关发行版�
 </div>
 </section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id48">安装方式2</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id49">安装方式2</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>安装helm-v3</p>
 <p>使用一条命令安装helm</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">git</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">get_helm</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">bash</span>
@@ -317,18 +325,22 @@ OS和Windows，用户安装前按需下载合用的平台上的相关发行版�
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wget https://get.helm.sh/helm-vv3.2.1-linux-amd64.tar.gz
 tar zxvf helm-v3.2.1-linux-amd64.tar.gz
 mv linux-amd64/helm /usr/bin/
-
-**helm3的安装和部署**
-
-Kubernetes的包管理工具Helm3
-
-https://blog.csdn.net/qq<span class="se">\_</span><span class="m">39680564</span>/article/details/107201496
 </pre></div>
 </div>
+<p>设置helm自动补全</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;source &lt;(helm completion bash)&quot;</span> &gt;&gt;  ~/.bash_profile
+<span class="nb">source</span>  ~/.bash_profile
+</pre></div>
+</div>
+<blockquote>
+<div><p><strong>helm3的安装和部署</strong></p>
+<p>Kubernetes的包管理工具Helm3</p>
+<p><a class="reference external" href="https://blog.csdn.net/qq_39680564/article/details/107201496">https://blog.csdn.net/qq_39680564/article/details/107201496</a></p>
+</div></blockquote>
 </section>
 </section>
 <section id="charts">
-<h2><a class="toc-backref" href="#id49">查看Charts仓库信息</a><a class="headerlink" href="#charts" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id50">查看Charts仓库信息</a><a class="headerlink" href="#charts" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">home</span><span class="p">]</span><span class="c1"># helm repo list</span>
 <span class="n">NAME</span>            <span class="n">URL</span>
 <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>   <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>
@@ -338,7 +350,7 @@ https://blog.csdn.net/qq<span class="se">\_</span><span class="m">39680564</span
 </div>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id50">常见操作</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id51">常见操作</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>4.2  配置国内 t chart  仓库
 
  微软仓库（http://mirror.azure.cn/kubernetes/charts/）这个仓库推荐，基本上官网有的 chart 这里都有。
@@ -419,7 +431,7 @@ version: 10.5.7
 </div>
 </section>
 <section id="stable-redisns-redis">
-<h2><a class="toc-backref" href="#id51">安装stable/redis在ns=redis中</a><a class="headerlink" href="#stable-redisns-redis" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id52">安装stable/redis在ns=redis中</a><a class="headerlink" href="#stable-redisns-redis" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>//创建
 helm search repo redis
 kubectl create namespace redis
@@ -508,7 +520,7 @@ $ helm history helloworld
 </div>
 </section>
 <section id="id6">
-<h2><a class="toc-backref" href="#id52">helm包检查项目</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id53">helm包检查项目</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># helm包检查项目</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># helm list --all-namespaces</span>
 
@@ -543,7 +555,7 @@ $ helm history helloworld
 </div>
 </section>
 <section id="id7">
-<h2><a class="toc-backref" href="#id53">Helm安装和卸载</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id54">Helm安装和卸载</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># helm安装和卸载
 [root@ci-base home]# helm install myapp --debug ./mychart --set service.type=NodePort
 [root@ci-base home]# helm uninstall myapp
@@ -576,15 +588,13 @@ helm install --name myapp --debug ./mychart --set service.type=NodePort
 </div>
 </section>
 <section id="helmdemo">
-<h2><a class="toc-backref" href="#id54">使用Helm部署Demo</a><a class="headerlink" href="#helmdemo" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id55">使用Helm部署Demo</a><a class="headerlink" href="#helmdemo" title="Permalink to this headline">¶</a></h2>
 <p>事实上，一个单独的Charts既能用于部署简单应用，例如一个memcached
 Pod，也能部署复杂的应用，如由HTTP服务器、DB服务器、Cache服务器和应用程序服务器等共同组成的Web应用栈。</p>
 <p>接下来我们基于以上认知和Demo配置来进行部署，流程如图</p>
-<figure class="align-default">
-<img alt="" src="../_images/k8s-helm0001.png" />
-</figure>
+<img alt="../_images/k8s-helm0001.png" src="../_images/k8s-helm0001.png" />
 <section id="chart">
-<h3><a class="toc-backref" href="#id55">chart 的基本结构</a><a class="headerlink" href="#chart" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id56">chart 的基本结构</a><a class="headerlink" href="#chart" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@ci-base helm]# helm create test
 Creating test
 
@@ -617,7 +627,7 @@ test/
 </ul>
 </section>
 <section id="helm-create">
-<h3><a class="toc-backref" href="#id56">helm create</a><a class="headerlink" href="#helm-create" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id57">helm create</a><a class="headerlink" href="#helm-create" title="Permalink to this headline">¶</a></h3>
 <p>创建一个 Chart 模板</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># helm create test</span>
 <span class="n">Creating</span> <span class="n">test</span>
@@ -625,7 +635,7 @@ test/
 </div>
 </section>
 <section id="helm-package">
-<h3><a class="toc-backref" href="#id57">helm package</a><a class="headerlink" href="#helm-package" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id58">helm package</a><a class="headerlink" href="#helm-package" title="Permalink to this headline">¶</a></h3>
 <p>打包一个 Chart 模板</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># helm package test</span>
 <span class="n">Successfully</span> <span class="n">packaged</span> <span class="n">chart</span> <span class="ow">and</span> <span class="n">saved</span> <span class="n">it</span> <span class="n">to</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">k8s</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">helm</span><span class="o">/</span><span class="n">test</span><span class="o">-</span><span class="mf">0.1</span><span class="o">.</span><span class="mf">0.</span><span class="n">tgz</span>
@@ -633,7 +643,7 @@ test/
 </div>
 </section>
 <section id="helm-search">
-<h3><a class="toc-backref" href="#id58">helm search</a><a class="headerlink" href="#helm-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id59">helm search</a><a class="headerlink" href="#helm-search" title="Permalink to this headline">¶</a></h3>
 <p>查找可用的 Chart 模板</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># helm search hub nginx</span>
 <span class="n">URL</span>                                                     <span class="n">CHART</span> <span class="n">VERSION</span>   <span class="n">APP</span> <span class="n">VERSION</span>     <span class="n">DESCRIPTION</span>
@@ -644,7 +654,7 @@ test/
 </div>
 </section>
 <section id="helm-inspect">
-<h3><a class="toc-backref" href="#id59">helm inspect</a><a class="headerlink" href="#helm-inspect" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id60">helm inspect</a><a class="headerlink" href="#helm-inspect" title="Permalink to this headline">¶</a></h3>
 <p>查看指定 Chart 的基本信息</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">helm</span><span class="p">]</span><span class="c1"># helm inspect chart test</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">v2</span>
@@ -657,7 +667,7 @@ test/
 </div>
 </section>
 <section id="id8">
-<h3><a class="toc-backref" href="#id60">Chart 模板示例</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id61">Chart 模板示例</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <section id="id9">
 <h4>Chart 文件结构<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>wordpress
@@ -690,7 +700,8 @@ test/
 <li><p>README.md 可选：Chart 的介绍信息等（该文件对于一个大型 Chart
 来说十分重要）</p></li>
 <li><p>Requirements.yaml 可选：列举当前 Chart 的需要依赖的 Chart</p></li>
-<li><p>templates</p></li>
+<li><p>templates</p>
+<ul>
 <li><p>该目录下存放 Chart 所有的 K8s
 资源定义模板，通常不同的资源放在不同的文件中，DCE Helm
 插件中自定义模板的 K8s 资源统一放在 all_sources.yaml 文件中</p></li>
@@ -699,6 +710,8 @@ test/
 其它资源定义模板中使用</p></li>
 <li><p>NOTES.txt，可选：一段简短使用说明的文本文件，用于安装 Release
 后提示用户使用</p></li>
+</ul>
+</li>
 <li><p>values.yaml 当前 Chart 的默认配置的值</p></li>
 </ul>
 <p>我们查看下使用 <code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">create</span></code> 命令自动生成的 <code class="docutils literal notranslate"><span class="pre">templates/service.yaml</span></code>
@@ -727,7 +740,7 @@ template</a>
 </section>
 </section>
 <section id="id10">
-<h3><a class="toc-backref" href="#id61">编写一个简单的 Chart 示例</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id62">编写一个简单的 Chart 示例</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>本节以构建一个名称为 nginx-test Chart 为示例，来描述一个 chart
 必要条件。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># helm create nginx-test</span>
@@ -892,11 +905,12 @@ update”命令更新依赖关系，并自动下载被依赖的Charts至charts/�
 templates 下的 K8s 资源 yaml 渲染时填充默认值。</p>
 <p>不过需要注意的是，<strong>如果使用 helm install 来部署一个 Release ,
 可以通过下面命令指定一份yaml 文件作为填充值</strong>：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>helm install --values=myvals.yaml nginx
-
-注意：上面命令不要复制执行，执行会报错的。请根据实际情况执行！！！
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">install</span> <span class="o">--</span><span class="n">values</span><span class="o">=</span><span class="n">myvals</span><span class="o">.</span><span class="n">yaml</span> <span class="n">nginx</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>注意：上面命令不要复制执行，执行会报错的。请根据实际情况执行！！！</p>
+</div></blockquote>
 <p>3、创建 templates 下的模板文件， 用于生成 Kubernetes 资源清单(manifests)
 如下所示:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cat nginx-test/templates/deployment.yaml</span>
@@ -930,7 +944,7 @@ templates 下的 K8s 资源 yaml 渲染时填充默认值。</p>
 </pre></div>
 </div>
 <p>该模板定义了
-“nginx-test.name”、”nginx-test.fullname”、”nginx-test.chart”
+“nginx-test.name”、“nginx-test.fullname”、“nginx-test.chart”
 等可重用模板部分，当模板引擎读取该文件时，它存储对
 nginx-test.name等的引用， 直到调用 template “nginx-test.name”
 为止。然后把值渲染到模板中。</p>
@@ -974,9 +988,9 @@ repository（存储库）到本地</p></li>
 </section>
 </section>
 <section id="id13">
-<h2><a class="toc-backref" href="#id62">Chart 模板开发指南</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id63">Chart 模板开发指南</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
 <section id="id14">
-<h3><a class="toc-backref" href="#id63">1 先创建模板</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id64">1 先创建模板</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$  helm create mychart
 Creating mychart
 </pre></div>
@@ -1085,7 +1099,7 @@ YAML 文档。</p>
   <span class="n">myvalue</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span>
 </pre></div>
 </div>
-<p>所以我们可以这样理解 <code class="docutils literal notranslate"><span class="pre">.Release.Name：</span></code>”从顶层命名空间开始，找到
+<p>所以我们可以这样理解 <code class="docutils literal notranslate"><span class="pre">.Release.Name：</span></code>“从顶层命名空间开始，找到
 Release 对象，然后在里面查找名为 <code class="docutils literal notranslate"><span class="pre">Name</span></code> 的对象”。</p>
 <p>现在，当我们安装我们的资源时，我们会立即看到使用这个模板指令的结果:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$  helm install clunky-serval ./mychart -n dev
@@ -1134,7 +1148,7 @@ data:
 </section>
 </section>
 <section id="chart-yaml-values-yaml">
-<h3><a class="toc-backref" href="#id64">2 修改 Chart.yaml，Values.yaml</a><a class="headerlink" href="#chart-yaml-values-yaml" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id65">2 修改 Chart.yaml，Values.yaml</a><a class="headerlink" href="#chart-yaml-values-yaml" title="Permalink to this headline">¶</a></h3>
 <section id="id17">
 <h4>2.1 内置对象<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">Release</span></code> 是可以在模板中访问的顶级对象之一。</p>
@@ -1528,11 +1542,12 @@ data:
     - &quot;Cheese&quot;
     - &quot;Peppers&quot;
     - &quot;Onions&quot;
-
-YAML 中的 ``|-``
-标记表示一个多行字符串。这可以是一种有用的技术，用于在清单中嵌入大块数据，如此处所示。
 </pre></div>
 </div>
+<blockquote>
+<div><p>YAML 中的 <code class="docutils literal notranslate"><span class="pre">|-</span></code>
+标记表示一个多行字符串。这可以是一种有用的技术，用于在清单中嵌入大块数据，如此处所示。</p>
+</div></blockquote>
 </section>
 <section id="id20">
 <h4>2.5 变量<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h4>
@@ -1657,7 +1672,7 @@ data:
 </section>
 </section>
 <section id="id21">
-<h3><a class="toc-backref" href="#id65">3 模板和值</a><a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id66">3 模板和值</a><a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
 <p>在 templates 目录下创建部署镜像所需要的 yaml 文件，并变量引用 yaml
 里经常变动的字段</p>
 <p>Helm
@@ -1695,21 +1710,22 @@ install”命令时传递包含所需要的自定义值的YAML文件；此处传
 <p>如下面示例中的内容，其中title属于全局作用域，max_connections和password则仅属于mysql
 Charts，port仅属于apache Charts：</p>
 <p><code class="docutils literal notranslate"><span class="pre">values.yaml</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>title: &quot;My WordPress Site&quot; # Sent to the WordPress template
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">title</span><span class="p">:</span> <span class="s2">&quot;My WordPress Site&quot;</span> <span class="c1"># Sent to the WordPress template</span>
 
-mysql:
-  max_connections: 100 # Sent to MySQL
-  password: &quot;secret&quot;
+<span class="n">mysql</span><span class="p">:</span>
+  <span class="n">max_connections</span><span class="p">:</span> <span class="mi">100</span> <span class="c1"># Sent to MySQL</span>
+  <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;secret&quot;</span>
 
-apache:
-  port: 8080 # Passed to Apache
-
-参考文献：https://blog.csdn.net/qq\_39680564/article/details/107388151
+<span class="n">apache</span><span class="p">:</span>
+  <span class="n">port</span><span class="p">:</span> <span class="mi">8080</span> <span class="c1"># Passed to Apache</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>参考文献：<a class="reference external" href="https://blog.csdn.net/qq_39680564/article/details/107388151">https://blog.csdn.net/qq_39680564/article/details/107388151</a></p>
+</div></blockquote>
 </section>
 <section id="id22">
-<h3><a class="toc-backref" href="#id66">4. 自定义Charts</a><a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id67">4. 自定义Charts</a><a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
 <section id="id23">
 <h4>4.1 生成一个空Charts<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h4>
 <p>下面的命令会于命令执行的当前目录中创建一个名为demoapp的子目录作为Charts存储路径：</p>
@@ -1986,13 +2002,11 @@ NAME                         CLASS    HOSTS                   ADDRESS   PORTS   
 ingress.extensions/demoapp   &lt;none&gt;   helm-demoapp.runjs.cn             <span class="m">80</span>      2m47s
 </pre></div>
 </div>
-<figure class="align-default">
-<img alt="" src="../_images/helm-demoapp001.png" />
-</figure>
+<img alt="../_images/helm-demoapp001.png" src="../_images/helm-demoapp001.png" />
 </section>
 </section>
 <section id="id25">
-<h3><a class="toc-backref" href="#id67">5. 打包及分享</a><a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id68">5. 打包及分享</a><a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
 <p>测试完成的自定义Chart可打包后存储在目标仓库仅供自己或有限范围内的用户使用，也可按需公开回馈到社区之中。helm
 package命令基于众多选项提供了灵活的打包机制，如下的命令就会先更新依赖关系再进行打包操作。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm package CI-gitee-helm/
@@ -2000,9 +2014,7 @@ Successfully packaged chart and saved it to: /data/jenkins/gitee_workspace_paral
 </pre></div>
 </div>
 <p>将该仓库添加至本地helm命令的可用列表中。</p>
-<figure class="align-default">
-<img alt="" src="../_images/helm2021-push001.png" />
-</figure>
+<img alt="../_images/helm2021-push001.png" src="../_images/helm2021-push001.png" />
 <p>该类Chart的仓库地址为https://hub.xxxx.xxx/chartrepo/&lt;PROJECT&gt;</p>
 <p>该类Chart的仓库地址为http://hub.gitee.cc/chartrepo/gitee-helm</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm repo add gitee-helm http://hub.gitee.cc/chartrepo/gitee-helm
@@ -2040,18 +2052,18 @@ $ helm repo update
 
 <span class="c1"># 下载</span>
 $ helm pull gitee-helm/gitee-ci
-
-參考文献
-
-https://blog.51cto.com/u<span class="se">\_</span><span class="m">13812615</span>/2523543
 </pre></div>
 </div>
+<blockquote>
+<div><p>參考文献</p>
+<p><a class="reference external" href="https://blog.51cto.com/u_13812615/2523543">https://blog.51cto.com/u_13812615/2523543</a></p>
+</div></blockquote>
 </section>
 </section>
 <section id="helm3-chart">
-<h2><a class="toc-backref" href="#id68">Helm3 Chart多依赖微服务构建案例</a><a class="headerlink" href="#helm3-chart" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id69">Helm3 Chart多依赖微服务构建案例</a><a class="headerlink" href="#helm3-chart" title="Permalink to this headline">¶</a></h2>
 <section id="id26">
-<h3><a class="toc-backref" href="#id69">1. 创建父chart</a><a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id70">1. 创建父chart</a><a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
 <p>创建一个前端<code class="docutils literal notranslate"><span class="pre">Vue</span></code>作为父<code class="docutils literal notranslate"><span class="pre">Chart</span></code>。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ helm create vue
 </pre></div>
@@ -2099,7 +2111,7 @@ vue/
 </div>
 </section>
 <section id="id27">
-<h3><a class="toc-backref" href="#id70">2. 创建子Chart</a><a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id71">2. 创建子Chart</a><a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
 <p>创建<code class="docutils literal notranslate"><span class="pre">eureka</span></code>注册中心、<code class="docutils literal notranslate"><span class="pre">oauth2</span></code>鉴权中心和一个<code class="docutils literal notranslate"><span class="pre">MS</span></code>微服务，作为子<code class="docutils literal notranslate"><span class="pre">Chart</span></code>。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> vue/charts/
 
@@ -2192,7 +2204,7 @@ vue/
 </div>
 </section>
 <section id="id28">
-<h3><a class="toc-backref" href="#id71">3.调试</a><a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id72">3.调试</a><a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
 <section id="id29">
 <h4>3.1 调试父Chart<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h4>
 <p><strong>首先删除``Chart``中无用的文件，所有文件根据自己需求创建。</strong></p>
@@ -2465,8 +2477,8 @@ Boot的配置文件。只需要创建一个configmap，然后将四个配置文�
 </div>
 <p>编写完之后可以通过<code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">install</span> <span class="pre">--dry-run</span> <span class="pre">confimap</span> <span class="pre">eureka/</span></code>验证模版正确性。</p>
 </section>
-<section id="id31">
-<h5>3.2.2 创建工作负载<code class="docutils literal notranslate"><span class="pre">deployment</span></code>模版文件<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h5>
+<section id="deployment-1">
+<span id="id31"></span><h5>3.2.2 创建工作负载<code class="docutils literal notranslate"><span class="pre">deployment</span></code>模版文件<a class="headerlink" href="#deployment-1" title="Permalink to this headline">¶</a></h5>
 <ul class="simple">
 <li><p>eureka</p></li>
 </ul>
@@ -2810,8 +2822,8 @@ Boot的配置文件。只需要创建一个configmap，然后将四个配置文�
 </pre></div>
 </div>
 </section>
-<section id="id32">
-<h5>3.2.3 创建服务发现<code class="docutils literal notranslate"><span class="pre">service</span></code>模版文件<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h5>
+<section id="service-1">
+<span id="id32"></span><h5>3.2.3 创建服务发现<code class="docutils literal notranslate"><span class="pre">service</span></code>模版文件<a class="headerlink" href="#service-1" title="Permalink to this headline">¶</a></h5>
 <ul class="simple">
 <li><p>eureka</p></li>
 </ul>
@@ -2964,7 +2976,7 @@ Deleting outdated charts
 </section>
 </section>
 <section id="id34">
-<h3><a class="toc-backref" href="#id72">4. 安装</a><a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<span id="id35"></span><h3><a class="toc-backref" href="#id73">4. 安装</a><a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
 <p>直接使用<code class="docutils literal notranslate"><span class="pre">helm</span></code>本地安装父<code class="docutils literal notranslate"><span class="pre">Chart</span></code>即可</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>helm install demo vue/
 </pre></div>
@@ -2986,14 +2998,14 @@ ws       <span class="m">1</span>/1     <span class="m">1</span>            <spa
 </pre></div>
 </div>
 </section>
-<section id="id35">
-<h3><a class="toc-backref" href="#id73">5.优化</a><a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<section id="id36">
+<h3><a class="toc-backref" href="#id74">5.优化</a><a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
 <p>述步骤完成的多依赖构建，已经满足一键部署多个服务的需求了，但是通过实际操作下来，会发现一些问题：</p>
 <p>每个子chart中都有相同的values值。例如：secretsName、configmapName、nameSpace。
 有很多模版都是相同的。例如：deployment.yaml、service.yaml。</p>
 <p>如果有二三十个微服务后端的话，会有一大部分时间在做重复工作。所以我们就在想能不能复用这些常量和模版。</p>
-<section id="id36">
-<h4>5.1 全局常量<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h4>
+<section id="id37">
+<h4>5.1 全局常量<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h4>
 <p>可以修改父Chart的values.yaml，追加一个global值，将所有子Chart会用到的值设置为全局常量。</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">imageCredentials</span><span class="p">:</span>
   <span class="nt">registry</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://192.168.1.40</span>
@@ -3015,8 +3027,8 @@ ws       <span class="m">1</span>/1     <span class="m">1</span>            <spa
 <p>此值可供所有<code class="docutils literal notranslate"><span class="pre">chart</span></code>使用，使用方式：<code class="docutils literal notranslate"><span class="pre">.Values.global.nameSpace</span></code>、<code class="docutils literal notranslate"><span class="pre">.Values.global.secretsName</span></code>等等。
 这样我们就无需在每个子<code class="docutils literal notranslate"><span class="pre">Chart</span></code>的<code class="docutils literal notranslate"><span class="pre">values.yaml</span></code>中重复定义这些值了，只需修改一下模版中的使用方式即可。</p>
 </section>
-<section id="id37">
-<h4>5.2 共享常量<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h4>
+<section id="id38">
+<h4>5.2 共享常量<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h4>
 <p>父<code class="docutils literal notranslate"><span class="pre">Chart</span></code>的<code class="docutils literal notranslate"><span class="pre">values.yaml</span></code>，增加以下内容，注意节点的名字必须是子<code class="docutils literal notranslate"><span class="pre">chart</span></code>名。</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">imageCredentials</span><span class="p">:</span>
   <span class="nt">registry</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://192.168.1.40</span>
@@ -3075,11 +3087,87 @@ ws       <span class="m">1</span>/1     <span class="m">1</span>            <spa
 <div><p>参考文献：</p>
 <p><a class="reference external" href="https://blog.csdn.net/qq_39680564/article/details/107516510">https://blog.csdn.net/qq_39680564/article/details/107516510</a></p>
 </div></blockquote>
+<p>模板文件参考</p>
+<p>_helpers.tpl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{{/* vim: set filetype=mustache: */}}
+{{/*
+Expand the name of the chart.
+展开chart的名称。
+*/}}
+{{- define &quot;vue.name&quot; -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix &quot;-&quot; }}
+{{- end }}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+
+创建一个默认的完全限定应用名称。
+我们截断为 63 个字符，因为某些 Kubernetes 名称字段仅限于此（受 DNS 命名规范）。
+如果发布名称包含chart名称，它将用作全名。
+*/}}
+{{- define &quot;vue.fullname&quot; -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix &quot;-&quot; }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix &quot;-&quot; }}
+{{- else }}
+{{- printf &quot;%s-%s&quot; .Release.Name $name | trunc 63 | trimSuffix &quot;-&quot; }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create chart name and version as used by the chart label.
+创建chart标签使用的chart名称和版本。
+*/}}
+{{- define &quot;vue.chart&quot; -}}
+{{- printf &quot;%s-%s&quot; .Chart.Name .Chart.Version | replace &quot;+&quot; &quot;_&quot; | trunc 63 | trimSuffix &quot;-&quot; }}
+{{- end }}
+
+{{/*
+Common labels
+常用标签
+*/}}
+{{- define &quot;vue.labels&quot; -}}
+helm.sh/chart: {{ include &quot;vue.chart&quot; . }}
+{{ include &quot;vue.selectorLabels&quot; . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+选择器标签
+*/}}
+{{- define &quot;vue.selectorLabels&quot; -}}
+app.kubernetes.io/name: {{ include &quot;vue.name&quot; . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+创建要使用的服务帐户的名称
+*/}}
+{{- define &quot;vue.serviceAccountName&quot; -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include &quot;vue.fullname&quot; .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default &quot;default&quot; .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+</pre></div>
+</div>
 </section>
 </section>
 </section>
-<section id="id38">
-<h2><a class="toc-backref" href="#id74">常见命令</a><a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h2>
+<section id="id39">
+<h2><a class="toc-backref" href="#id75">常见命令</a><a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 基于本地Chart目录部署</span>
 $ helm install -f values.yaml -n ci-gitee-nginx ci-gitee-nginx ./
 
@@ -3099,16 +3187,25 @@ $ helm install ./k8sapp
 <span class="c1"># 安装本地 chart</span>
 $ helm install -f myvalues.yaml myredis ./redis
 
-Helm支持四种安装方法：
+<span class="c1"># 检查charts的依赖及模板配置是否正确</span>
+$ helm lint example/
 
-（1）安装仓库中的chart，例如helm install stable/nginx。
 
-（2）通过tar包安装，例如helm install ./nginx-1.2.3.tgz。
+为了检测生成的清单，但并不安装到chart，可以将 --debug 和 --dry-run组合使用。
 
-（3）通过chart本地目录安装，例如helm install ./nginx。
+如果设置了—verify，chart必须有出处文件，且出处文件必须传递所有的验证步骤。
 
-（4）通过URL安装，例如helm install https://example.com/charts/nginx-1.2.3.tgz。
+有五种不同的方式来标识需要安装的chart：
 
+<span class="m">1</span>.通过chart引用： helm install mymaria example/mariadb
+
+<span class="m">2</span>.通过chart包： helm install mynginx ./nginx-1.2.3.tgz
+
+<span class="m">3</span>.通过未打包chart目录的路径： helm install mynginx ./nginx
+
+<span class="m">4</span>.通过URL绝对路径： helm install mynginx https://example.com/charts/nginx-1.2.3.tgz
+
+<span class="m">5</span>.通过chart引用和仓库url： helm install —repo https://example.com/charts/ mynginx nginx
 
 
 <span class="c1"># 指定变量</span>
@@ -3155,17 +3252,35 @@ TEST SUITE: None
 $ helm install demoapp --debug ./demoapp --dry-run -n demoapp --set service.type<span class="o">=</span>NodePort
 </pre></div>
 </div>
+<p>参考文献：</p>
+<p>Helm v3 安装使用</p>
+<p><a class="reference external" href="https://cooting.cn/archives/150.html">https://cooting.cn/archives/150.html</a></p>
 </section>
-<section id="id39">
-<h2><a class="toc-backref" href="#id75">搭建私有helm仓库及图形界面</a><a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://www.jianshu.com/p/18478cf7a37f">https://www.jianshu.com/p/18478cf7a37f</a></p>
+<section id="helm3">
+<h2><a class="toc-backref" href="#id76">Helm3内置对象</a><a class="headerlink" href="#helm3" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.akiraka.net/kubernetes/helm/1268.html">https://www.akiraka.net/kubernetes/helm/1268.html</a></p>
+</section>
+<section id="kubernetes-k8s-helm-efk">
+<h2><a class="toc-backref" href="#id77">Kubernetes（k8s）Helm 部署 EFK 集群</a><a class="headerlink" href="#kubernetes-k8s-helm-efk" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://zhuanlan.zhihu.com/p/113629660">https://zhuanlan.zhihu.com/p/113629660</a></p>
 </section>
 <section id="id40">
-<h2><a class="toc-backref" href="#id76">参考文献</a><a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h2>
-<p>Helm 用户指南 <a class="reference external" href="https://whmzsu.github.io/helm-doc-zh-cn/">https://whmzsu.github.io/helm-doc-zh-cn/</a></p>
+<h2><a class="toc-backref" href="#id78">搭建私有helm仓库及图形界面</a><a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.jianshu.com/p/18478cf7a37f">https://www.jianshu.com/p/18478cf7a37f</a></p>
+</section>
+<section id="id41">
+<h2><a class="toc-backref" href="#id79">参考文献</a><a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>玩K8S不得不会的HELM</p>
+<p><a class="reference external" href="https://juejin.cn/post/6844904081366974472?share_token=1630eaaf-71c5-4203-8e65-9ff1cbee7570">https://juejin.cn/post/6844904081366974472?share_token=1630eaaf-71c5-4203-8e65-9ff1cbee7570</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/99jianshao/p/15024952.html">https://www.cnblogs.com/99jianshao/p/15024952.html</a></p>
+</div></blockquote>
+<blockquote>
+<div><p>Helm 用户指南 <a class="reference external" href="https://whmzsu.github.io/helm-doc-zh-cn/">https://whmzsu.github.io/helm-doc-zh-cn/</a></p>
 <p><a class="reference external" href="https://blog.csdn.net/weixin_36938307/article/details/105245770">https://blog.csdn.net/weixin_36938307/article/details/105245770</a></p>
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12752783.html">https://www.cnblogs.com/xiao987334176/p/12752783.html</a></p>
 <p><a class="reference external" href="https://jimmysong.io/kubernetes-handbook/practice/helm.html">https://jimmysong.io/kubernetes-handbook/practice/helm.html</a></p>
+</div></blockquote>
 </section>
 </section>
 
@@ -3173,7 +3288,7 @@ $ helm install demoapp --debug ./demoapp --dry-run -n demoapp --set service.type
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="09.kubernetes%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html" class="btn btn-neutral float-left" title="Kubernetes实战案例" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="14.%E6%95%B4%E7%90%86%E5%85%A8%E7%BD%91%E6%9C%80%E5%85%A8K8S%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7-%E5%B9%B3%E5%8F%B0.html" class="btn btn-neutral float-left" title="整理全网最全K8S集群管理工具-平台" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html" class="btn btn-neutral float-right" title="03.Docker经典实例" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

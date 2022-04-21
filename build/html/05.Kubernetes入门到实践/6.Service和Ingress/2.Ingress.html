@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ingress &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="7.存储与配置" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html" />
+    <link rel="prev" title="Service" href="1.Service.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../5.%E6%8E%A7%E5%88%B6%E5%99%A8/index.html">5.控制器</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">6.Service和Ingress</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="1.Service.html">Service</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Ingress</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">1.Ingress控制器的安装</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">2.Ingress的基本操作</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html">7.存储与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html">8.Kubernetes资源的管理及调度</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">6.Service和Ingress</a> &raquo;</li>
+      <li>Ingress</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/6.Service和Ingress/2.Ingress.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#ingress" id="id6">Ingress</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id7">1.Ingress控制器的安装</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id8">2.Ingress的基本操作</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id3" id="id9">2.1 Ingress示例</a></p></li>
+<li><p><a class="reference internal" href="#service" id="id10">2.2 不使用虚拟主机名称-单个Service</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id11">2.3 基于虚拟主机名称-多个子路径</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id12">2.4 基于多个虚拟主机名称</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="ingress">
+<h1><a class="toc-backref" href="#id6">Ingress</a><a class="headerlink" href="#ingress" title="Permalink to this headline">¶</a></h1>
+<p>要将Kubernetes集群内的服务发布到集群外来使用，通常的办法是</p>
+<ol class="arabic simple">
+<li><p>配置NodePort</p></li>
+<li><p>配置LoadBalancer的Service</p></li>
+<li><p>配置ExternalIP的Service</p></li>
+<li><p>通过Pod模板中的HostPort进行配置等。</p></li>
+</ol>
+<p>但这些方式都存在比较严重的问题。它们几乎都是通过节点端口形式向外暴露服务的，Service一旦变多，每个节点上开启的端口也会
+变多。这样不仅维护起来相当复杂，安全性还会大大降低。</p>
+<p>Ingress可以避免这个问题，除了Ingress自身的服务需要向外发布之外，其他服务不必使用节点端口形式向外发布。</p>
+<p>由Ingress接收外部请求，然后按照域名配置转发给各个后端服务</p>
+<p>通过Ingress访问Service提供的服务</p>
+<img alt="../../_images/image-20220416165238675.png" src="../../_images/image-20220416165238675.png" />
+<p>在使用Ingress时一般会涉及3个组件：</p>
+<ul class="simple">
+<li><p>反向代理负载均衡器：其实它类似于Nginx、Apache的应用。在集群中可以使用Deployment、DaemonSet等控制器自由部署反向代理负载均衡器。</p></li>
+<li><p>Ingress控制器：实质上是监控器。它不断地与API
+Server进行交互，实时地感知后端Service、Pod等的变化情况，比如新增和减
+少Pod、增加与减少Service等。当得到这些变化信息后，Ingress控制器再结合Ingress生成配置，然后更新反向代理负载均衡器并
+刷新其配置，以达到服务发现的作用。</p></li>
+<li><p>Ingress：定义访问规则。假如某个域名对应某个Service，或者某个域名下的子路径对应某个Service，那么当某个域名的请求或
+子路径的请求进来时，就把请求转发给对应Service。根据这个规则，Ingress控制器会将访问规则动态写入负载均衡器配置中，从
+而实现整体的服务发现和负载均衡。</p></li>
+</ul>
+<p>在使用Ingress时各个组件的关系</p>
+<img alt="../../_images/image-20220416170546781.png" src="../../_images/image-20220416170546781.png" />
+<p>Ingress控制器不会随着Kubernetes一起安装。如果要让Ingress资源正常运作，需要安装Ingress控制器。可以选择的Ingress控制器
+种类很多，可根据情况自行选择。</p>
+<p>不管是哪类Ingress控制器，因为在基本使用层面几乎没有差别（在性能、安全或复杂使用上可能略有区别），所以后面介绍Ingress
+基本操作的部分也适用于所有类型的Ingress控制器。</p>
+<p>我们使用Traefik作为Ingress控制器，它的功能非常强大，跟Kubernetes结合得很好，还提供了商用支持。</p>
+<section id="id1">
+<h2><a class="toc-backref" href="#id7">1.Ingress控制器的安装</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Traefik的安装并不复杂。在这里我们选择最简单的默认安装，只要两步就可以完成。</p>
+<p>第一步，执行以下命令，配置traefik-ingress-controller基于角色的访问控制（Role
+Based Access Control, RBAC），让它能与
+Kubernetes的资源和API进行细粒度的控制和交互。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-rbac.yaml
+</pre></div>
+</div>
+<p>第二步，选择以下两个命令中的一个执行即可。配置<code class="docutils literal notranslate"><span class="pre">traefik-ingress-controller</span></code>的反向代理负载均衡器服务进程，并在
+Kubernetes集群外的各个Node上暴露端口，这样就可以通过集群外的机器访问服务了。</p>
+<p>DaemonSet版本的代码如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-ds.yaml
+</pre></div>
+</div>
+<p>Deployment版本的代码如下。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-deployment.yaml
+</pre></div>
+</div>
+<p>DaemonSet版本和Deployment版本各有利弊。</p>
+<p>Deployment版本的可伸缩性更好，而DaemonSet的流量转发更少，这里不会详述，可根据自己的喜好选择。</p>
+<p>从使用角度来说，两种方式没有任何差异，都会暴露各个Node的80端口以供集群外的机器访问服务。</p>
+<p>其区别在于：</p>
+<ul class="simple">
+<li><p>DaemonSet版本用Pod的HostPort进行暴露</p></li>
+<li><p>Deployment版本用Service的NodePort进行暴露</p></li>
+</ul>
+<p>可以打开上面两个yaml文件自行查看。我们本次选择的是DaemonSet版本。</p>
+<blockquote>
+<div><p>提示：为了了解更全面的安装细节或进行自定义操作，可以参见Traefik官网中关于在Kubernetes上使用的部分，查看TraefikIngress控制器的详细安装说明。</p>
+</div></blockquote>
+<p>两个安装步骤执行完成后，可以通过如下命令，查看与traefik-ingress-controller相关的Pod是否已成功运行</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod -n kube-system -o wide
+NAME                                     READY   STATUS    RESTARTS   AGE    IP              NODE             NOMINATED NODE   READINESS GATES
+traefik-ingress-controller-8zsqv         1/1     Running   0          93s    10.0.3.188      giteego-k8s-n2   &lt;none&gt;           &lt;none&gt;
+traefik-ingress-controller-j4gsp         1/1     Running   0          93s    10.0.1.9        giteego-k8s-n3   &lt;none&gt;           &lt;none&gt;
+traefik-ingress-controller-mxnw8         1/1     Running   0          93s    10.0.0.218      giteego-k8s-n1   &lt;none&gt;           &lt;none&gt;
+</pre></div>
+</div>
+<p>处于运行状态后，可以对这些Pod的IP地址执行curl命令，查看服务是否成功安装</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@giteego</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">n4</span> <span class="o">~</span><span class="p">]</span><span class="c1"># curl 10.0.3.188</span>
+<span class="mi">404</span> <span class="n">page</span> <span class="ow">not</span> <span class="n">found</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@giteego</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">n4</span> <span class="o">~</span><span class="p">]</span><span class="c1"># curl 10.0.1.9</span>
+<span class="mi">404</span> <span class="n">page</span> <span class="ow">not</span> <span class="n">found</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@giteego</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">n4</span> <span class="o">~</span><span class="p">]</span><span class="c1"># curl 10.0.0.218</span>
+<span class="mi">404</span> <span class="n">page</span> <span class="ow">not</span> <span class="n">found</span>
+</pre></div>
+</div>
+<p>如果返回“404 page
+notfound”，则表示服务已成功安装（因为没有配置资源，所以显示“404 page not
+found”）</p>
+<p>通过如下命令，也可以看到与traefik-ingress-controller相关的Service成功配置</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get service -n kube-system
+NAME                      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+kube-dns                  ClusterIP   10.96.0.10      &lt;none&gt;        53/UDP,53/TCP,9153/TCP   170d
+metrics-server            ClusterIP   10.103.31.254   &lt;none&gt;        443/TCP                  169d
+traefik-ingress-service   ClusterIP   10.101.78.83    &lt;none&gt;        80/TCP,8080/TCP          4m33s
+</pre></div>
+</div>
+<p>之前提到，Traefik在每个Node上暴露80端口以提供服务。我们也可以进行测试</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get node -o wide
+NAME             STATUS   ROLES                  AGE    VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE                KERNEL-VERSION                CONTAINER-RUNTIME
+giteego-k8s-m1   Ready    control-plane,master   170d   v1.21.3   192.168.1.56    &lt;none&gt;        CentOS Linux 7 (Core)   5.14.15-1.el7.elrepo.x86_64   containerd://1.4.11
+giteego-k8s-n1   Ready    ingress                170d   v1.21.3   192.168.1.58    &lt;none&gt;        CentOS Linux 7 (Core)   5.14.15-1.el7.elrepo.x86_64   containerd://1.4.11
+giteego-k8s-n2   Ready    ingress                170d   v1.21.3   192.168.1.64    &lt;none&gt;        CentOS Linux 7 (Core)   5.14.15-1.el7.elrepo.x86_64   containerd://1.4.11
+giteego-k8s-n3   Ready    ingress                170d   v1.21.3   192.168.1.59    &lt;none&gt;        CentOS Linux 7 (Core)   5.14.15-1.el7.elrepo.x86_64   cont
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@gitee</span><span class="o">-</span><span class="n">go</span> <span class="n">traefik</span><span class="p">]</span><span class="c1"># curl  192.168.1.58</span>
+<span class="mi">404</span> <span class="n">page</span> <span class="ow">not</span> <span class="n">found</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@gitee</span><span class="o">-</span><span class="n">go</span> <span class="n">traefik</span><span class="p">]</span><span class="c1"># curl  192.168.1.64</span>
+<span class="mi">404</span> <span class="n">page</span> <span class="ow">not</span> <span class="n">found</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2><a class="toc-backref" href="#id8">2.Ingress的基本操作</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<section id="id3">
+<h3><a class="toc-backref" href="#id9">2.1 Ingress示例</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>两个服务—一个是httpd服务，另一个是Nginx服务</p>
+<p>（1）创建与这两个服务相关的Deployment控制器。 ① 使用命令创建yml文件。</p>
+<p><code class="docutils literal notranslate"><span class="pre">exampledeploymentforingress.yml</span></code></p>
+<p>② 在文件中填入如下内容并保存。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeploymentnginx</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeploymenthttpd</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentforhttpd</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentforhttpd</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">httpd</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">httpd:2.2</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>③ 运行以下命令，通过模板创建Deployment控制器。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampledeploymentforingress.yml
+</pre></div>
+</div>
+<p>④ 通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pod-o</span> <span class="pre">wide</span></code>命令查看Pod是否已成功</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod -o wide
+NAME                                      READY   STATUS    RESTARTS   AGE    IP            NODE            NOMINATED NODE   READINESS GATES
+exampledeploymenthttpd-75c6d89b44-rs66c   <span class="m">1</span>/1     Running   <span class="m">0</span>          107s   <span class="m">10</span>.0.23.198   gitee-k8s-w28   &lt;none&gt;           &lt;none&gt;
+exampledeploymentnginx-656c6d8f4c-7mnnf   <span class="m">1</span>/1     Running   <span class="m">0</span>          107s   <span class="m">10</span>.0.23.12    gitee-k8s-w28   &lt;none&gt;           &lt;none&gt;
+</pre></div>
+</div>
+<p>（2）创建与这两个服务相关的Service。</p>
+<p>① 使用命令创建yml文件。</p>
+<p><code class="docutils literal notranslate"><span class="pre">exampleserviceforingress.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleservicenginx</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+  <span class="nt">ports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+    <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8081</span>
+    <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="nn">---</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleservicehttpd</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentforhttpd</span>
+  <span class="nt">ports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+    <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8081</span>
+    <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>③ 运行以下命令，通过模板创建Service。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleserviceforingress.yml
+</pre></div>
+</div>
+<p>④ 通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubeclt</span> <span class="pre">get</span> <span class="pre">service</span></code>命令，查看Service是否已成功配置</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get service
+NAME                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>    AGE
+exampleservicehttpd   ClusterIP   <span class="m">10</span>.105.151.198   &lt;none&gt;        <span class="m">8081</span>/TCP   61s
+exampleservicenginx   ClusterIP   <span class="m">10</span>.100.179.196     &lt;none&gt;        <span class="m">8081</span>/TCP   61s
+</pre></div>
+</div>
+<p>exampleservicehttpd的IP地址为10.105.151.198，
+exampleservicenginx的IP地址为10.100.179.196。</p>
+<p>（3）进行简单验证，看看服务是否已成功创建。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl 10.105.151.198:8081
+&lt;html&gt;&lt;body&gt;&lt;h1&gt;It works!&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+
+$ curl 10.100.179.196:8081
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+</pre></div>
+</div>
+</section>
+<section id="service">
+<h3><a class="toc-backref" href="#id10">2.2 不使用虚拟主机名称-单个Service</a><a class="headerlink" href="#service" title="Permalink to this headline">¶</a></h3>
+<p>Kubernetes中其实可以通过很多方式来暴露单个Service，不过也可以用Ingress来实现这个功能。要指定一个没有配置规则的
+Ingress，只设置backend属性即可。</p>
+<blockquote>
+<div><p>注意：显而易见，不推荐这种方式，这里只是为了说明这种方式存在而已。</p>
+</div></blockquote>
+<p>首先，定义模板文件，创建一个名为<code class="docutils literal notranslate"><span class="pre">examplesingleingress.yml</span></code>的模板文件。命令如下。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">extensions/v1beta1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplesingleingress</span>
+  <span class="nt">annotations</span><span class="p">:</span>
+    <span class="nt">Kubernetes.io/ingress.class</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">traefik</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">backend</span><span class="p">:</span>
+    <span class="nt">serviceName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleservicehttpd</span>
+    <span class="nt">servicePort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8081</span>
+</pre></div>
+</div>
+<p>该模板的含义如下。</p>
+<ul class="simple">
+<li><p>apiVersion表示使用的API版本，Ingress目前只存在于beta1版本中。</p></li>
+<li><p>kind表示要创建的资源对象，这里使用关键字Ingress。</p></li>
+<li><p>metadata表示该资源对象的元数据，一个资源对象可拥有多个元数据。metadata下面的annotations表示资源对象的注解。对
+于Ingress，如果配置了多个Ingress控制器，则需要指定此注解，确定使用哪个Ingress控制器。在本书中安装的是Traefik，
+所以需要按此填写。如果只安装了一个Ingress控制器，则可以不用指定此注解，Ingress会自动匹配唯一的控制器。</p></li>
+<li><p>spec表示该资源对象的具体设置。spec下面的backend表示Ingress对应的后端服务。其中serviceName代表Service资源的
+名称，这里取之前设置的名称exampleservicehttpd；</p></li>
+<li><p>servicePort代表Service资源的端口，这里取之前在exampleservicehttpd中设置的8081。</p></li>
+</ul>
+<p>通过模板创建Ingress</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplesingleingress.yml
+</pre></div>
+</div>
+<p>Ingress创建成功后，可以通过以下命令查看Ingress。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get ingress
+NAME                   CLASS    HOSTS   ADDRESS   PORTS   AGE
+examplesingleingress   &lt;none&gt;   *                 <span class="m">80</span>      28s
+</pre></div>
+</div>
+<p>通过以下命令可以查看指定Ingress的详细信息。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$  kubectl describe ingress examplesingleingress
+Name:             examplesingleingress
+Namespace:        default
+Address:
+Default backend:  exampleservicehttpd:8081 <span class="o">(</span><span class="m">10</span>.0.6.41:80<span class="o">)</span>
+Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  *           *     exampleservicehttpd:8081 <span class="o">(</span><span class="m">10</span>.0.6.41:80<span class="o">)</span>
+Annotations:  Kubernetes.io/ingress.class: traefik
+Events:       &lt;none&gt;
+</pre></div>
+</div>
+<p>可以看到这个Ingress
+对应的后端为exampleservicehttpd:8081，后面的括号中是Pod的IP地址，即10.0.6.41:80。</p>
+<p>Host和Path都为*，这表示没有指定任何规则，直接访问Ingress服务的根地址即可访问Service。</p>
+<p>之前提到Traefik在每个Node上暴露端口80以提供服务，我们可以进行测试。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl <span class="m">192</span>.168.1.58
+&lt;html&gt;&lt;body&gt;&lt;h1&gt;It works!&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+
+$ curl <span class="m">192</span>.168.1.64
+&lt;html&gt;&lt;body&gt;&lt;h1&gt;It works!&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3><a class="toc-backref" href="#id11">2.3 基于虚拟主机名称-多个子路径</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>上面的示例并未展示出Ingress的强大之处，这里会展示Ingress的另一个用法，以便看到使用Ingress的优势所在。</p>
+<p>假设现在要实现这样的场景：</p>
+<p>在同一个域名下配置两个子路径，其中一个子路径访问httpd的Service，</p>
+<p>另一个子路径访问Nginx的Service。</p>
+<p>如图6-50所示，首先，通过虚拟网址</p>
+<p><code class="docutils literal notranslate"><span class="pre">web.testk8s.com/httpdservice</span></code>和<code class="docutils literal notranslate"><span class="pre">web.testk8s.com/nginxservice</span></code>访问不同的服务。</p>
+<p>同一个域名下配置两个子路径</p>
+<img alt="../../_images/image-20220416200209622.png" src="../../_images/image-20220416200209622.png" />
+<p>创建<code class="docutils literal notranslate"><span class="pre">examplefanoutingress.yml</span></code>模板文件</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplefanoutingress</span>
+  <span class="nt">annotations</span><span class="p">:</span>
+    <span class="nt">Kubernetes.io/ingress.class</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">traefik</span>
+    <span class="nt">traefik.frontend.rule.type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">PathPrefixStrip</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">rules</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web.testk8s.com</span>
+      <span class="nt">http</span><span class="p">:</span>
+        <span class="nt">paths</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/httpdservice</span>
+            <span class="nt">backend</span><span class="p">:</span>
+              <span class="nt">service</span><span class="p">:</span>
+                <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleservicehttpd</span>
+                <span class="nt">port</span><span class="p">:</span>
+                 <span class="nt">number</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8081</span>
+          <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/nginxservice</span>
+            <span class="nt">backend</span><span class="p">:</span>
+              <span class="nt">service</span><span class="p">:</span>
+                <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleservicenginx</span>
+                <span class="nt">port</span><span class="p">:</span>
+                  <span class="nt">number</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8081</span>
+</pre></div>
+</div>
+<p>该模板的含义如下，这里会详细说明一些重要的属性。</p>
+<ul class="simple">
+<li><p>apiVersion表示使用的API版本，Ingress目前只存在于beta1版本中。</p></li>
+<li><p>kind表示要创建的资源对象，这里使用关键字Ingress。</p></li>
+<li><p>metadata表示该资源对象的元数据，一个资源对象可拥有多个元数据。metadata下面的annotations表示资源对象的注解。其
+中Kubernetes.io/ingress.class表示要使用哪个Ingress控制器；<strong>traefik.frontend.rule.type表示Traefik的特定属性，如果支持在一个域名下划分子路径，这里必须填写PathPrefixStrip。</strong></p></li>
+<li><p>spec表示该资源对象的具体设置。spec下面的rules表示Ingress的路由规则。<em>host表示自定义一个虚拟主机名称</em>，
+以此为基础访问各个Service；http表示http协议下的各种设置，在下面设置了多个paths属性，即代表各个子路径的设置。第
+一个path为/httpdservice，它对应的后端服务是exampleservicehttpd；第二个path为/nginxservice，它对应的后端服务是exampleservicenginx。</p></li>
+</ul>
+<p>运行以下命令，通过模板创建Ingress。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplefanoutingress.yml
+</pre></div>
+</div>
+<p>Ingress创建成功后，可以通过以下命令查看Ingress。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get ingress
+NAME                   CLASS    HOSTS             ADDRESS   PORTS   AGE
+examplefanoutingress   &lt;none&gt;   web.testk8s.com             <span class="m">80</span>      113s
+examplesingleingress   &lt;none&gt;   *                           <span class="m">80</span>      3s
+</pre></div>
+</div>
+<p>从这里也可以看到本例中配置的Ingress与上一个示例中配置的Ingress的区别，它拥有HOSTS属性（值为web.testk8s.com）。</p>
+<p>通过以下命令，可以查看指定Ingress的详细信息。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl describe ingress examplefanoutingress
+Name:             examplefanoutingress
+Namespace:        default
+Address:
+Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
+Rules:
+  Host             Path  Backends
+  ----             ----  --------
+  web.testk8s.com
+                   /httpdservice   exampleservicehttpd:8081 (10.0.6.165:80)
+                   /nginxservice   exampleservicenginx:8081 (10.0.6.98:80)
+Annotations:       Kubernetes.io/ingress.class: traefik
+                   traefik.frontend.rule.type: PathPrefixStrip
+Events:            &lt;none&gt;
+</pre></div>
+</div>
+<p>可以看到这个Ingress除了Host为web.testk8s.com之外，还对应了两个path（即访问的子路径），各个子路径对应的Service后面的小括号中也标明了Service对应的Pod。</p>
+<p>在集群外的机器访问这些服务之前，需要给这些集群外的机器配置HOST，以便能通过虚拟主机名称解析出对应的IP地址。</p>
+<p>现在编辑HOST文件（对于Linux系统，其路径为/etc/hosts；</p>
+<p>对于Windows系统，其路径为C:），需要在HOST文件中添加如下内容。</p>
+<p>若在浏览器上访问虚拟网址http://web.testk8s.com/httpdservice，就会定位到exampleservicehttpd提供的服务</p>
+<p>若在浏览器上访问虚拟网址http://web.testk8s.com/nginxservice，就会定位到exampleservicenginx提供的服务</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.58</span>    <span class="n">web</span><span class="o">.</span><span class="n">testk8s</span><span class="o">.</span><span class="n">com</span>
+<span class="mf">192.168</span><span class="o">.</span><span class="mf">1.64</span>    <span class="n">web</span><span class="o">.</span><span class="n">testk8s</span><span class="o">.</span><span class="n">com</span>
+</pre></div>
+</div>
+<img alt="../../_images/image-20220416203139629.png" src="../../_images/image-20220416203139629.png" />
+</section>
+<section id="id5">
+<h3><a class="toc-backref" href="#id12">2.4 基于多个虚拟主机名称</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>首先定义模板文件<code class="docutils literal notranslate"><span class="pre">examplehostingingress.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplefanoutingress</span>
+  <span class="nt">annotations</span><span class="p">:</span>
+    <span class="nt">Kubernetes.io/ingress.class</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">traefik</span>
+    <span class="nt">traefik.frontend.rule.type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">PathPrefixStrip</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">rules</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web.testk8shttpd.com</span>
+      <span class="nt">http</span><span class="p">:</span>
+        <span class="nt">paths</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/</span>
+            <span class="nt">pathType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Prefix</span>
+            <span class="nt">backend</span><span class="p">:</span>
+              <span class="nt">service</span><span class="p">:</span>
+                <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleservicehttpd</span>
+                <span class="nt">port</span><span class="p">:</span>
+                 <span class="nt">number</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8081</span>
+    <span class="p p-Indicator">-</span> <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web.testk8snginx.com</span>
+      <span class="nt">http</span><span class="p">:</span>
+        <span class="nt">paths</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/</span>
+            <span class="nt">pathType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Prefix</span>
+            <span class="nt">backend</span><span class="p">:</span>
+              <span class="nt">service</span><span class="p">:</span>
+                <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleservicenginx</span>
+                <span class="nt">port</span><span class="p">:</span>
+                 <span class="nt">number</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8081</span>
+</pre></div>
+</div>
+<p>这个Ingress和之前定义的区别在于，这里定义了两个规则：</p>
+<p>其中一个host设置为web.testk8shttpd.com（虚拟网址），其后端服务为exampleservicehttpd；</p>
+<p>另一个host设置为web.testk8snginx.com（虚拟网址），其后端服务为exampleservicenginx。</p>
+<p>运行以下命令，通过模板创建Ingress。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplehostingingress.yml
+</pre></div>
+</div>
+<p>Ingress创建成功后，可以通过以下命令查询Ingress。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get ingress
+NAME                   CLASS    HOSTS                                       ADDRESS   PORTS   AGE
+examplefanoutingress   &lt;none&gt;   web.testk8shttpd.com,web.testk8snginx.com             <span class="m">80</span>      1s
+examplesingleingress   &lt;none&gt;   *                                                     <span class="m">80</span>      25m
+</pre></div>
+</div>
+<p>查询结果如图6-56所示。从这里也可以看到和之前配置的Ingress的区别，它拥有两个HOSTS属性，分别为web.testk8shttpd.com
+和web.testk8snginx.com。</p>
+<p>通过以下命令，可以查看指定Ingress的详细信息。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl describe ingress examplefanoutingress
+Name:             examplefanoutingress
+Namespace:        default
+Address:
+Default backend:  default-http-backend:80 <span class="o">(</span>&lt;error: endpoints <span class="s2">&quot;default-http-backend&quot;</span> not found&gt;<span class="o">)</span>
+Rules:
+  Host                  Path  Backends
+  ----                  ----  --------
+  web.testk8shttpd.com
+                        /   exampleservicehttpd:8081 <span class="o">(</span><span class="m">10</span>.0.6.165:80<span class="o">)</span>
+  web.testk8snginx.com
+                        /   exampleservicenginx:8081 <span class="o">(</span><span class="m">10</span>.0.6.98:80<span class="o">)</span>
+Annotations:            Kubernetes.io/ingress.class: traefik
+                        traefik.frontend.rule.type: PathPrefixStrip
+Events:                 &lt;none&gt;
+</pre></div>
+</div>
+<p>可以看到这个Ingress拥有两个Host，分别对应的不同的Service。</p>
+<p>在集群外的机器访问这些服务之前，需要给这些集群外的机器配置HOST，以便能通过虚拟主机名称解析出对应的IP地址。</p>
+<p>为了编辑HOST文件（对于Linux系统，其路径为/etc/hosts；</p>
+<p>对于Windows系统，其路径为C:），需要在HOST文件中添加如下关于虚拟网址的内容。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.58</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8shttpd</span><span class="o">.</span><span class="n">com</span>
+<span class="mf">192.168</span><span class="o">.</span><span class="mf">1.58</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8snginx</span><span class="o">.</span><span class="n">com</span>
+<span class="mf">192.168</span><span class="o">.</span><span class="mf">1.64</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8shttpd</span><span class="o">.</span><span class="n">com</span>
+<span class="mf">192.168</span><span class="o">.</span><span class="mf">1.64</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8snginx</span><span class="o">.</span><span class="n">com</span>
+</pre></div>
+</div>
+<p>若在浏览器上访问虚拟网址http://web.testk8shttpd.com，就会定位到exampleservicehttpd提供的服务</p>
+<p>若在浏览器上访问虚拟网址http://web.testk8snginx.com，就会定位到exampleservicenginx提供的服务</p>
+<img alt="../../_images/image-20220416204925382.png" src="../../_images/image-20220416204925382.png" />
+<p>关于更复杂的场景（如配置多个虚拟主机、每个主机配置多个子路径等方式），读者可以自行尝试，这里不再详述。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="1.Service.html" class="btn btn-neutral float-left" title="Service" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html" class="btn btn-neutral float-right" title="7.存储与配置" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
