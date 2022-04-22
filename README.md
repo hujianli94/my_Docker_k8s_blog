@@ -10,8 +10,8 @@
 Ŀ¼目录详细
 
 - Docker入门到实战(第3版)
-- Docker 容器与容器云（第2版）
-- Kubernetes实战 
+- Prometheus监控运维实战
+- Kubernetes入门到实战
 
 
 
