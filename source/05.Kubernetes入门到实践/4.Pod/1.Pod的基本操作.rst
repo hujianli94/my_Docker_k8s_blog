@@ -743,13 +743,17 @@ Pod中可以包含一个或多个初始化容器，它们是在应用程序容�
 
 初始化容器不能是长期运行的容器，而是在执行完一定操作后就必须结束的。
 
-初始化容器不是同时运行的，而是按照既定顺序一个接一个地运行的。在正式容器运行前，所有的初始化容器必须正常结束。
+初始化容器不是同时运行的，而是按照既定顺序一个接一个地运行的。
+
+在正式容器运行前，所有的初始化容器必须正常结束。
 
 初始化容器的目的是将初始化逻辑与主体业务逻辑分离并放置在不同的镜像中。
 
 初始化容器执行失败时，如果restartPolicy是OnFailure或者Always，那么会重复执行失败的初始化容器一直到成功；
 
-如果restartPolicy是Never，则不会重启失败的初始化容器。如果初始化容器执行成功，那么无论restartPolicy是什么，都不会再次重启。
+如果restartPolicy是Never，则不会重启失败的初始化容器。
+
+如果初始化容器执行成功，那么无论restartPolicy是什么，都不会再次重启。
 
 初始化容器和正式容器能够定义的属性完全一样，但正式容器放在spec属性的containers下面，而初始化容器放在initContainers下面。
 
@@ -821,6 +825,135 @@ Pod中可以包含一个或多个初始化容器，它们是在应用程序容�
 按照之前设定的顺序，先执行initdbcheck，再执行initscript，初始化容器执行完之后，才运行maincontainer。
 
 .. image:: ../../_static/image-20220408181905423.png
+
+下面的资源清单仅是一个初始化容器的使用示例，读者可自行创建并观察初始化容器的相关状态：
+
+.. code:: yaml
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: myapp-pod
+     labels:
+       app: myapp
+   spec:
+     containers:
+     - name: myapp-container
+       image: ikubernetes/myapp:v1
+     initContainers:
+     - name: init-something
+       image: busybox
+       command: ['sh', '-c', 'sleep 10']
+
+1.1 Init Container
+''''''''''''''''''
+
+Pod
+能够具有多个容器，应用运行在容器里面，但是它也可能有一个或多个先于应用容器启动的
+Init 容器。Init
+容器在所有容器运行之前执行（run-to-completion），常用来初始化配置。
+
+如果为一个 Pod 指定了多个 Init 容器，那些容器会按顺序一行。 当所有的
+Init 容器运行完成时，Kubernetes 初始化 Pod 并像平常一样运行应用容器。
+
+下面是一个 Init 容器的示例：
+
+.. code:: yaml
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: init-demo
+   spec:
+     containers:
+     - name: nginx
+       image: nginx
+       ports:
+       - containerPort: 80
+       volumeMounts:
+       - name: workdir
+         mountPath: /usr/share/nginx/html
+     # These containers are run during pod initialization
+     initContainers:
+     - name: install
+       image: busybox
+       command:
+       - wget
+       - "-O"
+       - "/work-dir/index.html"
+       - http://kubernetes.io
+       volumeMounts:
+       - name: workdir
+         mountPath: "/work-dir"
+     dnsPolicy: Default
+     volumes:
+     - name: workdir
+       emptyDir: {}
+
+-  它们可以包含并运行实用工具，出于安全考虑，是不建议在应用容器镜像中包含这些实用工具的。
+-  它们可以包含使用工具和定制化代码来安装，但是不能出现在应用镜像中。例如，创建镜像没必要
+   FROM 另一个镜像，只需要在安装过程中使用类似 sed、 awk、 python 或 dig
+   这样的工具。
+-  应用镜像可以分离出创建和部署的角色，而没有必要联合它们构建一个单独的镜像。
+-  它们使用 Linux
+   Namespace，所以对应用容器具有不同的文件系统视图。因此，它们能够具有访问
+   Secret 的权限，而应用容器不能够访问。
+-  它们在应用容器启动之前运行完成，然而应用容器并行运行，所以 Init
+   容器提供了一种简单的方式来阻塞或延迟应用容器的启动，直到满足了一组先决条件。
+
+Init 容器的资源计算，选择一下两者的较大值：
+
+-  所有 Init 容器中的资源使用的最大值
+-  Pod 中所有容器资源使用的总和
+
+Init 容器的重启策略：
+
+-  如果 Init 容器执行失败，Pod 设置的 restartPolicy 为 Never，则 pod
+   将处于 fail 状态。否则 Pod 将一直重新执行每一个 Init 容器直到所有的
+   Init 容器都成功。
+-  如果 Pod 异常退出，重新拉取 Pod 后，Init 容器也会被重新执行。所以在
+   Init 容器中执行的任务，需要保证是幂等的。
+
+1.2 初始化容器常见案例
+''''''''''''''''''''''
+
+在 mountOptions 中设置 uid 和 gid
+时失败，有时候需要设置挂载时候目录的属主和属组权限，默认持久存储卷挂载、或者cm进行挂载的权限为\ ``root:root``\ 且只读。这时候可以通过initcontainer容器进行权限修改。
+
+可以通过执行以下操作之一来缓解此问题
+
+-  通过在 fsGroup 中的 runAsUser 和 gid 中设置 uid 来\ `配置 pod
+   的安全上下文 <https://kubernetes.io/docs/tasks/configure-pod-container/security-context/>`__\ 。例如，以下设置会将
+   pod 设置为 root，使其可供任何文件访问：
+
+::
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: security-context-demo
+   spec:
+     securityContext:
+       runAsUser: 0
+       fsGroup: 0
+
+..
+
+   备注: 因为 gid 和 uid 默认装载为 root 或0。如果 gid 或 uid
+   设置为非根（例如1000），则 Kubernetes 将使用
+   ``chown``\ 更改该磁盘下的所有目录和文件。此操作可能非常耗时，并且可能会导致装载磁盘的速度非常慢。
+
+-  使用 initContainers 中的 ``chown`` 设置 gid 和 uid。例如:
+
+::
+
+   initContainers:
+   - name: volume-mount
+     image: busybox
+     command: ["sh", "-c", "chown -R 100:100 /data"]
+     volumeMounts:
+     - name: <your data volume>
+       mountPath: /data
 
 2.正式容器运行阶段
 ^^^^^^^^^^^^^^^^^^
@@ -966,7 +1099,7 @@ HttpGet
 -  Failure：容器没有通过诊断。
 -  Unknown：诊断失败，不会采取任何措施。
 
-诊断是如何执行的呢？kubelet会调用容器配置中定义的测定方案来执行诊断，一共有3种测定方案。
+诊断是如何执行的呢？kubelet会调用容器配置中定义的测定方案来执行诊断，\ **一共有3种测定方案。**
 
 -  ExecAction：在容器内部执行指定的命令。如果命令以状态码“0”退出，则测定为诊断成功。其配置方式如下。
 

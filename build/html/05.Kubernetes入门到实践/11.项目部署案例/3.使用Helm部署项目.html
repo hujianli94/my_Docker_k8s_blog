@@ -218,8 +218,46 @@ examplechart/
 <ul class="simple">
 <li><p>charts目录</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>charts目录用于存放该Chart依赖的所有子Chart的目录，这些子Chart的目录也遵从目前的Chart文件结构（即拥有4个部分）。如果有子Chart，则需要在父Chart中新建requirements.yaml文件，并在文件中记录这些子Chart。
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>charts目录用于存放该Chart依赖的所有子Chart的目录，这些子Chart的目录也遵从目前的Chart文件结构（即拥有4个部分）。
+如果有子Chart，则需要在父Chart中新建requirements.yaml文件，并在文件中记录这些子Chart。
 在创建新Chart时默认没有依赖的子Chart。
+</pre></div>
+</div>
+<p>helm3
+v2版本中。已经将依赖requirements.yaml去掉，默认requirements.yaml的内容直接写入Chart.yaml中。</p>
+<p>示例</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v2</span>
+<span class="n">appVersion</span><span class="p">:</span> <span class="mf">2.0</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">name</span><span class="p">:</span> <span class="n">foruda</span>
+<span class="n">home</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span>
+<span class="n">description</span><span class="p">:</span> <span class="n">foruda</span> <span class="n">ci</span> <span class="n">Helm</span> <span class="n">chart</span> <span class="k">for</span> <span class="n">Kubernetes</span>
+<span class="n">icon</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">static</span><span class="o">/</span><span class="n">images</span><span class="o">/</span><span class="n">logo</span><span class="o">-</span><span class="n">black</span><span class="o">.</span><span class="n">svg</span>
+<span class="n">keywords</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">foruda</span>
+  <span class="o">-</span> <span class="n">ci</span>
+  <span class="o">-</span> <span class="n">gitee</span><span class="o">-</span><span class="n">ci</span>
+<span class="n">maintainers</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">foruda</span>
+    <span class="n">email</span><span class="p">:</span> <span class="mi">1879324764</span><span class="nd">@qq</span><span class="o">.</span><span class="n">com</span>
+
+<span class="n">sources</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">oschina</span><span class="o">/</span><span class="n">foruda</span><span class="o">-</span><span class="n">gitee</span><span class="o">-</span><span class="n">helm</span><span class="o">.</span><span class="n">git</span>
+<span class="n">version</span><span class="p">:</span> <span class="mf">2.0</span><span class="o">.</span><span class="mi">0</span>
+
+<span class="n">dependencies</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">postgres</span>
+    <span class="n">repository</span><span class="p">:</span> <span class="n">file</span><span class="p">:</span><span class="o">//./</span><span class="n">charts</span><span class="o">/</span><span class="n">postgres</span><span class="o">/</span>
+    <span class="n">version</span><span class="p">:</span> <span class="mf">2.0</span><span class="o">.</span><span class="mi">0</span>
+</pre></div>
+</div>
+<p>如下所示的示例，是Wordpress Charts中定义的动态依赖关系：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dependencies</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">mariadb</span>
+  <span class="n">version</span><span class="p">:</span> <span class="mf">2.1</span><span class="o">.</span><span class="mi">1</span>
+  <span class="n">repository</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">-</span><span class="n">charts</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">googleapis</span><span class="o">.</span><span class="n">com</span><span class="o">/</span>
+  <span class="n">condition</span><span class="p">:</span> <span class="n">mariadb</span><span class="o">.</span><span class="n">enabled</span>
+  <span class="n">tags</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">wordpress</span><span class="o">-</span><span class="n">database</span>
 </pre></div>
 </div>
 <ul class="simple">
