@@ -12,6 +12,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+# config配置更多参考文献：https://sphinxguide.readthedocs.io/en/latest/sphinx_basics/settings.html
+# config配置更多参考文献：https://www.sphinx-doc.org/en/master/usage/configuration.html
+
+
 import sys
 import os
 from pygments.lexer import RegexLexer

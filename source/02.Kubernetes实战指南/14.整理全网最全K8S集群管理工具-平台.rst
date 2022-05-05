@@ -8,3 +8,102 @@
 参考文献：
 
 https://www.cnblogs.com/aixing/p/15837547.html
+
+1. 基于Kubernetes的通用开源PaaS 管理平台-**KubeGems**
+-----------------------------------------------------
+
+1.1 介绍
+~~~~~~~~
+
+KubeGems 广泛的使用来自包括 云原生基金会（CNCF) 和 Istio社区
+开源的产品，并在此基础上做了二次开发和适配。针对产品内部比较通用的需求，KubeGems也会及时将代码以PR的方式回馈社区，以保证产品能够与社区进行同步更新。
+
+为更好地降低用户对云原生生态内的熟悉门槛，KubeGems
+提供了专门的安装控制器对集成的三方插件进行集中管理，并以此保证我们的产品能始终如一的部署在不同方式构建的
+Kubernetes 集群之上，使用户能更完整能够体验到 KubeGems 的功能。
+
+   在 v1.20.0 版本中，KubeGems 内部集成了近 30
+   来个服务，您可以自由选择是否启用它们。
+
+1.2 安装
+~~~~~~~~
+
+**KubeGems Installer Operator** 是一个通过 Operator SDK 构建的 Ansible
+Kubernetes 控制器。通过 CRD 中的定义的字段对 Ansible
+进行变量传递。Installer Operator 的运行需要具备集群管理员的 RBAC
+权限，所以在部署前需要联系您的集群管理员，以保证有足够的授权执行以下操作。
+
+首先使用如下所示命令安装 KubeGems Installer 控制器：
+
+.. code:: bash
+
+   $ KUBEGEMS_VERSION=v1.20.0-beta.1
+
+   $ wget -O- https://github.com/kubegems/installer-operator/releases/download/${KUBEGEMS_VERSION}/centrol.yaml \
+   | sed "s#image: kubegems#image: registry.cn-beijing.aliyuncs.com/kubegems#g"  \
+   | kubectl apply -f -
+
+CRD 与控制器部署完成后就可以开始创建 installer 对象进行安装：
+
+.. code:: bash
+
+   $ wget -O - https://github.com/kubegems/installer-operator/releases/download/${KUBEGEMS_VERSION}/centrol.installer.yaml \
+   | sed "s#repository: docker.io#repository: registry.cn-beijing.aliyuncs.com#g" \
+   | kubectl apply -f -
+
+更多使用方式可查看官方文档了解更多信息：https://www.kubegems.io/。
+
+可以再创建一条 ingress 规则将 kubegems dashboard
+服务暴露出来，如下所示：
+
+.. code:: yaml
+
+   apiVersion: networking.k8s.io/v1
+   kind: Ingress
+   metadata:
+     name: gems-dashboard
+     namespace: gemcloud-system
+     annotations:
+       kubernetes.io/ingress.class: "nginx"
+       nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+       nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+       nginx.ingress.kubernetes.io/proxy-body-size: "512m"
+       nginx.org/proxy-buffering: "false"
+       nginx.org/websocket-services: gems-dashboard
+   spec:
+     rules:
+       - host: kubegems-dashboard.runjs.cn
+         http:
+           paths:
+             - path: /
+               pathType: ImplementationSpecific
+               backend:
+                 service:
+                   name: gems-dashboard
+                   port:
+                     number: 8000
+
+默认登录密码：
+
+   账号 admin，密码 demo!@#admin。
+
+1.3 使用
+~~~~~~~~
+
+-  使用 ``admin`` 账号登录 KubeGems 管理后台，点击右下角 【工具箱】
+   图标，进入 【系统管理】
+-  点击 【创建集群】，将集群的 ``kubeconfig`` 文件粘贴至文本框。
+-  输入\ ``集群名称``\ 和集群容器运行时类型，勾选上 ``控制集群``\ 。
+
+**信息**
+
+控制集群不会注入 ``gem-insatller-manager`` 服务。
+
+-  集群导入成功，并且状态正常后，点击 【详情】进入集群信息管理页面
+-  集群详情页包含了集群的\ ``基本状态``\ 、\ ``证书信息``\ 、\ ``监控指标``\ 、\ ``物理资源``\ 、\ ``资源类型``\ 以及\ ``使用统计``\ 等信息。
+
+**目前不太推荐使用，因为是开源的软件，主要是Github上start数量和活跃度不高。**
+
+更多文档参考
+
+https://www.kubegems.io/docs/quick-starts/quick-start
