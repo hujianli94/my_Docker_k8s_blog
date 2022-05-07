@@ -71,6 +71,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../11.%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E6%A1%88%E4%BE%8B/index.html">11.项目部署案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../12.Helm%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/index.html">12.Helm学习指南</a></li>
 </ul>
 </li>
 </ul>
@@ -346,6 +347,34 @@ alert举例。指定容器监听端口，配置存活就绪检测，设置资源
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment <span class="o">{</span>deployment名称<span class="o">}</span> -o yaml
 示例
 $ kubectl get deployment exampledeployment -o yaml
+</pre></div>
+</div>
+<p><strong>deployment 添加hosts</strong></p>
+<p>示例yml：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ReplicationController</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dp-rc</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dp-pod</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dp-pod</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">hostAliases</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">ip</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">192.168.176.247</span>
+        <span class="nt">hostnames</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="s">&quot;dccas.finupgroup.com&quot;</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dp</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">reg.k8s.dc.finupgroup.com/datacenter/dp:latest</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Always</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
 </pre></div>
 </div>
 </section>
