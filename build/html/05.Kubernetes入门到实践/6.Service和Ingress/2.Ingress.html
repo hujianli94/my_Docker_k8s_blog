@@ -56,7 +56,7 @@
 <li class="toctree-l3"><a class="reference internal" href="1.Service.html">Service</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Ingress</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id1">1.Ingress控制器的安装</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">2.Ingress的基本操作</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">2.Ingress的基本操作</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ingresshttps">3.Ingress配置https访问</a></li>
 </ul>
 </li>
@@ -100,30 +100,31 @@
   <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#ingress" id="id7">Ingress</a></p>
+<li><p><a class="reference internal" href="#ingress" id="id8">Ingress</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id8">1.Ingress控制器的安装</a></p>
+<li><p><a class="reference internal" href="#id1" id="id9">1.Ingress控制器的安装</a></p>
 <ul>
-<li><p><a class="reference internal" href="#nginx-ingress" id="id9">1.1 Nginx-ingress部署及使用</a></p></li>
-<li><p><a class="reference internal" href="#traefik-ingress" id="id10">1.2 Traefik-ingress部署及使用</a></p></li>
-<li><p><a class="reference internal" href="#id2" id="id11">1.3 在指定节点部署Ingress服务</a></p></li>
+<li><p><a class="reference internal" href="#nginx-ingress" id="id10">1.1 Nginx-ingress部署及使用</a></p></li>
+<li><p><a class="reference internal" href="#helmnginx-ingress" id="id11">1.2 helm部署nginx-ingress</a></p></li>
+<li><p><a class="reference internal" href="#traefik-ingress" id="id12">1.3 Traefik-ingress部署及使用</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id13">1.4 在指定节点部署Ingress服务</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id3" id="id12">2.Ingress的基本操作</a></p>
+<li><p><a class="reference internal" href="#id4" id="id14">2.Ingress的基本操作</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id4" id="id13">2.1 Ingress示例</a></p></li>
-<li><p><a class="reference internal" href="#service" id="id14">2.2 不使用虚拟主机名称-单个Service</a></p></li>
-<li><p><a class="reference internal" href="#id5" id="id15">2.3 基于虚拟主机名称-多个子路径</a></p></li>
-<li><p><a class="reference internal" href="#id6" id="id16">2.4 基于多个虚拟主机名称</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id15">2.1 Ingress示例</a></p></li>
+<li><p><a class="reference internal" href="#service" id="id16">2.2 不使用虚拟主机名称-单个Service</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id17">2.3 基于虚拟主机名称-多个子路径</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id18">2.4 基于多个虚拟主机名称</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#ingresshttps" id="id17">3.Ingress配置https访问</a></p></li>
+<li><p><a class="reference internal" href="#ingresshttps" id="id19">3.Ingress配置https访问</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
 <section id="ingress">
-<h1><a class="toc-backref" href="#id7">Ingress</a><a class="headerlink" href="#ingress" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id8">Ingress</a><a class="headerlink" href="#ingress" title="Permalink to this headline">¶</a></h1>
 <p>要将Kubernetes集群内的服务发布到集群外来使用，通常的办法是</p>
 <ol class="arabic simple">
 <li><p>配置NodePort</p></li>
@@ -156,7 +157,7 @@ Server进行交互，实时地感知后端Service、Pod等的变化情况，比�
 基本操作的部分也适用于所有类型的Ingress控制器。</p>
 <p>我们使用Traefik作为Ingress控制器，它的功能非常强大，跟Kubernetes结合得很好，还提供了商用支持。</p>
 <section id="id1">
-<h2><a class="toc-backref" href="#id8">1.Ingress控制器的安装</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">1.Ingress控制器的安装</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Traefik的安装并不复杂。在这里我们选择最简单的默认安装，只要两步就可以完成。</p>
 <p>第一步，执行以下命令，配置traefik-ingress-controller基于角色的访问控制（Role
 Based Access Control, RBAC），让它能与
@@ -232,14 +233,119 @@ giteego-k8s-n3   Ready    ingress                170d   v1.21.3   192.168.1.59  
 </pre></div>
 </div>
 <section id="nginx-ingress">
-<h3><a class="toc-backref" href="#id9">1.1 Nginx-ingress部署及使用</a><a class="headerlink" href="#nginx-ingress" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id10">1.1 Nginx-ingress部署及使用</a><a class="headerlink" href="#nginx-ingress" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>参考文献</p>
 <p><a class="reference external" href="https://www.cnblogs.com/itzgr/p/13030762.html">https://www.cnblogs.com/itzgr/p/13030762.html</a></p>
 </div></blockquote>
 </section>
+<section id="helmnginx-ingress">
+<h3><a class="toc-backref" href="#id11">1.2 helm部署nginx-ingress</a><a class="headerlink" href="#helmnginx-ingress" title="Permalink to this headline">¶</a></h3>
+<p><strong>pull helm chart ingress-nginx-4.0.19.tgz</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">pull</span> <span class="o">--</span><span class="n">repo</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>
+<span class="n">tar</span> <span class="o">-</span><span class="n">zxf</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="mf">4.0</span><span class="o">.</span><span class="mf">19.</span><span class="n">tgz</span>
+</pre></div>
+</div>
+<p><strong>pull &amp; push images</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.3</span>
+<span class="n">docker</span> <span class="n">pull</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span>
+<span class="n">docker</span> <span class="n">pull</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">defaultbackend</span><span class="o">-</span><span class="n">amd64</span><span class="p">:</span><span class="mf">1.5</span>
+
+<span class="n">docker</span> <span class="n">tag</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.3</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.3</span>
+<span class="n">docker</span> <span class="n">tag</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span>
+<span class="n">docker</span> <span class="n">tag</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">defaultbackend</span><span class="o">-</span><span class="n">amd64</span><span class="p">:</span><span class="mf">1.5</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">defaultbackend</span><span class="o">-</span><span class="n">amd64</span><span class="p">:</span><span class="mf">1.5</span>
+
+<span class="n">docker</span> <span class="n">push</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.3</span>
+<span class="n">docker</span> <span class="n">push</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span>
+<span class="n">docker</span> <span class="n">push</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">defaultbackend</span><span class="o">-</span><span class="n">amd64</span><span class="p">:</span><span class="mf">1.5</span>
+</pre></div>
+</div>
+<p><strong>create values.yaml</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">&gt;</span> <span class="n">values</span><span class="o">.</span><span class="n">yaml</span> <span class="o">&lt;&lt;</span><span class="n">EOF</span>
+<span class="n">controller</span><span class="p">:</span>
+  <span class="n">image</span><span class="p">:</span>
+    <span class="n">registry</span><span class="p">:</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span>
+    <span class="n">tag</span><span class="p">:</span> <span class="s2">&quot;v1.1.3&quot;</span>
+    <span class="n">digest</span><span class="p">:</span> <span class="n">sha256</span><span class="p">:</span><span class="n">dffe4f5b082eadb5d4c9680c80319bf45447609b26330faafa6e4fef5c6a1e59</span>
+  <span class="n">config</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">-</span><span class="n">header</span><span class="o">-</span><span class="n">buffer</span><span class="o">-</span><span class="n">size</span><span class="p">:</span> <span class="mi">16</span><span class="n">k</span>
+    <span class="n">use</span><span class="o">-</span><span class="n">forwarded</span><span class="o">-</span><span class="n">headers</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span>
+  <span class="n">dnsPolicy</span><span class="p">:</span> <span class="n">ClusterFirstWithHostNet</span>
+  <span class="n">hostNetwork</span><span class="p">:</span> <span class="n">true</span>
+  <span class="n">hostPort</span><span class="p">:</span>
+    <span class="n">enabled</span><span class="p">:</span> <span class="n">true</span>
+  <span class="n">extraArgs</span><span class="p">:</span>
+    <span class="n">http</span><span class="o">-</span><span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
+    <span class="n">https</span><span class="o">-</span><span class="n">port</span><span class="p">:</span> <span class="mi">443</span>
+    <span class="n">default</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">certificate</span><span class="p">:</span> <span class="s2">&quot;ingress-nginx/gitee.com-ingress-secret&quot;</span>
+  <span class="n">kind</span><span class="p">:</span> <span class="n">DaemonSet</span>
+  <span class="n">tolerations</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">key</span><span class="p">:</span> <span class="n">GiteeCommonAddonsOnly</span>
+      <span class="n">operator</span><span class="p">:</span> <span class="s2">&quot;Equal&quot;</span>
+      <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span>
+      <span class="n">effect</span><span class="p">:</span> <span class="s2">&quot;NoSchedule&quot;</span>
+  <span class="n">nodeSelector</span><span class="p">:</span>
+    <span class="n">node_role</span><span class="p">:</span> <span class="n">sys</span><span class="o">-</span><span class="n">node</span>
+    <span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">os</span><span class="p">:</span> <span class="n">linux</span>
+  <span class="n">service</span><span class="p">:</span>
+    <span class="n">enabled</span><span class="p">:</span> <span class="n">false</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">ClusterIP</span>
+  <span class="n">admissionWebhooks</span><span class="p">:</span>
+    <span class="n">patch</span><span class="p">:</span>
+      <span class="n">image</span><span class="p">:</span>
+        <span class="n">registry</span><span class="p">:</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span>
+        <span class="n">digest</span><span class="p">:</span> <span class="n">sha256</span><span class="p">:</span><span class="mi">78351</span><span class="n">fc9d9b5f835e0809921c029208faeb7fbb6dc2d3b0d1db0a6584195cfed</span>
+      <span class="n">nodeSelector</span><span class="p">:</span>
+        <span class="n">node_role</span><span class="p">:</span> <span class="n">sys</span><span class="o">-</span><span class="n">node</span>
+        <span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">os</span><span class="p">:</span> <span class="n">linux</span>
+      <span class="n">tolerations</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">key</span><span class="p">:</span> <span class="n">GiteeCommonAddonsOnly</span>
+          <span class="n">operator</span><span class="p">:</span> <span class="s2">&quot;Equal&quot;</span>
+          <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span>
+          <span class="n">effect</span><span class="p">:</span> <span class="s2">&quot;NoSchedule&quot;</span>
+
+<span class="n">defaultBackend</span><span class="p">:</span>
+  <span class="n">enabled</span><span class="p">:</span> <span class="n">true</span>
+  <span class="n">image</span><span class="p">:</span>
+    <span class="n">registry</span><span class="p">:</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">defaultbackend</span><span class="o">-</span><span class="n">amd64</span>
+    <span class="n">tag</span><span class="p">:</span> <span class="s2">&quot;1.5&quot;</span>
+  <span class="n">tolerations</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">key</span><span class="p">:</span> <span class="n">GiteeCommonAddonsOnly</span>
+      <span class="n">operator</span><span class="p">:</span> <span class="s2">&quot;Equal&quot;</span>
+      <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span>
+      <span class="n">effect</span><span class="p">:</span> <span class="s2">&quot;NoSchedule&quot;</span>
+  <span class="n">nodeSelector</span><span class="p">:</span>
+    <span class="n">node_role</span><span class="p">:</span> <span class="n">sys</span><span class="o">-</span><span class="n">node</span>
+    <span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">os</span><span class="p">:</span> <span class="n">linux</span>
+<span class="n">EOF</span>
+</pre></div>
+</div>
+<p><strong>install ingress-nginx</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">create</span> <span class="n">ns</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>
+<span class="n">helm</span> <span class="n">install</span> <span class="o">-</span><span class="n">n</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span> <span class="o">-</span><span class="n">f</span> <span class="n">values</span><span class="o">.</span><span class="n">yaml</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span> <span class="o">./</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>
+</pre></div>
+</div>
+<p><strong>create certs secret</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">certs</span>
+<span class="n">kubectl</span> <span class="n">create</span> <span class="n">secret</span> <span class="n">tls</span> <span class="o">-</span><span class="n">n</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span> <span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">-</span><span class="n">ingress</span><span class="o">-</span><span class="n">secret</span> <span class="o">--</span><span class="n">cert</span><span class="o">=</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">crt</span> <span class="o">--</span><span class="n">key</span><span class="o">=</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">key</span> <span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="o">=</span><span class="n">client</span> <span class="o">-</span><span class="n">o</span> <span class="n">yaml</span> <span class="o">&gt;</span> <span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">secret</span><span class="o">.</span><span class="n">yaml</span>
+<span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">secret</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p><strong>set default ingressClass</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">ingressClass</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>参考文献</p>
+<p><a class="reference external" href="https://github.com/kubernetes/ingress-nginx">https://github.com/kubernetes/ingress-nginx</a></p>
+</div></blockquote>
+</section>
 <section id="traefik-ingress">
-<h3><a class="toc-backref" href="#id10">1.2 Traefik-ingress部署及使用</a><a class="headerlink" href="#traefik-ingress" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">1.3 Traefik-ingress部署及使用</a><a class="headerlink" href="#traefik-ingress" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Traefik-ingress部署及使用</p>
 <p><a class="reference external" href="https://www.cnblogs.com/itzgr/p/13030883.html">https://www.cnblogs.com/itzgr/p/13030883.html</a></p>
@@ -250,10 +356,24 @@ giteego-k8s-n3   Ready    ingress                170d   v1.21.3   192.168.1.59  
 </div></blockquote>
 </section>
 <section id="id2">
-<h3><a class="toc-backref" href="#id11">1.3 在指定节点部署Ingress服务</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">1.4 在指定节点部署Ingress服务</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>我们部署2个ingress节点，做ha高可用，对外发布服务。</p>
+<section id="id3">
+<h4>1. 设置污点和标签<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>设置污点</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl taint node gitee-k8s-n1 <span class="nv">GiteeCommonAddonsOnly</span><span class="o">=</span>yes:NoSchedule
+$ kubectl taint node gitee-k8s-n2 <span class="nv">GiteeCommonAddonsOnly</span><span class="o">=</span>yes:NoSchedule
+</pre></div>
+</div>
 <p>打标签</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl label nodes node01 node-role.kubernetes.io/ingress<span class="o">=</span><span class="s2">&quot;true&quot;</span>
-$ kubectl label nodes node02 node-role.kubernetes.io/ingress<span class="o">=</span><span class="s2">&quot;true&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 带有标识符的标签</span>
+$ kubectl label nodes gitee-k8s-n1 node-role.kubernetes.io/ingress<span class="o">=</span><span class="s2">&quot;true&quot;</span>
+$ kubectl label nodes gitee-k8s-n2 node-role.kubernetes.io/ingress<span class="o">=</span><span class="s2">&quot;true&quot;</span>
+
+
+<span class="c1"># 或者默认标签</span>
+$ kubectl label nodes gitee-k8s-n1 <span class="nv">node_role</span><span class="o">=</span><span class="s2">&quot;sys-node&quot;</span>
+$ kubectl label nodes gitee-k8s-n2 <span class="nv">node_role</span><span class="o">=</span><span class="s2">&quot;sys-node&quot;</span>
 </pre></div>
 </div>
 <p>查看节点是否设置 Label 成功</p>
@@ -261,13 +381,214 @@ $ kubectl label nodes node02 node-role.kubernetes.io/ingress<span class="o">=</s
 </pre></div>
 </div>
 <p>如果想删除标签，可以使用</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl label nodes node.k8s.com node-role.kubernetes.io/ingress-
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 默认标签</span>
+$ kubectl label nodes gitee-k8s-n1 node-role-
+
+
+<span class="c1"># 带有标识符的标签</span>
+$ kubectl label nodes gitee-k8s-n1 node-role.kubernetes.io/ingress-
 </pre></div>
 </div>
 <p>更新deployment，增加nodeSelector配置</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl -n kube-system patch deployment nginx-ingress-controller -p <span class="s1">&#39;{&quot;spec&quot;: {&quot;template&quot;: {&quot;spec&quot;: {&quot;nodeSelector&quot;: {&quot;node-role.kubernetes.io/ingress&quot;: &quot;true&quot;}}}}}&#39;</span>
 </pre></div>
 </div>
+</section>
+<section id="keepalived">
+<h4>2. 安装keepalived<a class="headerlink" href="#keepalived" title="Permalink to this headline">¶</a></h4>
+<p>通过keepalived来配置ingress的高可用。</p>
+<p><strong>Keepalived安装</strong></p>
+<p>Keepalived 在 CentOS7系统下使用 yum 安装即可。在 CentOS 7 系统下，LVS
+已被集成到内核中，无须单独安装。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ yum -y install keepalived
+$ systemctl restart keepalived
+$ systemctl status keepalived
+$ systemctl <span class="nb">enable</span> keepalived
+</pre></div>
+</div>
+<p><strong>Keepalived配置</strong></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 备份默认配置</span>
+$ cp -rf /etc/keepalived/keepalived.conf<span class="o">{</span>,_bak<span class="o">}</span>
+</pre></div>
+</div>
+<p>主机</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cat &gt;/etc/keepalived/keepalived.conf &lt;&lt;EOF
+
+! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     acassen@firewall.loc
+     failover@firewall.loc
+     sysadmin@firewall.loc
+   }
+   notification_email_from Alexandre.Cassen@firewall.loc
+   smtp_server 192.168.200.1
+   smtp_connect_timeout 30
+   router_id LVS_DEVEL
+   vrrp_skip_check_adv_addr
+   #vrrp_strict
+   vrrp_garp_interval 0
+   vrrp_gna_interval 0
+}
+
+vrrp_instance VI_1 {
+    state BACKUP
+    nopreempt
+    interface eth0
+    virtual_router_id 52
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        192.168.1.107
+    }
+}
+EOF
+</pre></div>
+</div>
+<p>备机</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cat &gt;/etc/keepalived/keepalived.conf &lt;&lt;EOF
+
+! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     acassen@firewall.loc
+     failover@firewall.loc
+     sysadmin@firewall.loc
+   }
+   notification_email_from Alexandre.Cassen@firewall.loc
+   smtp_server 192.168.200.1
+   smtp_connect_timeout 30
+   router_id LVS_DEVEL
+   vrrp_skip_check_adv_addr
+   #vrrp_strict
+   vrrp_garp_interval 0
+   vrrp_gna_interval 0
+}
+
+vrrp_instance VI_1 {
+    state BACKUP
+    interface eth0
+    virtual_router_id 52
+    priority 90
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        192.168.1.107
+    }
+}
+EOF
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ systemctl restart keepalived
+$ systemctl status keepalived
+</pre></div>
+</div>
+</section>
+<section id="haproxy">
+<h4>3. 安装haproxy<a class="headerlink" href="#haproxy" title="Permalink to this headline">¶</a></h4>
+<p>通过haproxy进行负载均衡后端服务。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ yum -y install haproxy
+$ cp -rf /etc/haproxy/haproxy.cfg<span class="o">{</span>,_bak<span class="o">}</span>
+</pre></div>
+</div>
+<p>主备机haproxy的配置</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cat &gt; /etc/haproxy/haproxy.cfg <span class="s">&lt;&lt;EOF</span>
+<span class="s">global</span>
+<span class="s">    log         127.0.0.1 local2</span>
+<span class="s">    chroot      /var/lib/haproxy</span>
+<span class="s">    pidfile     /var/run/haproxy.pid</span>
+<span class="s">    maxconn     8000</span>
+<span class="s">    user        haproxy</span>
+<span class="s">    group       haproxy</span>
+<span class="s">    daemon</span>
+<span class="s">    stats socket /var/lib/haproxy/stats</span>
+
+<span class="s">defaults</span>
+<span class="s">    mode                    tcp</span>
+<span class="s">    log                     global</span>
+<span class="s">    option                  httplog</span>
+<span class="s">    option                  dontlognull</span>
+<span class="s">    retries                 3</span>
+<span class="s">    timeout http-request    10s</span>
+<span class="s">    timeout queue           1m</span>
+<span class="s">    timeout connect         10s</span>
+<span class="s">    timeout client          1m</span>
+<span class="s">    timeout server          1m</span>
+<span class="s">    timeout http-keep-alive 10s</span>
+<span class="s">    timeout check           10s</span>
+<span class="s">    maxconn                 600</span>
+
+
+<span class="s">frontend  pro_nodeport30900</span>
+<span class="s">    bind *:9000</span>
+<span class="s">    mode tcp</span>
+<span class="s">    default_backend             pro_nodeport30900</span>
+
+<span class="s">frontend  jen_nodeport32001</span>
+<span class="s">    bind *:9600</span>
+<span class="s">    mode tcp</span>
+<span class="s">    default_backend             jen_nodeport32001</span>
+
+<span class="s">frontend  mysql5730006</span>
+<span class="s">    bind *:3308</span>
+<span class="s">    mode tcp</span>
+<span class="s">    default_backend             mysql5730006</span>
+
+<span class="s">frontend  redis30379</span>
+<span class="s">    bind *:6379</span>
+<span class="s">    mode tcp</span>
+<span class="s">    default_backend             redis30379</span>
+
+<span class="s">frontend  gitalyha30099</span>
+<span class="s">    bind *:9999</span>
+<span class="s">    mode tcp</span>
+<span class="s">    default_backend             gitalyha30099</span>
+
+
+
+<span class="s">backend pro_nodeport30900</span>
+<span class="s">    balance     roundrobin</span>
+<span class="s">    server      master1 192.168.1.32:30900 check maxconn 2000</span>
+<span class="s">    server      master2 192.168.1.39:30900 check maxconn 2000</span>
+
+
+<span class="s">backend jen_nodeport32001</span>
+<span class="s">    balance     roundrobin</span>
+<span class="s">    server      master1 192.168.1.32:32001 check maxconn 2000</span>
+<span class="s">    server      master2 192.168.1.39:32001 check maxconn 2000</span>
+
+
+<span class="s">backend mysql5730006</span>
+<span class="s">    balance     leastconn</span>
+<span class="s">    server      master1 192.168.1.32:30006 check maxconn 2000</span>
+<span class="s">    server      master2 192.168.1.39:30006 check maxconn 2000</span>
+
+<span class="s">backend redis30379</span>
+<span class="s">    balance     roundrobin</span>
+<span class="s">    server      master1 192.168.1.32:30379 check maxconn 2000</span>
+<span class="s">    server      master2 192.168.1.39:30379 check maxconn 2000</span>
+
+<span class="s">backend gitalyha30099</span>
+<span class="s">    balance     roundrobin</span>
+<span class="s">    server      master1 192.168.1.32:30099 check maxconn 2000</span>
+<span class="s">    server      master2 192.168.1.39:30099 check maxconn 2000</span>
+<span class="s">EOF</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ systemctl restart haproxy
+$ systemctl <span class="nb">enable</span> haproxy
+</pre></div>
+</div>
+<p>最后再使用helm部署nginx-ingress，参考上面的部署方法。</p>
 <blockquote>
 <div><p>参考文献</p>
 <p><a class="reference external" href="https://sre.ink/deploy-ingress-on-single-node/">在指定节点部署Ingress服务</a></p>
@@ -277,10 +598,11 @@ Traefik-ingress</a></p>
 </div></blockquote>
 </section>
 </section>
-<section id="id3">
-<h2><a class="toc-backref" href="#id12">2.Ingress的基本操作</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+</section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id13">2.1 Ingress示例</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h2><a class="toc-backref" href="#id14">2.Ingress的基本操作</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<section id="id5">
+<h3><a class="toc-backref" href="#id15">2.1 Ingress示例</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>两个服务—一个是httpd服务，另一个是Nginx服务</p>
 <p>（1）创建与这两个服务相关的Deployment控制器。 ① 使用命令创建yml文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">exampledeploymentforingress.yml</span></code></p>
@@ -391,7 +713,7 @@ $ curl 10.100.179.196:8081
 </div>
 </section>
 <section id="service">
-<h3><a class="toc-backref" href="#id14">2.2 不使用虚拟主机名称-单个Service</a><a class="headerlink" href="#service" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">2.2 不使用虚拟主机名称-单个Service</a><a class="headerlink" href="#service" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes中其实可以通过很多方式来暴露单个Service，不过也可以用Ingress来实现这个功能。要指定一个没有配置规则的
 Ingress，只设置backend属性即可。</p>
 <blockquote>
@@ -457,8 +779,8 @@ $ curl <span class="m">192</span>.168.1.64
 </pre></div>
 </div>
 </section>
-<section id="id5">
-<h3><a class="toc-backref" href="#id15">2.3 基于虚拟主机名称-多个子路径</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<section id="id6">
+<h3><a class="toc-backref" href="#id17">2.3 基于虚拟主机名称-多个子路径</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>上面的示例并未展示出Ingress的强大之处，这里会展示Ingress的另一个用法，以便看到使用Ingress的优势所在。</p>
 <p>假设现在要实现这样的场景：</p>
 <p>在同一个域名下配置两个子路径，其中一个子路径访问httpd的Service，</p>
@@ -545,8 +867,8 @@ Events:            &lt;none&gt;
 </div>
 <img alt="../../_images/image-20220416203139629.png" src="../../_images/image-20220416203139629.png" />
 </section>
-<section id="id6">
-<h3><a class="toc-backref" href="#id16">2.4 基于多个虚拟主机名称</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<section id="id7">
+<h3><a class="toc-backref" href="#id18">2.4 基于多个虚拟主机名称</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>首先定义模板文件<code class="docutils literal notranslate"><span class="pre">examplehostingingress.yml</span></code></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
 <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ingress</span>
@@ -630,7 +952,7 @@ Events:                 &lt;none&gt;
 </section>
 </section>
 <section id="ingresshttps">
-<h2><a class="toc-backref" href="#id17">3.Ingress配置https访问</a><a class="headerlink" href="#ingresshttps" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">3.Ingress配置https访问</a><a class="headerlink" href="#ingresshttps" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>参考文献</p>
 <p><a class="reference external" href="https://www.gl.sh.cn/2021/12/26/ingress-nginx_pei_zhi_https.html">https://www.gl.sh.cn/2021/12/26/ingress-nginx_pei_zhi_https.html</a></p>
