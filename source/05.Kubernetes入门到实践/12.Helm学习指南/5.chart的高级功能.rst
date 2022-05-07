@@ -1,0 +1,162 @@
+.. contents::
+   :depth: 3
+..
+
+chart的高级功能
+===============
+
+1. chart依赖项
+--------------
+
+``Chart.yaml``
+
+::
+
+   apiVersion: v2
+   name: rocket
+   description: Go fast!
+   version: 1.0.0
+   appVersion: 9.17.49
+   icon: https://wile.example.com/rocket.svg
+   keywords:
+     - road runner
+     - rocket
+   home: https://wile.example.com/
+   sources:
+     - https://github.com/masterminds/learning-helm/blob/master/chapter7/rocket
+   maintainers:
+     - name: ACME Corp
+       email: maintainers@example.com
+     - name: Wile E. Coyote
+       email: wile@example.com
+       
+       
+   dependencies:
+     - name: booster
+       version: ^1.0.0
+       repository: https://raw.githubusercontent.com/Masterminds/learning-helm/master/chapter7/repository/
+
+着重看dependencies部分：
+
+-  存储库中依赖chart的名称。
+-  chart的版本范围字符串。
+-  要从中检索chart的存储库。
+
+要在指定范围内解析依赖项的最新版本并检索它，可以使用以下命令：
+
+.. code:: shell
+
+   $ helm dependency update .
+
+参考文献：
+
+https://www.bookstack.cn/read/helm-3.7.1-zh/c181f93165dcab38.md
+
+2. 库类型Chart
+--------------
+
+参考文献
+
+https://www.bookstack.cn/read/helm-3.7.1-zh/f3f0a05a1bde5886.md
+
+3. 钩子
+-------
+
+Helm提供了一种在发布过程中钩住事件并采取行动的方法。如果你希望将一些动作捆绑为发布的一部分，这将非常有用。
+
+例如，在升级过程中对数据库进行备份的能力，同时确保在升级Kubernetes资源之前进行备份。
+
+钩子类似于常规模板，它们封装的功能是通过运行在Kubernetes集群中的容器以及应用程序的其他资源提供的。
+
+钩子与其他资源的区别在于设置了特殊注解。当Helm看到helm.sh/hook注解时，它将资源用作钩子。
+
+4. 向chart中添加测试
+--------------------
+
+测试是软件开发不可或缺的一部分，Helm通过使用test钩子和Kubernetes资源提供了测试chart的能力。
+
+这意味着测试在Kubernetes集群中与工作负载（可以访问chart安装的组件）一起运行。
+
+除了Helm中内置的chart测试之外，Helm项目还提供了一个名为Chart
+Testing的测试工具。由于Chart
+Testing建立在Helm客户端的特性之上，因此我们将首先查看Helm客户端中内置的功能。
+
+4.1 Helm测试
+~~~~~~~~~~~~
+
+Helm有一个helm test命令，该命令在运行的chart实例上执行test钩子。
+
+实现这些钩子的资源可以用来检查数据库能否访问、数据库模式是否正确就位、工作负载之间的连接是否工作以及其他操作细节。
+
+如果测试失败，Helm将使用非零的退出代码退出，并向你提供失败的Kubernetes资源的名称。
+
+非零的退出代码在与某些自动测试系统（以这种方式检测故障）配对时非常有用。当你拥有Kubernetes资源的名称时，可以查看日志以查看失败的内容。测试通常位于templates目录的tests子目录中。将测试放在这个目录中提供了一个有用的分离。这是一个约定，不是运行测试所必需的。
+
+``anvil/templates/tests/test-connection.yaml``
+
+.. code:: yaml
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: "{{ include "anvil.fullname" . }}-test-connection"
+     labels:
+       {{- include "anvil.labels" . | nindent 4 }}
+     annotations:
+       "helm.sh/hook": test-success
+   spec:
+     containers:
+       - name: wget
+         image: busybox
+         command: ['wget']
+         args: ['{{ include "anvil.fullname" . }}:{{ .Values.service.port }}']
+     restartPolicy: Never
+
+这个测试是在运行helm
+create时默认为Nginx创建的。它碰巧也可以对与booster应用程序的连接进行测试。这个简单的测试说明了测试的结构。
+
+.. code:: shell
+
+   $ helm install myapp anvil/
+   NAME: myapp
+   LAST DEPLOYED: Sat May  7 05:05:27 2022
+   NAMESPACE: default
+   STATUS: deployed
+   REVISION: 1
+   NOTES:
+   1. Get the application URL by running these commands:
+     export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=anvil,app.kubernetes.io/instance=myapp" -o jsonpath="{.items[0].metadata.name}")
+     echo "Visit http://127.0.0.1:8080 to use your application"
+     
+    $ helm test myapp
+   Pod myapp-anvil-test-connection pending
+   Pod myapp-anvil-test-connection pending
+   Pod myapp-anvil-test-connection pending
+   Pod myapp-anvil-test-connection succeeded
+   NAME: myapp
+   LAST DEPLOYED: Sat May  7 05:05:27 2022
+   NAMESPACE: default
+   STATUS: deployed
+   REVISION: 1
+   TEST SUITE:     myapp-anvil-test-connection
+   Last Started:   Sat May  7 05:06:28 2022
+   Last Completed: Sat May  7 05:06:48 2022
+   Phase:          Succeeded
+   NOTES:
+   1. Get the application URL by running these commands:
+     export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=anvil,app.kubernetes.io/instance=myapp" -o jsonpath="{.items[0].metadata.name}")
+     echo "Visit http://127.0.0.1:8080 to use your application"
+     kubectl --namespace default port-forward $POD_NAME 8080:80
+
+4.2 Chart Testing工具
+~~~~~~~~~~~~~~~~~~~~~
+
+Chart
+Testing可以用各种方式安装和使用。例如，你可以将其用作开发系统上的二进制应用程序或持续集成系统中的容器中的二进制应用程序。在项目页面（https://oreil.ly/sJXpR）上可了解有关使用和设置它的更多信息。
+
+5. 安全注意事项
+---------------
+
+参考文档
+
+https://helm.sh/zh/docs/topics/provenance/
