@@ -307,12 +307,11 @@ found”）
 
 .. code:: shell
 
-   # 带有标识符的标签
+   ## 打上2个标签。
+   # 带有ingress标识符的标签
    $ kubectl label nodes gitee-k8s-n1 node-role.kubernetes.io/ingress="true"
    $ kubectl label nodes gitee-k8s-n2 node-role.kubernetes.io/ingress="true"
-
-
-   # 或者默认标签
+   # nginx-ingress标签
    $ kubectl label nodes gitee-k8s-n1 node_role="sys-node"
    $ kubectl label nodes gitee-k8s-n2 node_role="sys-node"
 
@@ -326,18 +325,18 @@ found”）
 
 .. code:: shell
 
-   # 默认标签
+   # 删除nginx-ingress标签
    $ kubectl label nodes gitee-k8s-n1 node-role-
-
-
-   # 带有标识符的标签
+   # 删除带有ingress标识符的标签
    $ kubectl label nodes gitee-k8s-n1 node-role.kubernetes.io/ingress-
 
 更新deployment，增加nodeSelector配置
 
 .. code:: shell
 
-   $ kubectl -n kube-system patch deployment nginx-ingress-controller -p '{"spec": {"template": {"spec": {"nodeSelector": {"node-role.kubernetes.io/ingress": "true"}}}}}'
+   # $ kubectl -n kube-system patch deployment nginx-ingress-controller -p '{"spec": {"template": {"spec": {"nodeSelector": {"node-role.kubernetes.io/ingress": "true"}}}}}'
+
+   $ kubectl -n kube-system patch deployment nginx-ingress-controller -p '{"spec": {"template": {"spec": {"nodeSelector": {"node_role": "sys-node"}}}}}'
 
 2. 安装keepalived
 ^^^^^^^^^^^^^^^^^

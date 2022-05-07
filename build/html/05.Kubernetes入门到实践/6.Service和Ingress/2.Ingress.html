@@ -366,12 +366,11 @@ $ kubectl taint node gitee-k8s-n2 <span class="nv">GiteeCommonAddonsOnly</span><
 </pre></div>
 </div>
 <p>打标签</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 带有标识符的标签</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">## 打上2个标签。</span>
+<span class="c1"># 带有ingress标识符的标签</span>
 $ kubectl label nodes gitee-k8s-n1 node-role.kubernetes.io/ingress<span class="o">=</span><span class="s2">&quot;true&quot;</span>
 $ kubectl label nodes gitee-k8s-n2 node-role.kubernetes.io/ingress<span class="o">=</span><span class="s2">&quot;true&quot;</span>
-
-
-<span class="c1"># 或者默认标签</span>
+<span class="c1"># nginx-ingress标签</span>
 $ kubectl label nodes gitee-k8s-n1 <span class="nv">node_role</span><span class="o">=</span><span class="s2">&quot;sys-node&quot;</span>
 $ kubectl label nodes gitee-k8s-n2 <span class="nv">node_role</span><span class="o">=</span><span class="s2">&quot;sys-node&quot;</span>
 </pre></div>
@@ -381,16 +380,16 @@ $ kubectl label nodes gitee-k8s-n2 <span class="nv">node_role</span><span class=
 </pre></div>
 </div>
 <p>如果想删除标签，可以使用</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 默认标签</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 删除nginx-ingress标签</span>
 $ kubectl label nodes gitee-k8s-n1 node-role-
-
-
-<span class="c1"># 带有标识符的标签</span>
+<span class="c1"># 删除带有ingress标识符的标签</span>
 $ kubectl label nodes gitee-k8s-n1 node-role.kubernetes.io/ingress-
 </pre></div>
 </div>
 <p>更新deployment，增加nodeSelector配置</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl -n kube-system patch deployment nginx-ingress-controller -p <span class="s1">&#39;{&quot;spec&quot;: {&quot;template&quot;: {&quot;spec&quot;: {&quot;nodeSelector&quot;: {&quot;node-role.kubernetes.io/ingress&quot;: &quot;true&quot;}}}}}&#39;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># $ kubectl -n kube-system patch deployment nginx-ingress-controller -p &#39;{&quot;spec&quot;: {&quot;template&quot;: {&quot;spec&quot;: {&quot;nodeSelector&quot;: {&quot;node-role.kubernetes.io/ingress&quot;: &quot;true&quot;}}}}}&#39;</span>
+
+$ kubectl -n kube-system patch deployment nginx-ingress-controller -p <span class="s1">&#39;{&quot;spec&quot;: {&quot;template&quot;: {&quot;spec&quot;: {&quot;nodeSelector&quot;: {&quot;node_role&quot;: &quot;sys-node&quot;}}}}}&#39;</span>
 </pre></div>
 </div>
 </section>
