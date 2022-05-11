@@ -361,26 +361,39 @@ UI中的Graph页面中查询到node_memory_MemTotal_bytes信息</p>
 <p>然后配置grafana仪表盘，导入9276模板，即可采集。</p>
 <p>编写了一个采集linux主机metrics的脚本</p>
 <p><code class="docutils literal notranslate"><span class="pre">node_exporter.sh</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">prometheus</span><span class="o">/</span><span class="n">node_exporter</span><span class="o">/</span><span class="n">releases</span><span class="o">/</span><span class="n">download</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mf">17.0</span><span class="o">/</span><span class="n">node_exporter</span><span class="o">-</span><span class="mf">0.17</span><span class="o">.</span><span class="mf">0.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
-<span class="n">tar</span> <span class="n">zxf</span> <span class="n">node_exporter</span><span class="o">-</span><span class="mf">0.17</span><span class="o">.</span><span class="mf">0.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
-<span class="n">mv</span> <span class="n">node_exporter</span><span class="o">-</span><span class="mf">0.17</span><span class="o">.</span><span class="mf">0.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">node_exporter</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1"># Notes: 本脚本用于在服务器上安装node-exporter</span>
+<span class="c1"># TIPS: 生产环境不建议使用 Docker部署node-exporter</span>
 
-<span class="n">cat</span> <span class="o">&lt;&lt;</span><span class="n">EOF</span> <span class="o">&gt;/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">systemd</span><span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">node_exporter</span><span class="o">.</span><span class="n">service</span>
-<span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
-<span class="n">Description</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">prometheus</span><span class="o">.</span><span class="n">io</span>
+wget https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz
+tar xvf node_exporter-1.1.2.linux-amd64.tar.gz
+mv node_exporter-1.1.2.linux-amd64 /usr/local/bin/node_exporter
 
-<span class="p">[</span><span class="n">Service</span><span class="p">]</span>
-<span class="n">Restart</span><span class="o">=</span><span class="n">on</span><span class="o">-</span><span class="n">failure</span>
-<span class="n">ExecStart</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">node_exporter</span><span class="o">/</span><span class="n">node_exporter</span>
+groupadd prometheus
+useradd -g prometheus -m -d /var/lib/prometheus -s /sbin/nologin prometheus
+mkdir /usr/local/prometheus
+chown prometheus.prometheus -R /usr/local/prometheus
 
-<span class="p">[</span><span class="n">Install</span><span class="p">]</span>
-<span class="n">WantedBy</span><span class="o">=</span><span class="n">multi</span><span class="o">-</span><span class="n">user</span><span class="o">.</span><span class="n">target</span>
-<span class="n">EOF</span>
+cat &gt; /etc/systemd/system/node_exporter.service <span class="s">&lt;&lt; EOF</span>
+<span class="s">[Unit]</span>
+<span class="s">Description=node_exporter</span>
+<span class="s">Documentation=https://prometheus.io/</span>
+<span class="s">After=network.target</span>
+<span class="s">[Service]</span>
+<span class="s">Type=simple</span>
+<span class="s">User=prometheus</span>
+<span class="s">ExecStart=/usr/local/bin/node_exporter/node_exporter --collector.processes  --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)</span>
+<span class="s">Restart=on-failure</span>
+<span class="s">[Install]</span>
+<span class="s">WantedBy=multi-user.target</span>
+<span class="s">EOF</span>
 
-<span class="n">systemctl</span> <span class="n">daemon</span><span class="o">-</span><span class="n">reload</span>
-<span class="n">systemctl</span> <span class="n">enable</span> <span class="n">node_exporter</span>
-<span class="n">systemctl</span> <span class="n">restart</span> <span class="n">node_exporter</span>
+systemctl daemon-reload
+systemctl restart node_exporter.service
+systemctl <span class="nb">enable</span> node_exporter.service
+
+systemctl start node_exporter.service
+systemctl status node_exporter
 </pre></div>
 </div>
 <p>批量安装node_exporter脚本</p>
