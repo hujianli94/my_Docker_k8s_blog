@@ -139,12 +139,14 @@ GitHub下载，在https://github.com/prometheus/node_exporter/releases下载指�
 exporter版本所对应的特定平台的二进制文件。然后开始Node
 exporter的安装部署以及使用。
 
-::
+.. code:: shell
 
-   tar zxvf node_exporter-0.16.0.linux-amd64.tar.gz
-   cd node_exporter-0.16.0.linux-amd64
-   mkdir /data/node_exporter
-   mv node_exporter /data/node_exporter/
+   $ curl -OL https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
+
+   $ tar zxvf node_exporter-0.17.0.linux-amd64.tar.gz
+   $ cd node_exporter-0.17.0.linux-amd64
+   $ mkdir /data/node_exporter
+   $ mv node_exporter /data/node_exporter/
 
    [root@cicd-dev node_exporter]# ./node_exporter
    INFO[0000] Starting node_exporter (version=0.16.0, branch=HEAD, revision=d42bd70f4363dced6b77d8fc311ea57b63387e4f)  source="node_exporter.go:82"
@@ -168,9 +170,9 @@ collectors”列是node_exporter默认情况下启用的功能。如果想更换
 
 添加node_exporter为系统服务开机启动
 
-::
+.. code:: shell
 
-   [root@cicd-dev node_exporter]# cat /usr/lib/systemd/system/node_exporter.service
+   $ cat >/usr/lib/systemd/system/node_exporter.service <<EOF
    [Unit]
    Description=node_exporter
    Documentation=https://prometheus.io/
@@ -183,6 +185,7 @@ collectors”列是node_exporter默认情况下启用的功能。如果想更换
    Restart=on-failure
    [Install]
    WantedBy=multi-user.target
+   EOF
 
 设置开机自启动
 
@@ -193,9 +196,9 @@ collectors”列是node_exporter默认情况下启用的功能。如果想更换
    systemctl stop node_exporter
    systemctl start node_exporter
 
-::
+.. code:: shell
 
-   [root@cicd-dev node_exporter]# ps aux |grep node_exporter
+   $ ps aux |grep node_exporter
    992      12057  0.1  0.1  22216 11352 ?        Ssl  Feb04  52:32 /opt/gitlab/embedded/bin/node_exporter --web.listen-address=localhost:9100 --collector.textfile.directory=/var/opt/gitlab/node-exporter/textfile_collector
    root     25878  0.0  0.0 113404  5768 ?        Ssl  09:34   0:00 /data/node_exporter/node_exporter
 
@@ -243,9 +246,9 @@ UI中的Graph页面中查询到node_memory_MemTotal_bytes信息
 
 编写了一个采集linux主机metrics的脚本
 
-::
+``node_exporter.sh``
 
-   cat node_exporter.sh
+::
 
    #!/bin/bash
    wget https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
@@ -339,18 +342,21 @@ CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设
 
 4）配置数据库认证。mysqld_exports需要连接数据库服务器的用户名和密码，这里可以通过两种方式向exporter提供此内容。
 
-·使用环境变量。创建一个名为“DATA_SOURCE_NAME”的环境变量，格式如下：
+-  使用环境变量。创建一个名为“DATA_SOURCE_NAME”的环境变量，格式如下：
 
 ::
 
    export DATA_SOURCE_NAME='user:password@(hostname:3306)/'
 
-·使用配置文件。创建一个文件“.mysqld_exporter.cnf”，并在该文件中输入用户名和密码。格式如下：
+-  使用配置文件。创建一个文件“.mysqld_exporter.cnf”，并在该文件中输入用户名和密码。格式如下：
 
 ::
 
+   [client]
    user=xxxx
    password=xxxx
+   port=3306
+   host=127.0.0.1
 
 我们选择使用第二种方法，在与“mysqld_exports”文件同目录下创建“.mysqld_exporter.cnf”文件，并添加如下内容
 
@@ -360,22 +366,28 @@ CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设
    [client]
    user=mysqld_exporter
    password=OSChina@2021
+   port=3306
+   host=192.168.1.61
 
 查看目录结构
 
-::
+.. code:: shell
 
-   [root@localhost data]# tree -a mysqld_exporter/
+   $ tree -a mysqld_exporter/
    mysql_exporter/
    ├── LICENSE
    ├── mysqld_exporter
    └── .mysqld_exporter.cnf
 
-5）启动mysqld_exporter。
+   $ mkdir -p /data/mysqld_exporter/
+   $ cp mysqld_exporter /data/mysqld_exporter/
+   $ cp .mysqld_exporter.cnf /data/mysqld_exporter/
 
-::
+5）启动mysqld_exporter
 
-   [root@localhost mysqld_exporter]# ./mysqld_exporter --config.my-cnf=".mysqld_exporter.cnf"
+.. code:: shell
+
+   $ ./mysqld_exporter --config.my-cnf=".mysqld_exporter.cnf"
    INFO[0000] Starting mysqld_exporter (version=0.11.0, branch=HEAD, revision=5d7179615695a61ecc3b5bf90a2a7c76a9592cdd)  source="mysqld_exporter.go:206"
    INFO[0000] Build context (go=go1.10.3, user=root@3d3ff666b0e4, date=20180629-15:00:35)  source="mysqld_exporter.go:207"
    INFO[0000] Enabled scrapers:                             source="mysqld_exporter.go:218"
@@ -389,9 +401,9 @@ CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设
 
 创建系统服务启动配置文件mysqld_exporter.service：
 
-::
+.. code:: shell
 
-   [root@localhost mysql_exporter]# cat /usr/lib/systemd/system/mysqld_exporter.service
+   $ cat > /usr/lib/systemd/system/mysqld_exporter.service <<EOF
    [Unit]
    Description=Prometheus MySQL Exporter
    After=network.target
@@ -420,18 +432,27 @@ CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设
    --collect.perf_schema.tableiowaits \
    --collect.slave_status \
    --web.listen-address=0.0.0.0:9104
+   ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5
+   TimeoutStopSec=5
+   KillMode=mixed
 
    [Install]
    WantedBy=multi-user.target
+   EOF
 
 可以使用命令：#./mysqld_exporter-h查看相关帮助信息，依据实际监控内容配置启动文件。最后可以通过systemctl命令进行各种操作，例如：
 
 ::
 
    systemctl daemon-reload
-   systemctl enable mysql_exporter.service
+   systemctl enable mysqld_exporter.service
    systemctl start mysqld_exporter.service
    systemctl status mysqld_exporter.service
+
+.. code:: shell
+
+   $ netstat -tunpl|grep 9104
+   tcp6       0      0 :::9104                 :::*                    LISTEN      11629/mysqld_export
 
 综上，我们完成了对mysqld_exporter的下载安装，并对其进行了系统服务添加和开机启动设置。通过浏览器访问主机页面地址http://192.168.1.35:9104/metrics，可以看到此刻采集到的样本数据，mysql_up的值为1，即MySQL为启动运行状态，版本信息为5.7.20，部分内容如下所示：
 
@@ -476,6 +497,9 @@ CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设
        scrape_interval: 10s
        static_configs:
        - targets: ['192.168.1.35:9104']
+
+类似地对于可视化配置而言，在Grafana官网选择适用于监控MySQL的模板(过滤条件：name/description=mysql
+and data source=Prometheus)，复制其ID——12826
 
 **3.metrics**
 
@@ -600,8 +624,8 @@ server集成在Windows操作系统且64位版本时，可以下载对应的软�
 
 `promethus监控RDS <https://www.cnblogs.com/xiao987334176/p/12101494.html>`__
 
-2 Redis exporter
-^^^^^^^^^^^^^^^^
+2 Redis exporter 单节点
+^^^^^^^^^^^^^^^^^^^^^^^
 
 **1.软件下载与部署**
 
@@ -633,7 +657,7 @@ server集成在Windows操作系统且64位版本时，可以下载对应的软�
    [Service]
    Type=simple
    Restart=always
-   ExecStart=/data/redis_exporter/redis_exporter\
+   ExecStart=/data/redis_exporter/redis_exporter \
    -redis.addr localhost:6379
 
    [Install]
@@ -688,6 +712,15 @@ redis_exporter 在 Grafana 上为我们提供好了 Dashboard
 参考文献：
 
 https://www.cnblogs.com/xiao987334176/p/12101496.html
+
+3. Redis exporter监控redis集群
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+参考文献：
+
+https://www.cnblogs.com/fsckzy/p/12053604.html
+
+https://www.cnblogs.com/caoweixiong/p/12736384.html
 
 2.2.5 Nginx监控
 ~~~~~~~~~~~~~~~
@@ -1165,6 +1198,19 @@ http://192.168.1.37:9090/targets 可以看到监控指标说明获取数据成�
 使用193模板即可
 
 .. image:: ../_static/prometheus_docker_monitor01.png
+
+但是这个模板，无法选择根据主机选择。推荐另外一个模板，它是可以选择主机的。
+
+https://grafana.com/grafana/dashboards/10566
+
+2.2.8 kubernets监控
+~~~~~~~~~~~~~~~~~~~
+
+http://www.mydlq.club/article/112/
+
+https://grafana.com/grafana/dashboards/8919
+
+https://grafana.com/grafana/dashboards/16098
 
 本章小结
 --------

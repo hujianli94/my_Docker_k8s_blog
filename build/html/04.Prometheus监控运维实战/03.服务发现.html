@@ -357,6 +357,96 @@ bootstrap = true: do not enable unless necessary
 <span class="n">a7ecac245c66</span>  <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.3</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.9</span><span class="o">.</span><span class="mi">1</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
 </pre></div>
 </div>
+<p><strong>docker-compose部署consul集群</strong></p>
+<p>docker-compose.yaml</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
+<span class="nt">networks</span><span class="p">:</span>
+  <span class="nt">mynet</span><span class="p">:</span>
+
+<span class="nt">services</span><span class="p">:</span>
+  <span class="nt">consul-server1</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">consul:latest</span>
+    <span class="nt">hostname</span><span class="p">:</span> <span class="s">&quot;consul-server1&quot;</span>
+    <span class="nt">container_name</span><span class="p">:</span> <span class="s">&quot;consul-server1&quot;</span>
+    <span class="nt">ports</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;8500:8500&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;8300:8300&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;8301:8301&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;8302:8302&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;8600:8600&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;53&quot;</span>
+    <span class="nt">volumes</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">./consul/data1:/consul/data</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="s">&quot;agent</span><span class="nv"> </span><span class="s">-server</span><span class="nv"> </span><span class="s">-bootstrap-expect</span><span class="nv"> </span><span class="s">2</span><span class="nv"> </span><span class="s">-ui</span><span class="nv"> </span><span class="s">-bind=0.0.0.0</span><span class="nv"> </span><span class="s">-client=0.0.0.0</span><span class="nv"> </span><span class="s">-datacenter=dc1&quot;</span>
+    <span class="nt">networks</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mynet</span>
+
+  <span class="nt">consul-server2</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">consul:latest</span>
+    <span class="nt">hostname</span><span class="p">:</span> <span class="s">&quot;consul-server2&quot;</span>
+    <span class="nt">container_name</span><span class="p">:</span> <span class="s">&quot;consul-server2&quot;</span>
+    <span class="nt">ports</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;8501:8500&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;53&quot;</span>
+    <span class="nt">volumes</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">./consul/data2:/consul/data</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="s">&quot;agent</span><span class="nv"> </span><span class="s">-server</span><span class="nv"> </span><span class="s">-ui</span><span class="nv"> </span><span class="s">-bind=0.0.0.0</span><span class="nv"> </span><span class="s">-client=0.0.0.0</span><span class="nv"> </span><span class="s">-join</span><span class="nv"> </span><span class="s">consul-server1</span><span class="nv"> </span><span class="s">-datacenter=dc1</span><span class="nv"> </span><span class="s">&quot;</span>
+    <span class="nt">depends_on</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">consul-server1</span>
+    <span class="nt">networks</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mynet</span>
+
+  <span class="nt">consul-server3</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">consul:latest</span>
+    <span class="nt">hostname</span><span class="p">:</span> <span class="s">&quot;consul-server3&quot;</span>
+    <span class="nt">container_name</span><span class="p">:</span> <span class="s">&quot;consul-server3&quot;</span>
+    <span class="nt">ports</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;8502:8500&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;53&quot;</span>
+    <span class="nt">volumes</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">./consul/data3:/consul/data</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="s">&quot;agent</span><span class="nv"> </span><span class="s">-server</span><span class="nv"> </span><span class="s">-ui</span><span class="nv"> </span><span class="s">-bind=0.0.0.0</span><span class="nv"> </span><span class="s">-client=0.0.0.0</span><span class="nv"> </span><span class="s">-join</span><span class="nv"> </span><span class="s">consul-server1</span><span class="nv"> </span><span class="s">-datacenter=dc1&quot;</span>
+    <span class="nt">depends_on</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">consul-server1</span>
+    <span class="nt">networks</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mynet</span>
+
+
+  <span class="nt">consul-node1</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">consul:latest</span>
+    <span class="nt">hostname</span><span class="p">:</span> <span class="s">&quot;consul-node1&quot;</span>
+    <span class="nt">container_name</span><span class="p">:</span> <span class="s">&quot;consul-node1&quot;</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="s">&quot;agent</span><span class="nv"> </span><span class="s">-join</span><span class="nv"> </span><span class="s">consul-server1</span><span class="nv"> </span><span class="s">-datacenter=dc1&quot;</span>
+    <span class="nt">depends_on</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">consul-server1</span>
+    <span class="nt">networks</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mynet</span>
+
+  <span class="nt">consul-node2</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">consul:latest</span>
+    <span class="nt">hostname</span><span class="p">:</span> <span class="s">&quot;consul-node2&quot;</span>
+    <span class="nt">container_name</span><span class="p">:</span> <span class="s">&quot;consul-node2&quot;</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="s">&quot;agent</span><span class="nv"> </span><span class="s">-join</span><span class="nv"> </span><span class="s">consul-server1</span><span class="nv"> </span><span class="s">-disable-host-node-id</span><span class="nv"> </span><span class="s">-datacenter=dc1&quot;</span>
+    <span class="nt">depends_on</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">consul-server1</span>
+    <span class="nt">networks</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mynet</span>
+</pre></div>
+</div>
+<p>测试验证</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker <span class="nb">exec</span> -it consul-server1 consul members
+Node            Address          Status  Type    Build   Protocol  DC   Partition  Segment
+consul-server1  <span class="m">172</span>.20.0.2:8301  alive   server  <span class="m">1</span>.11.1  <span class="m">2</span>         dc1  default    &lt;all&gt;
+consul-server2  <span class="m">172</span>.20.0.4:8301  alive   server  <span class="m">1</span>.11.1  <span class="m">2</span>         dc1  default    &lt;all&gt;
+consul-server3  <span class="m">172</span>.20.0.5:8301  alive   server  <span class="m">1</span>.11.1  <span class="m">2</span>         dc1  default    &lt;all&gt;
+consul-node1    <span class="m">172</span>.20.0.3:8301  alive   client  <span class="m">1</span>.11.1  <span class="m">2</span>         dc1  default    &lt;default&gt;
+consul-node2    <span class="m">172</span>.20.0.6:8301  alive   client  <span class="m">1</span>.11.1  <span class="m">2</span>         dc1  default    &lt;default&gt;
+</pre></div>
+</div>
+<p>访问测试</p>
+<p>注意服务器端口开放情况与防火墙拦截</p>
+<p><a class="reference external" href="http://192.168.1.133:8500/ui">http://192.168.1.133:8500/ui</a></p>
+<img alt="../_images/image-20220511144155346.png" src="../_images/image-20220511144155346.png" />
 </section>
 </section>
 <section id="id6">
@@ -370,35 +460,35 @@ API服务注册方法，即在启动后由服务自身通过调用API进行自�
 <code class="docutils literal notranslate"><span class="pre">node-exporter</span></code> 服务信息，服务地址及端口为 <code class="docutils literal notranslate"><span class="pre">node-exporter</span></code>
 默认提供指标数据的地址，执行如下命令：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">PUT</span> <span class="o">-</span><span class="n">d</span> <span class="s1">&#39;{</span>
-  <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;node-exporter&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;node-exporter-192.168.1.34&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;192.168.1.34&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;192.168.1.133&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;node-exporter-vm&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;192.168.1.133&quot;</span><span class="p">,</span>
   <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">9100</span><span class="p">,</span>
   <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="s2">&quot;prometheus&quot;</span>
   <span class="p">],</span>
   <span class="s2">&quot;checks&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
-      <span class="s2">&quot;http&quot;</span><span class="p">:</span> <span class="s2">&quot;http://192.168.1.34:9100/metrics&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;http&quot;</span><span class="p">:</span> <span class="s2">&quot;http://192.168.1.133:9100/metrics&quot;</span><span class="p">,</span>
       <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="s2">&quot;5s&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
-<span class="p">}</span><span class="s1">&#39;  http://192.168.1.35:8500/v1/agent/service/register</span>
+<span class="p">}</span><span class="s1">&#39;  http://192.168.1.133:8500/v1/agent/service/register</span>
 </pre></div>
 </div>
 <p>提一下，如果要注销掉某个服务，可以通过如下 API
 命令操作，例如注销上边添加的 <code class="docutils literal notranslate"><span class="pre">node-exporter</span></code> 服务</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">PUT</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.35</span><span class="p">:</span><span class="mi">8500</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">agent</span><span class="o">/</span><span class="n">service</span><span class="o">/</span><span class="n">deregister</span><span class="o">/</span><span class="n">node</span><span class="o">-</span><span class="n">exporter</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">PUT</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.133</span><span class="p">:</span><span class="mi">8500</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">agent</span><span class="o">/</span><span class="n">service</span><span class="o">/</span><span class="n">deregister</span><span class="o">/</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.133</span>
 </pre></div>
 </div>
 </section>
 <section id="consulprometheus">
 <h4>2.1.3 Consul与Prometheus集成<a class="headerlink" href="#consulprometheus" title="Permalink to this headline">¶</a></h4>
 <p>Consul完成了服务的发现和注册后，维护着整个应用环境中的所有服务信息。此时，通过Prometheus与Consul的交互便可自动获取已经注册的node_exporter的信息。我们需要对Prometheus的配置文件prometheus.yml进行编辑，添加如下基于Consul的服务发现内容：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">job_name</span><span class="p">:</span> <span class="s1">&#39;consul_node_2021&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">job_name</span><span class="p">:</span> <span class="s1">&#39;consul_node&#39;</span>
   <span class="n">honor_labels</span><span class="p">:</span> <span class="n">true</span>
   <span class="n">consul_sd_configs</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">server</span><span class="p">:</span> <span class="s1">&#39;192.168.1.35:8500&#39;</span>
+    <span class="o">-</span> <span class="n">server</span><span class="p">:</span> <span class="s1">&#39;192.168.1.133:8500&#39;</span>
   <span class="n">relabel_configs</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;__meta_consul_service_id&#39;</span><span class="p">]</span>
       <span class="n">regex</span><span class="p">:</span> <span class="s1">&#39;consul&#39;</span>

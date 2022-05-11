@@ -304,6 +304,105 @@ https://www.cnblogs.com/dalianpai/p/12269024.html
    6f62c9f56b1a  172.17.0.4:8301  alive   server  1.9.1  2         dc1  <all>
    a7ecac245c66  172.17.0.3:8301  alive   server  1.9.1  2         dc1  <all>
 
+**docker-compose部署consul集群**
+
+docker-compose.yaml
+
+.. code:: yaml
+
+   version: '3'
+   networks:
+     mynet:
+
+   services:
+     consul-server1:
+       image: consul:latest
+       hostname: "consul-server1"
+       container_name: "consul-server1"
+       ports:
+         - "8500:8500"
+         - "8300:8300"
+         - "8301:8301"
+         - "8302:8302"
+         - "8600:8600"
+         - "53"
+       volumes:
+         - ./consul/data1:/consul/data
+       command: "agent -server -bootstrap-expect 2 -ui -bind=0.0.0.0 -client=0.0.0.0 -datacenter=dc1"
+       networks:
+         - mynet
+
+     consul-server2:
+       image: consul:latest
+       hostname: "consul-server2"
+       container_name: "consul-server2"
+       ports:
+         - "8501:8500"
+         - "53"
+       volumes:
+         - ./consul/data2:/consul/data
+       command: "agent -server -ui -bind=0.0.0.0 -client=0.0.0.0 -join consul-server1 -datacenter=dc1 "
+       depends_on:
+         - consul-server1
+       networks:
+         - mynet
+
+     consul-server3:
+       image: consul:latest
+       hostname: "consul-server3"
+       container_name: "consul-server3"
+       ports:
+         - "8502:8500"
+         - "53"
+       volumes:
+         - ./consul/data3:/consul/data
+       command: "agent -server -ui -bind=0.0.0.0 -client=0.0.0.0 -join consul-server1 -datacenter=dc1"
+       depends_on:
+         - consul-server1
+       networks:
+         - mynet
+
+
+     consul-node1:
+       image: consul:latest
+       hostname: "consul-node1"
+       container_name: "consul-node1"
+       command: "agent -join consul-server1 -datacenter=dc1"
+       depends_on:
+         - consul-server1
+       networks:
+         - mynet
+
+     consul-node2:
+       image: consul:latest
+       hostname: "consul-node2"
+       container_name: "consul-node2"
+       command: "agent -join consul-server1 -disable-host-node-id -datacenter=dc1"
+       depends_on:
+         - consul-server1
+       networks:
+         - mynet
+
+测试验证
+
+.. code:: shell
+
+   $ docker exec -it consul-server1 consul members
+   Node            Address          Status  Type    Build   Protocol  DC   Partition  Segment
+   consul-server1  172.20.0.2:8301  alive   server  1.11.1  2         dc1  default    <all>
+   consul-server2  172.20.0.4:8301  alive   server  1.11.1  2         dc1  default    <all>
+   consul-server3  172.20.0.5:8301  alive   server  1.11.1  2         dc1  default    <all>
+   consul-node1    172.20.0.3:8301  alive   client  1.11.1  2         dc1  default    <default>
+   consul-node2    172.20.0.6:8301  alive   client  1.11.1  2         dc1  default    <default>
+
+访问测试
+
+注意服务器端口开放情况与防火墙拦截
+
+http://192.168.1.133:8500/ui
+
+.. image:: ../_static/image-20220511144155346.png
+
 2.1.2 服务注册发现
 ^^^^^^^^^^^^^^^^^^
 
@@ -322,27 +421,27 @@ API服务注册方法，即在启动后由服务自身通过调用API进行自�
 ::
 
    curl -X PUT -d '{
-     "id": "node-exporter",
-     "name": "node-exporter-192.168.1.34",
-     "address": "192.168.1.34",
+     "id": "192.168.1.133",
+     "name": "node-exporter-vm",
+     "address": "192.168.1.133",
      "port": 9100,
      "tags": [
        "prometheus"
      ],
      "checks": [
        {
-         "http": "http://192.168.1.34:9100/metrics",
+         "http": "http://192.168.1.133:9100/metrics",
          "interval": "5s"
        }
      ]
-   }'  http://192.168.1.35:8500/v1/agent/service/register
+   }'  http://192.168.1.133:8500/v1/agent/service/register
 
 提一下，如果要注销掉某个服务，可以通过如下 API
 命令操作，例如注销上边添加的 ``node-exporter`` 服务
 
 ::
 
-   curl -X PUT http://192.168.1.35:8500/v1/agent/service/deregister/node-exporter 
+   curl -X PUT http://192.168.1.133:8500/v1/agent/service/deregister/192.168.1.133
 
 2.1.3 Consul与Prometheus集成
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -351,10 +450,10 @@ Consul完成了服务的发现和注册后，维护着整个应用环境中的�
 
 ::
 
-     - job_name: 'consul_node_2021'
+     - job_name: 'consul_node'
        honor_labels: true
        consul_sd_configs:
-         - server: '192.168.1.35:8500'
+         - server: '192.168.1.133:8500'
        relabel_configs:
          - source_labels: ['__meta_consul_service_id']
            regex: 'consul'
