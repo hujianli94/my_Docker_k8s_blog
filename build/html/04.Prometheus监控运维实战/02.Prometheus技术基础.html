@@ -276,10 +276,10 @@ GitHub官网https://github.com/prometheus上获取对应的Exporter最新版本�
 GitHub下载，在https://github.com/prometheus/node_exporter/releases下载指定的Node
 exporter版本所对应的特定平台的二进制文件。然后开始Node
 exporter的安装部署以及使用。</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl -OL https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl -OL https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz
 
-$ tar zxvf node_exporter-0.17.0.linux-amd64.tar.gz
-$ <span class="nb">cd</span> node_exporter-0.17.0.linux-amd64
+$ tar zxvf node_exporter-1.1.2.linux-amd64.tar.gz
+$ <span class="nb">cd</span> node_exporter-1.1.2.linux-amd64
 $ mkdir /data/node_exporter
 $ mv node_exporter /data/node_exporter/
 
@@ -302,7 +302,7 @@ INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> 
 </pre></div>
 </div>
 <p>先在终端界面启动node_exporter，成功启动后可以看到默认监听端口是9100，其中“Enabled
-collectors”列是node_exporter默认情况下启用的功能。如果想更换默认监控端口，需要启动时添加参数–web.listen-address=“:9200”即可，更多方法可以使用#./node_exporter-h查看相关帮助信息。</p>
+collectors”列是node_exporter默认情况下启用的功能。如果想更换默认监控端口，需要启动时添加参数<code class="docutils literal notranslate"><span class="pre">--web.listen-address=&quot;0.0.0.0:9200&quot;</span></code>即可，更多方法可以使用#./node_exporter-h查看相关帮助信息。</p>
 <p>添加node_exporter为系统服务开机启动</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ cat &gt;/usr/lib/systemd/system/node_exporter.service <span class="s">&lt;&lt;EOF</span>
 <span class="s">[Unit]</span>
@@ -399,6 +399,14 @@ systemctl status node_exporter
 <p>批量安装node_exporter脚本</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># github地址：</span>
 <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">zhuqiyang</span><span class="o">/</span><span class="n">install</span><span class="o">-</span><span class="n">node_exporter</span><span class="o">-</span><span class="n">shell</span>
+</pre></div>
+</div>
+<p><strong>docker部署node_exporter（生产环境不建议使用）</strong></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker run -d -p <span class="m">9100</span>:9100 <span class="se">\</span>
+  --restart<span class="o">=</span>always <span class="se">\</span>
+  -h node_exporter <span class="se">\</span>
+  --name node-exporter <span class="se">\</span>
+  prom/node-exporter
 </pre></div>
 </div>
 </section>
@@ -703,29 +711,44 @@ server集成在Windows操作系统且64位版本时，可以下载对应的软�
 <p>1）下载redis_exporter。</p>
 <p>下载地址为https://github.com/oliver006/redis_exporter/releases。选择当时最新版本redis_exporter-v0.23.0.linux-amd64.tar.gz，对Redis
 2.x，3.x，4.x，and 5.x版本均支持。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/oliver006/redis_exporter/releases/download/v1.3.5/redis_exporter-v1.3.5.linux-amd64.tar.gz
+$ tar -xvf redis_exporter-v1.3.5.linux-amd64.tar
+$ <span class="nb">cd</span> redis_exporter-v1.3.5.linux-amd64/
+</pre></div>
+</div>
 <p>2）解压缩软件包到指定的安装目录：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#进入安装目录下，在终端启动查看信息，成功启动，默认监听端口是9121</span>
-<span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">redis_exporter</span><span class="p">]</span><span class="c1"># ./redis_exporter -redis.addr localhost:6379</span>
-<span class="n">INFO</span><span class="p">[</span><span class="mi">0000</span><span class="p">]</span> <span class="n">Redis</span> <span class="n">Metrics</span> <span class="n">Exporter</span> <span class="n">v0</span><span class="o">.</span><span class="mf">23.0</span>    <span class="n">build</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">17</span><span class="p">:</span><span class="mi">29</span><span class="p">:</span><span class="mi">45</span>    <span class="n">sha1</span><span class="p">:</span> <span class="mi">10045</span><span class="n">b85b5aaa1c5fa35</span>                                         <span class="n">ba38e3a1aee14f772b31</span>    <span class="n">Go</span><span class="p">:</span> <span class="n">go1</span><span class="o">.</span><span class="mf">11.2</span>
-<span class="n">INFO</span><span class="p">[</span><span class="mi">0000</span><span class="p">]</span> <span class="n">Providing</span> <span class="n">metrics</span> <span class="n">at</span> <span class="p">:</span><span class="mi">9121</span><span class="o">/</span><span class="n">metrics</span>
-<span class="n">INFO</span><span class="p">[</span><span class="mi">0000</span><span class="p">]</span> <span class="n">Connecting</span> <span class="n">to</span> <span class="n">redis</span> <span class="n">hosts</span><span class="p">:</span> <span class="p">[]</span><span class="n">string</span><span class="p">{</span><span class="s2">&quot;localhost:6379&quot;</span><span class="p">}</span>
-<span class="n">INFO</span><span class="p">[</span><span class="mi">0000</span><span class="p">]</span> <span class="n">Using</span> <span class="n">alias</span><span class="p">:</span> <span class="p">[]</span><span class="n">string</span><span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">}</span>
+<p>redis_exporter 常用的选项：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>-redis.addr：指明一个或多个 Redis 节点的地址，多个节点使用逗号分隔，默认为 redis://localhost:6379
+-redis.password：验证 Redis 时使用的密码；
+-redis.file：包含一个或多个redis 节点的文件路径，每行一个节点，此选项与 -redis.addr 互斥。
+-web.listen-address：监听的地址和端口，默认为 0.0.0.0:9121
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#进入安装目录下，在终端启动查看信息，成功启动，默认监听端口是9121</span>
+$ ./redis_exporter -redis.addr localhost:6379
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Redis Metrics Exporter v0.23.0    build date: <span class="m">2018</span>-12-03-17:29:45    sha1: 10045b85b5aaa1c5fa35                                         ba38e3a1aee14f772b31    Go: go1.11.2
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Providing metrics at :9121/metrics
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Connecting to redis hosts: <span class="o">[]</span>string<span class="o">{</span><span class="s2">&quot;localhost:6379&quot;</span><span class="o">}</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Using alias: <span class="o">[]</span>string<span class="o">{</span><span class="s2">&quot;&quot;</span><span class="o">}</span>
+
+<span class="c1"># 或者更改监听端口</span>
+$ ./redis_exporter -web.listen-address <span class="s2">&quot;0.0.0.0:9122&quot;</span> redis//127.0.0.1:6380
 </pre></div>
 </div>
 <p>3）添加redis_exporter为系统服务开机启动配置文件redis_exporter.service：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">redis_exporter</span><span class="p">]</span><span class="c1"># cat /usr/lib/systemd/system/redis_exporter.service</span>
-<span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
-<span class="n">Description</span><span class="o">=</span><span class="n">Prometheus</span> <span class="n">Redis</span> <span class="n">Exporter</span>
-<span class="n">After</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">target</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ cat /usr/lib/systemd/system/redis_exporter.service
+<span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Prometheus Redis Exporter
+<span class="nv">After</span><span class="o">=</span>network.target
 
-<span class="p">[</span><span class="n">Service</span><span class="p">]</span>
-<span class="n">Type</span><span class="o">=</span><span class="n">simple</span>
-<span class="n">Restart</span><span class="o">=</span><span class="n">always</span>
-<span class="n">ExecStart</span><span class="o">=/</span><span class="n">data</span><span class="o">/</span><span class="n">redis_exporter</span><span class="o">/</span><span class="n">redis_exporter</span> \
-<span class="o">-</span><span class="n">redis</span><span class="o">.</span><span class="n">addr</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">6379</span>
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>simple
+<span class="nv">Restart</span><span class="o">=</span>always
+<span class="nv">ExecStart</span><span class="o">=</span>/data/redis_exporter/redis_exporter <span class="se">\</span>
+-redis.addr localhost:6379
 
-<span class="p">[</span><span class="n">Install</span><span class="p">]</span>
-<span class="n">WantedBy</span><span class="o">=</span><span class="n">multi</span><span class="o">-</span><span class="n">user</span><span class="o">.</span><span class="n">target</span>
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
 </pre></div>
 </div>
 <p>Redis

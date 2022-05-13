@@ -304,6 +304,84 @@ docker导入镜像
 
 https://blog.youqiqi.cn/archives/docker-cun-chu-wei-zhi-xiu-gai
 
+13.Docker清理数据卷
+^^^^^^^^^^^^^^^^^^^
+
+**Docker 查看数据卷及磁盘使用情况**
+
+Docker
+在长时间使用的情况下，经常需要删除旧的容器并创建新的容器，长此以往，Docker
+的数据卷 volumes
+会产生了非常多的僵尸文件，这些将是稳健大都是未绑定容器的目录
+
+**查询僵尸文件**
+
+在 Docker 1.9 以上的版本中，官方提供用于查询僵尸文件的命令：
+
+::
+
+   docker volume ls -qf dangling=true
+
+Docker 1.13 引入了类似于 Linux 上 df 的命令，用于查看 Docker
+的磁盘使用情况
+
+::
+
+   > docker system df
+   TYPE                TOTAL               ACTIVE              SIZE                RECLAIMABLE
+   Images              2                   1                   306.6MB             233.7MB (76%)
+   Containers          1                   1                   12.62GB             0B (0%)
+   Local Volumes       20                  0                   16GB                16GB (100%)
+   Build Cache         0                   0                   0B                  0B
+
+上述信息可以看出
+
+::
+
+   Docker 镜像占用了 306.6MB 磁盘，
+   Docker 容器占用了 12.62GB 磁盘，
+   Docker 数据卷占用了 16GB 磁盘。
+
+**Docker 删除无用数据卷**
+
+手动删除命令
+
+::
+
+   # 删除所有dangling数据卷（即无用的Volume，僵尸文件）
+   docker volume rm $(docker volume ls -qf dangling=true)
+
+   # 删除所有dangling镜像（即无tag的镜像）
+   docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+
+   # 删除所有关闭的容器
+   docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm
+
+删除关闭的容器、无用的数据卷和网络，以及dangling镜像（即无tag的镜像）
+
+　　注意，所有关闭的容器都会被删除，请核查是否存在关闭运行但是需要保留的容器
+
+::
+
+   # 删除关闭的容器、无用的数据卷和网络
+   docker system prune
+   # 删除更彻底，可以将没有容器使用Docker镜像都删掉
+   docker system prune -a
+
+重启 Docker
+
+使用上面几个方法的命令可以有效清理 Docker
+运行所产生的无用文件，且无需重启 Docker 即可生效。
+
+但是 Docker 也许存在某些 bug（内核 3.13 版本的 Docker 确诊），导致
+Docker 无法清理一些无用目录，不过重启 Docker 可以解决这个问题
+
+参考文献:
+
+https://www.cnblogs.com/zhuminghui/p/14566178.html
+
+https://blog.csdn.net/truelove12358/article/details/102949386
+
 容器相关
 ~~~~~~~~
 

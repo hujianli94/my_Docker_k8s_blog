@@ -141,10 +141,10 @@ exporter的安装部署以及使用。
 
 .. code:: shell
 
-   $ curl -OL https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
+   $ curl -OL https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz
 
-   $ tar zxvf node_exporter-0.17.0.linux-amd64.tar.gz
-   $ cd node_exporter-0.17.0.linux-amd64
+   $ tar zxvf node_exporter-1.1.2.linux-amd64.tar.gz
+   $ cd node_exporter-1.1.2.linux-amd64
    $ mkdir /data/node_exporter
    $ mv node_exporter /data/node_exporter/
 
@@ -166,7 +166,7 @@ exporter的安装部署以及使用。
    INFO[0000]  - infiniband                                 source="node_exporter.go:97"
 
 先在终端界面启动node_exporter，成功启动后可以看到默认监听端口是9100，其中“Enabled
-collectors”列是node_exporter默认情况下启用的功能。如果想更换默认监控端口，需要启动时添加参数–web.listen-address=“:9200”即可，更多方法可以使用#./node_exporter-h查看相关帮助信息。
+collectors”列是node_exporter默认情况下启用的功能。如果想更换默认监控端口，需要启动时添加参数\ ``--web.listen-address="0.0.0.0:9200"``\ 即可，更多方法可以使用#./node_exporter-h查看相关帮助信息。
 
 添加node_exporter为系统服务开机启动
 
@@ -290,6 +290,16 @@ UI中的Graph页面中查询到node_memory_MemTotal_bytes信息
 
    # github地址：
    https://github.com/zhuqiyang/install-node_exporter-shell
+
+**docker部署node_exporter（生产环境不建议使用）**
+
+.. code:: shell
+
+   $ docker run -d -p 9100:9100 \
+     --restart=always \
+     -h node_exporter \
+     --name node-exporter \
+     prom/node-exporter
 
 2 Windows主机监控
 ^^^^^^^^^^^^^^^^^
@@ -647,22 +657,40 @@ server集成在Windows操作系统且64位版本时，可以下载对应的软�
 下载地址为https://github.com/oliver006/redis_exporter/releases。选择当时最新版本redis_exporter-v0.23.0.linux-amd64.tar.gz，对Redis
 2.x，3.x，4.x，and 5.x版本均支持。
 
+.. code:: shell
+
+   $ wget https://github.com/oliver006/redis_exporter/releases/download/v1.3.5/redis_exporter-v1.3.5.linux-amd64.tar.gz
+   $ tar -xvf redis_exporter-v1.3.5.linux-amd64.tar
+   $ cd redis_exporter-v1.3.5.linux-amd64/
+
 2）解压缩软件包到指定的安装目录：
+
+redis_exporter 常用的选项：
 
 ::
 
+   -redis.addr：指明一个或多个 Redis 节点的地址，多个节点使用逗号分隔，默认为 redis://localhost:6379
+   -redis.password：验证 Redis 时使用的密码；
+   -redis.file：包含一个或多个redis 节点的文件路径，每行一个节点，此选项与 -redis.addr 互斥。
+   -web.listen-address：监听的地址和端口，默认为 0.0.0.0:9121
+
+.. code:: shell
+
    #进入安装目录下，在终端启动查看信息，成功启动，默认监听端口是9121
-   [root@localhost redis_exporter]# ./redis_exporter -redis.addr localhost:6379 
+   $ ./redis_exporter -redis.addr localhost:6379 
    INFO[0000] Redis Metrics Exporter v0.23.0    build date: 2018-12-03-17:29:45    sha1: 10045b85b5aaa1c5fa35                                         ba38e3a1aee14f772b31    Go: go1.11.2
    INFO[0000] Providing metrics at :9121/metrics
    INFO[0000] Connecting to redis hosts: []string{"localhost:6379"}
    INFO[0000] Using alias: []string{""}
 
+   # 或者更改监听端口
+   $ ./redis_exporter -web.listen-address "0.0.0.0:9122" redis//127.0.0.1:6380
+
 3）添加redis_exporter为系统服务开机启动配置文件redis_exporter.service：
 
-::
+.. code:: shell
 
-   [root@localhost redis_exporter]# cat /usr/lib/systemd/system/redis_exporter.service
+   $ cat /usr/lib/systemd/system/redis_exporter.service
    [Unit]
    Description=Prometheus Redis Exporter
    After=network.target

@@ -764,8 +764,8 @@ COPY与ADD指令功能类似，当使用本地目录为源目录时，推荐使�
 
 .. image:: ../_static/dockerfile03.png
 
-Build images with BuildKit
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+BuildKit
+~~~~~~~~
 
 基于BuildKit优化Dockerfile的构建
 
@@ -774,12 +774,21 @@ https://mp.weixin.qq.com/s/OjeQsalkthe-YksIe0HtVg
 安装buildx
 ^^^^^^^^^^
 
-::
+.. code:: shell
 
-   $ export DOCKER_BUILDKIT=1
-   $ docker build --platform=local -o . git://github.com/docker/buildx
+   # Buildx 0.6+
+   $ docker buildx bake "https://github.com/docker/buildx.git"
+   $ mkdir -p ~/.docker/cli-plugins
+   $ mv ./bin/buildx ~/.docker/cli-plugins/docker-buildx
+
+   # Docker 19.03+
+   $ DOCKER_BUILDKIT=1 docker build --platform=local -o . "https://github.com/docker/buildx.git"
    $ mkdir -p ~/.docker/cli-plugins
    $ mv buildx ~/.docker/cli-plugins/docker-buildx
+
+   # Local 
+   $ git clone https://github.com/docker/buildx.git && cd buildx
+   $ make install
 
 ① 第一种方式使用BuildKit特性，设置环境变量
 
@@ -885,6 +894,10 @@ After the build was complete the ``app`` binary was exported:
 
    $ ./app
    Ready to receive requests on port 8080
+
+参考文献
+
+https://www.yuque.com/morlay/me/docker-buildx
 
 选择父镜像
 ~~~~~~~~~~

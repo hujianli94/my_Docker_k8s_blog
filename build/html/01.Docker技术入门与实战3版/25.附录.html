@@ -70,7 +70,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">附录</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#a">附录A　常见问题总结</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id2">镜像相关</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id11">容器相关</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">容器相关</a></li>
 </ul>
 </li>
 </ul>
@@ -111,12 +111,12 @@
   <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#id1" id="id16">附录</a></p>
+<li><p><a class="reference internal" href="#id1" id="id17">附录</a></p>
 <ul>
-<li><p><a class="reference internal" href="#a" id="id17">附录A　常见问题总结</a></p>
+<li><p><a class="reference internal" href="#a" id="id18">附录A　常见问题总结</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id2" id="id18">镜像相关</a></p></li>
-<li><p><a class="reference internal" href="#id11" id="id19">容器相关</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id19">镜像相关</a></p></li>
+<li><p><a class="reference internal" href="#id12" id="id20">容器相关</a></p></li>
 </ul>
 </li>
 </ul>
@@ -124,11 +124,11 @@
 </ul>
 </div>
 <section id="id1">
-<h1><a class="toc-backref" href="#id16">附录</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id17">附录</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <section id="a">
-<h2><a class="toc-backref" href="#id17">附录A　常见问题总结</a><a class="headerlink" href="#a" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">附录A　常见问题总结</a><a class="headerlink" href="#a" title="Permalink to this headline">¶</a></h2>
 <section id="id2">
-<h3><a class="toc-backref" href="#id18">镜像相关</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">镜像相关</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <section id="id3">
 <h4>1.如何备份系统中的所有镜像<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">backup_image.sh</span></code></p>
@@ -388,9 +388,66 @@ done
 <h4>12. Docker存储位置修改<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
 <p><a class="reference external" href="https://blog.youqiqi.cn/archives/docker-cun-chu-wei-zhi-xiu-gai">https://blog.youqiqi.cn/archives/docker-cun-chu-wei-zhi-xiu-gai</a></p>
 </section>
-</section>
 <section id="id11">
-<h3><a class="toc-backref" href="#id19">容器相关</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<h4>13.Docker清理数据卷<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<p><strong>Docker 查看数据卷及磁盘使用情况</strong></p>
+<p>Docker
+在长时间使用的情况下，经常需要删除旧的容器并创建新的容器，长此以往，Docker
+的数据卷 volumes
+会产生了非常多的僵尸文件，这些将是稳健大都是未绑定容器的目录</p>
+<p><strong>查询僵尸文件</strong></p>
+<p>在 Docker 1.9 以上的版本中，官方提供用于查询僵尸文件的命令：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">volume</span> <span class="n">ls</span> <span class="o">-</span><span class="n">qf</span> <span class="n">dangling</span><span class="o">=</span><span class="n">true</span>
+</pre></div>
+</div>
+<p>Docker 1.13 引入了类似于 Linux 上 df 的命令，用于查看 Docker
+的磁盘使用情况</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">docker</span> <span class="n">system</span> <span class="n">df</span>
+<span class="n">TYPE</span>                <span class="n">TOTAL</span>               <span class="n">ACTIVE</span>              <span class="n">SIZE</span>                <span class="n">RECLAIMABLE</span>
+<span class="n">Images</span>              <span class="mi">2</span>                   <span class="mi">1</span>                   <span class="mf">306.6</span><span class="n">MB</span>             <span class="mf">233.7</span><span class="n">MB</span> <span class="p">(</span><span class="mi">76</span><span class="o">%</span><span class="p">)</span>
+<span class="n">Containers</span>          <span class="mi">1</span>                   <span class="mi">1</span>                   <span class="mf">12.62</span><span class="n">GB</span>             <span class="mi">0</span><span class="n">B</span> <span class="p">(</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span>
+<span class="n">Local</span> <span class="n">Volumes</span>       <span class="mi">20</span>                  <span class="mi">0</span>                   <span class="mi">16</span><span class="n">GB</span>                <span class="mi">16</span><span class="n">GB</span> <span class="p">(</span><span class="mi">100</span><span class="o">%</span><span class="p">)</span>
+<span class="n">Build</span> <span class="n">Cache</span>         <span class="mi">0</span>                   <span class="mi">0</span>                   <span class="mi">0</span><span class="n">B</span>                  <span class="mi">0</span><span class="n">B</span>
+</pre></div>
+</div>
+<p>上述信息可以看出</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Docker 镜像占用了 306.6MB 磁盘，
+Docker 容器占用了 12.62GB 磁盘，
+Docker 数据卷占用了 16GB 磁盘。
+</pre></div>
+</div>
+<p><strong>Docker 删除无用数据卷</strong></p>
+<p>手动删除命令</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 删除所有dangling数据卷（即无用的Volume，僵尸文件）
+docker volume rm $(docker volume ls -qf dangling=true)
+
+# 删除所有dangling镜像（即无tag的镜像）
+docker rmi $(docker images | grep &quot;^&lt;none&gt;&quot; | awk &quot;{print $3}&quot;)
+
+# 删除所有关闭的容器
+docker ps -a | grep Exit | cut -d &#39; &#39; -f 1 | xargs docker rm
+</pre></div>
+</div>
+<p>删除关闭的容器、无用的数据卷和网络，以及dangling镜像（即无tag的镜像）</p>
+<p>　　注意，所有关闭的容器都会被删除，请核查是否存在关闭运行但是需要保留的容器</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 删除关闭的容器、无用的数据卷和网络</span>
+<span class="n">docker</span> <span class="n">system</span> <span class="n">prune</span>
+<span class="c1"># 删除更彻底，可以将没有容器使用Docker镜像都删掉</span>
+<span class="n">docker</span> <span class="n">system</span> <span class="n">prune</span> <span class="o">-</span><span class="n">a</span>
+</pre></div>
+</div>
+<p>重启 Docker</p>
+<p>使用上面几个方法的命令可以有效清理 Docker
+运行所产生的无用文件，且无需重启 Docker 即可生效。</p>
+<p>但是 Docker 也许存在某些 bug（内核 3.13 版本的 Docker 确诊），导致
+Docker 无法清理一些无用目录，不过重启 Docker 可以解决这个问题</p>
+<p>参考文献:</p>
+<p><a class="reference external" href="https://www.cnblogs.com/zhuminghui/p/14566178.html">https://www.cnblogs.com/zhuminghui/p/14566178.html</a></p>
+<p><a class="reference external" href="https://blog.csdn.net/truelove12358/article/details/102949386">https://blog.csdn.net/truelove12358/article/details/102949386</a></p>
+</section>
+</section>
+<section id="id12">
+<h3><a class="toc-backref" href="#id20">容器相关</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <section id="docker-ps">
 <h4>1.容器退出后，通过docker ps 命令查看不到，数据会丢失么？<a class="headerlink" href="#docker-ps" title="Permalink to this headline">¶</a></h4>
 <p>容器退出后会处于终止(exited)状态，此时可以通过docker ps
@@ -398,14 +455,14 @@ done
 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">[container]</span> <span class="pre">start</span></code>命令来启动它。</p>
 <p>只有删除掉容器才会清除所有数据。</p>
 </section>
-<section id="id12">
-<h4>2.如何停止所有正在运行的容器<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<section id="id13">
+<h4>2.如何停止所有正在运行的容器<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>可以使用 docker [container] stop $(docker ps -q) 命令
 </pre></div>
 </div>
 </section>
-<section id="id13">
-<h4>3.如何批量清理所有的容器，包括处于运行状态和停止状态的<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<section id="id14">
+<h4>3.如何批量清理所有的容器，包括处于运行状态和停止状态的<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>可以使用 docker [container] rm -f $(docker ps -qa) 命令
 </pre></div>
 </div>
@@ -422,15 +479,15 @@ done
 </pre></div>
 </div>
 </section>
-<section id="id14">
-<h4>6.如何清理 Docker 占用的磁盘空间<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<section id="id15">
+<h4>6.如何清理 Docker 占用的磁盘空间<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
 <p><a class="reference external" href="https://zhuanlan.zhihu.com/p/100793598">https://zhuanlan.zhihu.com/p/100793598</a></p>
 <p>迁移/var/lib/docker目录</p>
 <p><a class="reference external" href="https://blog.csdn.net/weixin_32820767/article/details/81196250">https://blog.csdn.net/weixin_32820767/article/details/81196250</a></p>
 <p><a class="reference external" href="https://www.lemonlzy.cn/2020/05/24/Docker%E6%96%87%E4%BB%B6%E6%B8%85%E7%90%86/">https://www.lemonlzy.cn/2020/05/24/Docker%E6%96%87%E4%BB%B6%E6%B8%85%E7%90%86/</a></p>
 </section>
-<section id="id15">
-<h4>7.给运行中的docker容器添加端口映射<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<section id="id16">
+<h4>7.给运行中的docker容器添加端口映射<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
 <p>1.获取容器IP</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker inspect &lt;container_id&gt; <span class="p">|</span> grep IPAddress
 </pre></div>
