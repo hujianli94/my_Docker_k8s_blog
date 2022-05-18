@@ -30,7 +30,6 @@ def log():
             print("-----------------------------------------------------")
 
         return Internal
-
     return Out_Wrapper
 
 

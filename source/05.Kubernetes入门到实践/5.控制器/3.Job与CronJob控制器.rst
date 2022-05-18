@@ -26,6 +26,55 @@ Job控制器可以执行3种类型的任务。
    spec.parallelism指定并发数，也可以配合
    spec.completions属性指定总任务的执行次数。
 
+1.1. Job yaml模板
+~~~~~~~~~~~~~~~~~
+
+.. code:: yaml
+
+   apiVersion: batch/v1  #必填，版本号
+   kind: Job # 必填，资源类型
+   metadata: # 必填，元数据
+     name: <name>-job # 必填，资源名称
+     namespace: test # pod所属的命名空间
+     labels: # 自定义标签
+       name: string #自定义标签名字<key: value>
+   spec: # 必填，部署的详细定义
+     completions: int # 资源重复作业数，默认值: 1 
+     parallelism: int # 资源并行作业数，默认值: 1
+     backoffLimit: int # 资源失败重试次数，默认值：6
+     activeDeadlineSecond: int # 资源作业超时时间，默认0 永不超时
+     ttlSecondsAfterFinished: int # 任务执行完，多少秒自动删除，默认300
+     template: # 必填，应用容器模板定义
+       spec:
+         containers: #此处参考pod的containers
+         - name: busybox
+           image: busybox:latest
+           imagePullPolicy: IfNotPresent
+           command: ["echo", "hello world"]
+         restartPolicy: Never # job类型资源重启策略必须为Never或者OnFailure
+
+-  yaml示例：以busybox镜像启动，输出hello
+   world举例。记得将重启策略设置为Never或者OnFailure
+
+.. code:: yaml
+
+   apiVersion: batch/v1
+   kind: Job
+   metadata:
+     name: hello-job
+     namespace: test
+     labels:
+       name: hello-job
+   spec:
+     template:
+       spec:
+         containers: 
+         - name: busybox
+           image: busybox:latest
+           imagePullPolicy: IfNotPresent
+           command: ["echo", "hello world"]
+         restartPolicy: Never
+
 1.1 一次性任务
 ~~~~~~~~~~~~~~
 
@@ -405,9 +454,10 @@ CronJob控制器是比Job更高级的资源对象。CronJob控制器基于Job，
 -  在未来的某个指定时间运行一次Job，例如，某项临时任务。
 -  周期性地运行Job，例如，定期备份、发送邮件等。
 
-CronJob控制器的模板如下所示
+3.1 CronJob控制器 yaml模板
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
+.. code:: yaml
 
    apiVersion: batch/v1  #必填，版本号
    kind: Job # 必填，资源类型
@@ -436,6 +486,34 @@ CronJob控制器的模板如下所示
                imagePullPolicy: IfNotPresent
                command: ["echo", "hello world"]
              restartPolicy: Never # job类型资源重启策略必须为Never或者OnFailure
+
+-  yaml示例：以busybox镜像启动，输出hello
+   world举例。记得将重启策略设置为Never或者OnFailure
+
+.. code:: yaml
+
+   apiVersion: batch/v1beta1
+   kind: CronJob
+   metadata:
+     name: hello-cj
+     namespace: test
+     labels:
+       app: hello-cronjob
+   spec:
+     schedule: "*/2 * * * *"
+     jobTemplate:
+       metadata:
+         labels:
+           app: hello-cronjob
+       spec:
+         template:
+           spec:
+             containers: 
+             - name: busybox
+               image: busybox:latest
+               imagePullPolicy: IfNotPresent
+               command: ["echo", "hello world"]
+             restartPolicy: Never
 
 ``examplecronjob.yml``
 

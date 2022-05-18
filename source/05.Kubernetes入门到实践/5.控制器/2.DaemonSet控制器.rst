@@ -26,7 +26,124 @@ DaemonSet控制器的一些典型用法包括但不限于以下几种。
 
 *删除DaemonSet控制器将会删除它创建的所有Pod。*
 
-1.DaemonSet控制器的基本操作
+1. DaemonSet yaml模板
+---------------------
+
+``DaemonSet除了不用设置replicas，其他的与Deployment一致``
+
+.. code:: yaml
+
+   apiVersion: apps/v1      #必填，版本号
+   kind: DaemonSet     #必填，资源类型
+   metadata:       #必填，元数据
+     name: <name>-ds     #必填，资源名称
+     namespace: <namespace>    #Pod所属的命名空间
+     labels:      #自定义标签
+       - name: string     #自定义标签名字<key: value>
+   spec:         #必填，部署的详细定义
+     selector: #必填，标签选择
+       matchLabels: #必填，标签匹配
+         name: <name> #必填，通过此标签匹配对应pod<key: value>
+     template: #必填，应用容器模版定义
+       metadata: 
+         labels: 
+           name: <name> #必填，与上面matchLabels的标签相同
+       spec: 
+         containers: #此处参考pod的containers
+
+-  yaml示例：监控组件node-exporter部署示例
+
+.. code:: yaml
+
+   apiVersion: apps/v1
+   kind: DaemonSet
+   metadata:
+     labels:
+       app: node-exporter-ds
+     name: node-exporter-ds
+     namespace: test
+   spec:
+     selector:
+       matchLabels:
+         app: node-exporter
+     template:
+       metadata:
+         labels:
+           app: node-exporter
+       spec:
+         containers:
+         - args:
+           - --web.listen-address=127.0.0.1:9100
+           - --path.procfs=/host/proc
+           - --path.sysfs=/host/sys
+           - --path.rootfs=/host/root
+           - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+)($|/)
+           - --collector.filesystem.ignored-fs-types=^(autofs|binfmt_misc|cgroup|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|sysfs|tracefs)$
+           image: prometheus/node-exporter:v0.18.1
+           name: node-exporter
+           resources:
+             limits:
+               cpu: 250m
+               memory: 180Mi
+             requests:
+               cpu: 102m
+               memory: 180Mi
+           volumeMounts:
+           - mountPath: /host/proc
+             name: proc
+             readOnly: false
+           - mountPath: /host/sys
+             name: sys
+             readOnly: false
+           - mountPath: /host/root
+             mountPropagation: HostToContainer
+             name: root
+             readOnly: true
+         - args:
+           - --logtostderr
+           - --secure-listen-address=$(IP):9100
+           - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+           - --upstream=http://127.0.0.1:9100/
+           env:
+           - name: IP
+             valueFrom:
+               fieldRef:
+                 fieldPath: status.podIP
+           image: 172.16.140.21/prometheus/kube-rbac-proxy:v0.4.1
+           name: kube-rbac-proxy
+           ports:
+           - containerPort: 9100
+             hostPort: 9100
+             name: https
+           resources:
+             limits:
+               cpu: 20m
+               memory: 60Mi
+             requests:
+               cpu: 10m
+               memory: 20Mi
+         hostNetwork: true
+         hostPID: true
+         nodeSelector:
+           kubernetes.io/os: linux
+         securityContext:
+           runAsNonRoot: true
+           runAsUser: 65534
+         serviceAccountName: node-exporter
+         tolerations:
+         - operator: Exists
+         volumes:
+         - hostPath:
+             path: /proc
+           name: proc
+         - hostPath:
+             path: /sys
+           name: sys
+         - hostPath:
+             path: /
+           name: root
+
+2.DaemonSet控制器的基本操作
 ---------------------------
 
 ``exampleDaemonset.yml``
@@ -166,7 +283,7 @@ kube-system，例如，下面的命令。
            k8s-app: cilium
    .....
 
-2.DaemonSet控制器的更新
+3.DaemonSet控制器的更新
 -----------------------
 
 DaemonSet控制器有两种更新方式。
@@ -177,7 +294,7 @@ DaemonSet控制器有两种更新方式。
 -  OnDelete：这是向后兼容的默认更新方式。当使用OnDelete更新方式时，在更新DaemonSet控制器模板后，只有手动删除旧的DaemonSet控制器Pod后，才会创建新的DaemonSet控制器Pod。这与Kubernetes
    1.5或更早版本中DaemonSet控制器的行为相同。
 
-2.1 RollingUpdate
+3.1 RollingUpdate
 ~~~~~~~~~~~~~~~~~
 
 对于RollingUpdate，与之前Deployment控制器不一样的地方在于，
@@ -188,7 +305,7 @@ DaemonSet控制器有两种更新方式。
 
 RollingUpdate与deployment的类似，这里就不再介绍了。
 
-2.2 OnDelete
+3.2 OnDelete
 ~~~~~~~~~~~~
 
 OnDelete更新方式。 为了修改之前的yml文件，将其从httpd

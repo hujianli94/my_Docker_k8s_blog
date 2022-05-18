@@ -54,6 +54,77 @@ yaml模板
              requests: # 请求空间大小
                storage: 1Gi # 空间大小值
 
+-  yaml示例：以nginx服务使用nfs共享存储为例
+
+.. code:: yaml
+
+   #先定义了一个名为myapp-svc的Headless Service资源，用于为关联到的每个Pod资源创建DNS资源记录。
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: myapp-svc
+     labels:
+       app: myapp-svc
+   spec:
+     ports:
+     - port: 80
+       name: web
+     clusterIP: None
+     selector:
+       app: myapp-pod
+
+   ---
+   # 定义多个使用NFS存储后端的PV，空间大小为2GB，仅支持单路的读写操作。
+   apiVersion: v1
+   kind: PersistentVolume
+   metadata:
+     name: nfs-pv
+   spec:
+     capacity:
+       storage: 2Gi
+     accessModes:
+       - ReadWriteOnce
+     persistentVolumeReclaimPolicy: Recycle
+     storageClassName: nfs
+     nfs:
+       path: /nfs/data1
+       server: 172.17.0.2
+   ---
+   # 定义了一个名为myapp的StatefulSet资源，它通过Pod模板创建了两个Pod资源副本，并基于volumeClaimTemplates（存储卷申请模板）向nfs存储类请求动态供给PV，从而为每个Pod资源提供大小为1GB的专用存储卷。
+   apiVersion: apps/v1
+   kind: StatefulSet
+   metadata:
+     name: myapp-sts
+   spec:
+     selector:
+       matchLabels:
+         app: myapp-pod
+     serviceName: myapp-svc
+     replicas: 2
+     template:
+       metadata:
+         labels:
+           app: myapp-pod
+       spec:
+         containers:
+         - name: nginx
+           image: k8s.gcr.io/nginx-slim:0.8
+           ports:
+           - containerPort: 80
+             name: web
+           volumeMounts:
+           - name: myapp-data
+             mountPath: /usr/share/nginx/html
+     volumeClaimTemplates:
+     - metadata:
+         name: myapp-data
+       spec:
+         accessModes: [ "ReadWriteOnce" ]
+         storageClassName: "nfs"
+         resources:
+           requests:
+             storage: 1Gi
+
 1.statefulset的组成
 -------------------
 
