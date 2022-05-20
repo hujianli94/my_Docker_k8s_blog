@@ -1348,6 +1348,37 @@ Fluentd 的 Configmap 对象中的 <code class="docutils literal notranslate"><s
     <span class="no">&lt;/match&gt;</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>注意：node节点会创建一个/var/log/td-agent/buffer/td目录。此目录数据很大，考虑到磁盘空间的问题，可以将buffer
+settings为memory的方式</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span> <span class="o">|-</span>
+  <span class="o">&lt;</span><span class="n">match</span> <span class="o">**&gt;</span>
+    <span class="nd">@id</span> <span class="n">kafka</span>
+    <span class="nd">@type</span> <span class="n">kafka2</span>
+    <span class="nd">@log_level</span> <span class="n">info</span>
+    <span class="c1"># list of seed brokers</span>
+    <span class="n">brokers</span> <span class="n">kafka</span><span class="o">-</span><span class="mf">0.</span><span class="n">kafka</span><span class="o">-</span><span class="n">headless</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span><span class="p">:</span><span class="mi">9092</span>
+    <span class="n">use_event_time</span> <span class="n">true</span>
+    <span class="c1"># topic settings</span>
+    <span class="n">topic_key</span> <span class="n">k8slog</span>
+    <span class="n">default_topic</span> <span class="n">messages</span>  <span class="c1"># 注意，kafka中消费使用的是这个topic</span>
+    <span class="c1"># buffer settings</span>
+    <span class="o">&lt;</span><span class="n">buffer</span> <span class="n">k8slog</span><span class="o">&gt;</span>
+      <span class="nd">@type</span> <span class="n">memory</span>
+      <span class="n">path</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">td</span><span class="o">-</span><span class="n">agent</span><span class="o">/</span><span class="n">buffer</span><span class="o">/</span><span class="n">td</span>
+      <span class="n">flush_interval</span> <span class="mi">3</span><span class="n">s</span>
+    <span class="o">&lt;/</span><span class="n">buffer</span><span class="o">&gt;</span>
+    <span class="c1"># data type settings</span>
+    <span class="o">&lt;</span><span class="nb">format</span><span class="o">&gt;</span>
+      <span class="nd">@type</span> <span class="n">json</span>
+    <span class="o">&lt;/</span><span class="nb">format</span><span class="o">&gt;</span>
+    <span class="c1"># producer settings</span>
+    <span class="n">required_acks</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">compression_codec</span> <span class="n">gzip</span>
+  <span class="o">&lt;/</span><span class="n">match</span><span class="o">&gt;</span>
+</pre></div>
+</div>
 <p>然后替换运行的 Fluentd 镜像：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># fluentd-daemonset.yaml</span>
 <span class="n">image</span><span class="p">:</span> <span class="n">registry</span><span class="o">.</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">hu_k8s</span><span class="o">/</span><span class="n">fluent</span><span class="o">-</span><span class="n">plugin</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="mf">0.16</span><span class="o">.</span><span class="mi">1</span>
