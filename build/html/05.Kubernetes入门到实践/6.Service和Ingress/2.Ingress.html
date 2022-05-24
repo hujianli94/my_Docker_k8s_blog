@@ -58,6 +58,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#id1">1.Ingress控制器的安装</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id4">2.Ingress的基本操作</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ingresshttps">3.Ingress配置https访问</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">4.Ingress选型与应用</a></li>
 </ul>
 </li>
 </ul>
@@ -101,31 +102,32 @@
   <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#ingress" id="id8">Ingress</a></p>
+<li><p><a class="reference internal" href="#ingress" id="id9">Ingress</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id9">1.Ingress控制器的安装</a></p>
+<li><p><a class="reference internal" href="#id1" id="id10">1.Ingress控制器的安装</a></p>
 <ul>
-<li><p><a class="reference internal" href="#nginx-ingress" id="id10">1.1 Nginx-ingress部署及使用</a></p></li>
-<li><p><a class="reference internal" href="#helmnginx-ingress" id="id11">1.2 helm部署nginx-ingress</a></p></li>
-<li><p><a class="reference internal" href="#traefik-ingress" id="id12">1.3 Traefik-ingress部署及使用</a></p></li>
-<li><p><a class="reference internal" href="#id2" id="id13">1.4 在指定节点部署Ingress服务</a></p></li>
+<li><p><a class="reference internal" href="#nginx-ingress" id="id11">1.1 Nginx-ingress部署及使用</a></p></li>
+<li><p><a class="reference internal" href="#helmnginx-ingress" id="id12">1.2 helm部署nginx-ingress</a></p></li>
+<li><p><a class="reference internal" href="#traefik-ingress" id="id13">1.3 Traefik-ingress部署及使用</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id14">1.4 在指定节点部署Ingress服务</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id4" id="id14">2.Ingress的基本操作</a></p>
+<li><p><a class="reference internal" href="#id4" id="id15">2.Ingress的基本操作</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id5" id="id15">2.1 Ingress示例</a></p></li>
-<li><p><a class="reference internal" href="#service" id="id16">2.2 不使用虚拟主机名称-单个Service</a></p></li>
-<li><p><a class="reference internal" href="#id6" id="id17">2.3 基于虚拟主机名称-多个子路径</a></p></li>
-<li><p><a class="reference internal" href="#id7" id="id18">2.4 基于多个虚拟主机名称</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id16">2.1 Ingress示例</a></p></li>
+<li><p><a class="reference internal" href="#service" id="id17">2.2 不使用虚拟主机名称-单个Service</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id18">2.3 基于虚拟主机名称-多个子路径</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id19">2.4 基于多个虚拟主机名称</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#ingresshttps" id="id19">3.Ingress配置https访问</a></p></li>
+<li><p><a class="reference internal" href="#ingresshttps" id="id20">3.Ingress配置https访问</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id21">4.Ingress选型与应用</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
 <section id="ingress">
-<h1><a class="toc-backref" href="#id8">Ingress</a><a class="headerlink" href="#ingress" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id9">Ingress</a><a class="headerlink" href="#ingress" title="Permalink to this headline">¶</a></h1>
 <p>要将Kubernetes集群内的服务发布到集群外来使用，通常的办法是</p>
 <ol class="arabic simple">
 <li><p>配置NodePort</p></li>
@@ -158,7 +160,7 @@ Server进行交互，实时地感知后端Service、Pod等的变化情况，比�
 基本操作的部分也适用于所有类型的Ingress控制器。</p>
 <p>我们使用Traefik作为Ingress控制器，它的功能非常强大，跟Kubernetes结合得很好，还提供了商用支持。</p>
 <section id="id1">
-<h2><a class="toc-backref" href="#id9">1.Ingress控制器的安装</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">1.Ingress控制器的安装</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Traefik的安装并不复杂。在这里我们选择最简单的默认安装，只要两步就可以完成。</p>
 <p>第一步，执行以下命令，配置traefik-ingress-controller基于角色的访问控制（Role
 Based Access Control, RBAC），让它能与
@@ -234,14 +236,19 @@ giteego-k8s-n3   Ready    ingress                170d   v1.21.3   192.168.1.59  
 </pre></div>
 </div>
 <section id="nginx-ingress">
-<h3><a class="toc-backref" href="#id10">1.1 Nginx-ingress部署及使用</a><a class="headerlink" href="#nginx-ingress" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">1.1 Nginx-ingress部署及使用</a><a class="headerlink" href="#nginx-ingress" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>参考文献</p>
 <p><a class="reference external" href="https://www.cnblogs.com/itzgr/p/13030762.html">https://www.cnblogs.com/itzgr/p/13030762.html</a></p>
 </div></blockquote>
+<p><strong>k8s部署高可用Ingress</strong></p>
+<blockquote>
+<div><p>参考文献</p>
+<p><a class="reference external" href="https://www.cnblogs.com/keep-live/p/11882829.html">https://www.cnblogs.com/keep-live/p/11882829.html</a></p>
+</div></blockquote>
 </section>
 <section id="helmnginx-ingress">
-<h3><a class="toc-backref" href="#id11">1.2 helm部署nginx-ingress</a><a class="headerlink" href="#helmnginx-ingress" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">1.2 helm部署nginx-ingress</a><a class="headerlink" href="#helmnginx-ingress" title="Permalink to this headline">¶</a></h3>
 <p><strong>pull helm chart ingress-nginx-4.0.19.tgz</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">pull</span> <span class="o">--</span><span class="n">repo</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>
 <span class="n">tar</span> <span class="o">-</span><span class="n">zxf</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="mf">4.0</span><span class="o">.</span><span class="mf">19.</span><span class="n">tgz</span>
@@ -347,7 +354,7 @@ giteego-k8s-n3   Ready    ingress                170d   v1.21.3   192.168.1.59  
 </div></blockquote>
 </section>
 <section id="traefik-ingress">
-<h3><a class="toc-backref" href="#id12">1.3 Traefik-ingress部署及使用</a><a class="headerlink" href="#traefik-ingress" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">1.3 Traefik-ingress部署及使用</a><a class="headerlink" href="#traefik-ingress" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Traefik-ingress部署及使用</p>
 <p><a class="reference external" href="https://www.cnblogs.com/itzgr/p/13030883.html">https://www.cnblogs.com/itzgr/p/13030883.html</a></p>
@@ -358,7 +365,7 @@ giteego-k8s-n3   Ready    ingress                170d   v1.21.3   192.168.1.59  
 </div></blockquote>
 </section>
 <section id="id2">
-<h3><a class="toc-backref" href="#id13">1.4 在指定节点部署Ingress服务</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">1.4 在指定节点部署Ingress服务</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>我们部署2个ingress节点，做ha高可用，对外发布服务。</p>
 <section id="id3">
 <h4>1. 设置污点和标签<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
@@ -601,9 +608,9 @@ Traefik-ingress</a></p>
 </section>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id14">2.Ingress的基本操作</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">2.Ingress的基本操作</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <section id="id5">
-<h3><a class="toc-backref" href="#id15">2.1 Ingress示例</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">2.1 Ingress示例</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>两个服务—一个是httpd服务，另一个是Nginx服务</p>
 <p>（1）创建与这两个服务相关的Deployment控制器。 ① 使用命令创建yml文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">exampledeploymentforingress.yml</span></code></p>
@@ -714,7 +721,7 @@ $ curl 10.100.179.196:8081
 </div>
 </section>
 <section id="service">
-<h3><a class="toc-backref" href="#id16">2.2 不使用虚拟主机名称-单个Service</a><a class="headerlink" href="#service" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">2.2 不使用虚拟主机名称-单个Service</a><a class="headerlink" href="#service" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes中其实可以通过很多方式来暴露单个Service，不过也可以用Ingress来实现这个功能。要指定一个没有配置规则的
 Ingress，只设置backend属性即可。</p>
 <blockquote>
@@ -781,7 +788,7 @@ $ curl <span class="m">192</span>.168.1.64
 </div>
 </section>
 <section id="id6">
-<h3><a class="toc-backref" href="#id17">2.3 基于虚拟主机名称-多个子路径</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">2.3 基于虚拟主机名称-多个子路径</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>上面的示例并未展示出Ingress的强大之处，这里会展示Ingress的另一个用法，以便看到使用Ingress的优势所在。</p>
 <p>假设现在要实现这样的场景：</p>
 <p>在同一个域名下配置两个子路径，其中一个子路径访问httpd的Service，</p>
@@ -869,7 +876,7 @@ Events:            &lt;none&gt;
 <img alt="../../_images/image-20220416203139629.png" src="../../_images/image-20220416203139629.png" />
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id18">2.4 基于多个虚拟主机名称</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">2.4 基于多个虚拟主机名称</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>首先定义模板文件<code class="docutils literal notranslate"><span class="pre">examplehostingingress.yml</span></code></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
 <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ingress</span>
@@ -953,11 +960,18 @@ Events:                 &lt;none&gt;
 </section>
 </section>
 <section id="ingresshttps">
-<h2><a class="toc-backref" href="#id19">3.Ingress配置https访问</a><a class="headerlink" href="#ingresshttps" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id20">3.Ingress配置https访问</a><a class="headerlink" href="#ingresshttps" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>参考文献</p>
 <p><a class="reference external" href="https://www.gl.sh.cn/2021/12/26/ingress-nginx_pei_zhi_https.html">https://www.gl.sh.cn/2021/12/26/ingress-nginx_pei_zhi_https.html</a></p>
 <p><a class="reference external" href="https://sre.ink/ingress-use-https/">https://sre.ink/ingress-use-https/</a></p>
+</div></blockquote>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id21">4.Ingress选型与应用</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>参考文献</p>
+<p><a class="reference external" href="https://www.cnblogs.com/leozhanggg/p/13189173.html">https://www.cnblogs.com/leozhanggg/p/13189173.html</a></p>
 </div></blockquote>
 </section>
 </section>

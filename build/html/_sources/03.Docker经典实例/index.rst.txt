@@ -26,3 +26,4 @@
     17.consul服务注册
     18.Docker完美部署Gitea
     19.使用CoreDNS作为数据中心内网DNS
+    20.离线安装Harborv2

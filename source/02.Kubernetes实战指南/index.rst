@@ -21,4 +21,5 @@
     12.使用EFKLK搭建Kubernetes日志收集工具栈
     13.Kubernetes容器运行时从Docker切换成Containerd
     14.整理全网最全K8S集群管理工具-平台
+    15.基于Docker+K8S+GitLabSVN+Jenkins+Harbor持续集成交付环境
     20.Helm简化Kubernetes部署

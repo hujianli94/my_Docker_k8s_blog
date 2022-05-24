@@ -899,7 +899,7 @@ server，然后创建pv与nfs进行绑定，所有其他使用nfs的storageclass
 
 .. code:: shell
 
-   #   安装 nfs-client-provisioner
+   # 在线安装 nfs-client-provisioner
    helm install efk-nfs-storage azure/nfs-client-provisioner -n nfs \
    --set nfs.server=192.168.1.60 \
    --set nfs.path=/efk \
@@ -907,18 +907,26 @@ server，然后创建pv与nfs进行绑定，所有其他使用nfs的storageclass
    --set storageClass.defaultClass=true
 
 
-
-
    # 或者下载到本地再安装
    helm pull azure/nfs-client-provisioner
    tar xvf nfs-client-provisioner-*.tgz
 
 
+   # 离线安装 nfs-client-provisioner
    helm install efk-nfs-storage -n nfs \
    --set nfs.server=192.168.1.60 \
    --set nfs.path=/efk  \
    --set storageClass.name=efk-nfs,storageClass.reclaimPolicy=Retain \
    --set storageClass.defaultClass=true \
+   nfs-client-provisioner
+
+
+   # 设置为非默认的StorageClass
+   helm install kubeops-nfs -n nfs \
+   --set nfs.server=192.168.1.60 \
+   --set nfs.path=/kube-ops  \
+   --set storageClass.name=kube-ops-nfs,storageClass.reclaimPolicy=Retain \
+   --set storageClass.defaultClass=false \
    nfs-client-provisioner
 
 ..

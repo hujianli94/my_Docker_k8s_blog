@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding:utf8 -*-
 # auther: 18793
 # Date：2019/12/5 17:14
@@ -15,7 +14,6 @@ judges and incrementally updates it based on the md5 value
 """
 
 Search_Path = os.path.abspath(os.path.dirname(os.path.abspath(__file__))) + "/source"
-
 # ENV_PATH = sys.path.append("D:\\Users\\pandocc-2.2.3.2")
 
 
