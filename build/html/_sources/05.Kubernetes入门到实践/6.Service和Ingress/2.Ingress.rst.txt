@@ -299,6 +299,10 @@ found”）
 1.4 在指定节点部署Ingress服务
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+   **提示**
+   生产应用场景中，我们通常会以DaemonSet结合NodeAffinity、PodAntiAffinity使用，甚至是利用Taints/Tolerations调度机制将
+   Ingress控制器以单实例的方式运行在专用的节点之上，并让Ingress控制器共享相关节点的名称空间，或者在Service上使用externalIP等来解决引入外部流量的问题。
+
 我们部署2个ingress节点，做ha高可用，对外发布服务。
 
 1. 设置污点和标签
@@ -1007,9 +1011,86 @@ Ingress创建成功后，可以通过以下命令查询Ingress。
 
    https://sre.ink/ingress-use-https/
 
+假设要同时在HTTP和HTTPS协议上发布dev名称空间下的service/demoapp服务，我们可以使用类似如下的资源清单（demoapp-
+ingress.yaml）进行。一旦为某个虚拟主机启用TLS，ingress-nginx控制器默认会将以HTTP明文协议发往该主机的所有请求重定向至对应
+的HTTPS主机，若希望同时保留二者，需要将注解nginx.ingress.kubernetes.io/ssl-redirect的值设置为false来禁用
+这种重定向功能。
+
+``demoapp-ingress.yaml``
+
+**修改https模式为http模式**
+
+.. code:: yaml
+
+   apiVersion: networking.k8s.io/v1
+   kind: Ingress
+   metadata:
+     name: ci-gitee-ent-ingress
+     namespace: nginx
+     annotations:
+       kubernetes.io/ingress.class: "nginx"
+       nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+       nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+       nginx.ingress.kubernetes.io/proxy-body-size: "512m"
+       nginx.ingress.kubernetes.io/ssl-redirect: "false"
+       nginx.ingress.kubernetes.io/rewrite-target: /
+   spec:
+     rules:
+     - host: 3088.git-ent.com
+       http:
+         paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: my-nginx
+               port:
+                 number: 80
+
+**https模式**
+
+.. code:: yaml
+
+   apiVersion: networking.k8s.io/v1
+   kind: Ingress
+   metadata:
+     name: ci-gitee-ent-ingress
+     namespace: nginx
+     annotations:
+       kubernetes.io/ingress.class: "nginx"
+       nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+       nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+       nginx.ingress.kubernetes.io/proxy-body-size: "512m"
+   spec:
+     tls:
+     - hosts:
+       - 3136-com.runjs.cn
+     rules:
+     - host: 3136-com.runjs.cn
+       http:
+         paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: my-nginx
+               port:
+                 number: 80
+
 4.Ingress选型与应用
 -------------------
 
    参考文献
 
    https://www.cnblogs.com/leozhanggg/p/13189173.html
+
+5. Nginx-ingress上传文件大小限制问题
+------------------------------------
+
+   参考文献
+
+   https://blog.51cto.com/u_14842009/5145960
+
+   https://www.jianshu.com/p/21c45f580630
+
+   https://blog.csdn.net/weixin_41831919/article/details/118831423
