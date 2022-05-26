@@ -8,3 +8,4 @@
     :maxdepth: 3
 
     1.Kubernetes的安装与部署
+    2.集群故障处理
