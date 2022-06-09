@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>资源调度-为Pod设置计算资源 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="资源管理-命名空间" href="2.%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4.html" />
+    <link rel="prev" title="8.Kubernetes资源的管理及调度" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../5.%E6%8E%A7%E5%88%B6%E5%99%A8/index.html">5.控制器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html">7.存储与配置</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">8.Kubernetes资源的管理及调度</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">资源调度-为Pod设置计算资源</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2.%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4.html">资源管理-命名空间</a></li>
+<li class="toctree-l3"><a class="reference internal" href="3.%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86-%E6%A0%87%E7%AD%BE%E3%80%81%E9%80%89%E6%8B%A9%E5%99%A8%E5%8F%8A%E6%B3%A8%E8%A7%A3.html">资源管理-标签、选择器及注解</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4.%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6-Pod%E8%B0%83%E5%BA%A6%E7%AD%96%E7%95%A5%E8%AF%A6%E8%A7%A3.html">资源调度-Pod调度策略详解</a></li>
+<li class="toctree-l3"><a class="reference internal" href="5.%E4%BC%98%E5%85%88%E7%BA%A7%E4%B8%8E%E6%8A%A2%E5%8D%A0%E5%BC%8F%E8%B0%83%E5%BA%A6.html">优先级与抢占式调度</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../11.%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E6%A1%88%E4%BE%8B/index.html">11.项目部署案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../12.Helm%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/index.html">12.Helm学习指南</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../13.Kubernetes-DevOps/index.html">13.Kubernetes-DevOps</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">8.Kubernetes资源的管理及调度</a> &raquo;</li>
+      <li>资源调度-为Pod设置计算资源</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/8.Kubernetes资源的管理及调度/1.资源调度-为Pod设置计算资源.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pod" id="id1">资源调度-为Pod设置计算资源</a></p></li>
+</ul>
+</div>
+<section id="pod">
+<h1><a class="toc-backref" href="#id1">资源调度-为Pod设置计算资源</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h1>
+<p>容器运行时（container
+runtime）通常会提供一些机制来限制容器能够使用的计算资源的大小，例如，最多可以使用多少CPU或内存。如果超过计算资源的限制，容器就会被终止。</p>
+<p>例如，在Docker中，通过docker
+run命令中的<strong>–cpu-shares、–cpu-quota、–memory</strong>等参数，可以指定容器对CPU和内存的使用限度。同样，在Pod模板中也提供了这个功能，Pod模板中的相关参数如下所示。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployment</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span>
+        <span class="c1">#资源限制和请求的设置</span>
+        <span class="nt">resources</span><span class="p">:</span>
+          <span class="c1">#资源限制的设置</span>
+          <span class="nt">limits</span><span class="p">:</span>
+            <span class="c1">#CPU的限制，单位为CPU内核数，将用于docker run --cpu-quota 参数；</span>
+            <span class="c1">#也可以使用小数，例如0.1，它等价于表达式100m（表示100milicore）</span>
+            <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;600m&quot;</span>
+            <span class="c1">#内存限制，单位可以为MiB/GiB/MB/GB，将用于docker run --memory参数，</span>
+            <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;500Mi&quot;</span>
+          <span class="c1">#资源请求的设置</span>
+          <span class="nt">requests</span><span class="p">:</span>
+            <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;100m&quot;</span>
+            <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;100Mi&quot;</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>requests和limits属性从不同维度保证Pod的资源占用情况。</p>
+<p>requests表示容器至少可获得的资源大小，也许容器实际上不会使用这么多资源，但Kubernetes在
+调度时会以此为参照，保证容器能调度到至少满足这些资源的机器上。</p>
+<p>而limits表示容器能够使用资源的最大限度，如果超过这个值，容器将被终止。</p>
+<p>本节用两个示例演示limits和requests的功能。</p>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodforresource.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforresource</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplecontainerforresource</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">vish/stress</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;-mem-total&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;150Mi&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-mem-alloc-size&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;5Mi&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-mem-alloc-sleep&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;1s&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">resources</span><span class="p">:</span>
+      <span class="nt">limits</span><span class="p">:</span>
+        <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;1&quot;</span>
+        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;100Mi&quot;</span>
+      <span class="nt">requests</span><span class="p">:</span>
+        <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;200m&quot;</span>
+        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;50Mi&quot;</span>
+</pre></div>
+</div>
+<p>在本例中，我们定义了一个名为examplecontainerforresource的容器，</p>
+<p>其资源上限分别为1个CPU内核和100MiB（1MiB=2 20 B，1MB=10 6
+B）内存空间，请求的资源为200milicore CPU和50MiB内存空间。</p>
+<p>该容器使用的镜像为vish/stress，这是一种专门用来测试容器性能和压力的工具镜像。在容器启动时，会分别传入多个参数。第一组参数为’-mem-total’,‘150Mi’，这表示将容器的内存占用量增加到150MiB，这将超过设置的最大值100MiB，但它不是一次达到150MiB的。第二组参数为’-mem-alloc-size’,‘5Mi’，这表示从0开始每次增加5MiB的内存占用。</p>
+<p>第三组参数为’-mem-alloc-sleep’,‘1s’，这表示增加内存占用量的时间间隔为1s。结合前面的参数，表示每秒增加5MiB的内存占用量，直到占用150MiB的内存空间。</p>
+<p>这个容器在创建初期不会有任何问题，和正常容器一样。但创建差不多20s后，追加的内存就会超过100MiB的限制。我们先应用模板，看看实际效果。</p>
+<p>创建Pod。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforresource.ym
+</pre></div>
+</div>
+<p>接下来，通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pod</span> <span class="pre">examplepodforresource</span></code>命令查看Pod的运行情况，直到状态变为Running</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod examplepodforresource
+NAME                    READY   STATUS    RESTARTS   AGE
+examplepodforresource   <span class="m">1</span>/1     Running   <span class="m">0</span>          60s
+</pre></div>
+</div>
+<p>此时如果使用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pod</span> <span class="pre">examplepodforresource</span></code>命令可以查看Pod的详细信息。在容器信息部分可以看到其资源设置情况</p>
+<img alt="../../_images/image-20220419133647324.png" src="../../_images/image-20220419133647324.png" />
+<p>最开始容器还能正常运行，但运行超过20s以后，因为压力测试工具不断施压，当其内存占用量超过了limits属性中设置的100MiB后，容器会被自动终止。此时通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pod</span></code>命令查询容器状态，可以发现其状态变为OOMKilled，READY变为0。基于容器的重启策略，容器会不断重启。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod
+NAME                                      READY   STATUS      RESTARTS   AGE
+examplepodforresource                     <span class="m">0</span>/1     OOMKilled   <span class="m">3</span>          90s
+</pre></div>
+</div>
+<p>最后，通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pod</span> <span class="pre">examplepodforresource</span> <span class="pre">-o</span> <span class="pre">yaml</span></code>命令查看详情，可以发现容器是由于超出资源限制而被终止的</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">kubectl</span> <span class="n">get</span> <span class="n">pod</span> <span class="n">examplepodforresource</span> <span class="o">-</span><span class="n">o</span> <span class="n">yaml</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Pod</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">kubectl</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">last</span><span class="o">-</span><span class="n">applied</span><span class="o">-</span><span class="n">configuration</span><span class="p">:</span> <span class="o">|</span>
+      <span class="p">{</span><span class="s2">&quot;apiVersion&quot;</span><span class="p">:</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span><span class="s2">&quot;kind&quot;</span><span class="p">:</span><span class="s2">&quot;Pod&quot;</span><span class="p">,</span><span class="s2">&quot;metadata&quot;</span><span class="p">:{</span><span class="s2">&quot;annotations&quot;</span><span class="p">:{},</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;examplepodforresource&quot;</span><span class="p">,</span><span class="s2">&quot;namespace&quot;</span><span class="p">:</span><span class="s2">&quot;default&quot;</span><span class="p">},</span><span class="s2">&quot;spec&quot;</span><span class="p">:{</span><span class="s2">&quot;containers&quot;</span><span class="p">:[{</span><span class="s2">&quot;args&quot;</span><span class="p">:[</span><span class="s2">&quot;-mem-total&quot;</span><span class="p">,</span><span class="s2">&quot;150Mi&quot;</span><span class="p">,</span><span class="s2">&quot;-mem-alloc-size&quot;</span><span class="p">,</span><span class="s2">&quot;5Mi&quot;</span><span class="p">,</span><span class="s2">&quot;-mem-alloc-sleep&quot;</span><span class="p">,</span><span class="s2">&quot;1s&quot;</span><span class="p">],</span><span class="s2">&quot;image&quot;</span><span class="p">:</span><span class="s2">&quot;vish/stress&quot;</span><span class="p">,</span><span class="s2">&quot;imagePullPolicy&quot;</span><span class="p">:</span><span class="s2">&quot;IfNotPresent&quot;</span><span class="p">,</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;examplecontainerforresource&quot;</span><span class="p">,</span><span class="s2">&quot;resources&quot;</span><span class="p">:{</span><span class="s2">&quot;limits&quot;</span><span class="p">:{</span><span class="s2">&quot;cpu&quot;</span><span class="p">:</span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="s2">&quot;memory&quot;</span><span class="p">:</span><span class="s2">&quot;100Mi&quot;</span><span class="p">},</span><span class="s2">&quot;requests&quot;</span><span class="p">:{</span><span class="s2">&quot;cpu&quot;</span><span class="p">:</span><span class="s2">&quot;200m&quot;</span><span class="p">,</span><span class="s2">&quot;memory&quot;</span><span class="p">:</span><span class="s2">&quot;50Mi&quot;</span><span class="p">}}}]}}</span>
+  <span class="n">creationTimestamp</span><span class="p">:</span> <span class="s2">&quot;2022-04-19T05:34:27Z&quot;</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">examplepodforresource</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">default</span>
+  <span class="n">resourceVersion</span><span class="p">:</span> <span class="s2">&quot;82218112&quot;</span>
+  <span class="n">selfLink</span><span class="p">:</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">pods</span><span class="o">/</span><span class="n">examplepodforresource</span>
+  <span class="n">uid</span><span class="p">:</span> <span class="mi">674</span><span class="n">b9153</span><span class="o">-</span><span class="mi">8541</span><span class="o">-</span><span class="mi">4</span><span class="n">a79</span><span class="o">-</span><span class="mi">8</span><span class="n">b81</span><span class="o">-</span><span class="n">e1efba17984d</span>
+  <span class="o">......</span>
+    <span class="n">lastState</span><span class="p">:</span>
+      <span class="n">terminated</span><span class="p">:</span>
+        <span class="n">containerID</span><span class="p">:</span> <span class="n">containerd</span><span class="p">:</span><span class="o">//</span><span class="mi">6</span><span class="n">befbf056b338e8d2947f3265e8a5e56084c7efa12953fe2e7f9848017e8ed01</span>
+        <span class="n">exitCode</span><span class="p">:</span> <span class="mi">137</span>
+        <span class="n">finishedAt</span><span class="p">:</span> <span class="s2">&quot;2022-04-19T05:37:21Z&quot;</span>
+        <span class="n">reason</span><span class="p">:</span> <span class="n">OOMKilled</span>
+        <span class="n">startedAt</span><span class="p">:</span> <span class="s2">&quot;2022-04-19T05:37:03Z&quot;</span>
+</pre></div>
+</div>
+<p>创建另一个示例，首先，创建examplepodforerror.yml文件</p>
+<p><code class="docutils literal notranslate"><span class="pre">examplepodforerror.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforerror</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplecontainerforerror</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">resources</span><span class="p">:</span>
+      <span class="nt">requests</span><span class="p">:</span>
+        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;500Gi&quot;</span>
+</pre></div>
+</div>
+<p>本例中的Pod和之前相比并没有什么特别之处，但设置了它的resource.requests.memory属性，其值为500GiB（1GiB=2
+30 字节，1GB=10 9
+字节），目前一般计算机应该不会有这么大的内存资源。我们先应用模板，看看实际效果。</p>
+<p>执行以下命令，创建Pod。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f examplepodforerror.yml
+</pre></div>
+</div>
+<p>通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pod</span> <span class="pre">examplepodforerror</span></code>命令查看Pod的运行情况，可以发现它的状态一直都是Pending</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod examplepodforerror
+NAME                 READY   STATUS    RESTARTS   AGE
+examplepodforerror   <span class="m">0</span>/1     Pending   <span class="m">0</span>          &lt;invalid&gt;
+</pre></div>
+</div>
+<p>接下来，通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pods</span> <span class="pre">examplepodforerror</span></code>命令，查看Pod的详细信息，在底部的Events区域可以发现造成Pending的原因</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl describe pods examplepodforerror
+</pre></div>
+</div>
+<p>如图所示，集群中没有任何一台机器能满足该Pod的内存要求。</p>
+<img alt="../../_images/image-20220419134730357.png" src="../../_images/image-20220419134730357.png" />
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="8.Kubernetes资源的管理及调度" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="2.%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4.html" class="btn btn-neutral float-right" title="资源管理-命名空间" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

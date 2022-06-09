@@ -1,0 +1,386 @@
+.. contents::
+   :depth: 3
+..
+
+DaemonSet控制器
+===============
+
+DaemonSet控制器是一种特殊的Pod控制器，会在集群中的各个节点上运行单一的Pod副本。
+
+它非常适合部署那些为节点本身提供服务或执行维护的Pod。
+
+例如，对于日志收集和转发、监控以及运行以增加节点本身功能为目的的服务，这些都使用DaemonSet控制器。
+
+因为DaemonSet控制器通常用于提供基本服务，并且每个节点都需要它，所以它可以绕过调度限制而直接部署到主机上。
+
+比如，原本Master服务器会不可用于常规的Pod调度，但因为DaemonSet控制器独特的职责，它可以越过基于Pod的限制，以确保基础服务的运行。
+
+DaemonSet控制器的一些典型用法包括但不限于以下几种。
+
+-  运行集群存储Daemon控制器，如在每个Node上运行glusterd、ceph。
+-  在每个Node上运行日志收集Daemon控制器，如Fluentd、logstash。
+-  在每个Node上运行监控Daemon控制器，如Prometheus Node
+   Exporter、collectd、Datadog代理、New Relic 代理或Ganglia gmond。
+
+*当把Node加入集群时，也会自动为它新增一个Pod。当从集群中移除Node时，对应的Pod也会被回收。*
+
+*删除DaemonSet控制器将会删除它创建的所有Pod。*
+
+1. DaemonSet yaml模板
+---------------------
+
+``DaemonSet除了不用设置replicas，其他的与Deployment一致``
+
+.. code:: yaml
+
+   apiVersion: apps/v1      #必填，版本号
+   kind: DaemonSet     #必填，资源类型
+   metadata:       #必填，元数据
+     name: <name>-ds     #必填，资源名称
+     namespace: <namespace>    #Pod所属的命名空间
+     labels:      #自定义标签
+       - name: string     #自定义标签名字<key: value>
+   spec:         #必填，部署的详细定义
+     selector: #必填，标签选择
+       matchLabels: #必填，标签匹配
+         name: <name> #必填，通过此标签匹配对应pod<key: value>
+     template: #必填，应用容器模版定义
+       metadata: 
+         labels: 
+           name: <name> #必填，与上面matchLabels的标签相同
+       spec: 
+         containers: #此处参考pod的containers
+
+-  yaml示例：监控组件node-exporter部署示例
+
+.. code:: yaml
+
+   apiVersion: apps/v1
+   kind: DaemonSet
+   metadata:
+     labels:
+       app: node-exporter-ds
+     name: node-exporter-ds
+     namespace: test
+   spec:
+     selector:
+       matchLabels:
+         app: node-exporter
+     template:
+       metadata:
+         labels:
+           app: node-exporter
+       spec:
+         containers:
+         - args:
+           - --web.listen-address=127.0.0.1:9100
+           - --path.procfs=/host/proc
+           - --path.sysfs=/host/sys
+           - --path.rootfs=/host/root
+           - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+)($|/)
+           - --collector.filesystem.ignored-fs-types=^(autofs|binfmt_misc|cgroup|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|sysfs|tracefs)$
+           image: prometheus/node-exporter:v0.18.1
+           name: node-exporter
+           resources:
+             limits:
+               cpu: 250m
+               memory: 180Mi
+             requests:
+               cpu: 102m
+               memory: 180Mi
+           volumeMounts:
+           - mountPath: /host/proc
+             name: proc
+             readOnly: false
+           - mountPath: /host/sys
+             name: sys
+             readOnly: false
+           - mountPath: /host/root
+             mountPropagation: HostToContainer
+             name: root
+             readOnly: true
+         - args:
+           - --logtostderr
+           - --secure-listen-address=$(IP):9100
+           - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+           - --upstream=http://127.0.0.1:9100/
+           env:
+           - name: IP
+             valueFrom:
+               fieldRef:
+                 fieldPath: status.podIP
+           image: 172.16.140.21/prometheus/kube-rbac-proxy:v0.4.1
+           name: kube-rbac-proxy
+           ports:
+           - containerPort: 9100
+             hostPort: 9100
+             name: https
+           resources:
+             limits:
+               cpu: 20m
+               memory: 60Mi
+             requests:
+               cpu: 10m
+               memory: 20Mi
+         hostNetwork: true
+         hostPID: true
+         nodeSelector:
+           kubernetes.io/os: linux
+         securityContext:
+           runAsNonRoot: true
+           runAsUser: 65534
+         serviceAccountName: node-exporter
+         tolerations:
+         - operator: Exists
+         volumes:
+         - hostPath:
+             path: /proc
+           name: proc
+         - hostPath:
+             path: /sys
+           name: sys
+         - hostPath:
+             path: /
+           name: root
+
+2.DaemonSet控制器的基本操作
+---------------------------
+
+``exampleDaemonset.yml``
+
+.. code:: yaml
+
+   apiVersion: apps/v1
+   kind: DaemonSet
+   metadata:
+     name: exampledaemonset
+   spec:
+     selector:
+       matchLabels:
+         example: deploymentforhttpd
+     template:
+       metadata:
+         labels:
+           example: deploymentforhttpd
+       spec:
+         containers:
+           - name: httpd
+             image: httpd:2.2
+             ports:
+             - containerPort: 80
+               hostPort: 8082
+               protocol: TCP
+
+该模板的含义如下。
+
+-  apiVersion表示使用的API版本，apps/v1表示使用Kubernetes
+   API的稳定版本。
+-  kind表示要创建的资源对象，这里使用关键字DaemonSet。
+-  metadata表示该资源对象的元数据。一个资源对象可拥有多个元数据，其中一项是name，这表示当前资源的命名。
+-  spec表示该资源对象的具体设置。
+-  selector/matchLabels：用于定义一个或多个自定义标签（label），其形式为键值对，这对Pod起筛选作用，会选
+   择与标签定义相匹配的Pod。这在后续章节会详细解说，因为它是必填字段，所以这里填写了一个示例值。
+-  template：Pod模板，具体的模板。httpd镜像中默认定义的对外提供服务的端口为80。通过
+   containerPort属性，我们将80端口暴露出来，再通过hostPort属性映射到宿主机的端口8082上，以便通过“主
+   机IP:端口”形式访问容器所提供的服务。
+
+运行以下命令，通过模板创建DaemonSet控制器。
+
+.. code:: bash
+
+   $ kubectl apply -f exampleDaemonset.yml
+
+部署完成后，可以通过以下命令查看当前DaemonSet控制器的状态。
+
+.. code:: bash
+
+   $ kubectl get daemonset
+   NAME               DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+   exampledaemonset   28        28        2       28           2           <none>          23s
+
+DESIRED表示预期的Pod数（因为有28个Node，所以为28），CURRENT表示当前的Pod数。
+
+同样，也可以通过$ kubectl get pods -o
+wide命令查看Pod的状态。可以看到我们并没有指定需要多少个Pod副本，DaemonSet
+控制器会为每台Node分配一个Pod。
+
+.. code:: bash
+
+   $ kubectl get pod -o wide
+   NAME                     READY   STATUS    RESTARTS   AGE    IP            NODE            NOMINATED NODE   READINESS GATES
+   exampledaemonset-5h2jj   1/1     Running   0          2m1s   10.0.12.216   gitee-k8s-w23   <none>           <none>
+   exampledaemonset-6frgf   1/1     Running   0          2m1s   10.0.16.156   gitee-k8s-w11   <none>           <none>
+   exampledaemonset-7wtz9   1/1     Running   0          2m1s   10.0.23.119   gitee-k8s-w28   <none>           <none>
+   exampledaemonset-8qlgj   1/1     Running   0          2m1s   10.0.9.39     gitee-k8s-w16   <none>           <none>
+   exampledaemonset-96pfr   1/1     Running   0          2m1s   10.0.36.190   gitee-k8s-w08   <none>           <none>
+   exampledaemonset-9vph6   1/1     Running   0          2m1s   10.0.7.93     gitee-k8s-w19   <none>           <none>
+
+通过浏览器进入“NodeIP:8082”，就可以访问对应节点的Daemon进程。
+
+::
+
+   [root@ci-base daemonset]# curl 192.168.1.35:8082
+   <html><body><h1>It works!</h1></body></html>[root@ci-base daemonset]#
+
+如果此时有新的Node加入集群中，Kubernetes也会自动为新节点增加一个exampleDaemonset
+Pod。
+
+除了我们自己创建的DeamonSet控制器以外，Kubernetes本身的一些组件也是使用DeamonSet控制器来管理的。使用以下命令，可以查看Kubernetes系统的DaemonSet控制器。
+
+.. code:: bash
+
+   # Kubernetes系统的DaemonSet控制器
+   $ kubectl get daemonset --namespace=kube-system
+   NAME     DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+   cilium   33        33        33      33           33          <none>          167d
+
+要了解一个正在运行的Pod的配置，可以通过以下命令来获取。
+
+.. code:: bash
+
+   $ kubectl get daemonset {daemonset名称} -o yaml
+
+如果是Kubernetes系统级的DaemonSet控制器，则还需要在命令中加上–namespace=
+kube-system，例如，下面的命令。
+
+.. code:: bash
+
+   $ kubectl get daemonset cilium --namespace=kube-system -o yaml
+
+查看DaemonSet控制器配置得到的执行结果
+
+::
+
+   $ kubectl get daemonset cilium --namespace=kube-system -o yaml
+   apiVersion: apps/v1
+   kind: DaemonSet
+   metadata:
+     annotations:
+       deprecated.daemonset.template.generation: "1"
+       meta.helm.sh/release-name: cilium
+       meta.helm.sh/release-namespace: kube-system
+     creationTimestamp: "2021-10-26T12:08:24Z"
+     generation: 1
+     labels:
+       app.kubernetes.io/managed-by: Helm
+       k8s-app: cilium
+     name: cilium
+     namespace: kube-system
+     resourceVersion: "75428394"
+     selfLink: /apis/apps/v1/namespaces/kube-system/daemonsets/cilium
+     uid: 6bf95d76-fb85-41b0-8def-3cf8bc78ab3e
+   spec:
+     revisionHistoryLimit: 10
+     selector:
+       matchLabels:
+         k8s-app: cilium
+     template:
+       metadata:
+         annotations:
+           scheduler.alpha.kubernetes.io/critical-pod: ""
+         creationTimestamp: null
+         labels:
+           k8s-app: cilium
+   .....
+
+3.DaemonSet控制器的更新
+-----------------------
+
+DaemonSet控制器有两种更新方式。
+
+-  RollingUpdate：当使用RollingUpdate方式时，在更新DaemonSet
+   控制器模板后，旧的DaemonSet
+   Pod将被终止，并且将以受控方式自动创建新的DaemonSet Pod。
+-  OnDelete：这是向后兼容的默认更新方式。当使用OnDelete更新方式时，在更新DaemonSet控制器模板后，只有手动删除旧的DaemonSet控制器Pod后，才会创建新的DaemonSet控制器Pod。这与Kubernetes
+   1.5或更早版本中DaemonSet控制器的行为相同。
+
+3.1 RollingUpdate
+~~~~~~~~~~~~~~~~~
+
+对于RollingUpdate，与之前Deployment控制器不一样的地方在于，
+
+**DaemonSet控制器中的RollingUpdate只支持maxUnavailable属性。**
+
+*因为DaemonSet控制器是在每个Node主机上启动的唯一Pod，不能启动多余的节点，所以无法使用maxSurge属性。*
+
+RollingUpdate与deployment的类似，这里就不再介绍了。
+
+3.2 OnDelete
+~~~~~~~~~~~~
+
+OnDelete更新方式。 为了修改之前的yml文件，将其从httpd
+2.2版本升级到2.4版本， 首先，运行如下命令。
+
+.. code:: yaml
+
+   apiVersion: apps/v1
+   kind: DaemonSet
+   metadata:
+     name: exampledaemonset
+   spec:
+     selector:
+       matchLabels:
+         example: deploymentforhttpd
+     template:
+       metadata:
+         labels:
+           example: deploymentforhttpd
+       spec:
+         containers:
+           - name: httpd
+             image: httpd:2.4
+             ports:
+             - containerPort: 80
+               hostPort: 8082
+               protocol: TCP
+     updateStrategy:
+       type: OnDelete
+
+接下来，运行以下命令，通过模板创建DaemonSet控制器。
+
+.. code:: bash
+
+   $ kubectl get daemonset
+   NAME               DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+   exampledaemonset   28        28        28      28           28          <none>          14s
+
+   $ kubectl apply -f exampleDaemonset.yml
+   daemonset.apps/exampledaemonset configured
+
+   $ kubectl get daemonset
+   NAME               DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+   exampledaemonset   28        28        28      0            28          <none>          2m19s
+
+此时通过\ ``$ kubectl get daemonset``\ 命令查看状态，可以发现UP-TO-DATE变为0，表示DaemonSet控制器现在都是旧版本，
+
+接下来，执行\ ``$ kubectl get pods -o wide``\ 命令，现在所有的Pod都是旧版本
+
+.. code:: bash
+
+   $ kubectl get pod  -o wide
+   NAME                     READY   STATUS    RESTARTS   AGE   IP            NODE            NOMINATED NODE   READINESS          GATES
+   exampledaemonset-4dghq   1/1     Running   0          99s   10.0.37.173   gitee-k8s-w09   <none>           <none>
+   exampledaemonset-4rcmq   1/1     Running   0          98s   10.0.18.230   gitee-k8s-w25   <none>           <none>
+   exampledaemonset-4s5cc   1/1     Running   0          99s   10.0.6.200    gitee-k8s-w27   <none>           <none>
+   exampledaemonset-6dlbh   1/1     Running   0          99s   10.0.32.85    gitee-k8s-w05   <none>           <none>
+   exampledaemonset-6r52w   1/1     Running   0          99s   10.0.25.143   gitee-k8s-w17   <none>           <none>
+   ....
+
+接下来，删除第一个Pod以触发更新，在本例中为exampledaemonset-4dghq，这个Pod所在的机器为gitee-k8s-w09。执行如下
+命令。
+
+.. code:: bash
+
+   $ kubectl delete pod exampledaemonset-4dghq
+
+接下来，执行\ ``$ kubectl get pods -o wide``\ 命令，可以看到原来旧版本的
+exampledaemonset-4dghq已经被删除，取而代之的是一个新版本Pod。
+
+最后，通过\ ``$ kubectl get daemonset``\ 命令查看状态，可以发现UP-TO-DATE变为1，这表示已经有1台机器上的DaemonSet控制器是
+新版本了。
+
+.. code:: bash
+
+   $ kubectl get daemonset
+   NAME               DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+   exampledaemonset   28        28        28      1            28          <none>          5m25s

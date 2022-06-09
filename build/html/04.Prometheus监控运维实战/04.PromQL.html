@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PromQL &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="告警处理" href="05.%E5%91%8A%E8%AD%A6%E5%A4%84%E7%90%86.html" />
+    <link rel="prev" title="服务发现" href="03.%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">04.Prometheus监控运维实战</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.Prometheus%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%8F%8A%E9%83%A8%E7%BD%B2.html">Prometheus基本概念及部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Prometheus%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80.html">Prometheus技术基础</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.html">服务发现</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">PromQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.%E5%91%8A%E8%AD%A6%E5%A4%84%E7%90%86.html">告警处理</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../05.Kubernetes%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/index.html">05.Kubernetes入门到实践</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">04.Prometheus监控运维实战</a> &raquo;</li>
+      <li>PromQL</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/04.Prometheus监控运维实战/04.PromQL.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#promql" id="id1">PromQL</a></p></li>
+</ul>
+</div>
+<section id="promql">
+<h1><a class="toc-backref" href="#id1">PromQL</a><a class="headerlink" href="#promql" title="Permalink to this headline">¶</a></h1>
+<p>Prometheus提供了一种功能强大的表达式语言PromQL（Prometheus
+QueryLanguage）。PromQL允许用户实时选择和汇聚时间序列数据，是Prometheus自己开发的数据查询DSL语言，使用这个查询语言能够进行各种聚合、分析和计算，使管理员能够根据指标更好地了解系统性能。本章首先对时序数据库进行介绍，了解其应用场景；然后对PromQL内容进行说明，包括PromQL数据类型、时序选择器、聚合操作、各类运算符和函数；最后通过简单的示例对PromQL查询操作进行汇总分析。</p>
+<p>Prometheus还提供了下列内置的聚合操作符，这些操作符作用域瞬时向量。可以将瞬时表达式返回的样本数据进行聚合，形成一个新的时间序列。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sum</span></code> (求和)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code> (最小值)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max</span></code> (最大值)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">avg</span></code> (平均值)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stddev</span></code> (标准差)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stdvar</span></code> (标准差异)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">count</span></code> (计数)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">count_values</span></code> (对value进行计数)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bottomk</span></code> (后n条时序)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">topk</span></code> (前n条时序)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quantile</span></code> (分布统计)</p></li>
+</ul>
+<p>使用聚合操作的语法如下：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;aggr-op&gt;([parameter,] &lt;vector expression&gt;) [without|by (&lt;label list&gt;)]
+</pre></div>
+</div>
+<p>其中只有<code class="docutils literal notranslate"><span class="pre">count_values</span></code>, <code class="docutils literal notranslate"><span class="pre">quantile</span></code>, <code class="docutils literal notranslate"><span class="pre">topk</span></code>,
+<code class="docutils literal notranslate"><span class="pre">bottomk</span></code>支持参数(parameter)</p>
+<p>without用于从计算结果中移除列举的标签，而保留其它标签。by则正好相反，结果向量中只保留列出的标签，其余标签则移除。通过without和by可以按照样本的问题对数据进行聚合。</p>
+<p>例如：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sum(prometheus_http_requests_total) without (instance)
+</pre></div>
+</div>
+<p>等价于</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sum(prometheus_http_requests_total) by (code,handler,job,method)
+</pre></div>
+</div>
+<p><strong>略有不同是排序</strong></p>
+<p>如果只需要计算整个应用的HTTP请求总量，可以直接使用表达式：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sum(prometheus_http_requests_total)
+</pre></div>
+</div>
+<p>count_values用于时间序列中每一个样本值出现的次数。count_values会为每一个唯一的样本值输出一个时间序列，并且每一个时间序列包含一个额外的标签。</p>
+<p>例如：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>count_values(&quot;count&quot;, prometheus_http_requests_total)
+</pre></div>
+</div>
+<p>topk和bottomk则用于对样本值进行排序，返回当前样本值前n位，或者后n位的时间序列。</p>
+<p>获取HTTP请求数前5位的时序样本数据，可以使用表达式：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>topk(5, prometheus_http_requests_total)
+</pre></div>
+</div>
+<p>quantile用于计算当前样本数据值的分布情况quantile(φ, express)其中0 ≤ φ ≤
+1。</p>
+<p>例如，当φ为0.5时，即表示找到当前样本数据中的中位数：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>quantile(0.5, prometheus_http_requests_total)
+</pre></div>
+</div>
+<p>prometheus-监控项</p>
+<p><a class="reference external" href="https://blog.csdn.net/han949417140/article/details/112462319">https://blog.csdn.net/han949417140/article/details/112462319</a></p>
+<p>使用正则表达式过滤变量</p>
+<p><a class="reference external" href="https://grafana.com/docs/grafana/latest/variables/filter-variables-with-regex/#filter-and-modify-using-named-text-and-value-capture-groups">https://grafana.com/docs/grafana/latest/variables/filter-variables-with-regex/#filter-and-modify-using-named-text-and-value-capture-groups</a></p>
+<p>node-exporter常用指标含义</p>
+<p><a class="reference external" href="https://blog.csdn.net/yjph83/article/details/84909319">https://blog.csdn.net/yjph83/article/details/84909319</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/robinunix/p/11276296.html">https://www.cnblogs.com/robinunix/p/11276296.html</a></p>
+<p>参考文献：</p>
+<p><a class="reference external" href="https://zhuanlan.zhihu.com/p/121104877">https://zhuanlan.zhihu.com/p/121104877</a></p>
+<p><a class="reference external" href="https://www.bookstack.cn/read/prometheus-book/promql-README.md">https://www.bookstack.cn/read/prometheus-book/promql-README.md</a></p>
+<p><a class="reference external" href="https://www.bookstack.cn/read/prometheus_practice/promql-summary.md">https://www.bookstack.cn/read/prometheus_practice/promql-summary.md</a></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="03.%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.html" class="btn btn-neutral float-left" title="服务发现" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="05.%E5%91%8A%E8%AD%A6%E5%A4%84%E7%90%86.html" class="btn btn-neutral float-right" title="告警处理" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

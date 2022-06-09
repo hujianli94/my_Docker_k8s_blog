@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prometheus技术基础 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="服务发现" href="03.%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.html" />
+    <link rel="prev" title="Prometheus基本概念及部署" href="01.Prometheus%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%8F%8A%E9%83%A8%E7%BD%B2.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">04.Prometheus监控运维实战</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.Prometheus%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%8F%8A%E9%83%A8%E7%BD%B2.html">Prometheus基本概念及部署</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Prometheus技术基础</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#exporter">1.Exporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">2.Exporter类型</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">2.1 文本数据格式</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">2.2 获取Exporter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id4">2.2.1 测试主机列表及其软件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">2.2.2 软件下载清单</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">2.2.3 主机监控</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">2.2.4 数据库监控</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nginx">2.2.5 Nginx监控</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">2.2.6 Prometheus之黑盒监控</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#docker">2.2.7 Docker监控</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kubernets">2.2.8 kubernets监控</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">本章小结</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="03.%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.html">服务发现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.PromQL.html">PromQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.%E5%91%8A%E8%AD%A6%E5%A4%84%E7%90%86.html">告警处理</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../05.Kubernetes%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/index.html">05.Kubernetes入门到实践</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">04.Prometheus监控运维实战</a> &raquo;</li>
+      <li>Prometheus技术基础</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/04.Prometheus监控运维实战/02.Prometheus技术基础.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#prometheus" id="id10">Prometheus技术基础</a></p>
+<ul>
+<li><p><a class="reference internal" href="#exporter" id="id11">1.Exporter</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id12">2.Exporter类型</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id13">2.1 文本数据格式</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id3" id="id14">2.2 获取Exporter</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id4" id="id15">2.2.1 测试主机列表及其软件</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id16">2.2.2 软件下载清单</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id17">2.2.3 主机监控</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id18">2.2.4 数据库监控</a></p></li>
+<li><p><a class="reference internal" href="#nginx" id="id19">2.2.5 Nginx监控</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id20">2.2.6 Prometheus之黑盒监控</a></p></li>
+<li><p><a class="reference internal" href="#docker" id="id21">2.2.7 Docker监控</a></p></li>
+<li><p><a class="reference internal" href="#kubernets" id="id22">2.2.8 kubernets监控</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id9" id="id23">本章小结</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="prometheus">
+<h1><a class="toc-backref" href="#id10">Prometheus技术基础</a><a class="headerlink" href="#prometheus" title="Permalink to this headline">¶</a></h1>
+<section id="exporter">
+<h2><a class="toc-backref" href="#id11">1.Exporter</a><a class="headerlink" href="#exporter" title="Permalink to this headline">¶</a></h2>
+<p>Prometheus核心组件中，Exporter是重要的组成部分，在实际中监控样本数据的收集都是由Exporter完成的，Prometheus服务器只需要定时从这些Exporter提供的HTTP服务获取监控数据即可。</p>
+<p>本章将对Exporter的类型以及文本数据格式进行说明，讨论如何从官方的Exporter列表获取常用的Exporter，比如用于监控基础设施中服务器性能的node_exporter、wmi_exporter，用于对数据库监控的mysqld_exporter和redis_exporter等。</p>
+<p>并对这些获取特定目标监控样本数据的Exporter软件包进行安装集成，最终可以很直观地通过Prometheus
+Web UI浏览采集到的各类监控数据。</p>
+</section>
+<section id="id1">
+<h2><a class="toc-backref" href="#id12">2.Exporter类型</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>通常来说可以将Exporter分为两类：</p>
+<ul class="simple">
+<li><p>直接采集型。这类Exporter直接内置了相应的应用程序，用于向Prometheus直接提供Target数据支持。这样设计的好处是，可以更好地监控各自系统的内部运行状态，同时也适合更多自定义监控指标的项目实施。例如cAdvisor、Kubernetes等，它们均内置了用于向Prometheus提供监控数据的端点。</p></li>
+<li><p>间接采集型。原始监控目标并不直接支持Prometheus，需要我们使用Prometheus提供的Client
+Library编写该监控目标的监控采集程序，用户可以将该程序独立运行，去获取指定的各类监控数据值。例如，由于Linux操作系统自身并不能直接支持Prometheus，用户无法从操作系统层面上直接提供对Prometheus的支持，因此单独提供Node
+exporter，还有数据库或网站HTTP应用类等Exporter。</p></li>
+</ul>
+<section id="id2">
+<h3><a class="toc-backref" href="#id13">2.1 文本数据格式</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Prometheus的所有流程都需要使用基于文本的格式。现在我们可以使用浏览器访问已经部署完成的metrics，可以从Prometheus
+Web UI提供的页面http://192.168.24.17:9090/metrics来获取信息.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># HELP go_gc_duration_seconds A summary of the GC invocation durations.</span>
+<span class="c1"># TYPE go_gc_duration_seconds summary</span>
+<span class="n">go_gc_duration_seconds</span><span class="p">{</span><span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">}</span> <span class="mf">1.6686e-05</span>
+<span class="n">go_gc_duration_seconds</span><span class="p">{</span><span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;0.25&quot;</span><span class="p">}</span> <span class="mf">2.3724e-05</span>
+<span class="n">go_gc_duration_seconds</span><span class="p">{</span><span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">}</span> <span class="mf">3.4785e-05</span>
+<span class="n">go_gc_duration_seconds</span><span class="p">{</span><span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;0.75&quot;</span><span class="p">}</span> <span class="mf">5.5535e-05</span>
+<span class="n">go_gc_duration_seconds</span><span class="p">{</span><span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">}</span> <span class="mf">0.000209371</span>
+<span class="n">go_gc_duration_seconds_sum</span> <span class="mf">0.017473216</span>
+<span class="n">go_gc_duration_seconds_count</span> <span class="mi">304</span>
+<span class="c1"># HELP go_goroutines Number of goroutines that currently exist.</span>
+<span class="c1"># TYPE go_goroutines gauge</span>
+<span class="n">go_goroutines</span> <span class="mi">88</span>
+<span class="c1"># HELP go_info Information about the Go environment.</span>
+<span class="c1"># TYPE go_info gauge</span>
+<span class="n">go_info</span><span class="p">{</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;go1.13.4&quot;</span><span class="p">}</span> <span class="mi">1</span>
+<span class="c1"># HELP go_memstats_alloc_bytes Number of bytes allocated and still in use.</span>
+<span class="c1"># TYPE go_memstats_alloc_bytes gauge</span>
+<span class="n">go_memstats_alloc_bytes</span> <span class="mf">4.170512e+07</span>
+<span class="c1"># HELP go_memstats_alloc_bytes_total Total number of bytes allocated, even if freed.</span>
+<span class="c1"># TYPE go_memstats_alloc_bytes_total counter</span>
+<span class="n">go_memstats_alloc_bytes_total</span> <span class="mf">7.036375856e+09</span>
+<span class="c1"># HELP go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table.</span>
+<span class="c1"># TYPE go_memstats_buck_hash_sys_bytes gauge</span>
+<span class="n">go_memstats_buck_hash_sys_bytes</span> <span class="mf">1.871112e+06</span>
+<span class="c1"># HELP go_memstats_frees_total Total number of frees.</span>
+</pre></div>
+</div>
+<p>这些样本数据集合说明如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·以#HELP开始的行，表示metric的帮助与说明注释，可以包含当前监控指标名称和对应的说明信息。
+
+·以#TYPE开始的行，表示定义metric类型，可以包含当前监控指标名称和类型，类型有Counter、Gauge、Histogram、Summary和Untyped。
+
+·以非#开始的行，即监控样本数据。
+
+·其他一般性注释，方便阅读使用，会被Prometheus忽略。
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id14">2.2 获取Exporter</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>Prometheus Exporter社区很活跃，提供了支持120+常见开源组件的Exporter，</p>
+<p>一些比较有名的技术厂商都专门编写对应的Prometheus
+Exporter，例如，Oracle编写的Weblogic Exporter，IBM编写的IBM MQ
+exporter，Kubernetes、etcd都直接内置了基于Exporter规范的Metrics。</p>
+<p>在众多的第三方提供的Exporter中，有一些Exporter作为Prometheus
+GitHub官方组织的一部分进行维护，这些Exporter会被标记为官方。</p>
+<p>可以在Prometheus官网https://prometheus.io/docs/instrumenting/exporters/</p>
+<p>里看到常用的Node/system metrics exporter（official）和MySQL server
+exporter（official）。在这些Exporter的名称末尾都标示了（official），即官方进行维护的Exporter。</p>
+<p>我们也可以直接到Prometheus
+GitHub官网https://github.com/prometheus上获取对应的Exporter最新版本。</p>
+<p>我们将以下演示环境中用到的应用信息进行汇总，方便大家后续操作中查看</p>
+<section id="id4">
+<h3><a class="toc-backref" href="#id15">2.2.1 测试主机列表及其软件</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 19%" />
+<col style="width: 44%" />
+<col style="width: 8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>名称</p></th>
+<th class="head"><p>IP地址</p></th>
+<th class="head"><p>软件信息</p></th>
+<th class="head"><p>端口</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>prometheus</p></td>
+<td><p>192.168.1.x</p></td>
+<td><p>prometheus-2.4.0.linux…</p></td>
+<td><p>9090</p></td>
+</tr>
+<tr class="row-odd"><td><p>Grafana</p></td>
+<td><p>192.168.1.x</p></td>
+<td><p>grafana-5.2.4-1.x86_64.zip</p></td>
+<td><p>3000</p></td>
+</tr>
+<tr class="row-even"><td><p>Linux主机</p></td>
+<td><p>192.168.1.x</p></td>
+<td><p>node_exporter-0.16.0.linux…</p></td>
+<td><p>9100</p></td>
+</tr>
+<tr class="row-odd"><td><p>Windows主机</p></td>
+<td><p>192.168.1.x</p></td>
+<td><p>wmi_exporter-0.5.0-amd64.msi</p></td>
+<td><p>9182</p></td>
+</tr>
+<tr class="row-even"><td><p>MySQL主机</p></td>
+<td><p>192.168.1.x</p></td>
+<td><p>mysqld_exporter-0.11.0.linux…</p></td>
+<td><p>9104</p></td>
+</tr>
+<tr class="row-odd"><td><p>Redis主机</p></td>
+<td><p>192.168.1.xx</p></td>
+<td><p>redis-exporter-v0.23.0.linux…</p></td>
+<td><p>9121</p></td>
+</tr>
+<tr class="row-even"><td><p>Nginx主机</p></td>
+<td><p>192.168.1.xxx</p></td>
+<td><p>nginx-vts-exporter-0.10.3.linux…</p></td>
+<td><p>9913</p></td>
+</tr>
+<tr class="row-odd"><td><p>Blackbox Exporter主机</p></td>
+<td><p>192.168.1.xx</p></td>
+<td><p>blackbox_exporter-0.14.0.linux…</p></td>
+<td><p>9115</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id5">
+<h3><a class="toc-backref" href="#id16">2.2.2 软件下载清单</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>自行百度下载</p>
+</section>
+<section id="id6">
+<h3><a class="toc-backref" href="#id17">2.2.3 主机监控</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<section id="linux">
+<h4>1 Linux主机监控<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h4>
+<p><strong>1.下载部署</strong></p>
+<p>在安装之前，首先在官方下载页面https://prometheus.io/download/找到Nodeexporter列表，下载最新版本中特定平台的二进制文件。或者直接在官方的Prometheus
+GitHub下载，在https://github.com/prometheus/node_exporter/releases下载指定的Node
+exporter版本所对应的特定平台的二进制文件。然后开始Node
+exporter的安装部署以及使用。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl -OL https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz
+
+$ tar zxvf node_exporter-1.1.2.linux-amd64.tar.gz
+$ <span class="nb">cd</span> node_exporter-1.1.2.linux-amd64
+$ mkdir /data/node_exporter
+$ mv node_exporter /data/node_exporter/
+
+<span class="o">[</span>root@cicd-dev node_exporter<span class="o">]</span><span class="c1"># ./node_exporter</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Starting node_exporter <span class="o">(</span><span class="nv">version</span><span class="o">=</span><span class="m">0</span>.16.0, <span class="nv">branch</span><span class="o">=</span>HEAD, <span class="nv">revision</span><span class="o">=</span>d42bd70f4363dced6b77d8fc311ea57b63387e4f<span class="o">)</span>  <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:82&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Build context <span class="o">(</span><span class="nv">go</span><span class="o">=</span>go1.9.6, <span class="nv">user</span><span class="o">=</span>root@a67a9bc13a69, <span class="nv">date</span><span class="o">=</span><span class="m">20180515</span>-15:52:42<span class="o">)</span>  <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:83&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Enabled collectors:                           <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:90&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - arp                                        <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - bcache                                     <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - bonding                                    <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - conntrack                                  <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - cpu                                        <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - diskstats                                  <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - edac                                       <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - entropy                                    <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - filefd                                     <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - filesystem                                 <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - hwmon                                      <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  - infiniband                                 <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;node_exporter.go:97&quot;</span>
+</pre></div>
+</div>
+<p>先在终端界面启动node_exporter，成功启动后可以看到默认监听端口是9100，其中“Enabled
+collectors”列是node_exporter默认情况下启用的功能。如果想更换默认监控端口，需要启动时添加参数<code class="docutils literal notranslate"><span class="pre">--web.listen-address=&quot;0.0.0.0:9200&quot;</span></code>即可，更多方法可以使用#./node_exporter-h查看相关帮助信息。</p>
+<p>添加node_exporter为系统服务开机启动</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ cat &gt;/usr/lib/systemd/system/node_exporter.service <span class="s">&lt;&lt;EOF</span>
+<span class="s">[Unit]</span>
+<span class="s">Description=node_exporter</span>
+<span class="s">Documentation=https://prometheus.io/</span>
+<span class="s">After=network-online.target</span>
+<span class="s">[Service]</span>
+<span class="s">Type=simple</span>
+<span class="s">User=root</span>
+<span class="s">Group=root</span>
+<span class="s">ExecStart=/data/node_exporter/node_exporter</span>
+<span class="s">Restart=on-failure</span>
+<span class="s">[Install]</span>
+<span class="s">WantedBy=multi-user.target</span>
+<span class="s">EOF</span>
+</pre></div>
+</div>
+<p>设置开机自启动</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">daemon</span><span class="o">-</span><span class="n">reload</span>
+<span class="n">systemctl</span> <span class="n">enable</span> <span class="n">node_exporter</span>
+<span class="n">systemctl</span> <span class="n">stop</span> <span class="n">node_exporter</span>
+<span class="n">systemctl</span> <span class="n">start</span> <span class="n">node_exporter</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ ps aux <span class="p">|</span>grep node_exporter
+<span class="m">992</span>      <span class="m">12057</span>  <span class="m">0</span>.1  <span class="m">0</span>.1  <span class="m">22216</span> <span class="m">11352</span> ?        Ssl  Feb04  <span class="m">52</span>:32 /opt/gitlab/embedded/bin/node_exporter --web.listen-address<span class="o">=</span>localhost:9100 --collector.textfile.directory<span class="o">=</span>/var/opt/gitlab/node-exporter/textfile_collector
+root     <span class="m">25878</span>  <span class="m">0</span>.0  <span class="m">0</span>.0 <span class="m">113404</span>  <span class="m">5768</span> ?        Ssl  <span class="m">09</span>:34   <span class="m">0</span>:00 /data/node_exporter/node_exporter
+</pre></div>
+</div>
+<p>至此，我们完成了对node_exporter的下载安装，并对其进行了系统服务添加和开机自启动设置。</p>
+<p><strong>2.与Prometheus集成</strong></p>
+<p>当启动node_exporter在后台开始工作时，node_exporter和Prometheus还没有进行对接关联，此时，二者只是各自独立运行的应用程序。现在需要将已安装部署好的node_exporter添加到Prometheus服务器中。可以在Prometheus主机目录中，找到主配置文件，使用其中的静态配置功能static_configs来采集node_exporter提供的数据。</p>
+<p>在默认配置文件的基础上，重新编辑prometheus.yml文件，添加job与node_exporter进行关联的参考配置内容如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">job_name</span><span class="p">:</span> <span class="s1">&#39;prometheus&#39;</span>
+  <span class="n">static_configs</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">targets</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;localhost:9090&#39;</span><span class="p">]</span>
+
+<span class="o">-</span> <span class="n">job_name</span><span class="p">:</span> <span class="s1">&#39;node_exporter&#39;</span>
+  <span class="n">static_configs</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">targets</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;192.168.1.27:9100&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>注意，这里的YAML语法空格缩进；prometheus.yml配置文件中的prometheus和node_exporter均部署不同的主机上。</p>
+<p>进入Targets页面后，可以在列表中看到刚才配置好的node_exporter的状态为“UP”，说明Prometheus最后一次从Node
+exporter中采集数据是成功的，此刻，被监控的服务器主机工作运行状态是正常的。</p>
+<img alt="../_images/prometheus-004.png" src="../_images/prometheus-004.png" />
+<p>当然，我们也可以使用浏览器访问Prometheus web
+UI提供的graph页面地址http://192.168.1.37:9090/graph，在搜索框中输入“up”进行搜索，或者直接在“Execute”按钮后的选项框中，点击下拉按钮选择最末尾的“up”，再点击“Execute”进行搜索.</p>
+<p><strong>3.metrics查看</strong></p>
+<p>Node
+exporter服务正常运行时，使用浏览器访问被监控主机的页面地址http://192.168.1.37:9090/metrics，可以直接查看当前被监控主机的样本信息。列举以下常见的几类监控指标。</p>
+<p>我们也可以在Prometheus Web
+UI中的Graph页面中查询到node_memory_MemTotal_bytes信息</p>
+<p>由于与内存数据采集相关的metric太多了，在此我们就不一一列举说明，</p>
+<p>例如node_memory_MemAvailable_bytes、node_memory_MemFree_bytes、node_memory_SwapFree_bytes等。</p>
+<p>然后配置grafana仪表盘，导入9276模板，即可采集。</p>
+<p>编写了一个采集linux主机metrics的脚本</p>
+<p><code class="docutils literal notranslate"><span class="pre">node_exporter.sh</span></code></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1"># Notes: 本脚本用于在服务器上安装node-exporter</span>
+<span class="c1"># TIPS: 生产环境不建议使用 Docker部署node-exporter</span>
+
+wget https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz
+tar xvf node_exporter-1.1.2.linux-amd64.tar.gz
+mv node_exporter-1.1.2.linux-amd64 /usr/local/bin/node_exporter
+
+groupadd prometheus
+useradd -g prometheus -m -d /var/lib/prometheus -s /sbin/nologin prometheus
+mkdir /usr/local/prometheus
+chown prometheus.prometheus -R /usr/local/prometheus
+
+cat &gt; /etc/systemd/system/node_exporter.service <span class="s">&lt;&lt; EOF</span>
+<span class="s">[Unit]</span>
+<span class="s">Description=node_exporter</span>
+<span class="s">Documentation=https://prometheus.io/</span>
+<span class="s">After=network.target</span>
+<span class="s">[Service]</span>
+<span class="s">Type=simple</span>
+<span class="s">User=prometheus</span>
+<span class="s">ExecStart=/usr/local/bin/node_exporter/node_exporter --collector.processes  --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)</span>
+<span class="s">Restart=on-failure</span>
+<span class="s">[Install]</span>
+<span class="s">WantedBy=multi-user.target</span>
+<span class="s">EOF</span>
+
+systemctl daemon-reload
+systemctl restart node_exporter.service
+systemctl <span class="nb">enable</span> node_exporter.service
+
+systemctl start node_exporter.service
+systemctl status node_exporter
+</pre></div>
+</div>
+<p>批量安装node_exporter脚本</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># github地址：</span>
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">zhuqiyang</span><span class="o">/</span><span class="n">install</span><span class="o">-</span><span class="n">node_exporter</span><span class="o">-</span><span class="n">shell</span>
+</pre></div>
+</div>
+<p><strong>docker部署node_exporter（生产环境不建议使用）</strong></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker run -d -p <span class="m">9100</span>:9100 <span class="se">\</span>
+  --restart<span class="o">=</span>always <span class="se">\</span>
+  -h node_exporter <span class="se">\</span>
+  --name node-exporter <span class="se">\</span>
+  prom/node-exporter
+</pre></div>
+</div>
+</section>
+<section id="windows">
+<h4>2 Windows主机监控<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h4>
+<p>下载页面地址：<a class="reference external" href="https://github.com/martinlindhe/wmi_exporter/releases">https://github.com/martinlindhe/wmi_exporter/releases</a>。选择当前最新版本：wmi_exporter-0.5.0-amd64.msi下载到被监控主机。直接双击文件进行快速安装即可。wmi_exporter会自动安装到C:_exporter目录下，安装程序将WMI
+Exporter设置为Windows服务，并在Windows防火墙中创建入站规则“WMI
+Exporter（HTTP
+9182）”。WMIExporter自动启动运行后，可以启用Windows任务管理，在进程中找到wmi_exporter.exe进程。</p>
+<p>在wmi_exporter默认运行情况下，启用了cpu、cs、logical_disk、net、os、service、system、textfile采集监控内容。其他默认没有启用的采集监控内容可以访问GitHub网站https://github.com/martinlindhe/wmi_exporter/blob/v0.5.0/README.md页面进行查看。</p>
+<p>后续补充</p>
+</section>
+</section>
+<section id="id7">
+<h3><a class="toc-backref" href="#id18">2.2.4 数据库监控</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<section id="mysql-server-exporter">
+<h4>1 MySQL Server exporter<a class="headerlink" href="#mysql-server-exporter" title="Permalink to this headline">¶</a></h4>
+<p><strong>1.软件下载与部署</strong></p>
+<p>在安装之前，可以在官方下载页面https://prometheus.io/download/中找到mysqld_exporter列表，下载最新版本中特定平台的二进制文件。同样也可以直接在官方的Prometheus
+GitHub下载页面https://github.com/prometheus/mysqld_exporter/releases中下载指定的mysqld_exporter版本所对应特定平台的二进制文件。</p>
+<p>部署可分为以下6个步骤。</p>
+<p>1）下载mysqld_exporter</p>
+<p>2）解压缩软件包到指定的安装目录。</p>
+<p>3）创建MySQL授权用户。连接到MySQL服务器，创建一个用户，例如“mysqld_exporter”。该用户需要拥有PROCESS，SELECT，REPLICATION
+CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设置最大连接限制。可以进行如下操作：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">create</span> <span class="n">user</span> <span class="s1">&#39;mysqld_exporter&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">IDENTIFIED</span> <span class="n">BY</span> <span class="s1">&#39;OSChina@2021&#39;</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mf">0.05</span> <span class="n">sec</span><span class="p">)</span>
+
+
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="n">grant</span> <span class="n">process</span><span class="p">,</span> <span class="n">replication</span> <span class="n">client</span><span class="p">,</span><span class="n">select</span> <span class="n">on</span> <span class="o">*.*</span> <span class="n">to</span> <span class="s1">&#39;mysqld_exporter&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mf">0.00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mf">0.01</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="n">select</span> <span class="n">host</span><span class="p">,</span><span class="n">user</span> <span class="kn">from</span> <span class="nn">mysql.user</span><span class="p">;</span>
+<span class="o">+-----------+------------------+</span>
+<span class="o">|</span> <span class="n">host</span>      <span class="o">|</span> <span class="n">user</span>             <span class="o">|</span>
+<span class="o">+-----------+------------------+</span>
+<span class="o">|</span> <span class="o">%</span>         <span class="o">|</span> <span class="n">crm</span>              <span class="o">|</span>
+<span class="o">|</span> <span class="o">%</span>         <span class="o">|</span> <span class="n">gitee_production</span> <span class="o">|</span>
+<span class="o">|</span> <span class="o">%</span>         <span class="o">|</span> <span class="n">root</span>             <span class="o">|</span>
+<span class="o">|</span> <span class="o">%</span>         <span class="o">|</span> <span class="n">wiki</span>             <span class="o">|</span>
+<span class="o">|</span> <span class="o">%</span>         <span class="o">|</span> <span class="n">zentao</span>           <span class="o">|</span>
+<span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">gitee_production</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">mysql</span><span class="o">.</span><span class="n">session</span>    <span class="o">|</span>
+<span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">mysql</span><span class="o">.</span><span class="n">sys</span>        <span class="o">|</span>
+<span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">mysqld_exporter</span>  <span class="o">|</span>
+<span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">root</span>             <span class="o">|</span>
+<span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">wiki</span>             <span class="o">|</span>
+<span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">zentao</span>           <span class="o">|</span>
+<span class="o">+-----------+------------------+</span>
+</pre></div>
+</div>
+<p>4）配置数据库认证。mysqld_exports需要连接数据库服务器的用户名和密码，这里可以通过两种方式向exporter提供此内容。</p>
+<ul class="simple">
+<li><p>使用环境变量。创建一个名为“DATA_SOURCE_NAME”的环境变量，格式如下：</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">DATA_SOURCE_NAME</span><span class="o">=</span><span class="s1">&#39;user:password@(hostname:3306)/&#39;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>使用配置文件。创建一个文件“.mysqld_exporter.cnf”，并在该文件中输入用户名和密码。格式如下：</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">client</span><span class="p">]</span>
+<span class="n">user</span><span class="o">=</span><span class="n">xxxx</span>
+<span class="n">password</span><span class="o">=</span><span class="n">xxxx</span>
+<span class="n">port</span><span class="o">=</span><span class="mi">3306</span>
+<span class="n">host</span><span class="o">=</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>
+</pre></div>
+</div>
+<p>我们选择使用第二种方法，在与“mysqld_exports”文件同目录下创建“.mysqld_exporter.cnf”文件，并添加如下内容</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">mysql_exporter</span><span class="p">]</span><span class="c1"># cat .mysqld_exporter.cnf</span>
+<span class="p">[</span><span class="n">client</span><span class="p">]</span>
+<span class="n">user</span><span class="o">=</span><span class="n">mysqld_exporter</span>
+<span class="n">password</span><span class="o">=</span><span class="n">OSChina</span><span class="o">@</span><span class="mi">2021</span>
+<span class="n">port</span><span class="o">=</span><span class="mi">3306</span>
+<span class="n">host</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.61</span>
+</pre></div>
+</div>
+<p>查看目录结构</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ tree -a mysqld_exporter/
+mysql_exporter/
+├── LICENSE
+├── mysqld_exporter
+└── .mysqld_exporter.cnf
+
+$ mkdir -p /data/mysqld_exporter/
+$ cp mysqld_exporter /data/mysqld_exporter/
+$ cp .mysqld_exporter.cnf /data/mysqld_exporter/
+</pre></div>
+</div>
+<p>5）启动mysqld_exporter</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ ./mysqld_exporter --config.my-cnf<span class="o">=</span><span class="s2">&quot;.mysqld_exporter.cnf&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Starting mysqld_exporter <span class="o">(</span><span class="nv">version</span><span class="o">=</span><span class="m">0</span>.11.0, <span class="nv">branch</span><span class="o">=</span>HEAD, <span class="nv">revision</span><span class="o">=</span>5d7179615695a61ecc3b5bf90a2a7c76a9592cdd<span class="o">)</span>  <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;mysqld_exporter.go:206&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Build context <span class="o">(</span><span class="nv">go</span><span class="o">=</span>go1.10.3, <span class="nv">user</span><span class="o">=</span>root@3d3ff666b0e4, <span class="nv">date</span><span class="o">=</span><span class="m">20180629</span>-15:00:35<span class="o">)</span>  <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;mysqld_exporter.go:207&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Enabled scrapers:                             <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;mysqld_exporter.go:218&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  --collect.global_variables                   <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;mysqld_exporter.go:222&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  --collect.slave_status                       <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;mysqld_exporter.go:222&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  --collect.info_schema.tables                 <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;mysqld_exporter.go:222&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span>  --collect.global_status                      <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;mysqld_exporter.go:222&quot;</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Listening on :9104                            <span class="nv">source</span><span class="o">=</span><span class="s2">&quot;mysqld_exporter.go:232&quot;</span>
+</pre></div>
+</div>
+<p>6）添加mysqld_exporter，为系统服务启动。</p>
+<p>创建系统服务启动配置文件mysqld_exporter.service：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ cat &gt; /usr/lib/systemd/system/mysqld_exporter.service <span class="s">&lt;&lt;EOF</span>
+<span class="s">[Unit]</span>
+<span class="s">Description=Prometheus MySQL Exporter</span>
+<span class="s">After=network.target</span>
+<span class="s">User=root</span>
+<span class="s">Group=root</span>
+
+<span class="s">[Service]</span>
+<span class="s">Type=simple</span>
+<span class="s">Restart=always</span>
+<span class="s">ExecStart=/data/mysqld_exporter/mysqld_exporter \</span>
+<span class="s">--config.my-cnf=/data/mysqld_exporter/.mysqld_exporter.cnf \</span>
+<span class="s">--collect.global_status \</span>
+<span class="s">--collect.auto_increment.columns \</span>
+<span class="s">--collect.info_schema.processlist \</span>
+<span class="s">--collect.binlog_size \</span>
+<span class="s">--collect.info_schema.tablestats \</span>
+<span class="s">--collect.global_variables \</span>
+<span class="s">--collect.info_schema.innodb_metrics \</span>
+<span class="s">--collect.info_schema.query_response_time \</span>
+<span class="s">--collect.info_schema.userstats \</span>
+<span class="s">--collect.info_schema.tables \</span>
+<span class="s">--collect.perf_schema.tablelocks \</span>
+<span class="s">--collect.perf_schema.file_events \</span>
+<span class="s">--collect.perf_schema.eventswaits \</span>
+<span class="s">--collect.perf_schema.indexiowaits \</span>
+<span class="s">--collect.perf_schema.tableiowaits \</span>
+<span class="s">--collect.slave_status \</span>
+<span class="s">--web.listen-address=0.0.0.0:9104</span>
+<span class="s">ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5</span>
+<span class="s">TimeoutStopSec=5</span>
+<span class="s">KillMode=mixed</span>
+
+<span class="s">[Install]</span>
+<span class="s">WantedBy=multi-user.target</span>
+<span class="s">EOF</span>
+</pre></div>
+</div>
+<p>可以使用命令：#./mysqld_exporter-h查看相关帮助信息，依据实际监控内容配置启动文件。最后可以通过systemctl命令进行各种操作，例如：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">daemon</span><span class="o">-</span><span class="n">reload</span>
+<span class="n">systemctl</span> <span class="n">enable</span> <span class="n">mysqld_exporter</span><span class="o">.</span><span class="n">service</span>
+<span class="n">systemctl</span> <span class="n">start</span> <span class="n">mysqld_exporter</span><span class="o">.</span><span class="n">service</span>
+<span class="n">systemctl</span> <span class="n">status</span> <span class="n">mysqld_exporter</span><span class="o">.</span><span class="n">service</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ netstat -tunpl<span class="p">|</span>grep <span class="m">9104</span>
+tcp6       <span class="m">0</span>      <span class="m">0</span> :::9104                 :::*                    LISTEN      <span class="m">11629</span>/mysqld_export
+</pre></div>
+</div>
+<p>综上，我们完成了对mysqld_exporter的下载安装，并对其进行了系统服务添加和开机启动设置。通过浏览器访问主机页面地址http://192.168.1.35:9104/metrics，可以看到此刻采集到的样本数据，mysql_up的值为1，即MySQL为启动运行状态，版本信息为5.7.20，部分内容如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># HELP mysql_up Whether the MySQL server is up.</span>
+<span class="c1"># TYPE mysql_up gauge</span>
+<span class="n">mysql_up</span> <span class="mi">1</span>
+<span class="c1"># HELP mysql_version_info MySQL version and distribution.</span>
+<span class="c1"># TYPE mysql_version_info gauge</span>
+<span class="n">mysql_version_info</span><span class="p">{</span><span class="n">innodb_version</span><span class="o">=</span><span class="s2">&quot;5.7.32&quot;</span><span class="p">,</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;5.7.32-log&quot;</span><span class="p">,</span><span class="n">version_comment</span><span class="o">=</span><span class="s2">&quot;Source distribution&quot;</span><span class="p">}</span> <span class="mi">1</span>
+<span class="c1"># HELP mysqld_exporter_build_info A metric with a constant &#39;1&#39; value labeled by version, revision, branch, and goversion from which mysqld_exporter was built.</span>
+<span class="c1"># TYPE mysqld_exporter_build_info gauge</span>
+<span class="n">mysqld_exporter_build_info</span><span class="p">{</span><span class="n">branch</span><span class="o">=</span><span class="s2">&quot;HEAD&quot;</span><span class="p">,</span><span class="n">goversion</span><span class="o">=</span><span class="s2">&quot;go1.10.3&quot;</span><span class="p">,</span><span class="n">revision</span><span class="o">=</span><span class="s2">&quot;5d7179615695a61ecc3b5bf90a2a7c76a9592cdd&quot;</span><span class="p">,</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.11.0&quot;</span><span class="p">}</span> <span class="mi">1</span>
+<span class="c1"># HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.</span>
+<span class="c1"># TYPE process_cpu_seconds_total counter</span>
+<span class="n">process_cpu_seconds_total</span> <span class="mi">0</span>
+<span class="c1"># HELP process_max_fds Maximum number of open file descriptors.</span>
+<span class="c1"># TYPE process_max_fds gauge</span>
+<span class="n">process_max_fds</span> <span class="mi">1024</span>
+<span class="c1"># HELP process_open_fds Number of open file descriptors.</span>
+<span class="c1"># TYPE process_open_fds gauge</span>
+<span class="n">process_open_fds</span> <span class="mi">9</span>
+<span class="c1"># HELP process_resident_memory_bytes Resident memory size in bytes.</span>
+<span class="c1"># TYPE process_resident_memory_bytes gauge</span>
+<span class="n">process_resident_memory_bytes</span> <span class="mf">5.021696e+06</span>
+<span class="c1"># HELP process_start_time_seconds Start time of the process since unix epoch in seconds.</span>
+<span class="c1"># TYPE process_start_time_seconds gauge</span>
+<span class="n">process_start_time_seconds</span> <span class="mf">1.61542929271e+09</span>
+<span class="c1"># HELP process_virtual_memory_bytes Virtual memory size in bytes.</span>
+<span class="c1"># TYPE process_virtual_memory_bytes gauge</span>
+<span class="n">process_virtual_memory_bytes</span> <span class="mf">1.4667776e+07</span>
+</pre></div>
+</div>
+<p><strong>2.与Prometheus集成</strong></p>
+<p>在Prometheus的配置文件prometheus.yml中的static_configs模块内，继续追加配置内容来采集mysqld_exporter提供的数据。添加的参考配置内容如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">job_name</span><span class="p">:</span> <span class="s1">&#39;mysqld_exporter_node&#39;</span>
+  <span class="n">scrape_interval</span><span class="p">:</span> <span class="mi">10</span><span class="n">s</span>
+  <span class="n">static_configs</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">targets</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;192.168.1.35:9104&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>类似地对于可视化配置而言，在Grafana官网选择适用于监控MySQL的模板(过滤条件：name/description=mysql
+and data source=Prometheus)，复制其ID——12826</p>
+<p><strong>3.metrics</strong></p>
+<p>查看mysqld_exporter服务正常运行时，通过浏览器访问被监控MySQL主机的页面地址http://192.168.1.35:9104/metrics，可以直接查看当前被监控MySQL的采集信息。对于数据库管理员来说，MySQL数据库的性能状态监控内容非常多，但通常必不可少的内容包括查询吞吐量（Query
+throughput）、查询执行性能（Query execution
+performance）、连接情况（Connections）和缓冲池使用情况（Buffer pool
+usage）这四个与基本的性能和资源利用率相关的指标。</p>
+<p>1）查询吞吐量</p>
+<p>监控任何系统时，我们的主要关注点是确保系统工作有效完成。数据库运行时会完成大量的查询操作，所以监控优先级应该确保MySQL按照预期执行查询。MySQL有一个名为Questions的内部计数器，MySQL术语为“服务器状态变量”。对于客户端应用程序发送的所有语句，该计数器都是递增的。要查询服务器状态变量，可以使用MySQL提供的命令进行查询：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mysql&gt; show global status like &quot;Questions&quot;;
++---------------+---------+
+| Variable_name | Value   |
++---------------+---------+
+| Questions     | 4154298 |
++---------------+---------+
+1 row in set (0.00 sec)
+
+对应mysqld_exporter采集后再返回的样本数据中，使用
+mysql_global_status_questions展示当前的Questions大小
+mysql_global_status_queries 4.153952e+06
+# HELP mysql_global_status_questions Generic metric from SHOW GLOBAL STATUS.
+# TYPE mysql_global_status_questions untyped
+mysql_global_status_questions 4.153797e+06
+</pre></div>
+</div>
+<p>（2）查询执行性能</p>
+<p>关于查询执行性能表现方面，可以使用MySQL提供的Slow_queries计数器，每当查询的执行时间超过long_query_time参数指定的秒数时，计数器就会增加。默认阈值为10秒。下面使用MySQL提供的命令进行查询：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mysql&gt; show global status like &quot;Slow_queries&quot;;
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| Slow_queries  | 0     |
++---------------+-------+
+1 row in set (0.00 sec)
+
+对应mysqld_exporter采集后再返回的样本数据中，使用mysql_global_status_slow_queries来展示结果
+mysql_global_status_slow_launch_threads 0
+# HELP mysql_global_status_slow_queries Generic metric from SHOW GLOBAL STATUS.
+# TYPE mysql_global_status_slow_queries untyped
+mysql_global_status_slow_queries 0
+</pre></div>
+</div>
+<p>（3）连接情况为了防止MySQL服务器的过载运行，数据库管理员需要根据业务量进行预评估，以便限制客户端连接MySQL的数量。这里使用的MySQL5.7版本，在my.cnf文件配置了最大连接数max_connections=512。使用MySQL提供的命令进行查询，如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mysql&gt; show variables like &quot;max_connections&quot;;
++-----------------+-------+
+| Variable_name   | Value |
++-----------------+-------+
+| max_connections | 500   |
++-----------------+-------+
+1 row in set (0.00 sec)
+
+
+对应mysqld_exporter采集后再返回的样本数据中，mysql_global_variables_max_connections 来展示结果
+mysql_global_variables_max_connections 500
+
+数据库管理需要查看MySQL当前实例的连接数，即Threads_connected数值，可使用MySQL提供的命令进行查询，如下所示：
+mysql&gt; show global status like &quot;Threads_connected&quot;;
++-------------------+-------+
+| Variable_name     | Value |
++-------------------+-------+
+| Threads_connected | 1     |
++-------------------+-------+
+1 row in set (0.00 sec)
+
+mysql_global_status_threads_connected 1
+</pre></div>
+</div>
+<p>当设置的所有可用连接都被占用完时，若再有客户端进行连接MySQL，就会出现连接数过多的错误提示信息。我们可以使用以下相关的监控指标进行核查：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># HELP mysql_global_status_connection_errors_total Total number of MySQL connection errors.</span>
+<span class="c1"># TYPE mysql_global_status_connection_errors_total counter</span>
+<span class="n">mysql_global_status_connection_errors_total</span><span class="p">{</span><span class="n">error</span><span class="o">=</span><span class="s2">&quot;accept&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="n">mysql_global_status_connection_errors_total</span><span class="p">{</span><span class="n">error</span><span class="o">=</span><span class="s2">&quot;internal&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="n">mysql_global_status_connection_errors_total</span><span class="p">{</span><span class="n">error</span><span class="o">=</span><span class="s2">&quot;max_connections&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="n">mysql_global_status_connection_errors_total</span><span class="p">{</span><span class="n">error</span><span class="o">=</span><span class="s2">&quot;peer_address&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="n">mysql_global_status_connection_errors_total</span><span class="p">{</span><span class="n">error</span><span class="o">=</span><span class="s2">&quot;select&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="n">mysql_global_status_connection_errors_total</span><span class="p">{</span><span class="n">error</span><span class="o">=</span><span class="s2">&quot;tcpwrap&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="c1"># HELP mysql_global_status_connections Generic metric from SHOW GLOBAL STATUS.</span>
+<span class="c1"># TYPE mysql_global_status_connections untyped</span>
+<span class="n">mysql_global_status_connections</span> <span class="mi">7476</span>
+</pre></div>
+</div>
+<p>（4）缓存池使用情况当MySQL默认的存储引擎是InnoDB时，会使用缓冲池来缓存表和索引的数据。即便是初级数据库管理员，在部署MySQL实例时，也会提前预估并在my.cnf文件中配置参数innodb_buffer_pool_size。这是InnoDB最重要的参数，主要作用是缓存innodb表的索引、数据和插入数据，默认值为128M。</p>
+<p>通常，当我们查看Innodb_buffer_pool_reads的数量时，使用MySQL提供的命令，如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mysql&gt; show global status like &quot;Innodb_buffer_pool_reads&quot;;
++--------------------------+-------+
+| Variable_name            | Value |
++--------------------------+-------+
+| Innodb_buffer_pool_reads | 1101  |
++--------------------------+-------+
+1 row in set (0.01 sec)
+
+对应mysqld_exporter中，可以通过mysql_global_status_innodb_buffer_pool_reads查看指标数量，如下所示：
+# HELP mysql_global_status_innodb_buffer_pool_reads Generic metric from SHOW GLOBAL STATUS.
+# TYPE mysql_global_status_innodb_buffer_pool_reads untyped
+mysql_global_status_innodb_buffer_pool_reads 875
+</pre></div>
+</div>
+<p>若MySQL
+server集成在Windows操作系统且64位版本时，可以下载对应的软件包，如mysqld_exporter-0.11.0.windows-amd64.tar.gz。在Windows环境中使用可执行程序mysqld_exporter.exe进行相关内容的操作。</p>
+<p>总体与Linux操作系统下对MySQL数据的采集过程一样，即Prometheus使用mysqld_exporter采集MySQL的数据，然后对Prometheus进行配置，再获取mysqld_exporter采集到的各项监控指标，数据存放到Prometheus所在服务器的磁盘数据文件中。</p>
+<p>参考文献：</p>
+<p><a class="reference external" href="https://zhuanlan.zhihu.com/p/344743604">prometheus监控mysql实践</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/11181033.html">promethus监控mysql</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12101494.html">promethus监控RDS</a></p>
+</section>
+<section id="redis-exporter">
+<h4>2 Redis exporter 单节点<a class="headerlink" href="#redis-exporter" title="Permalink to this headline">¶</a></h4>
+<p><strong>1.软件下载与部署</strong></p>
+<p>1）下载redis_exporter。</p>
+<p>下载地址为https://github.com/oliver006/redis_exporter/releases。选择当时最新版本redis_exporter-v0.23.0.linux-amd64.tar.gz，对Redis
+2.x，3.x，4.x，and 5.x版本均支持。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/oliver006/redis_exporter/releases/download/v1.3.5/redis_exporter-v1.3.5.linux-amd64.tar.gz
+$ tar -xvf redis_exporter-v1.3.5.linux-amd64.tar
+$ <span class="nb">cd</span> redis_exporter-v1.3.5.linux-amd64/
+</pre></div>
+</div>
+<p>2）解压缩软件包到指定的安装目录：</p>
+<p>redis_exporter 常用的选项：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>-redis.addr：指明一个或多个 Redis 节点的地址，多个节点使用逗号分隔，默认为 redis://localhost:6379
+-redis.password：验证 Redis 时使用的密码；
+-redis.file：包含一个或多个redis 节点的文件路径，每行一个节点，此选项与 -redis.addr 互斥。
+-web.listen-address：监听的地址和端口，默认为 0.0.0.0:9121
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#进入安装目录下，在终端启动查看信息，成功启动，默认监听端口是9121</span>
+$ ./redis_exporter -redis.addr localhost:6379
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Redis Metrics Exporter v0.23.0    build date: <span class="m">2018</span>-12-03-17:29:45    sha1: 10045b85b5aaa1c5fa35                                         ba38e3a1aee14f772b31    Go: go1.11.2
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Providing metrics at :9121/metrics
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Connecting to redis hosts: <span class="o">[]</span>string<span class="o">{</span><span class="s2">&quot;localhost:6379&quot;</span><span class="o">}</span>
+INFO<span class="o">[</span><span class="m">0000</span><span class="o">]</span> Using alias: <span class="o">[]</span>string<span class="o">{</span><span class="s2">&quot;&quot;</span><span class="o">}</span>
+
+<span class="c1"># 或者更改监听端口</span>
+$ ./redis_exporter -web.listen-address <span class="s2">&quot;0.0.0.0:9122&quot;</span> redis//127.0.0.1:6380
+</pre></div>
+</div>
+<p>3）添加redis_exporter为系统服务开机启动配置文件redis_exporter.service：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ cat /usr/lib/systemd/system/redis_exporter.service
+<span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Prometheus Redis Exporter
+<span class="nv">After</span><span class="o">=</span>network.target
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>simple
+<span class="nv">Restart</span><span class="o">=</span>always
+<span class="nv">ExecStart</span><span class="o">=</span>/data/redis_exporter/redis_exporter <span class="se">\</span>
+-redis.addr localhost:6379
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</pre></div>
+</div>
+<p>Redis
+server若设置过密码登录，以上文件内容需要设置redis连接地址和密码。可以使用命令：#./redis_exporter-h查看相关帮助信息，依据实际监控内容配置启动文件。</p>
+<p>同样，可以通过systemctl命令重新加载配置文件，并设置redis_exporter.service为开机自启动后进行开启，查看状态、重启和停止服务操作。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">daemon</span><span class="o">-</span><span class="n">reload</span>
+<span class="n">systemctl</span> <span class="n">enable</span> <span class="n">redis_exporter</span><span class="o">.</span><span class="n">service</span>
+<span class="n">systemctl</span> <span class="n">start</span> <span class="n">redis_exporter</span><span class="o">.</span><span class="n">service</span>
+<span class="n">systemctl</span> <span class="n">status</span> <span class="n">redis_exporter</span><span class="o">.</span><span class="n">service</span>
+</pre></div>
+</div>
+<p>综上，我们完成了对redis_exporter的下载安装，使用浏览器访问主机页面地址http://192.168.1.35:9121/metrics，可以看到其运行状态为UP，如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># HELP redis_up upmetric</span>
+<span class="c1"># TYPE redis_up gauge</span>
+<span class="n">redis_up</span><span class="p">{</span><span class="n">addr</span><span class="o">=</span><span class="s2">&quot;localhost:6379&quot;</span><span class="p">,</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">}</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p><strong>2.与Prometheus集成</strong></p>
+<p>在Prometheus的配置文件prometheus.yml中的static_configs模块内，继续追加配置内容来采集redis_exporter提供的数据。参考配置内容如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">job_name</span><span class="p">:</span> <span class="s1">&#39;redis_exporter&#39;</span>
+  <span class="n">scrape_interval</span><span class="p">:</span> <span class="mi">10</span><span class="n">s</span>
+  <span class="n">static_configs</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">targets</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;192.168.1.35:9121&#39;</span><span class="p">]</span>
+    <span class="n">labels</span><span class="p">:</span>
+      <span class="n">instance</span><span class="p">:</span> <span class="n">bt</span><span class="o">-</span><span class="n">redis</span>
+</pre></div>
+</div>
+<p>配置完成后，仍然需要我们重新启动Prometheus或动态热加载，对配置文件进行加载生效操作。现在，可以在浏览器中输入Prometheus示例页面地址http://192.168.1.37:9090/targets，访问Prometheus
+Web
+UI提供的内容，可以看到在Targets页面列表中已经新增了redis_exporter显示项，且redis_exporter状态为“UP”。</p>
+<p><strong>3. 配置 Grafana 的模板</strong></p>
+<p>redis_exporter 在 Grafana 上为我们提供好了 Dashboard
+模板：<a class="reference external" href="http://www.eryajf.net/go?url=https://grafana.com/dashboards/763">https://grafana.com/dashboards/763</a></p>
+<p>下载后在 Grafana 中导入 json 模板就可以看到官方这样的示例截图啦：</p>
+<img alt="../_images/prometheus_redis202101.png" src="../_images/prometheus_redis202101.png" />
+<p>参考文献：</p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12101496.html">https://www.cnblogs.com/xiao987334176/p/12101496.html</a></p>
+</section>
+<section id="redis-exporterredis">
+<h4>3. Redis exporter监控redis集群<a class="headerlink" href="#redis-exporterredis" title="Permalink to this headline">¶</a></h4>
+<p>参考文献：</p>
+<p><a class="reference external" href="https://www.cnblogs.com/fsckzy/p/12053604.html">https://www.cnblogs.com/fsckzy/p/12053604.html</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/caoweixiong/p/12736384.html">https://www.cnblogs.com/caoweixiong/p/12736384.html</a></p>
+</section>
+</section>
+<section id="nginx">
+<h3><a class="toc-backref" href="#id19">2.2.5 Nginx监控</a><a class="headerlink" href="#nginx" title="Permalink to this headline">¶</a></h3>
+<p>在Prometheus官方文档中提供了2个Nginx使用的第三方Exporter：Nginxmetric
+library和nginx-vts-exporter。这里我们使用nginx-vts-exporter对已经安装好的Nginx服务进行监控数据采集。</p>
+<p>在安装nginx-vts-exporter前，如果你正在安装Nginx服务，此时，需要安装支持第三方的nginx
+virtual host traffic
+status模块，提供对虚拟主机状态信息的访问，它包含当前状态，如服务器、upstreams、缓存，即进行模块加载操作：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">configure</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">module</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">module</span><span class="o">-</span><span class="n">vts</span>
+</pre></div>
+</div>
+<p>nginx-module-vts在Nginx官网上的第三方栏目中推荐下载页面地址https://github.com/vozlt/nginx-module-vts，也可以直接使用git进行clone操作git
+clone
+git://github.com/vozlt/nginx-module-vts.git。若没有加载nginx-module-vts模块支持，想要通过重新编译加载模块时，需要备份原来的应用环境，再加载此模块。模块加载完成后，需要在Nginx配置文件中添加如下格式的配置内容：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span> <span class="p">{</span>
+    <span class="n">vhost_traffic_status_zone</span><span class="p">;</span>
+
+    <span class="o">...</span>
+
+    <span class="n">server</span> <span class="p">{</span>
+
+        <span class="o">...</span>
+
+        <span class="n">location</span> <span class="o">/</span><span class="n">status</span> <span class="p">{</span>
+            <span class="n">vhost_traffic_status_bypass_stats</span> <span class="n">on</span><span class="p">;</span>
+            <span class="n">vhost_traffic_status_display</span><span class="p">;</span>
+            <span class="n">vhost_traffic_status_display_format</span> <span class="n">html</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>正确添加后，重新加载Nginx配置文件使配置生效，通过浏览器访问/status，可以看到Nginx模块nginx-module-vts已经开始正常运行。</p>
+<img alt="../_images/prometheus_vts-nginx01.png" src="../_images/prometheus_vts-nginx01.png" />
+<p><strong>1.软件下载与部署</strong></p>
+<p>1）下载nginx-vts-exporter。</p>
+<p>下载页面地址为https://github.com/hnlq715/nginx-vts-exporter/releases。选择当时最新版本nginx-vts-exporter-0.10.3.linux-amd64.tar.gz，支持nginx-1.4..x版本和nginx-1.6.x以上版本。</p>
+<p>2）解压缩软件包到指定的安装目录：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 默认监听端口9913</span>
+<span class="o">./</span><span class="n">nginx</span><span class="o">-</span><span class="n">vts</span><span class="o">-</span><span class="n">exporter</span> <span class="o">-</span><span class="n">nginx</span><span class="o">.</span><span class="n">scrape_uri</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="o">/</span><span class="n">status</span><span class="o">/</span><span class="nb">format</span><span class="o">/</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>3）添加nginx-vts-exporter为系统服务开机启动配置文件nginx-vts-exporter.service：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
+<span class="n">Description</span><span class="o">=</span><span class="n">Prometheus</span> <span class="n">Nginx</span> <span class="n">VTS</span> <span class="n">Exporter</span>
+<span class="n">After</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">target</span>
+<span class="n">User</span><span class="o">=</span><span class="n">nginx</span>
+<span class="n">Group</span><span class="o">=</span><span class="n">nginx</span>
+
+<span class="p">[</span><span class="n">Service</span><span class="p">]</span>
+<span class="n">Type</span><span class="o">=</span><span class="n">simple</span>
+<span class="n">Restart</span><span class="o">=</span><span class="n">always</span>
+<span class="n">ExecStart</span><span class="o">=/</span><span class="n">data</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">vts</span><span class="o">-</span><span class="n">exporter</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">vts</span><span class="o">-</span><span class="n">exporter</span>\
+<span class="o">-</span><span class="n">nginx</span><span class="o">.</span><span class="n">scrape_uri</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="o">/</span><span class="n">status</span><span class="o">/</span><span class="nb">format</span><span class="o">/</span><span class="n">json</span>
+
+<span class="p">[</span><span class="n">Install</span><span class="p">]</span>
+<span class="n">WantedBy</span><span class="o">=</span><span class="n">multi</span><span class="o">-</span><span class="n">user</span><span class="o">.</span><span class="n">target</span>
+</pre></div>
+</div>
+<p>这里需要注意的是如果没有-nginx.scrape_uri参数，默认访问的状态地址是http://localhost/status。如果想修改访问端口，使用参数-telemetry.addressstring即可。最后可以通过systemctl命令进行各种操作。</p>
+<p>综上，我们完成了对nginx-vts-exporter的下载安装，并对其进行了系统服务添加和开机启动设置。使用浏览器访问示例主机页面地址http://192.168.1.379913/metrics，可以查看所有采集数据信息。</p>
+<p><strong>2.与Prometheus集成</strong></p>
+<p>在Prometheus的配置文件prometheus.yml中继续追加static_configs来采集redis_exporter提供的数据。添加的参考配置内容如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">job_name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">vts</span>
+  <span class="n">static_configs</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">targets</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;192.168.1.37:9913&#39;</span><span class="p">]</span>
+      <span class="n">labels</span><span class="p">:</span>
+        <span class="n">instance</span><span class="p">:</span> <span class="n">localhost</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="n">vts</span>
+</pre></div>
+</div>
+<p>配置完成后，仍然需要我们重新启动Prometheus或动态热加载配置文件。现在，可以在浏览器中输入Prometheus示例页面地址http://192.168.24.17:9090，访问Prometheus
+Web
+UI提供的页面内容，在Targets页面列表中已经新增了nginx-vts-exporter显示项，且nginx-vts-exporter状态为“UP”。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+</pre></div>
+</div>
+<p>参考文献：</p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12870942.html">使用nginx-module-vts监控各虚拟主机的流量</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/11180652.html">promethus监控nginx</a></p>
+</section>
+<section id="id8">
+<h3><a class="toc-backref" href="#id20">2.2.6 Prometheus之黑盒监控</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>Exporter的使用可以称为“白盒监控”，即需要把对应的Exporter程序安装到被监控的目标主机上，从而实现对主机各种资源及其状态的数据采集工作。但是由于某些情况下操作技术或其他原因，不是所有的Exporter都能部署到被监控的主机环境中，最典型的例子是监控全国网络质量的稳定性，通常的方法是使用ping操作，对选取的节点进行ICMP测试，此时不可能在他人应用环境中部署相关的Exporter程序。</p>
+<p>针对这样的应用的场景，Prometheus社区提供了黑盒解决方案，Blackbox
+Exporter无须安装在被监控的目标环境中，用户只需要将其安装在与Prometheus和被监控目标互通的环境中，通过HTTP、HTTPS、DNS、TCP、ICMP等方式对网络进行探测监控，还可以探测SSL证书过期时间。</p>
+<p><strong>1.下载安装包</strong></p>
+<p>在安装之前，首先在官方下载页面https://prometheus.io/download/中找到blackbox_exporter列表，下载最新版本中特定平台的二进制文件。</p>
+<p>或者直接在官方的Prometheus
+GitHub下载页面https://github.com/prometheus/blackbox_exporter/releases中下载指定blackbox_exporte版本所对应的特定平台的二进制文件。然后我们开始blackbox_exporter在主机中的安装部署使用工作。</p>
+<p><strong>2.软件安装与部署</strong></p>
+<p>1）官网下载blackbox_exporter</p>
+<p>2）解压缩软件包到指定的安装目录。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="n">blackbox_exporter</span><span class="o">-</span><span class="mf">0.14</span><span class="o">.</span><span class="mf">0.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>  <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span>
+
+<span class="n">cd</span> <span class="o">/</span><span class="n">data</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">sv</span> <span class="n">blackbox_exporter</span><span class="o">-</span><span class="mf">0.14</span><span class="o">.</span><span class="mf">0.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span> <span class="n">blackbox_exporter</span>
+</pre></div>
+</div>
+<p>3）添加blackbox_exporter为系统服务开机启动。同样，为了维护方便，将blackbox_exporter添加为系统服务且开机自启动。开始创建系统服务启动配置文件blackbox_exporter.service：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">blackbox_exporter</span><span class="p">]</span><span class="c1"># cat /usr/lib/systemd/system/blackbox_exporter.service</span>
+<span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
+<span class="n">Description</span><span class="o">=</span><span class="n">blackbox_exporter</span>
+<span class="n">After</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">target</span>
+
+<span class="p">[</span><span class="n">Service</span><span class="p">]</span>
+<span class="n">Type</span><span class="o">=</span><span class="n">simple</span>
+<span class="n">User</span><span class="o">=</span><span class="n">root</span>
+<span class="n">Group</span><span class="o">=</span><span class="n">root</span>
+<span class="n">ExecStart</span><span class="o">=/</span><span class="n">data</span><span class="o">/</span><span class="n">blackbox_exporter</span><span class="o">/</span><span class="n">blackbox_exporter</span> \
+          <span class="o">--</span><span class="n">config</span><span class="o">.</span><span class="n">file</span> <span class="s2">&quot;/data/blackbox_exporter/blackbox.yml&quot;</span> \
+          <span class="o">--</span><span class="n">web</span><span class="o">.</span><span class="n">listen</span><span class="o">-</span><span class="n">address</span> <span class="s2">&quot;:9115&quot;</span>
+<span class="n">Restart</span><span class="o">=</span><span class="n">on</span><span class="o">-</span><span class="n">failure</span>
+
+<span class="p">[</span><span class="n">Install</span><span class="p">]</span>
+<span class="n">WantedBy</span><span class="o">=</span><span class="n">multi</span><span class="o">-</span><span class="n">user</span><span class="o">.</span><span class="n">target</span>
+</pre></div>
+</div>
+<p>可以通过systemctl命令进行各种操作。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">daemon</span><span class="o">-</span><span class="n">reload</span>
+<span class="n">systemctl</span> <span class="n">enable</span> <span class="n">blackbox_exporter</span><span class="o">.</span><span class="n">service</span>
+<span class="n">systemctl</span> <span class="n">start</span> <span class="n">blackbox_exporter</span><span class="o">.</span><span class="n">service</span>
+<span class="n">systemctl</span> <span class="n">status</span> <span class="n">blackbox_exporter</span><span class="o">.</span><span class="n">service</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@localhost blackbox_exporter]# ps aux |grep blackbox_exporter
+root      1657  0.0  0.0 112764  7956 ?        Ssl  01:19   0:00 /data/blackbox_exporter/blackbox_exporter --config.file /data/blackbox_exporter/blackbox.yml --web.listen-address :9115
+root      1670  0.0  0.0 112808   972 pts/1    S+   01:19   0:00 grep --color=auto blackbox_exporter
+</pre></div>
+</div>
+<p>其中配置文件直接使用了默认的blackbox.yml文件，blackbox_exporter正常启动后，可以查看到服务状态为Active：active（running），并且开启默认端口9115进行监听。现在使用浏览器访问示例地址http://192.168.1.37:9115/，</p>
+<img alt="../_images/prometheus_black_exporter001.png" src="../_images/prometheus_black_exporter001.png" />
+<p>Blackbox
+Exporter控制台包括允许监控自身的指标，可以点击“Metics”链接，如图中示例，访问地址http://192.168.1.37:9115/metrics可进行查看。控制台还包含最近执行的探测列表，它们的状态以及显示发生的事件的调试日志，这些对于调试探测很有用。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># HELP blackbox_exporter_build_info A metric with a constant &#39;1&#39; value labeled by version, revision, branch, and goversion from which blackbox_exporter was built.</span>
+<span class="c1"># TYPE blackbox_exporter_build_info gauge</span>
+<span class="n">blackbox_exporter_build_info</span><span class="p">{</span><span class="n">branch</span><span class="o">=</span><span class="s2">&quot;HEAD&quot;</span><span class="p">,</span><span class="n">goversion</span><span class="o">=</span><span class="s2">&quot;go1.11.5&quot;</span><span class="p">,</span><span class="n">revision</span><span class="o">=</span><span class="s2">&quot;bba7ef76193948a333a5868a1ab38b864f7d968a&quot;</span><span class="p">,</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.14.0&quot;</span><span class="p">}</span> <span class="mi">1</span>
+<span class="c1"># HELP blackbox_exporter_config_last_reload_success_timestamp_seconds Timestamp of the last successful configuration reload.</span>
+<span class="c1"># TYPE blackbox_exporter_config_last_reload_success_timestamp_seconds gauge</span>
+<span class="n">blackbox_exporter_config_last_reload_success_timestamp_seconds</span> <span class="mf">1.6154435566517625e+09</span>
+<span class="c1"># HELP blackbox_exporter_config_last_reload_successful Blackbox exporter config loaded successfully.</span>
+<span class="c1"># TYPE blackbox_exporter_config_last_reload_successful gauge</span>
+<span class="n">blackbox_exporter_config_last_reload_successful</span> <span class="mi">1</span>
+<span class="c1"># HELP go_gc_duration_seconds A summary of the GC invocation durations.</span>
+<span class="c1"># TYPE go_gc_duration_seconds summary</span>
+<span class="n">go_gc_duration_seconds</span><span class="p">{</span><span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="n">go_gc_duration_seconds</span><span class="p">{</span><span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;0.25&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="n">go_gc_duration_seconds</span><span class="p">{</span><span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="n">go_gc_duration_seconds</span><span class="p">{</span><span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;0.75&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="n">go_gc_duration_seconds</span><span class="p">{</span><span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">}</span> <span class="mi">0</span>
+<span class="n">go_gc_duration_seconds_sum</span> <span class="mi">0</span>
+<span class="n">go_gc_duration_seconds_count</span> <span class="mi">0</span>
+<span class="c1"># HELP go_goroutines Number of goroutines that currently exist.</span>
+<span class="c1"># TYPE go_goroutines gauge</span>
+</pre></div>
+</div>
+<p>配置文件</p>
+<p>blackbox_exporter的默认配置文件是blackbox.yml，使用YAML格式，如果格式不符合语法要求，Blackbox
+Exporter将无法启动。在配置过程中，首先需要在Blackbox
+Exporter的配置文件中定义监测模块内容，然后在Prometheus
+Server的配置文件中声明用对应的模块去探测相应的targets。默认配置文件中常用的几个监测模块信息如下.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">modules</span><span class="p">:</span>
+  <span class="n">http_2xx</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">http</span>
+  <span class="n">http_post_2xx</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">http</span>
+    <span class="n">http</span><span class="p">:</span>
+      <span class="n">method</span><span class="p">:</span> <span class="n">POST</span>
+  <span class="n">tcp_connect</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">tcp</span>
+  <span class="n">pop3s_banner</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">tcp</span>
+    <span class="n">tcp</span><span class="p">:</span>
+      <span class="n">query_response</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">expect</span><span class="p">:</span> <span class="s2">&quot;^+OK&quot;</span>
+      <span class="n">tls</span><span class="p">:</span> <span class="n">true</span>
+      <span class="n">tls_config</span><span class="p">:</span>
+        <span class="n">insecure_skip_verify</span><span class="p">:</span> <span class="n">false</span>
+  <span class="n">ssh_banner</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">tcp</span>
+    <span class="n">tcp</span><span class="p">:</span>
+      <span class="n">query_response</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">expect</span><span class="p">:</span> <span class="s2">&quot;^SSH-2.0-&quot;</span>
+  <span class="n">irc_banner</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">tcp</span>
+    <span class="n">tcp</span><span class="p">:</span>
+      <span class="n">query_response</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;NICK prober&quot;</span>
+      <span class="o">-</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;USER prober prober prober :prober&quot;</span>
+      <span class="o">-</span> <span class="n">expect</span><span class="p">:</span> <span class="s2">&quot;PING :([^ ]+)&quot;</span>
+        <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;PONG $</span><span class="si">{1}</span><span class="s2">&quot;</span>
+      <span class="o">-</span> <span class="n">expect</span><span class="p">:</span> <span class="s2">&quot;^:[^ ]+ 001&quot;</span>
+  <span class="n">icmp</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">icmp</span>
+</pre></div>
+</div>
+<p><strong>1.http探测配置</strong></p>
+<p>检查HTTP状态，可以使用http探测器。它可以生成HTTP请求使用，如GET或POST方法，配置操作中可以定义请求超时时间，可以使用正则表达式进行相关匹配。首先，我们在blackbox.yml文件中添加HTTP监测模块，</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">modules</span><span class="p">:</span>
+  <span class="n">http_2xx</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">http</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="mi">10</span><span class="n">s</span>
+    <span class="n">http</span><span class="p">:</span>
+      <span class="n">preferred_ip_protocol</span><span class="p">:</span> <span class="s2">&quot;ip4&quot;</span>
+  <span class="n">http_post_2xx</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">http</span>
+    <span class="n">http</span><span class="p">:</span>
+      <span class="n">method</span><span class="p">:</span> <span class="n">POST</span>
+      <span class="n">preferred_ip_protocol</span><span class="p">:</span> <span class="s2">&quot;ip4&quot;</span>
+  <span class="n">tcp_connect</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">tcp</span>
+  <span class="n">pop3s_banner</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">tcp</span>
+    <span class="n">tcp</span><span class="p">:</span>
+      <span class="n">query_response</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">expect</span><span class="p">:</span> <span class="s2">&quot;^+OK&quot;</span>
+      <span class="n">tls</span><span class="p">:</span> <span class="n">true</span>
+      <span class="n">tls_config</span><span class="p">:</span>
+        <span class="n">insecure_skip_verify</span><span class="p">:</span> <span class="n">false</span>
+  <span class="n">ssh_banner</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">tcp</span>
+    <span class="n">tcp</span><span class="p">:</span>
+      <span class="n">query_response</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">expect</span><span class="p">:</span> <span class="s2">&quot;^SSH-2.0-&quot;</span>
+  <span class="n">irc_banner</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">tcp</span>
+    <span class="n">tcp</span><span class="p">:</span>
+      <span class="n">query_response</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;NICK prober&quot;</span>
+      <span class="o">-</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;USER prober prober prober :prober&quot;</span>
+      <span class="o">-</span> <span class="n">expect</span><span class="p">:</span> <span class="s2">&quot;PING :([^ ]+)&quot;</span>
+        <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;PONG $</span><span class="si">{1}</span><span class="s2">&quot;</span>
+      <span class="o">-</span> <span class="n">expect</span><span class="p">:</span> <span class="s2">&quot;^:[^ ]+ 001&quot;</span>
+  <span class="n">icmp</span><span class="p">:</span>
+    <span class="n">prober</span><span class="p">:</span> <span class="n">icmp</span>
+</pre></div>
+</div>
+<p>配置完成后通过重启BlackboxExporter服务或热加载方式：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+</pre></div>
+</div>
+<p>使得配置文件生效。</p>
+<p><strong>2.与Prometheus集成</strong></p>
+<p>与Prometheus进行配置集成，需要在prometheus.yml文件中配置对BlockboxExporter实例的采集任务，以下为添加的参考配置内容：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">job_name</span><span class="p">:</span> <span class="s1">&#39;blackbox_http&#39;</span>
+  <span class="n">metrics_path</span><span class="p">:</span> <span class="o">/</span><span class="n">probe</span>
+  <span class="n">params</span><span class="p">:</span>
+    <span class="n">module</span><span class="p">:</span> <span class="p">[</span><span class="n">http_2xx</span><span class="p">]</span>
+  <span class="n">static_configs</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">targets</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">www</span><span class="o">.</span><span class="mf">12306.</span><span class="n">cn</span>
+      <span class="o">-</span> <span class="n">www</span><span class="o">.</span><span class="n">baidu</span><span class="o">.</span><span class="n">com</span>
+  <span class="n">relabel_configs</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="n">__address__</span><span class="p">]</span>
+      <span class="n">target_label</span><span class="p">:</span> <span class="n">__param_target</span>
+    <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="n">__param_target</span><span class="p">]</span>
+      <span class="n">target_label</span><span class="p">:</span> <span class="n">instance</span>
+    <span class="o">-</span> <span class="n">target_label</span><span class="p">:</span> <span class="n">__address__</span>
+      <span class="n">replacement</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9115</span>
+</pre></div>
+</div>
+<p>通过命令curl模拟http请求，可以看到输出的Metrics信息</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">conf</span><span class="p">]</span><span class="c1"># curl &quot;http://192.168.1.37:9115/probe?module=http_2xx&amp;target=www.12306.cn&quot;</span>
+<span class="o">.....</span>
+
+<span class="c1"># HELP probe_http_ssl Indicates if SSL was used for the final redirect</span>
+<span class="c1"># TYPE probe_http_ssl gauge</span>
+<span class="n">probe_http_ssl</span> <span class="mi">1</span>
+<span class="c1"># HELP probe_http_status_code Response HTTP status code</span>
+<span class="c1"># TYPE probe_http_status_code gauge</span>
+<span class="n">probe_http_status_code</span> <span class="mi">200</span>
+<span class="c1"># HELP probe_http_version Returns the version of HTTP of the probe response</span>
+<span class="c1"># TYPE probe_http_version gauge</span>
+<span class="n">probe_http_version</span> <span class="mf">1.1</span>
+<span class="c1"># HELP probe_ip_protocol Specifies whether probe ip protocol is IP4 or IP6</span>
+<span class="c1"># TYPE probe_ip_protocol gauge</span>
+<span class="n">probe_ip_protocol</span> <span class="mi">4</span>
+<span class="c1"># HELP probe_ssl_earliest_cert_expiry Returns earliest SSL cert expiry in unixtime</span>
+<span class="c1"># TYPE probe_ssl_earliest_cert_expiry gauge</span>
+<span class="n">probe_ssl_earliest_cert_expiry</span> <span class="mf">1.641513599e+09</span>
+<span class="c1"># HELP probe_success Displays whether or not the probe was a success</span>
+<span class="c1"># TYPE probe_success gauge</span>
+<span class="n">probe_success</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>URL地址中使用的探针是通过其中的module参数来指定的，而target参数用来指定探测目标，探针所探测的结果通过Metrics的形式返回。从返回的样本中，用户可以获取站点的DNS解析耗时、响应时间、响应状态码、probe_http_ssl指示最终重定向是否使用SSL和指标probe_success为1的成功状态等相关监控指标。</p>
+<p>我们可以使用浏览器访问示例地址http://192.168.1.37:9090/targets</p>
+<img alt="../_images/prometheus-block-exporter002.png" src="../_images/prometheus-block-exporter002.png" />
+<p>如监控目标过多，prometheus.yml文件配置中的targets指定被探测目标地址时，就会使得配置文件过于“臃肿”。现在我们使用“file_sd_configs”重新对prometheus.yml进行配置，操作如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">PromStack</span><span class="o">/</span><span class="n">prometheus</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">probes</span> <span class="o">-</span><span class="n">p</span>
+<span class="n">vim</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">PromStack</span><span class="o">/</span><span class="n">prometheus</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">probes</span><span class="o">/</span><span class="n">http_probes</span><span class="o">.</span><span class="n">json</span>
+<span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;targets&quot;</span><span class="p">:[</span>
+            <span class="s2">&quot;www.12306.cn&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;www.baidu.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;www.taobao.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;www.jd.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;www.qq.com&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>vim prometheus.yml</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">job_name</span><span class="p">:</span> <span class="s1">&#39;blackbox_http&#39;</span>
+  <span class="n">metrics_path</span><span class="p">:</span> <span class="o">/</span><span class="n">probe</span>
+  <span class="n">params</span><span class="p">:</span>
+    <span class="n">module</span><span class="p">:</span> <span class="p">[</span><span class="n">http_2xx</span><span class="p">]</span>
+  <span class="n">file_sd_configs</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">files</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s1">&#39;/etc/prometheus/probes/*.json&#39;</span>
+      <span class="n">refresh_interval</span><span class="p">:</span> <span class="mi">5</span><span class="n">m</span>
+  <span class="n">relabel_configs</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="n">__address__</span><span class="p">]</span>
+      <span class="n">target_label</span><span class="p">:</span> <span class="n">__param_target</span>
+    <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="n">__param_target</span><span class="p">]</span>
+      <span class="n">target_label</span><span class="p">:</span> <span class="n">instance</span>
+    <span class="o">-</span> <span class="n">target_label</span><span class="p">:</span> <span class="n">__address__</span>
+      <span class="n">replacement</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9115</span>
+</pre></div>
+</div>
+<p>热加载使配置文件生效</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+</pre></div>
+</div>
+<p>同样，使用浏览器访问http://192.168.1.37:9090/targets，可以查看被探测的目标的target实例</p>
+<img alt="../_images/prometheus-black_exporter003.png" src="../_images/prometheus-black_exporter003.png" />
+<p>在blackbox.yml配置文件中，http_2xx监测模块对http探测类型进行定义，除以上定义内容外，还可以使用headers定义相关的请求头信息，使用body定义请求内容，针对HTTPS类型的服务可以对证书进行自定义设置，有兴趣的读者可以访问官方提供的配置参考，自己进行相关配置，参考地址https://github.com/prometheus/blackbox_exporter/blob/master/example.yml。</p>
+<p>对于Blackbox
+Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监控的操作过程都与HTTP探测流程一样，我们这里不一一进行演示，实际环境中有需要的读者可以访问https://www.robustperception.io/tag/blackbox_exporter，选择对应的模块内容，再结合官网提供的配置参考进行实际操作。</p>
+<p><strong>3. grafana中加入blackbox_exporter监控数据</strong></p>
+<p>此模板为9965号模板，数据源选择Prometheus 模板下载地址
+<a class="reference external" href="https://grafana.com/grafana/dashboards/9965">https://grafana.com/grafana/dashboards/9965</a></p>
+<img alt="../_images/prometheus-block-exporter004.png" src="../_images/prometheus-block-exporter004.png" />
+<p>参考文献：</p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12022482.html">https://www.cnblogs.com/xiao987334176/p/12022482.html</a></p>
+</section>
+<section id="docker">
+<h3><a class="toc-backref" href="#id21">2.2.7 Docker监控</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h3>
+<p><strong>监控一个容器服务(``常用的监控指标有: 内存，CPU,硬盘，网络，状态``)</strong></p>
+<p>cAdvisor (Container Advisor)
+用于收集正在允许的容器资源使用和性能信息。相当于zabbix-agent一样提供一个数据采集的接口</p>
+<p><strong>1.docker部署cAdvisor:</strong></p>
+<p>被监控服务器安装</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">d</span>   \
+<span class="o">--</span><span class="n">volume</span><span class="o">=/</span><span class="p">:</span><span class="o">/</span><span class="n">rootfs</span><span class="p">:</span><span class="n">ro</span> \
+<span class="o">--</span><span class="n">volume</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="p">:</span><span class="n">ro</span>  \
+<span class="o">--</span><span class="n">volume</span><span class="o">=/</span><span class="n">sys</span><span class="p">:</span><span class="o">/</span><span class="n">sys</span><span class="p">:</span><span class="n">ro</span>  \
+<span class="o">--</span><span class="n">volume</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">docker</span><span class="o">/</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">docker</span><span class="p">:</span><span class="n">ro</span>  \
+<span class="o">--</span><span class="n">volume</span><span class="o">=/</span><span class="n">dev</span><span class="o">/</span><span class="n">disk</span><span class="o">/</span><span class="p">:</span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">disk</span><span class="p">:</span><span class="n">ro</span> \
+<span class="o">--</span><span class="n">publish</span><span class="o">=</span><span class="mi">8890</span><span class="p">:</span><span class="mi">8080</span> \
+<span class="o">--</span><span class="n">detach</span><span class="o">=</span><span class="n">true</span> \
+<span class="o">--</span><span class="n">name</span><span class="o">=</span><span class="n">cadvisor</span> \
+<span class="n">google</span><span class="o">/</span><span class="n">cadvisor</span><span class="p">:</span><span class="n">latest</span>
+</pre></div>
+</div>
+<p><strong>访问该地址，就能看到实时采集到的数据</strong></p>
+<p><a class="reference external" href="http://192.168.1.25:8890/containers/">http://192.168.1.25:8890/containers/</a></p>
+<p>该地址的数据为prometheus识别的数据的接口</p>
+<p><a class="reference external" href="http://192.168.1.25:8890/metrics">http://192.168.1.25:8890/metrics</a></p>
+<p>去监控控制主机上修改prometheus的配置文件,复制一个job文件，job_name
+指名称，targets为cAdvisor服务器地址ip和端口</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">job_name</span><span class="p">:</span> <span class="s2">&quot;docker&quot;</span>
+  <span class="n">static_configs</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">targets</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;192.168.1.25:8890&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>开启内核路由转发</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="o">-</span><span class="n">e</span> <span class="s2">&quot;net.ipv4.ip_forward = 1</span><span class="se">\n</span><span class="s2">net.ipv4.conf.default.rp_filter = 0 </span><span class="se">\n</span><span class="s2">net.ipv4.conf.all.rp_filter = 0&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysctl</span><span class="o">.</span><span class="n">conf</span>
+<span class="n">sysctl</span> <span class="o">-</span><span class="n">p</span>
+</pre></div>
+</div>
+<p>热加载使配置文件生效</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="http://192.168.1.37:9090/targets">http://192.168.1.37:9090/targets</a> 可以看到监控指标说明获取数据成功</p>
+<p><strong>2. 配置 Grafana 的模板</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>https://grafana.com/grafana/download    #该地址下载grafana模板
+</pre></div>
+</div>
+<p>使用193模板即可</p>
+<img alt="../_images/prometheus_docker_monitor01.png" src="../_images/prometheus_docker_monitor01.png" />
+<p>但是这个模板，无法选择根据主机选择。推荐另外一个模板，它是可以选择主机的。</p>
+<p><a class="reference external" href="https://grafana.com/grafana/dashboards/10566">https://grafana.com/grafana/dashboards/10566</a></p>
+</section>
+<section id="kubernets">
+<h3><a class="toc-backref" href="#id22">2.2.8 kubernets监控</a><a class="headerlink" href="#kubernets" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.mydlq.club/article/112/">http://www.mydlq.club/article/112/</a></p>
+<p><a class="reference external" href="https://grafana.com/grafana/dashboards/8919">https://grafana.com/grafana/dashboards/8919</a></p>
+<p><a class="reference external" href="https://grafana.com/grafana/dashboards/16098">https://grafana.com/grafana/dashboards/16098</a></p>
+</section>
+</section>
+<section id="id9">
+<h2><a class="toc-backref" href="#id23">本章小结</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>Prometheus监控环境中，具有更好的跨平台和可读性的基于文本的数据格式。</p>
+<ul class="simple">
+<li><p>Node Exporter对Linux主机进行数据监控采</p></li>
+<li><p>wmi_exporter对Windows主机进行数据监控采集</p></li>
+<li><p>mysqld_exporter对MySQL数据库进行数据监控采集</p></li>
+<li><p>redis_exporter对Redis进行数据监控采集</p></li>
+<li><p>nginx-vts-exporter对nginx服务进行数据监控采集</p></li>
+<li><p>Prometheus的黑盒监控，通过对http的探测示例操作，为其他黑盒探测的使用提供了帮助。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="01.Prometheus%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%8F%8A%E9%83%A8%E7%BD%B2.html" class="btn btn-neutral float-left" title="Prometheus基本概念及部署" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="03.%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.html" class="btn btn-neutral float-right" title="服务发现" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

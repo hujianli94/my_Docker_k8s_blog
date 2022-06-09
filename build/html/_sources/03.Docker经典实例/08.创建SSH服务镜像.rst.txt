@@ -1,0 +1,101 @@
+.. contents::
+   :depth: 3
+..
+
+创建SSH服务镜像
+===============
+
+参考文献
+
+https://www.linuxprobe.com/docker-create-ssh.html
+
+1. 准备工作
+
+::
+
+   docker run -it ubuntu:14.04 /bin/bash
+
+
+   2. 安装和配置SSH服务
+   cp /etc/apt/sources.list /etc/apt/sources.list.bak
+   cat /etc/apt/sources.list<<EOF
+   deb http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse
+   deb http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse
+   deb http://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse
+   deb http://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse
+   deb http://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse
+   deb-src http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse
+   deb-src http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse
+   deb-src http://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse
+   deb-src http://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse
+   deb-src http://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse
+   EOF 
+
+在docker容器中安装ssh服务
+
+::
+
+   apt-get install openssh-server
+
+   SSH需要的一个目录/var/run/sshd不存在。这里手动创建该目录
+   mkdir -p /var/run/sshd
+   接着，以后台方式启动SSH服务：
+   root@9598cb8e8f4a:/var/run# /usr/sbin/sshd -D &
+   [1] 3263
+
+   netstat -natp
+
+   默认情况下，pam认证程序会对我们的SSH登录进行限制。修改pam对SSH的配置，取消登录
+   限制，具体操作为编辑/etc/pam.d/sshd，将下面这行注释掉（在前面加#）：
+   session required pam_loginuid.so
+
+dockerfile方式
+--------------
+
+`centos7 ssh
+dockerfile <https://www.cnblogs.com/fengjian2016/p/12496438.html>`__
+
+https://www.cnblogs.com/fengjian2016/p/12496438.html
+
+Dockerfile
+
+::
+
+   FROM centos:centos7.7.1908
+   ENV PATH $PATH:/usr/local/mysql/bin/
+
+   RUN yum -y install wget \
+       && rm -rf /etc/yum.repos.d/* \
+          && cd /etc/yum.repos.d/ \
+       && wget http://mirrors.aliyun.com/repo/Centos-7.repo \
+       && wget http://mirrors.aliyun.com/repo/epel-7.repo \
+       &&  yum clean all \
+           && yum install -y openssh-server bind-utils sysstat telnet net-tools glibc-common gcc automake autoconf libtool make gcc-c++ unzip libaio-devel numactl vim openssh* \
+
+       && sed -i 's/GSSAPIAuthentication yes/GSSAPIAuthentication no/g' /etc/ssh/sshd_config \
+       &&  sed -i 's/#UseDNS yes/UseDNS no/g' /etc/ssh/sshd_config \
+       && echo '123456' | passwd --stdin root \
+       && ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key \
+       && ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key 
+
+
+   COPY mysql /usr/local/mysql
+   ADD my.cnf /etc/
+
+   RUN mkdir -p /data/mysql/mysql3306/{data,logs,temp} \
+   && groupadd mysql \
+   && useradd -g mysql -s /sbin/nologin -d /usr/local/mysql -MN mysql \
+   && echo "PATH=$PATH:/usr/local/mysql/bin/" >>/etc/profile \
+   && chown -R mysql.mysql /data/mysql
+
+   RUN chown -R mysql.mysql /usr/local/mysql
+
+   # ------------------------------------------------------------------------------
+   ADD localtime /etc/localtime
+
+   RUN mkdir /var/run/sshd
+
+   WORKDIR /root/
+
+   EXPOSE 22
+   CMD ["/usr/sbin/sshd", "-D"]

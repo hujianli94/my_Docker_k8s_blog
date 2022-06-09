@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harbor &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tekton" href="4.Tekton.html" />
+    <link rel="prev" title="Gitlab" href="2.Gitlab.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../5.%E6%8E%A7%E5%88%B6%E5%99%A8/index.html">5.控制器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html">7.存储与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html">8.Kubernetes资源的管理及调度</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../11.%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E6%A1%88%E4%BE%8B/index.html">11.项目部署案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../12.Helm%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/index.html">12.Helm学习指南</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">13.Kubernetes-DevOps</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="1.Jenkins.html">Jenkins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2.Gitlab.html">Gitlab</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Harbor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">1.Harbor 认证原理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">2.安装</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">3.推送镜像</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">4.高可用</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">5.参考文献</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="4.Tekton.html">Tekton</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">13.Kubernetes-DevOps</a> &raquo;</li>
+      <li>Harbor</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/13.Kubernetes-DevOps/3.Harbor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#harbor" id="id6">Harbor</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id7">1.Harbor 认证原理</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id8">2.安装</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id9">3.推送镜像</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id10">4.高可用</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id11">5.参考文献</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="harbor">
+<h1><a class="toc-backref" href="#id6">Harbor</a><a class="headerlink" href="#harbor" title="Permalink to this headline">¶</a></h1>
+<p>Harbor 是一个 CNCF 基金会托管的开源的可信的云原生 docker registry
+项目，可以用于存储、签名、扫描镜像内容，Harbor
+通过添加一些常用的功能如安全性、身份权限管理等来扩展 docker registry
+项目，此外还支持在 registry
+之间复制镜像，还提供更加高级的安全功能，如用户管理、访问控制和活动审计等，在新版本中还添加了
+Helm 仓库托管的支持。</p>
+<p><strong>Harbor 最核心的功能就是给 docker registry
+添加上一层权限保护的功能</strong>，要实现这个功能，就需要我们在使用 docker
+login、pull、push
+等命令的时候进行拦截，先进行一些权限相关的校验，再进行操作，其实这一系列的操作
+docker registry v2 就已经为我们提供了支持，v2
+集成了一个安全认证的功能，将安全认证暴露给外部服务，让外部服务去实现。</p>
+<section id="id1">
+<h2><a class="toc-backref" href="#id7">1.Harbor 认证原理</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>上面我们说了 docker registry v2
+将安全认证暴露给了外部服务使用，那么是怎样暴露的呢？我们在命令行中输入
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">login</span> <span class="pre">https://registry.qikqiak.com</span></code>
+为例来为大家说明下认证流程：</p>
+<ol class="arabic simple">
+<li><p>docker client 接收到用户输入的 docker login 命令，将命令转化为调用
+engine api 的 RegistryLogin 方法</p></li>
+<li><p>在 RegistryLogin 方法中通过 http 盗用 registry 服务中的 auth 方法</p></li>
+<li><p>因为我们这里使用的是 v2 版本的服务，所以会调用 loginV2 方法，在
+loginV2 方法中会进行 /v2/ 接口调用，该接口会对请求进行认证</p></li>
+<li><p>此时的请求中并没有包含 token 信息，认证会失败，返回 401
+错误，同时会在 header 中返回去哪里请求认证的服务器地址</p></li>
+<li><p>registry client
+端收到上面的返回结果后，便会去返回的认证服务器那里进行认证请求，向认证服务器发送的请求的
+header 中包含有加密的用户名和密码</p></li>
+<li><p>认证服务器从 header
+中获取到加密的用户名和密码，这个时候就可以结合实际的认证系统进行认证了，比如从数据库中查询用户认证信息或者对接
+ldap 服务进行认证校验</p></li>
+<li><p>认证成功后，会返回一个 token 信息，client 端会拿着返回的 token 再次向
+registry 服务发送请求，这次需要带上得到的
+token，请求验证成功，返回状态码就是200了</p></li>
+<li><p>docker client 端接收到返回的200状态码，说明操作成功，在控制台上打印
+Login Succeeded 的信息
+至此，整个登录过程完成，整个过程可以用下面的流程图来说明：</p></li>
+</ol>
+<img alt="../../_images/20200512145015.png" src="../../_images/20200512145015.png" />
+<p>要完成上面的登录认证过程有两个关键点需要注意：怎样让 registry
+服务知道服务认证地址？我们自己提供的认证服务生成的 token 为什么 registry
+就能够识别？</p>
+<p>对于第一个问题，比较好解决，registry
+服务本身就提供了一个配置文件，可以在启动 registry
+服务的配置文件中指定上认证服务地址即可，其中有如下这样的一段配置信息：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">......</span>
+<span class="n">auth</span><span class="p">:</span>
+  <span class="n">token</span><span class="p">:</span>
+    <span class="n">realm</span><span class="p">:</span> <span class="n">token</span><span class="o">-</span><span class="n">realm</span>
+    <span class="n">service</span><span class="p">:</span> <span class="n">token</span><span class="o">-</span><span class="n">service</span>
+    <span class="n">issuer</span><span class="p">:</span> <span class="n">registry</span><span class="o">-</span><span class="n">token</span><span class="o">-</span><span class="n">issuer</span>
+    <span class="n">rootcertbundle</span><span class="p">:</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">bundle</span>
+<span class="o">......</span>
+</pre></div>
+</div>
+<p>其中 realm 就可以用来指定一个认证服务的地址，下面我们可以看到 Harbor
+中该配置的内容。</p>
+<blockquote>
+<div><p>关于 registry
+的配置，可以参考官方文档：<a class="reference external" href="https://docs.docker.com/registry/configuration/">https://docs.docker.com/registry/configuration/</a></p>
+</div></blockquote>
+<p>第二个问题，就是 registry 怎么能够识别我们返回的 token 文件？如果按照
+registry 的要求生成一个 token，是不是 registry
+就可以识别了？所以我们需要在我们的认证服务器中按照 registry 的要求生成
+token，而不是随便乱生成。那么要怎么生成呢？我们可以在 docker registry
+的源码中可以看到 token 是通过
+<code class="docutils literal notranslate"><span class="pre">JWT（JSON</span> <span class="pre">Web</span> <span class="pre">Token）</span></code>来实现的，所以我们按照要求生成一个 JWT 的
+token 就可以了。</p>
+<p>对 golang 熟悉的同学可以去 clone 下 Harbor 的代码查看下，Harbor 采用
+beego 这个 web 开发框架，源码阅读起来不是特别困难。我们可以很容易的看到
+Harbor 中关于上面我们讲解的认证服务部分的实现方法。</p>
+</section>
+<section id="id2">
+<h2><a class="toc-backref" href="#id8">2.安装</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>由于 Harbor 涉及的组件太多了，所以我们这里用更加便捷的 Helm
+来进行安装。首先添加仓库地址：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm repo add harbor https://helm.goharbor.io
+<span class="s2">&quot;harbor&quot;</span> has been added to your repositories
+
+$ helm repo update
+</pre></div>
+</div>
+<p>在安装 Harbor 的时候有很多可以配置的参数，可以在
+<a class="reference external" href="https://github.com/goharbor/harbor-helm">harbor-helm</a>
+项目上进行查看。</p>
+<p>比如这里我们将主域名配置为 <code class="docutils literal notranslate"><span class="pre">harbor.k8s.local</span></code>，通过前面的 Ceph RBD
+的 StorageClass 来提供存储，又因为前面我们在安装 GitLab
+的时候就已经单独安装了 postgresql 和 reids
+两个数据库，所以我们也可以配置 Harbor
+使用这两个外置的数据库，这样可以降低资源的使用。但是使用外置的数据库我们需要提前手动创建数据库，比如我们这里使用的
+GitLab 提供的数据库，则进入该 Pod 创建
+registry、clair、notary_server、notary_signer 这4个数据库：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods -n kube-ops -l <span class="nv">name</span><span class="o">=</span>postgresql
+NAME                          READY   STATUS    RESTARTS   AGE
+postgresql-65c9cdc4f4-ld86d   <span class="m">1</span>/1     Running   <span class="m">0</span>          30h
+
+$ kubectl <span class="nb">exec</span> -it postgresql-65c9cdc4f4-ld86d /bin/bash -n kube-ops
+kubectl <span class="nb">exec</span> <span class="o">[</span>POD<span class="o">]</span> <span class="o">[</span>COMMAND<span class="o">]</span> is DEPRECATED and will be removed <span class="k">in</span> a future version. Use kubectl <span class="nb">exec</span> <span class="o">[</span>POD<span class="o">]</span> -- <span class="o">[</span>COMMAND<span class="o">]</span> instead.
+root@postgresql-65c9cdc4f4-ld86d:/var/lib/postgresql# sudo su - postgres
+postgres@postgresql-65c9cdc4f4-ld86d:~$ psql
+psql <span class="o">(</span><span class="m">10</span>.9 <span class="o">(</span>Ubuntu <span class="m">10</span>.9-1.pgdg18.04+1<span class="o">))</span>
+Type <span class="s2">&quot;help&quot;</span> <span class="k">for</span> help.
+
+<span class="nv">postgres</span><span class="o">=</span><span class="c1"># CREATE DATABASE registry OWNER postgres;  # 创建 registry 数据库</span>
+CREATE DATABASE
+<span class="nv">postgres</span><span class="o">=</span><span class="c1"># GRANT ALL PRIVILEGES ON DATABASE registry to postgres;  # 授权给 postgres 用户</span>
+GRANT
+<span class="nv">postgres</span><span class="o">=</span><span class="c1"># GRANT ALL PRIVILEGES ON DATABASE registry to gitlab;  # 授权给 gitlab 用户</span>
+GRANT
+<span class="c1"># Todo: 用同样的方式创建其他三个数据库：clair、notary_server、notary_signer</span>
+......
+postgres-# <span class="se">\q</span>  <span class="c1"># 退出</span>
+
+<span class="c1"># 命令如下</span>
+CREATE DATABASE clair OWNER postgres<span class="p">;</span>
+GRANT ALL PRIVILEGES ON DATABASE clair to postgres<span class="p">;</span>
+GRANT ALL PRIVILEGES ON DATABASE clair to gitlab<span class="p">;</span>
+
+CREATE DATABASE notary_server OWNER postgres<span class="p">;</span>
+GRANT ALL PRIVILEGES ON DATABASE notary_server to postgres<span class="p">;</span>
+GRANT ALL PRIVILEGES ON DATABASE notary_server to gitlab<span class="p">;</span>
+
+CREATE DATABASE notary_signer OWNER postgres<span class="p">;</span>
+GRANT ALL PRIVILEGES ON DATABASE notary_signer to postgres<span class="p">;</span>
+GRANT ALL PRIVILEGES ON DATABASE notary_signer to gitlab<span class="p">;</span>
+</pre></div>
+</div>
+<p>创建storageClass</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get sc
+NAME                            PROVISIONER                                                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+
+nfs-retain                      cluster.local/nfs-storage-class-nfs-client-provisioner     Retain          Immediate           <span class="nb">true</span>                   3h42m
+</pre></div>
+</div>
+<p>数据库准备过后，就可以使用我们自己定制的 values
+文件来进行安装了，完整的定制的 values 文件如下所示：(harbor-values.yaml)</p>
+<p><code class="docutils literal notranslate"><span class="pre">harbor-values.yaml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">externalURL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://harbor-dashboard.runjs.cn</span>
+<span class="nt">harborAdminPassword</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Harbor12345</span>
+<span class="nt">logLevel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">debug</span>
+
+<span class="nt">expose</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ingress</span>
+  <span class="c1"># 关闭tls，https</span>
+  <span class="nt">tls</span><span class="p">:</span>
+    <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+  <span class="nt">ingress</span><span class="p">:</span>
+    <span class="nt">hosts</span><span class="p">:</span>
+      <span class="nt">core</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">harbor-dashboard.runjs.cn</span>
+      <span class="nt">notary</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">notary.runjs.cn</span>
+    <span class="nt">controller</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
+    <span class="nt">kubeVersionOverride</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+    <span class="nt">className</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+    <span class="nt">annotations</span><span class="p">:</span>
+      <span class="nt">ingress.kubernetes.io/ssl-redirect</span><span class="p">:</span> <span class="s">&quot;false&quot;</span>
+      <span class="nt">ingress.kubernetes.io/proxy-body-size</span><span class="p">:</span> <span class="s">&quot;0&quot;</span>
+      <span class="nt">nginx.ingress.kubernetes.io/ssl-redirect</span><span class="p">:</span> <span class="s">&quot;false&quot;</span>
+      <span class="nt">nginx.ingress.kubernetes.io/proxy-body-size</span><span class="p">:</span> <span class="s">&quot;0&quot;</span>
+
+
+<span class="nt">persistence</span><span class="p">:</span>
+  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">resourcePolicy</span><span class="p">:</span> <span class="s">&quot;keep&quot;</span>
+  <span class="nt">persistentVolumeClaim</span><span class="p">:</span>
+    <span class="nt">registry</span><span class="p">:</span>
+      <span class="nt">storageClass</span><span class="p">:</span> <span class="s">&quot;nfs-retain&quot;</span>
+      <span class="c1"># 如果是高可用的，多个副本组件需要使用 ReadWriteMany，默认为 ReadWriteOnce</span>
+      <span class="nt">accessMode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500Gi</span>
+    <span class="nt">chartmuseum</span><span class="p">:</span>
+      <span class="nt">storageClass</span><span class="p">:</span> <span class="s">&quot;nfs-retain&quot;</span>
+      <span class="nt">accessMode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50Gi</span>
+    <span class="nt">jobservice</span><span class="p">:</span>
+      <span class="nt">storageClass</span><span class="p">:</span> <span class="s">&quot;nfs-retain&quot;</span>
+      <span class="nt">accessMode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">20Gi</span>
+    <span class="nt">trivy</span><span class="p">:</span>
+      <span class="nt">storageClass</span><span class="p">:</span> <span class="s">&quot;nfs-retain&quot;</span>
+      <span class="nt">subPath</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+      <span class="nt">accessMode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10Gi</span>
+
+
+
+<span class="nt">database</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">external</span>
+  <span class="nt">external</span><span class="p">:</span>
+    <span class="nt">host</span><span class="p">:</span> <span class="s">&quot;postgresql.kube-ops.svc.cluster.local&quot;</span>
+    <span class="nt">port</span><span class="p">:</span> <span class="s">&quot;5432&quot;</span>
+    <span class="nt">username</span><span class="p">:</span> <span class="s">&quot;gitlab&quot;</span>
+    <span class="nt">password</span><span class="p">:</span> <span class="s">&quot;passw0rd&quot;</span>
+
+<span class="nt">redis</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">external</span>
+  <span class="nt">external</span><span class="p">:</span>
+    <span class="nt">addr</span><span class="p">:</span> <span class="s">&quot;redis.kube-ops.svc.cluster.local:6379&quot;</span>
+
+<span class="c1"># 默认为一个副本，如果要做高可用，只需要设置为 replicas &gt;= 2 即可</span>
+<span class="nt">portal</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">core</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">jobservice</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">registry</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">chartmuseum</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">clair</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">notary</span><span class="p">:</span>
+  <span class="nt">server</span><span class="p">:</span>
+    <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">signer</span><span class="p">:</span>
+    <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+<p>这些配置信息都是根据 Harbor 的 Chart 包默认的 values
+值进行覆盖的。现在我们直接安装即可：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 创建名称空间</span>
+$ kubectl get ns harbor
+
+<span class="c1"># 在线安装</span>
+$ helm install myharbor harbor/harbor -f harbor-values.yaml -n harbor
+
+<span class="c1"># 下载后离线安装</span>
+$ helm fetch harbor/harbor --untar
+$ helm install myharbor harbor -f harbor-values.yaml -n harbor
+</pre></div>
+</div>
+<p>正常情况下隔一会儿就可以安装成功了：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm list -A<span class="p">|</span>grep harbor
+myharbor                        harbor                  <span class="m">1</span>               <span class="m">2022</span>-05-25 <span class="m">17</span>:47:08.888095397 +0800 CST deployed        harbor-1.9.0                    <span class="m">2</span>.5.0
+
+$ kubectl get pods -n harbor -l <span class="nv">app</span><span class="o">=</span>harbor
+NAME                                      READY   STATUS    RESTARTS   AGE
+myharbor-chartmuseum-59d9d485f5-k4h9c     <span class="m">1</span>/1     Running   <span class="m">0</span>          43m
+myharbor-core-7767f7f766-7j2jc            <span class="m">1</span>/1     Running   <span class="m">0</span>          43m
+myharbor-jobservice-5c89c7c784-8hh95      <span class="m">1</span>/1     Running   <span class="m">0</span>          43m
+myharbor-notary-server-c9c7c8595-lp2q9    <span class="m">1</span>/1     Running   <span class="m">0</span>          43m
+myharbor-notary-signer-557998988c-sw7zq   <span class="m">1</span>/1     Running   <span class="m">0</span>          43m
+myharbor-portal-75ffcbf79d-ttj6d          <span class="m">1</span>/1     Running   <span class="m">0</span>          43m
+myharbor-registry-7cc597447d-v8bnn        <span class="m">2</span>/2     Running   <span class="m">0</span>          43m
+myharbor-trivy-0                          <span class="m">1</span>/1     Running   <span class="m">0</span>          43m
+</pre></div>
+</div>
+<p>安装完成后，我们就可以使用域名进行访问了，由于我们开启了
+KubernetesIngress 支持的</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get ingress -n harbor
+NAME                      CLASS    HOSTS                       ADDRESS   PORTS   AGE
+myharbor-ingress          &lt;none&gt;   harbor-dashboard.runjs.cn             <span class="m">80</span>      44m
+myharbor-ingress-notary   &lt;none&gt;   notary.runjs.cn                       <span class="m">80</span>      44m
+</pre></div>
+</div>
+<p>用户名使用默认的 admin，密码则是上面配置的默认 Harbor12345：</p>
+<img alt="../../_images/image-20220525183212958.png" src="../../_images/image-20220525183212958.png" />
+<p>我们可以看到有很多功能，默认情况下会有一个名叫 <code class="docutils literal notranslate"><span class="pre">library</span></code>
+的项目，该项目默认是公开访问权限的，进入项目可以看到里面还有
+<code class="docutils literal notranslate"><span class="pre">Helm</span> <span class="pre">Chart</span></code>
+包的管理，可以手动在这里上传，也可以对该项目里面的镜像进行一些其他配置。</p>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id9">3.推送镜像</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>现在我们来测试下使用 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">cli</span></code> 来进行 <code class="docutils literal notranslate"><span class="pre">pull/push</span></code> 镜像，直接使用
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">login</span></code> 命令登录：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 隐式登录</span>
+$ docker login harbor-dashboard.runjs.cn
+Username: admin
+Password:
+WARNING! Your password will be stored unencrypted <span class="k">in</span> /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+
+<span class="c1"># 登录账号密码默认保存在/root/.docker/config.json.</span>
+$ cat /root/.docker/config.json
+<span class="o">{</span>
+        <span class="s2">&quot;auths&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;harbor-dashboard.runjs.cn&quot;</span>: <span class="o">{</span>
+                        <span class="s2">&quot;auth&quot;</span>: <span class="s2">&quot;YWRtaW46SGFyYm9yMTIzNDU=&quot;</span>
+                <span class="o">}</span>
+        <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1"># 删除记录后，需要重新输入账号密码</span>
+
+<span class="c1"># 显示登录</span>
+$ docker login -u admin -p xxxx harbor-dashboard.runjs.cn
+</pre></div>
+</div>
+<p>如果开启了https，访问登录会报如下错误</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker login -u admin -p xxxx harbor-dashboard.runjs.cn
+Username: admin
+Password:
+INFO<span class="o">[</span><span class="m">0006</span><span class="o">]</span> Error logging <span class="k">in</span> to v2 endpoint, trying next endpoint: Get https://harbor.k8s.local/v2/: x509: certificat
+e signed by unknown authority
+Get https://harbor.k8s.local/v2/: x509: certificate signed by unknown authority
+</pre></div>
+</div>
+<p>解决办法：</p>
+<p>这是因为在使用 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">login</span></code> 登录的时候会使用 https
+的服务，而我们这里是自签名的证书，所以就报错了，我们可以将使用到的 CA
+证书文件复制到 <code class="docutils literal notranslate"><span class="pre">/etc/docker/certs.d/harbor-dashboard.runjs.cn</span></code>
+目录下面来解决这个问题（如果该目录不存在，则创建它）。<code class="docutils literal notranslate"><span class="pre">ca.crt</span></code>
+这个证书文件我们可以通过 Ingress 中使用的 Secret 资源对象来提供：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">$ kubectl get secret myharbor-harbor-ingress -n harbor -o yaml</span>
+<span class="l l-Scalar l-Scalar-Plain">apiVersion</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">data</span><span class="p">:</span>
+  <span class="nt">ca.crt</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;ca.crt&gt;</span>
+  <span class="nt">tls.crt</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;tls.crt&gt;</span>
+  <span class="nt">tls.key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;tls.key&gt;</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Secret</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">creationTimestamp</span><span class="p">:</span> <span class="s">&quot;2020-05-12T07:23:20Z&quot;</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">harbor</span>
+    <span class="nt">chart</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">harbor</span>
+    <span class="nt">heritage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Helm</span>
+    <span class="nt">release</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myharbor</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myharbor-harbor-ingress</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kube-ops</span>
+  <span class="nt">resourceVersion</span><span class="p">:</span> <span class="s">&quot;67162075&quot;</span>
+  <span class="nt">selfLink</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/api/v1/namespaces/kube-ops/secrets/myharbor-harbor-ingress</span>
+  <span class="nt">uid</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10a9d22d-3889-4ac4-87c4-5cda7e701828</span>
+<span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes.io/tls</span>
+</pre></div>
+</div>
+<p>其中 data 区域中 <code class="docutils literal notranslate"><span class="pre">ca.crt</span></code>
+对应的值就是我们需要证书，不过需要注意还需要做一个 base64
+的解码，这样证书配置上以后就可以正常访问了。</p>
+<p>不过由于上面的方法较为繁琐，所以一般情况下面我们在使用 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">cli</span></code>
+的时候是在 docker 启动参数后面添加一个 <code class="docutils literal notranslate"><span class="pre">--insecure-registry</span></code>
+参数来忽略证书的校验的，在 docker 启动配置文件
+<code class="docutils literal notranslate"><span class="pre">/usr/lib/systemd/system/docker.service</span></code> 中修改ExecStart的启动参数：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExecStart</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">dockerd</span> <span class="o">--</span><span class="n">insecure</span><span class="o">-</span><span class="n">registry</span> <span class="n">harbor</span><span class="o">-</span><span class="n">dashboard</span><span class="o">.</span><span class="n">runjs</span><span class="o">.</span><span class="n">cn</span>
+</pre></div>
+</div>
+<p>或者在 <code class="docutils literal notranslate"><span class="pre">Docker</span> <span class="pre">Daemon</span></code> 的配置文件中添加：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ cat /etc/docker/daemon.json
+<span class="o">{</span>
+  <span class="s2">&quot;insecure-registries&quot;</span> : <span class="o">[</span>
+    <span class="s2">&quot;harbor-dashboard.runjs.cn&quot;</span>
+  <span class="o">]</span>,
+  <span class="s2">&quot;registry-mirrors&quot;</span> : <span class="o">[</span>
+    <span class="s2">&quot;https://docker.mirrors.ustc.edu.cn&quot;</span>
+  <span class="o">]</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>然后保存重启 docker，再使用 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">cli</span></code> 就没有任何问题了：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker login -u admin -p xxx harbor-dashboard.runjs.cn
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+WARNING! Your password will be stored unencrypted <span class="k">in</span> /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+</pre></div>
+</div>
+<p>比如我们本地现在有一个名为 busybox
+的镜像，现在我们想要将该镜像推送到我们的私有仓库中去，应该怎样操作呢？首先我们需要给该镜像重新打一个具有
+<code class="docutils literal notranslate"><span class="pre">harbor-dashboard.runjs.cn</span></code>
+前缀的镜像，然后推送的时候就可以识别到推送到哪个镜像仓库：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker tag busybox:latest harbor-dashboard.runjs.cn/base/busybox:latest
+$ docker push harbor-dashboard.runjs.cn/base/busybox:latest
+The push refers to repository <span class="o">[</span>harbor-dashboard.runjs.cn/base/busybox<span class="o">]</span>
+01fd6df81c8e: Pushed
+latest: digest: sha256:62ffc2ed7554e4c6d360bce40bbcf196573dd27c4ce080641a2c59867e732dee size: <span class="m">527</span>
+</pre></div>
+</div>
+<p>推送完成后，我们同样可以在 Portal 页面上看到这个镜像的信息：</p>
+<img alt="../../_images/image-20220525184248913.png" src="../../_images/image-20220525184248913.png" />
+<p>镜像 push 成功，同样可以测试下 pull：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker rmi -f harbor-dashboard.runjs.cn/base/busybox:latest
+Untagged: harbor-dashboard.runjs.cn/base/busybox:latest
+Untagged: harbor-dashboard.runjs.cn/base/busybox@sha256:62ffc2ed7554e4c6d360bce40bbcf196573dd27c4ce080641a2c59867e732dee
+
+$ docker pull harbor-dashboard.runjs.cn/base/busybox:latest
+latest: Pulling from base/busybox
+Digest: sha256:62ffc2ed7554e4c6d360bce40bbcf196573dd27c4ce080641a2c59867e732dee
+Status: Downloaded newer image <span class="k">for</span> harbor-dashboard.runjs.cn/base/busybox:latest
+harbor-dashboard.runjs.cn/base/busybox:latest
+
+$ docker images <span class="p">|</span>grep busybox
+busybox                                                    latest                                     beae173ccac6   <span class="m">4</span> months ago    <span class="m">1</span>.24MB
+harbor-dashboard.runjs.cn/base/busybox                     latest                                     beae173ccac6   <span class="m">4</span> months ago    <span class="m">1</span>.24MB
+</pre></div>
+</div>
+<p>到这里证明上面我们的私有 docker
+仓库搭建成功了，大家可以尝试去创建一个私有的项目，然后创建一个新的用户，使用这个用户来进行
+pull/push
+镜像，Harbor还具有其他的一些功能，比如镜像复制，大家可以自行测试，感受下
+Harbor 和官方自带的 registry 仓库的差别。</p>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id10">4.高可用</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>Harbor 的大部分组件都是无状态的应用，比如 portal、core
+等只需要增加其相应的副本数量即可；在存储数据层面，需要提供高可用的
+Postgresql、Redis 集群，另外针对镜像和 chart
+服务也需要提供可持久的存储。</p>
+<img alt="../../_images/image-20220525184453987.png" src="../../_images/image-20220525184453987.png" />
+<p>要做高可用的
+Harbor，我们需要将数据库通过外置方式进行提供，当然也需要保证数据库是高可用的。然后存储需要允许跨节点数据共享，也就是要支持
+ReadWriteMany 模式，我们这里使用 Ceph 的话就需要使用
+CephFS。然后将其他组件副本数设置为大于等于2：portal.replicas、core.replicas、jobservice.replicas、registry.replicas、chartmuseum.replicas、clair.replicas、notary.server.replicas
+以及 notary.signer.replicas。</p>
+<p>然后重新使用 Helm 进行安装即可。</p>
+</section>
+<section id="id5">
+<h2><a class="toc-backref" href="#id11">5.参考文献</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>参考文档</p>
+<p><a class="reference external" href="https://www.qikqiak.com/k8strain/devops/harbor/">https://www.qikqiak.com/k8strain/devops/harbor/</a></p>
+<p><a class="reference external" href="http://www.mydlq.club/article/66/#%E5%9B%9B%E8%AE%BE%E7%BD%AE-harbor-%E9%85%8D%E7%BD%AE%E6%B8%85%E5%8D%95">http://www.mydlq.club/article/66/#%E5%9B%9B%E8%AE%BE%E7%BD%AE-harbor-%E9%85%8D%E7%BD%AE%E6%B8%85%E5%8D%95</a></p>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="2.Gitlab.html" class="btn btn-neutral float-left" title="Gitlab" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="4.Tekton.html" class="btn btn-neutral float-right" title="Tekton" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

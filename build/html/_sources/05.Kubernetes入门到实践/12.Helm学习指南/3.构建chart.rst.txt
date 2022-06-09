@@ -1,0 +1,247 @@
+.. contents::
+   :depth: 3
+..
+
+构建chart
+=========
+
+1.chart创建命令
+---------------
+
+::
+
+   $ helm create anvil
+
+chart目录结构
+
+.. code:: shell
+
+   $ tree anvil/
+   anvil/
+   ├── charts
+   ├── Chart.yaml
+   ├── templates
+   │   ├── deployment.yaml
+   │   ├── _helpers.tpl
+   │   ├── hpa.yaml
+   │   ├── ingress.yaml
+   │   ├── NOTES.txt
+   │   ├── serviceaccount.yaml
+   │   ├── service.yaml
+   │   └── tests
+   │       └── test-connection.yaml
+   └── values.yaml
+
+-  这个Chart.yaml文件包含元数据和chart的一些功能控件。
+-  依赖的chart可以选择保存在charts目录中。
+-  用于生成Kubernetes清单的模板存储在templates目录中
+-  这个NOTES.txt文件是一个特殊的模板。安装chart时，NOTES.txt文件模板是被渲染和显示到（而不是被安装到）集群中。模板可以包含未作为install或upgrade命令的一部分安装的测试。此chart包括由helm
+   test命令使用的测试。
+-  当Helm渲染清单时传递给模板的默认值位于values.yaml文件中。实例化chart时，可以覆盖这些值。
+
+安装这个新创建的chart，无须任何修改
+
+.. code:: shell
+
+   $ helm install myapp anvil/
+
+如果已将此chart安装到集群中进行测试，则可以通过运行以下命令从集群中删除该实例：
+
+.. code:: shell
+
+   $ helm delete myapp
+
+2. Chart.yaml文件
+-----------------
+
+``Chart.yaml``
+
+.. code:: yaml
+
+   apiVersion: v2
+   name: anvil
+   description: A surprise to catch something speedy.
+   version: 0.1.0
+   appVersion: 9.17.49
+   icon: https://wile.example.com/anvil.svg
+   keywords:
+     - road runner
+     - anvil
+   home: https://wile.example.com/
+   sources:
+     - https://github.com/masterminds/learning-helm/blob/master/chapter5/anvil
+   maintainers:
+     - name: ACME Corp
+       email: maintainers@example.com
+     - name: Wile E. Coyote
+       email: wile@example.com
+
+3. 修改模板
+-----------
+
+``deployment.yaml``
+
+.. code:: yaml
+
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: {{ include "anvil.fullname" . }}
+     labels:
+       {{- include "anvil.labels" . | nindent 4 }}
+   spec:
+   {{- if not .Values.autoscaling.enabled }}
+     replicas: {{ .Values.replicaCount }}
+   {{- end }}
+     selector:
+       matchLabels:
+         {{- include "anvil.selectorLabels" . | nindent 6 }}
+     template:
+       metadata:
+       {{- with .Values.podAnnotations }}
+         annotations:
+           {{- toYaml . | nindent 8 }}
+       {{- end }}
+         labels:
+           {{- include "anvil.selectorLabels" . | nindent 8 }}
+       spec:
+         {{- with .Values.imagePullSecrets }}
+         imagePullSecrets:
+           {{- toYaml . | nindent 8 }}
+         {{- end }}
+         serviceAccountName: {{ include "anvil.serviceAccountName" . }}
+         securityContext:
+           {{- toYaml .Values.podSecurityContext | nindent 8 }}
+         containers:
+           - name: {{ .Chart.Name }}
+             securityContext:
+               {{- toYaml .Values.securityContext | nindent 12 }}
+             image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+             imagePullPolicy: {{ .Values.image.pullPolicy }}
+             ports:
+               - name: http
+                 containerPort: 80
+                 protocol: TCP
+             livenessProbe:
+               httpGet:
+                 path: /
+                 port: http
+             readinessProbe:
+               httpGet:
+                 path: /
+                 port: http
+             resources:
+               {{- toYaml .Values.resources | nindent 12 }}
+         {{- with .Values.nodeSelector }}
+         nodeSelector:
+           {{- toYaml . | nindent 8 }}
+         {{- end }}
+         {{- with .Values.affinity }}
+         affinity:
+           {{- toYaml . | nindent 8 }}
+         {{- end }}
+         {{- with .Values.tolerations }}
+         tolerations:
+           {{- toYaml . | nindent 8 }}
+         {{- end }}
+
+::
+
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: {{ include "anvil.fullname" . }}
+     labels:
+       {{- include "anvil.labels" . | nindent 4 }}
+
+include模板函数允许将一个模板的输出包含在另一个模板中，这在管道中也能工作。include函数的第一个参数是要使用的模板的名称。作为第二个参数传入的“.”是根对象。因为根对象被传入，所以根对象上的属性和函数可以在被调用的模板中使用。
+
+anvil.fullname以及anvil.labels是通过_helpers.tpl文件引入的两个可重用模板（名称开头的“_”会使它上升到目录列表的顶部，以便你可以在模板中轻松找到它。Helm不会将它们渲染到Kubernetes清单中，但确实会使其中的模板可用）。
+
+anvil.fullname根据实例化chart时选择的名称提供名称，而anvil.labels提供遵循Kubernetes最佳实践的标签。
+
+::
+
+   spec:
+   {{- if not .Values.autoscaling.enabled }}
+     replicas: {{ .Values.replicaCount }}
+
+.Values上的属性是基于许多因素计算的。默认值和起点基于在chart的values.yaml文件中的输入
+
+这些值可以被实例化chart时传入的值覆盖。helm
+CLI具有直接传入值的标志（即–set、–set-file和–set-string）或传递带有值（即，-f或–values）的文件的标志。这些值被合并在一起，后传入的值优先采用。
+
+4. 使用values文件
+-----------------
+
+``values.yaml``
+
+.. code:: yaml
+
+   replicaCount: 1
+   image:
+     repository: nginx
+     pullPolicy: IfNotPresent
+     tag: ""
+   imagePullSecrets: []
+   nameOverride: ""
+   fullnameOverride: ""
+   serviceAccount:
+     create: true
+     annotations: {}
+     name: ""
+   podAnnotations: {}
+   podSecurityContext: {}
+   securityContext: {}
+   service:
+     type: ClusterIP
+     port: 80
+   ingress:
+     enabled: false
+     annotations: {}
+     hosts:
+       - host: chart-example.local
+         paths: []
+     tls: []
+   resources: {}
+   autoscaling:
+     enabled: false
+     minReplicas: 1
+     maxReplicas: 100
+     targetCPUUtilizationPercentage: 80
+   nodeSelector: {}
+   tolerations: []
+   affinity: {}
+
+5. 打包chart
+------------
+
+参考：
+
+https://www.yuque.com/cuiliang-s1qrv/k8s/ztps4d
+
+https://www.cnblogs.com/lvzhenjiang/p/14878430.html#23-chart%E8%87%AA%E5%BB%BA
+
+`harbor 管理Helm
+Chart包 <https://www.cnblogs.com/hankuikui/p/10038494.html>`__
+
+6. 校验chart代码
+----------------
+
+.. code:: shell
+
+   $ helm lint anvil/
+   ==> Linting anvil/
+   [INFO] Chart.yaml: icon is recommended
+
+此命令可以在一个命令中校验多个chart。
+
+.. code:: shell
+
+   $ helm lint anvil/ drupal/
+   ==> Linting anvil/
+   [INFO] Chart.yaml: icon is recommended
+
+   ==> Linting drupal/
+
+   2 chart(s) linted, 0 chart(s) failed

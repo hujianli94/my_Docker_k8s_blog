@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>使用Dockerfile创建镜像 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="实战案例" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html" />
+    <link rel="prev" title="Docker使用网络" href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">01.Docker技术入门与实战3版</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.%E5%88%9D%E8%AF%86Docker%E4%B8%8E%E5%AE%B9%E5%99%A8.html">初识Docker与容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Docker%E9%95%9C%E5%83%8F%E7%9A%84%E4%BD%BF%E7%94%A8.html">Docker镜像的使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.%E6%93%8D%E4%BD%9CDocker%E5%AE%B9%E5%99%A8.html">操作Docker容器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.%E8%AE%BF%E9%97%AEDocker%E4%BB%93%E5%BA%93.html">访问Docker仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">搭建本地私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06.Docker%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Docker数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html">Docker使用网络</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">使用Dockerfile创建镜像</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Dockerfile编写准则</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Dockerfile编写注意事项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">查看在运行容器的Dockerfile的工具</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker">查看docker容器运行命令的所有参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">1.基本结构</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Dockerfile拷贝目录的一个坑</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">Dockerfile指令说明</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">2.配置指令</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#from">1.FROM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#maintainer">2. MAINTAINER</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run">3.RUN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cmd">4.CMD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#label">5.LABEL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#expose">6.EXPOSE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#env">7.ENV</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#add">8.ADD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#copy">9.COPY</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#entrypoint">10.ENTRYPOINT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#volume">11.VOLUME</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#user">12.USER</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#workdir">13.WORKDIR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arg">14.ARG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#onbuild">15.ONBUILD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stopsignal">16.STOPSIGNAL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#healthcheck">17.HEALTHCHECK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shell">18.SHELL</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">3.创建镜像</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dockerignore">4.使用.dockerignore文件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">写 Dockerfile 的一些技巧</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#python-m-pip-pip">用 python -m pip 而不是 pip</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#apt-get-install">让 apt-get install 更安静</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#curl-wget">让 curl 和 wget 更安静</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#axel-curl-wget">用 axel 而不是 curl 或者 wget</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">设置容器时间与宿主机时间同步</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">创建镜像</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id13">命令选项</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#buildkit">BuildKit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14">选择父镜像</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dockerignore-1">使用.dockerignore文件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id16">多步骤创建</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id17">示例1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id18">示例2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id19">示例3</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">最佳实践</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">书写Dockerfile经验总结</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id22">常用的Dockerfile工程</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id23">鲲鹏应用迁移Dockerfile归档仓库</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id24">参考文献</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html">Docker核心实现技术</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.%E9%85%8D%E7%BD%AE%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">配置私有仓库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E4%B8%8E%E9%85%8D%E7%BD%AE.html">安全防护与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.%E9%AB%98%E7%BA%A7%E7%BD%91%E7%BB%9C%E5%8A%9F%E8%83%BD.html">高级网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.libnetwork%E6%8F%92%E4%BB%B6%E5%8C%96%E7%BD%91%E7%BB%9C%E5%8A%9F%E8%83%BD.html">libnetwork插件化网络功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.Etcd%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84%E9%94%AE%E5%80%BC%E6%95%B0%E6%8D%AE%E5%BA%93.html">Etcd高可用的键值数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Compose.html">Docker三剑客之Docker-Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Swarm.html">Docker三剑客之Docker-Swarm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18.Docker%E4%B8%89%E5%89%91%E5%AE%A2%E4%B9%8BDocker-Machine.html">Docker三剑客之Docker-Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19.%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AAWeb%E5%BA%94%E7%94%A8%E6%A0%88.html">搭建一个Web应用栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.Docker%E9%AB%98%E7%BA%A7%E7%BD%91%E7%BB%9C%E5%AE%9E%E6%88%98.html">Docker高级网络实战</a></li>
+<li class="toctree-l2"><a class="reference internal" href="21.%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.html">服务发现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22.Mesos-%E4%BC%98%E7%A7%80%E7%9A%84%E9%9B%86%E7%BE%A4%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6%E5%B9%B3%E5%8F%B0.html">Mesos—优秀的集群资源调度平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="23.Kubernetes-%E7%94%9F%E4%BA%A7%E7%BA%A7%E5%AE%B9%E5%99%A8%E9%9B%86%E7%BE%A4%E5%B9%B3%E5%8F%B0.html">Kubernetes-生产级容器集群平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24.%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E9%A1%B9%E7%9B%AE.html">其他相关项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25.%E9%99%84%E5%BD%95.html">附录</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05.Kubernetes%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/index.html">05.Kubernetes入门到实践</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">01.Docker技术入门与实战3版</a> &raquo;</li>
+      <li>使用Dockerfile创建镜像</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/01.Docker技术入门与实战3版/08.使用Dockerfile创建镜像.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#dockerfile" id="id25">使用Dockerfile创建镜像</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id26">Dockerfile编写准则</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id27">Dockerfile编写注意事项</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id28">查看在运行容器的Dockerfile的工具</a></p></li>
+<li><p><a class="reference internal" href="#docker" id="id29">查看docker容器运行命令的所有参数</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id30">1.基本结构</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id5" id="id31">Dockerfile拷贝目录的一个坑</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id32">Dockerfile指令说明</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id7" id="id33">2.配置指令</a></p>
+<ul>
+<li><p><a class="reference internal" href="#from" id="id34">1.FROM</a></p></li>
+<li><p><a class="reference internal" href="#maintainer" id="id35">2. MAINTAINER</a></p></li>
+<li><p><a class="reference internal" href="#run" id="id36">3.RUN</a></p></li>
+<li><p><a class="reference internal" href="#cmd" id="id37">4.CMD</a></p></li>
+<li><p><a class="reference internal" href="#label" id="id38">5.LABEL</a></p></li>
+<li><p><a class="reference internal" href="#expose" id="id39">6.EXPOSE</a></p></li>
+<li><p><a class="reference internal" href="#env" id="id40">7.ENV</a></p></li>
+<li><p><a class="reference internal" href="#add" id="id41">8.ADD</a></p></li>
+<li><p><a class="reference internal" href="#copy" id="id42">9.COPY</a></p></li>
+<li><p><a class="reference internal" href="#entrypoint" id="id43">10.ENTRYPOINT</a></p></li>
+<li><p><a class="reference internal" href="#volume" id="id44">11.VOLUME</a></p></li>
+<li><p><a class="reference internal" href="#user" id="id45">12.USER</a></p></li>
+<li><p><a class="reference internal" href="#workdir" id="id46">13.WORKDIR</a></p></li>
+<li><p><a class="reference internal" href="#arg" id="id47">14.ARG</a></p></li>
+<li><p><a class="reference internal" href="#onbuild" id="id48">15.ONBUILD</a></p></li>
+<li><p><a class="reference internal" href="#stopsignal" id="id49">16.STOPSIGNAL</a></p></li>
+<li><p><a class="reference internal" href="#healthcheck" id="id50">17.HEALTHCHECK</a></p></li>
+<li><p><a class="reference internal" href="#shell" id="id51">18.SHELL</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id8" id="id52">3.创建镜像</a></p></li>
+<li><p><a class="reference internal" href="#dockerignore" id="id53">4.使用.dockerignore文件</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id54">写 Dockerfile 的一些技巧</a></p>
+<ul>
+<li><p><a class="reference internal" href="#python-m-pip-pip" id="id55">用 python -m pip 而不是 pip</a></p></li>
+<li><p><a class="reference internal" href="#apt-get-install" id="id56">让 apt-get install 更安静</a></p></li>
+<li><p><a class="reference internal" href="#curl-wget" id="id57">让 curl 和 wget 更安静</a></p></li>
+<li><p><a class="reference internal" href="#axel-curl-wget" id="id58">用 axel 而不是 curl 或者 wget</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id59">设置容器时间与宿主机时间同步</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id11" id="id60">创建镜像</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id13" id="id61">命令选项</a></p></li>
+<li><p><a class="reference internal" href="#buildkit" id="id62">BuildKit</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id63">选择父镜像</a></p></li>
+<li><p><a class="reference internal" href="#dockerignore-1" id="id64">使用.dockerignore文件</a></p></li>
+<li><p><a class="reference internal" href="#id16" id="id65">多步骤创建</a></p></li>
+<li><p><a class="reference internal" href="#id17" id="id66">示例1</a></p></li>
+<li><p><a class="reference internal" href="#id18" id="id67">示例2</a></p></li>
+<li><p><a class="reference internal" href="#id19" id="id68">示例3</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id20" id="id69">最佳实践</a></p></li>
+<li><p><a class="reference internal" href="#id21" id="id70">书写Dockerfile经验总结</a></p></li>
+<li><p><a class="reference internal" href="#id22" id="id71">常用的Dockerfile工程</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id23" id="id72">鲲鹏应用迁移Dockerfile归档仓库</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id24" id="id73">参考文献</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="dockerfile">
+<h1><a class="toc-backref" href="#id25">使用Dockerfile创建镜像</a><a class="headerlink" href="#dockerfile" title="Permalink to this headline">¶</a></h1>
+<p>Dockerfile是一个文本格式的配置文件，用户可以使用Dockerfile来快速创建自定义的镜像。</p>
+<section id="id1">
+<h2><a class="toc-backref" href="#id26">Dockerfile编写准则</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>下面是Dockerfile编写的一些参考准则：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>（1）尽量选择官方镜像。
+
+（2）选择合适的基础镜像。
+# 标签中包含“alpine”的镜像是基于体积更小的Alpine Linux发行版制作的，一般情况下可以优先考虑。标签中包含“sdk”的镜像是包含完整的框架SDK的，往往体积比较大，如果仅用于运行托管，尽量选择带“runtime”的镜像
+
+（3）优化指令顺序。
+# 可以把WORKDIR、ENV等放在前面，把COPY、ADD放在后面。总的来说，就是把不需要经常更改的指令放到前面，将最频繁更改的指令放到最后面。
+
+（4）只复制需要的文件，切忌复制所有内容。
+
+（5）最小化可缓存的执行层。
+比如，每一个RUN指令都会被看作是可缓存的执行单元。太多的RUN指令会增加镜像的层数，增大镜像体积，而将所有的命令都放到同一个RUN指令中又会破坏缓存，从而延缓构建周期。
+
+（6）使用多阶段构建。
+
+（7）根据情况合并指令。前面其实提到过这一点，甚至还特地讲了转义字符，主要就是为此服务的。前面我们讲过，每一个指令都会创建一层，并构成新的镜像
+
+（8）删除多余文件和清理没用的中间结果。
+这一点很易于理解，通常来讲，体积更小，部署更快！因此，在构建过程中，我们需要清理那些最终不需要的代码或文件，比如临时文件、源代码、缓存等。
+
+
+（9）使用.dockerignore。.dockerignore文件用于忽略那些镜像构建时非必需的文件，可以是开发文档、日志和其他无用的文件。
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2><a class="toc-backref" href="#id27">Dockerfile编写注意事项</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>华为云上编写高效的Dockerfile说明举例很好，请参考</p>
+<p><a class="reference external" href="https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&amp;topicId=7248a2e6">https://support.huawei.com/carrier/docview!docview?nid=DOC1100716384&amp;topicId=7248a2e6</a></p>
+<p>编写 Dockerfile 的最佳实践</p>
+<p><a class="reference external" href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/">https://docs.docker.com/develop/develop-images/dockerfile_best-practices/</a></p>
+<blockquote>
+<div><p>Dockerfile 实践</p>
+</div></blockquote>
+<p><a class="reference external" href="https://www.bococ.cn/Docker/106.html">https://www.bococ.cn/Docker/106.html</a></p>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id28">查看在运行容器的Dockerfile的工具</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>项目地址：<a class="reference external" href="https://github.com/P3GLEG/Whaler">Whaler(opens new
+window)</a></p></li>
+<li><p>项目说明：能够查看在运行容器的Dockerfile的工具，有时候我们可能会维护一个没有Dockerfile的容器，即可借助此工具。</p></li>
+<li><p>相关文章：<a class="reference external" href="https://samaritan.ai/blog/reversing-docker-images-into-dockerfiles/">博文介绍</a></p></li>
+</ul>
+</section>
+<section id="docker">
+<h2><a class="toc-backref" href="#id29">查看docker容器运行命令的所有参数</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>项目地址：<a class="reference external" href="https://github.com/lavie/runlike">runlike(opens new
+window)</a></p></li>
+<li><p>项目说明：给定一个现有的 docker 容器，打印运行它的副本所需的命令行。</p></li>
+<li><p>相关文章：README</p></li>
+</ul>
+<p>可以将运行的docker 推导反写为docker-compose文件</p>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id30">1.基本结构</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>Dockerfile由一行行命令语句组成，并且支持以#开头的注释行。</p>
+<p>一般而言，Dockerfile主体内容分为四部分：基础镜像信息、维护者信息、镜像操作指令和容器启动时执行指令。</p>
+<p>一个简单的示例：</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="c"># escape=\ (backslash)</span>
+<span class="c"># This dockerfile uses the ubuntu:xeniel image</span>
+<span class="c"># VERSION 2 - EDITION 1</span>
+<span class="c"># Author: docker_user</span>
+<span class="c"># Command format: Instruction [arguments / command] ..</span>
+<span class="c"># Base image to use, this must be set as the first line</span>
+
+<span class="k">FROM</span> <span class="s">ubuntu:xeniel</span>
+<span class="c"># Maintainer: docker_user &lt;docker_user at email.com&gt; (@docker_user)</span>
+
+<span class="k">LABEL</span> maintainer docker_user&lt;docker_user@email.com&gt;
+<span class="c"># Commands to update the image</span>
+
+<span class="k">RUN</span> <span class="nb">echo</span> <span class="s2">&quot;deb http://archive.ubuntu.com/ubuntu/ xeniel main universe&quot;</span> &gt;&gt; /etc/
+    apt/sources.list
+<span class="k">RUN</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install -y nginx
+<span class="k">RUN</span> <span class="nb">echo</span> <span class="s2">&quot;\ndaemon off;&quot;</span> &gt;&gt; /etc/nginx/nginx.conf
+<span class="c"># Commands when creating a new container</span>
+
+<span class="k">CMD</span> /usr/sbin/nginx
+</pre></div>
+</div>
+<p>下面是Docker
+Hub上两个热门镜像nginx和Go的Dockerfile的例子，通过这两个例子。读者可以对Dockerfile结构有个基本的感知。</p>
+<p>第一个是在debian：jessie基础镜像基础上安装Nginx环境，从而创建一个新的nginx镜像：</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span> <span class="s">debian:jessie</span>
+<span class="k">LABEL</span> maintainer docker_user&lt;docker_user@email.com&gt;
+<span class="k">ENV</span> NGINX_VERSION <span class="m">1</span>.10.1-1~jessie
+<span class="k">RUN</span> apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 573BFD6B3D8FBC64107
+    9A6ABABF5BD827BD9BF62 <span class="se">\</span>
+        <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;deb http://nginx.org/packages/debian/ jessie nginx&quot;</span> &gt;&gt; /etc/apt/sources.list <span class="se">\</span>
+        <span class="o">&amp;&amp;</span> apt-get update <span class="se">\</span>
+        <span class="o">&amp;&amp;</span> apt-get install --no-install-recommends --no-install-suggests -y <span class="se">\</span>
+        ca-certificates <span class="se">\</span>
+        <span class="nv">nginx</span><span class="o">=</span><span class="si">${</span><span class="nv">NGINX_VERSION</span><span class="si">}</span> <span class="se">\</span>
+        nginx-module-xslt <span class="se">\</span>
+        nginx-module-geoip <span class="se">\</span>
+        nginx-module-image-filter <span class="se">\</span>
+        nginx-module-perl <span class="se">\</span>
+        nginx-module-njs <span class="se">\</span>
+        gettext-base <span class="se">\</span>
+        <span class="o">&amp;&amp;</span> rm -rf /var/lib/apt/lists/*
+<span class="c"># forward request and error logs to docker log collector</span>
+<span class="k">RUN</span> ln -sf /dev/stdout /var/log/nginx/access.log <span class="se">\</span>
+    <span class="o">&amp;&amp;</span> ln -sf /dev/stderr /var/log/nginx/error.log
+<span class="k">EXPOSE</span><span class="s"> 80 443</span>
+<span class="k">CMD</span> <span class="p">[</span><span class="s2">&quot;nginx&quot;</span><span class="p">,</span> <span class="s2">&quot;-g&quot;</span><span class="p">,</span> <span class="s2">&quot;daemon off;&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>第二个是基于buildpack-deps：jessie-scm基础镜像，安装Golang相关环境，制作一个Go语言的运行环境镜像：</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span> <span class="s">buildpack-deps:jessie-scm</span>
+<span class="c"># gcc for cgo</span>
+<span class="k">RUN</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install -y --no-install-recommends <span class="se">\</span>
+    g++ <span class="se">\</span>
+    gcc <span class="se">\</span>
+    libc6-dev <span class="se">\</span>
+    make <span class="se">\</span>
+    <span class="o">&amp;&amp;</span> rm -rf /var/lib/apt/lists/*
+<span class="k">ENV</span> GOLANG_VERSION <span class="m">1</span>.6.3
+<span class="k">ENV</span> GOLANG_DOWNLOAD_URL https://golang.org/dl/go<span class="nv">$GOLANG_VERSION</span>.linux-amd64.tar.gz
+<span class="k">ENV</span> GOLANG_DOWNLOAD_SHA256 cdde5e08530c0579255d6153b08fdb3b8e47caabbe717bc7bcd7561275a87aeb
+<span class="k">RUN</span> curl -fsSL <span class="s2">&quot;</span><span class="nv">$GOLANG_DOWNLOAD_URL</span><span class="s2">&quot;</span> -o golang.tar.gz <span class="se">\</span>
+    <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$GOLANG_DOWNLOAD_SHA256</span><span class="s2">  golang.tar.gz&quot;</span> <span class="p">|</span> sha256sum -c - <span class="se">\</span>
+    <span class="o">&amp;&amp;</span> tar -C /usr/local -xzf golang.tar.gz <span class="se">\</span>
+    <span class="o">&amp;&amp;</span> rm golang.tar.gz
+<span class="k">ENV</span> GOPATH /go
+<span class="k">ENV</span> PATH <span class="nv">$GOPATH</span>/bin:/usr/local/go/bin:<span class="nv">$PATH</span>
+<span class="k">RUN</span> mkdir -p <span class="s2">&quot;</span><span class="nv">$GOPATH</span><span class="s2">/src&quot;</span> <span class="s2">&quot;</span><span class="nv">$GOPATH</span><span class="s2">/bin&quot;</span> <span class="o">&amp;&amp;</span> chmod -R <span class="m">777</span> <span class="s2">&quot;</span><span class="nv">$GOPATH</span><span class="s2">&quot;</span>
+<span class="k">WORKDIR</span><span class="s"> $GOPATH</span>
+<span class="k">COPY</span> go-wrapper /usr/local/bin/
+</pre></div>
+</div>
+<p>示例,基于centos7镜像再构建</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span> <span class="s">centos:7</span>
+<span class="k">MAINTAINER</span><span class="s"> www.humingzhe.com</span>
+<span class="k">RUN</span> yum install -y gcc gcc-c++ make openssl-devel pcre-devel <span class="o">&amp;&amp;</span> yum clean all
+<span class="k">ADD</span> nginx-1.12.1.tar.gz /tmp
+
+<span class="k">RUN</span> <span class="nb">cd</span> /tmp/nginx-1.12.1 <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    ./configure --prefix<span class="o">=</span>/usr/local/nginx <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    make -j <span class="m">2</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    make install <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    rm -rf /tmp/nginx-1.12.1* <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> <span class="s1">&#39;Asia/Shanghai&#39;</span> &gt;/etc/timezone
+
+<span class="k">COPY</span> nginx.conf /usr/local/nginx/conf
+<span class="k">COPY</span> vhost/ /usr/local/nginx/conf
+
+<span class="k">WORKDIR</span><span class="s"> /usr/local/nginx</span>
+<span class="k">EXPOSE</span><span class="s"> 80</span>
+<span class="k">CMD</span> <span class="p">[</span><span class="s2">&quot;./sbin/nginx&quot;</span><span class="p">,</span> <span class="s2">&quot;-g&quot;</span><span class="p">,</span> <span class="s2">&quot;daemon off;&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="id5">
+<h3><a class="toc-backref" href="#id31">Dockerfile拷贝目录的一个坑</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>拷贝文件不需要写目标</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 拷贝文件</span>
+<span class="n">FROM</span> <span class="n">centos</span>
+<span class="n">COPY</span> <span class="mf">2.</span><span class="n">txt</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>拷贝目录则需要这样写,目标,不然拷贝不进去</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 拷贝目录</span>
+<span class="n">FROM</span> <span class="n">centos</span>
+<span class="n">COPY</span> <span class="n">mysql</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">mysql</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3><a class="toc-backref" href="#id32">Dockerfile指令说明</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>Dockerfile中指令的一般格式为INSTRUCTION
+arguments，包括“配置指令”（配置镜像信息）和“操作指令”（具体执行操作），参见表</p>
+<blockquote>
+<div><p>Docker Dockerfile</p>
+<p><a class="reference external" href="https://www.runoob.com/docker/docker-dockerfile.html">https://www.runoob.com/docker/docker-dockerfile.html</a></p>
+</div></blockquote>
+<p>Dockerfile中的指令及说明</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 81%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>指令</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>FROM</p></td>
+<td><p>指定创建基础镜像</p></td>
+</tr>
+<tr class="row-odd"><td><p>MAINTAINER</p></td>
+<td><p>指定维护者信息</p></td>
+</tr>
+<tr class="row-even"><td><p>RUN</p></td>
+<td><p>运行命令</p></td>
+</tr>
+<tr class="row-odd"><td><p>CMD</p></td>
+<td><p>指定启动容器时默认执行的命令</p></td>
+</tr>
+<tr class="row-even"><td><p>LABEL</p></td>
+<td><p>指定生成镜像的元数据标签信息</p></td>
+</tr>
+<tr class="row-odd"><td><p>EXPOSE</p></td>
+<td><p>声明镜像内服务所监听的端口</p></td>
+</tr>
+<tr class="row-even"><td><p>ENV</p></td>
+<td><p>指定环境变量</p></td>
+</tr>
+<tr class="row-odd"><td><p>ADD</p></td>
+<td><p>复制指定的&lt;src&gt;下的内容到容器中的&lt;dest&gt;下，&lt;s
+rc&gt;可以为URL；如果为tar文件，会自动解压到&lt;dest&gt;路径下</p></td>
+</tr>
+<tr class="row-even"><td><p>COPY</p></td>
+<td><p>复制本地主机的&lt;src&gt;路径下
+的内容到镜像中的&lt;dest&gt;下，一般推荐使用COPY，而不是ADD</p></td>
+</tr>
+<tr class="row-odd"><td><p>ENTRYPOINT</p></td>
+<td><p>指定镜像的默认入口</p></td>
+</tr>
+<tr class="row-even"><td><p>VOLUME</p></td>
+<td><p>创建数据卷挂载点</p></td>
+</tr>
+<tr class="row-odd"><td><p>USER</p></td>
+<td><p>指定运行容器时的用户名或UID</p></td>
+</tr>
+<tr class="row-even"><td><p>WORKDIR</p></td>
+<td><p>配置工作目录</p></td>
+</tr>
+<tr class="row-odd"><td><p>ARG</p></td>
+<td><p>指定镜像内使用的参数（例如版本号信息等）</p></td>
+</tr>
+<tr class="row-even"><td><p>ONBUILD</p></td>
+<td><p>当作为其他镜像的基础镜像时，所执行的创建操作指令</p></td>
+</tr>
+<tr class="row-odd"><td><p>STOPSIGNAL</p></td>
+<td><p>容器退出的信号值</p></td>
+</tr>
+<tr class="row-even"><td><p>HEALTHCHECK</p></td>
+<td><p>如何进行健康检查</p></td>
+</tr>
+<tr class="row-odd"><td><p>SHELL</p></td>
+<td><p>指定使用shell时的默认shell类型</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="id7">
+<h2><a class="toc-backref" href="#id33">2.配置指令</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>可参考文献：</p>
+<p><a class="reference external" href="https://juejin.cn/post/6844903958532587533#heading-25">Dockerfile、Docker Compose file
+参考文档</a></p>
+<section id="from">
+<h3><a class="toc-backref" href="#id34">1.FROM</a><a class="headerlink" href="#from" title="Permalink to this headline">¶</a></h3>
+<p>指定所创建镜像的基础镜像。</p>
+<p>格式为</p>
+<p><code class="docutils literal notranslate"><span class="pre">FROM&lt;image&gt;[AS&lt;name&gt;]</span></code></p>
+<p>或</p>
+<p><code class="docutils literal notranslate"><span class="pre">FROM&lt;image&gt;:&lt;tag&gt;[AS&lt;name&gt;]</span></code></p>
+<p>或</p>
+<p><code class="docutils literal notranslate"><span class="pre">FROM&lt;image&gt;&#64;&lt;digest&gt;[AS&lt;name&gt;]</span></code>。</p>
+<p>任何Dockerfile中第一条指令必须为FROM指令。</p>
+<p>并且，如果在同一个Dockerfile中创建多个镜像时，可以使用多个FROM指令（每个镜像一次）。</p>
+<p>为了保证镜像精简，可以选用体积较小的镜像如Alpine或Debian作为基础镜像。例如：</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">ARG</span> <span class="nv">VERSION</span><span class="o">=</span><span class="m">9</span>.3
+<span class="k">FROM</span> <span class="s">debian:${VERSION}</span>
+
+<span class="c">#示例</span>
+<span class="k">FROM</span> <span class="s">scratch</span>
+.....
+</pre></div>
+</div>
+</section>
+<section id="maintainer">
+<h3><a class="toc-backref" href="#id35">2. MAINTAINER</a><a class="headerlink" href="#maintainer" title="Permalink to this headline">¶</a></h3>
+<p>指定维护者信息，格式为MAINTAINER&lt;name&gt;。例如：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MAINTAINER</span> <span class="n">image_creator</span><span class="nd">@docker</span><span class="o">.</span><span class="n">com</span>
+</pre></div>
+</div>
+<p>该信息会写入生成镜像的Author属性域中。</p>
+</section>
+<section id="run">
+<h3><a class="toc-backref" href="#id36">3.RUN</a><a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h3>
+<p>运行指定命令。</p>
+<p>格式为RUN<code class="docutils literal notranslate"><span class="pre">&lt;command&gt;</span></code>或<code class="docutils literal notranslate"><span class="pre">RUN[&quot;executable&quot;，&quot;param1&quot;，&quot;param2&quot;]</span></code>。注意，后一个指令会被解析为Json数组，因此必须用双引号。</p>
+<p>前者默认将在shell终端中运行命令，即/bin/sh-c；后者则使用exec执行，不会启动shell环境。</p>
+<p>指定使用其他终端类型可以通过第二种方式实现，例如<code class="docutils literal notranslate"><span class="pre">RUN[&quot;/bin/bash&quot;，&quot;-c&quot;，&quot;echo</span> <span class="pre">hello&quot;]</span></code>。</p>
+<p>每条RUN指令将在当前镜像基础上执行指定命令，并提交为新的镜像层。当命令较长时可以使用:raw-latex:<cite>来换行</cite>。例如：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RUN</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span> \
+    <span class="o">&amp;&amp;</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">libsnappy</span><span class="o">-</span><span class="n">dev</span> <span class="n">zlib1g</span><span class="o">-</span><span class="n">dev</span> <span class="n">libbz2</span><span class="o">-</span><span class="n">dev</span> \
+    <span class="o">&amp;&amp;</span> <span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">cache</span><span class="o">/</span><span class="n">apt</span> \
+    <span class="o">&amp;&amp;</span> <span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">apt</span><span class="o">/</span><span class="n">lists</span><span class="o">/*</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">RUN</span></code> 作为 <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> 中最为常用的指令，在使用时有以下建议：</p>
+<ul class="simple">
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">RUN</span></code>
+指令执行过程中，产生的中间镜像会被当做缓存在下一次构建时使用，如果不想使用缓存，使其失效，可以在
+<code class="docutils literal notranslate"><span class="pre">build</span></code> 时添加 <code class="docutils literal notranslate"><span class="pre">--no-cache</span></code></p></li>
+<li><p>尽量把所有的 <code class="docutils literal notranslate"><span class="pre">RUN</span></code> 指令写到一起，如果是多条 <code class="docutils literal notranslate"><span class="pre">shell</span></code>
+命令，可以不用每条命令都添加 <code class="docutils literal notranslate"><span class="pre">RUN</span></code> ，更好的做法是通过 <code class="docutils literal notranslate"><span class="pre">\</span></code>
+换行，通过 <code class="docutils literal notranslate"><span class="pre">&amp;&amp;</span></code>
+连接多个指令，这样对构建生成的镜像的大小优化是很有帮助的，语法为</p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>RUN <span class="nb">set</span> -x <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    yum install -y epel-release <span class="se">\</span>
+    make <span class="se">\</span>
+    gcc <span class="se">\</span>
+    gcc-c++
+</pre></div>
+</div>
+</section>
+<section id="cmd">
+<h3><a class="toc-backref" href="#id37">4.CMD</a><a class="headerlink" href="#cmd" title="Permalink to this headline">¶</a></h3>
+<p>CMD指令用来指定启动容器时默认执行的命令。它支持三种格式：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CMD[&quot;executable&quot;，&quot;param1&quot;，&quot;param2&quot;]</span></code>使用exec执行，是推荐使用的方式；</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CMD</span> <span class="pre">command</span> <span class="pre">param1</span> <span class="pre">param2</span></code>在/bin/sh中执行，提供给需要交互的应用；</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CMD[&quot;param1&quot;，&quot;param2&quot;]</span></code>提供给ENTRYPOINT的默认参数。</p></li>
+</ul>
+<p>每个Dockerfile只能有一条CMD命令。如果指定了多条命令，只有最后一条会被执行。</p>
+<p>如果用户启动容器时手动指定了运行的命令（作为run的参数），则会覆盖掉CMD指定的命令。</p>
+<p>示例:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>CMD <span class="o">[</span><span class="s2">&quot;c:\\Apache24\\bin\\httpd.exe&quot;</span>, <span class="s2">&quot;-w&quot;</span><span class="o">]</span>
+CMD c:<span class="se">\\</span>Apache24<span class="se">\\</span>bin<span class="se">\\</span>httpd.exe -w
+</pre></div>
+</div>
+</section>
+<section id="label">
+<h3><a class="toc-backref" href="#id38">5.LABEL</a><a class="headerlink" href="#label" title="Permalink to this headline">¶</a></h3>
+<p>LABEL指令可以为生成的镜像添加元数据标签信息。这些信息可以用来辅助过滤出特定镜像。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">LABEL&lt;key&gt;=&lt;value&gt;&lt;key&gt;=&lt;value&gt;&lt;key&gt;=&lt;value&gt;</span></code>…。</p>
+<p>例如：</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">LABEL</span> <span class="s2">&quot;com.example.vendor&quot;</span><span class="o">=</span><span class="s2">&quot;ACME Incorporated&quot;</span>
+<span class="k">LABEL</span> com.example.label-with-value<span class="o">=</span><span class="s2">&quot;foo&quot;</span>
+<span class="k">LABEL</span> <span class="nv">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span>
+<span class="k">LABEL</span> <span class="nv">description</span><span class="o">=</span><span class="s2">&quot;This text illustrates \</span>
+<span class="s2">that label-values can span multiple lines.&quot;</span>
+</pre></div>
+</div>
+<p>在镜像构建后并成功运行容器，可以通过 <code class="docutils literal notranslate"><span class="pre">inspect</span></code> 查看</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># docker image inspect --format=&#39;&#39; myimage</span>
+<span class="p">{</span>
+  <span class="s2">&quot;com.example.vendor&quot;</span><span class="p">:</span> <span class="s2">&quot;ACME Incorporated&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;com.example.label-with-value&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;This text illustrates that label-values can span multiple lines.&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>如果要声明作者，语法为</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LABEL</span> <span class="n">maintainer</span><span class="o">=</span><span class="s2">&quot;SvenDowideit@home.org.au&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="expose">
+<h3><a class="toc-backref" href="#id39">6.EXPOSE</a><a class="headerlink" href="#expose" title="Permalink to this headline">¶</a></h3>
+<p>声明镜像内服务监听的端口。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">EXPOSE</span> <span class="pre">&lt;port&gt;</span> <span class="pre">[&lt;port&gt;/&lt;protocol&gt;...]</span></code>。</p>
+<p>例如：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EXPOSE</span> <span class="mi">22</span> <span class="mi">80</span> <span class="mi">8443</span>
+</pre></div>
+</div>
+<p>注意该指令只是起到声明作用，并不会自动完成端口映射。</p>
+<p>如果要映射端口出来，在启动容器时可以使用-P参数（Docker主机会自动分配一个宿主机的临时端口）或-p
+HOST_PORT：CONTAINER_PORT参数（具体指定所映射的本地端口）。</p>
+</section>
+<section id="env">
+<h3><a class="toc-backref" href="#id40">7.ENV</a><a class="headerlink" href="#env" title="Permalink to this headline">¶</a></h3>
+<p>指定环境变量，在镜像生成过程中会被后续RUN指令使用，在镜像启动的容器中也会存在。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">ENV&lt;key&gt;&lt;value&gt;</span></code>或<code class="docutils literal notranslate"><span class="pre">ENV&lt;key&gt;=&lt;value&gt;</span></code>…。</p>
+<p>例如：</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">ENV</span> PG_MAJOR <span class="m">9</span>.3
+<span class="k">ENV</span> PG_VERSION <span class="m">9</span>.3.4
+<span class="k">RUN</span> curl -SL http://example.com/postgres-<span class="nv">$PG_VERSION</span>.tar.xz <span class="p">|</span> tar -xJC /usr/src/
+    postgress <span class="o">&amp;&amp;</span> …
+<span class="k">ENV</span> PATH /usr/local/postgres-<span class="nv">$PG_MAJOR</span>/bin:<span class="nv">$PATH</span>
+</pre></div>
+</div>
+<p>指令指定的环境变量在运行时可以被覆盖掉，如</p>
+<p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run--env&lt;key&gt;=&lt;value&gt;built_image</span></code>。</p>
+<p>注意当一条ENV指令中同时为多个环境变量赋值并且值也是从环境变量读取时，会为变量都赋值后再更新。如下面的指令，最终结果为key1=value1
+key2=value2：</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">ENV</span> <span class="nv">key1</span><span class="o">=</span>value2
+<span class="k">ENV</span> <span class="nv">key1</span><span class="o">=</span>value1 <span class="nv">key2</span><span class="o">=</span><span class="si">${</span><span class="nv">key1</span><span class="si">}</span>
+</pre></div>
+</div>
+</section>
+<section id="add">
+<h3><a class="toc-backref" href="#id41">8.ADD</a><a class="headerlink" href="#add" title="Permalink to this headline">¶</a></h3>
+<p>该命令将复制指定的&lt;src&gt;路径下的内容到容器中的&lt;dest&gt;路径下。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">ADD&lt;src&gt;&lt;dest&gt;</span></code>。</p>
+<p>其中&lt;src&gt;可以是Dockerfile所在目录的一个相对路径（文件或目录），也可以是一个URL，还可以是一个tar文件（如果为tar文件，会自动解压到&lt;dest&gt;路径下）。&lt;dest&gt;可以是镜像内的绝对路径，或者相对于工作目录（WORKDIR）的相对路径。</p>
+<p>路径支持正则格式，例如：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ADD</span> <span class="o">*.</span><span class="n">c</span> <span class="o">/</span><span class="n">code</span><span class="o">/</span>
+</pre></div>
+</div>
+</section>
+<section id="copy">
+<h3><a class="toc-backref" href="#id42">9.COPY</a><a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">COPY</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ADD</span></code>
+都是用于在构建时往镜像中复制文件或目录的，并且两者都支持在复制时修改文件或目录的属主和属组，语法为</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ADD</span>  <span class="p">[</span><span class="o">--</span><span class="n">chown</span><span class="o">=&lt;</span><span class="n">user</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">group</span><span class="o">&gt;</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">src</span><span class="o">&gt;...</span> <span class="o">&lt;</span><span class="n">dest</span><span class="o">&gt;</span>
+<span class="n">ADD</span>  <span class="p">[</span><span class="o">--</span><span class="n">chown</span><span class="o">=&lt;</span><span class="n">user</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">group</span><span class="o">&gt;</span><span class="p">]</span> <span class="p">[</span><span class="s2">&quot;&lt;src&gt;&quot;</span><span class="p">,</span><span class="o">...</span> <span class="s2">&quot;&lt;dest&gt;&quot;</span><span class="p">]</span>
+<span class="n">COPY</span> <span class="p">[</span><span class="o">--</span><span class="n">chown</span><span class="o">=&lt;</span><span class="n">user</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">group</span><span class="o">&gt;</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">src</span><span class="o">&gt;...</span> <span class="o">&lt;</span><span class="n">dest</span><span class="o">&gt;</span>
+<span class="n">COPY</span> <span class="p">[</span><span class="o">--</span><span class="n">chown</span><span class="o">=&lt;</span><span class="n">user</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">group</span><span class="o">&gt;</span><span class="p">]</span> <span class="p">[</span><span class="s2">&quot;&lt;src&gt;&quot;</span><span class="p">,</span><span class="o">...</span> <span class="s2">&quot;&lt;dest&gt;&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>复制内容到镜像。 格式为</p>
+<p><code class="docutils literal notranslate"><span class="pre">COPY</span> <span class="pre">&lt;src&gt;</span> <span class="pre">&lt;dest&gt;</span></code></p>
+<p>复制本地主机的（为Dockerfile所在目录的相对路径，文件或目录）下内容到镜像中的。目标路径不存在时，会自动创建。</p>
+<p>路径同样支持正则格式。
+COPY与ADD指令功能类似，当使用本地目录为源目录时，推荐使用COPY。</p>
+<p>两者的使用差不多，但 <code class="docutils literal notranslate"><span class="pre">ADD</span></code> 功能更丰富</p>
+<ul>
+<li><p>支持URL</p>
+<p>例如源路径是文件的 <code class="docutils literal notranslate"><span class="pre">URL</span></code>
+链接，构建时自动进行下载，下载后放到目标路径下，文件权限为 <code class="docutils literal notranslate"><span class="pre">600</span></code></p>
+</li>
+<li><p>压缩包自动解压</p>
+<p>例如 <code class="docutils literal notranslate"><span class="pre">tar</span></code> 、 <code class="docutils literal notranslate"><span class="pre">gzip</span></code> 、 <code class="docutils literal notranslate"><span class="pre">bzip2</span></code> 、 <code class="docutils literal notranslate"><span class="pre">xz</span></code> 格式的压缩包，
+<code class="docutils literal notranslate"><span class="pre">ADD</span></code> 指令将会自动解压缩这个压缩文件到目标路径去</p>
+</li>
+</ul>
+</section>
+<section id="entrypoint">
+<h3><a class="toc-backref" href="#id43">10.ENTRYPOINT</a><a class="headerlink" href="#entrypoint" title="Permalink to this headline">¶</a></h3>
+<p>指定镜像的默认入口命令，该入口命令会在启动容器时作为根命令执行，所有传入值作为该命令的参数。</p>
+<p>支持两种格式：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ENTRYPOINT [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]（exec调用执行）；
+ENTRYPOINT command param1 param2（shell中执行）。
+</pre></div>
+</div>
+<p>此时，CMD指令指定值将作为根命令的参数。
+每个Dockerfile中只能有一个ENTRYPOINT，当指定多个时，只有最后一个起效。在运行时，可以被–entrypoint参数覆盖掉，如docker
+run–entrypoint。</p>
+</section>
+<section id="volume">
+<h3><a class="toc-backref" href="#id44">11.VOLUME</a><a class="headerlink" href="#volume" title="Permalink to this headline">¶</a></h3>
+<p>创建一个数据卷挂载点。 格式为<code class="docutils literal notranslate"><span class="pre">VOLUME</span> <span class="pre">[&quot;/data&quot;]</span></code>。</p>
+<p>运行容器时可以从本地主机或其他容器挂载数据卷，一般用来存放数据库和需要保持的数据等。</p>
+</section>
+<section id="user">
+<h3><a class="toc-backref" href="#id45">12.USER</a><a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h3>
+<p>指定运行容器时的用户名或UID，后续的RUN等指令也会使用指定的用户身份。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">USER</span> <span class="pre">daemon</span></code>。</p>
+<p>当服务不需要管理员权限时，可以通过该命令指定运行用户，并且可以在Dockerfile中创建所需要的用户。例如：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>RUN groupadd -r postgres <span class="o">&amp;&amp;</span> useradd --no-log-init -r -g postgres postgres
+</pre></div>
+</div>
+<p>要临时获取管理员权限可以使用gosu命令。</p>
+</section>
+<section id="workdir">
+<h3><a class="toc-backref" href="#id46">13.WORKDIR</a><a class="headerlink" href="#workdir" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">WORKDIR</span></code> 指令为 <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> 中的任何 <code class="docutils literal notranslate"><span class="pre">RUN</span></code> 、 <code class="docutils literal notranslate"><span class="pre">CMD</span></code> 、
+<code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span></code> 、 <code class="docutils literal notranslate"><span class="pre">COPY</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ADD</span></code>
+指令设置工作目录。如果工作目录不存在，即使它没有在后续的 <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>
+指令中使用，它也会被创建</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">WORKDIR</span> <span class="pre">/path/to/workdir</span></code>。</p>
+<p><code class="docutils literal notranslate"><span class="pre">WORKDIR</span></code> 指令可以在 <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>
+中使用多次。如果提供了一个相对路径，它将相对于前一个 <code class="docutils literal notranslate"><span class="pre">WORKDIR</span></code>
+指令的路径，语法为</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>WORKDIR /a
+WORKDIR b
+WORKDIR c
+RUN <span class="nb">pwd</span>
+</pre></div>
+</div>
+<p>则最终路径为/a/b/c。
+因此，为了避免出错，推荐WORKDIR指令中只使用绝对路径。</p>
+<p><code class="docutils literal notranslate"><span class="pre">WORKDIR</span></code> 指令也可以解析之前使用 <code class="docutils literal notranslate"><span class="pre">ENV</span></code> 设置的环境变量，只能使用在
+<code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> 中显式设置的环境变量，语法为</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ENV DIRPATH=/path
+WORKDIR $DIRPATH/$DIRNAME
+RUN pwd
+</pre></div>
+</div>
+<p>这里的最终路径是 <code class="docutils literal notranslate"><span class="pre">/path/$DIRNAME</span></code></p>
+</section>
+<section id="arg">
+<h3><a class="toc-backref" href="#id47">14.ARG</a><a class="headerlink" href="#arg" title="Permalink to this headline">¶</a></h3>
+<p>指定一些镜像内使用的参数（例如版本号信息等），这些参数在执行docker
+build命令时才以<code class="docutils literal notranslate"><span class="pre">--build-arg&lt;varname&gt;=&lt;value&gt;</span></code>格式传入。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">ARG&lt;name&gt;[=&lt;default</span> <span class="pre">value&gt;]</span></code>。</p>
+<p>则可以用<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build--build-arg&lt;name&gt;=&lt;value&gt;.</span></code>来指定参数值。</p>
+</section>
+<section id="onbuild">
+<h3><a class="toc-backref" href="#id48">15.ONBUILD</a><a class="headerlink" href="#onbuild" title="Permalink to this headline">¶</a></h3>
+<p>指定当基于所生成镜像创建子镜像时，自动执行的操作指令。</p>
+<p>格式为<code class="docutils literal notranslate"><span class="pre">ONBUILD</span> <span class="pre">[INSTRUCTION]</span></code>。
+例如，使用如下的Dockerfile创建父镜像ParentImage，指定ONBUILD指令：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dockerfile for ParentImage</span>
+<span class="o">[</span>...<span class="o">]</span>
+ONBUILD ADD . /app/src
+ONBUILD RUN /usr/local/bin/python-build --dir /app/src
+<span class="o">[</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>使用docker build命令创建子镜像ChildImage时（FROM
+ParentImage），会首先执行ParentImage中配置的ONBUILD指令：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dockerfile for ChildImage</span>
+FROM ParentImage
+</pre></div>
+</div>
+<p>等价于在ChildImage的Dockerfile中添加了如下指令：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#Automatically run the following when building ChildImage</span>
+ADD . /app/src
+RUN /usr/local/bin/python-build --dir /app/src
+...
+</pre></div>
+</div>
+<p>由于ONBUILD指令是隐式执行的，推荐在使用它的镜像标签中进行标注，例如ruby：2.1-onbuild。
+ONBUILD指令在创建专门用于自动编译、检查等操作的基础镜像时，十分有用。</p>
+</section>
+<section id="stopsignal">
+<h3><a class="toc-backref" href="#id49">16.STOPSIGNAL</a><a class="headerlink" href="#stopsignal" title="Permalink to this headline">¶</a></h3>
+<p>指定所创建镜像启动的容器接收退出的信号值：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">STOPSIGNAL</span> <span class="n">signal</span>
+</pre></div>
+</div>
+</section>
+<section id="healthcheck">
+<h3><a class="toc-backref" href="#id50">17.HEALTHCHECK</a><a class="headerlink" href="#healthcheck" title="Permalink to this headline">¶</a></h3>
+<p>配置所启动容器如何进行健康检查（如何判断健康与否），自Docker
+1.12开始支持。</p>
+<p>格式有两种：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·HEALTHCHECK[OPTIONS]CMD command：       根据所执行命令返回值是否为0来判断；
+·HEALTHCHECK NONE：                      禁止基础镜像中的健康检查。
+</pre></div>
+</div>
+<p>OPTION支持如下参数：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.--interval=&lt;间隔&gt;：两次健康检查的间隔，默认为 30 秒；
+·--timeout=&lt;时长&gt;：健康检查命令运行超时时间，如果超过这个时间，本次健康检查就被视为失败，默认 30 秒；
+·--retries=&lt;次数&gt;：当连续失败指定次数后，则将容器状态视为 unhealthy，默认 3 次。
+</pre></div>
+</div>
+<p>和 <code class="docutils literal notranslate"><span class="pre">CMD</span></code>, <code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span></code> 一样，<code class="docutils literal notranslate"><span class="pre">HEALTHCHECK</span></code>
+只可以出现一次，如果写了多个，只有最后一个生效。</p>
+<p>假设我们有个镜像是个最简单的 Web 服务，我们希望增加健康检查来判断其 Web
+服务是否在正常工作，我们可以用 <code class="docutils literal notranslate"><span class="pre">curl</span></code> 来帮助判断，其 <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> 的
+<code class="docutils literal notranslate"><span class="pre">HEALTHCHECK</span></code> 可以这么写：</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span> <span class="s">nginx</span>
+<span class="k">RUN</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install -y curl <span class="o">&amp;&amp;</span> rm -rf /var/lib/apt/lists/*
+
+<span class="k">HEALTHCHECK</span> --interval<span class="o">=</span>5s --timeout<span class="o">=</span>3s <span class="se">\</span>
+  <span class="k">CMD</span> curl -fs http://localhost/ <span class="o">||</span> <span class="nb">exit</span> <span class="m">1</span>
+</pre></div>
+</div>
+<p>这里我们设置了每 5
+秒检查一次（这里为了试验所以间隔非常短，实际应该相对较长），如果健康检查命令超过
+3 秒没响应就视为失败，并且使用 <code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-fs</span> <span class="pre">http://localhost/</span> <span class="pre">||</span> <span class="pre">exit</span> <span class="pre">1</span></code>
+作为健康检查命令。</p>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span></code> 来构建这个镜像：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker build -t myweb:v1 .
+</pre></div>
+</div>
+<p>构建好了后，我们启动一个容器：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker run -d --name web -p <span class="m">80</span>:80 myweb:v1
+</pre></div>
+</div>
+<p>当运行该镜像后，可以通过 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">ls</span></code> 看到最初的状态为
+<code class="docutils literal notranslate"><span class="pre">(health:</span> <span class="pre">starting)</span></code>：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker container lsCONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                            PORTS               NAMES03e28eb00bd0        myweb:v1            <span class="s2">&quot;nginx -g &#39;daemon off&quot;</span>   <span class="m">3</span> seconds ago       Up <span class="m">2</span> seconds <span class="o">(</span>health: starting<span class="o">)</span>   <span class="m">80</span>/tcp, <span class="m">443</span>/tcp     web
+</pre></div>
+</div>
+<p>在等待几秒钟后，再次 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">ls</span></code>，就会看到健康状态变化为了
+<code class="docutils literal notranslate"><span class="pre">(healthy)</span></code>：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                    PORTS               NAMES
+03e28eb00bd0        myweb:v1            <span class="s2">&quot;nginx -g &#39;daemon off&quot;</span>   <span class="m">18</span> seconds ago      Up <span class="m">16</span> seconds <span class="o">(</span>healthy<span class="o">)</span>   <span class="m">80</span>/tcp, <span class="m">443</span>/tcp     web
+</pre></div>
+</div>
+<p>如果健康检查连续失败超过了重试次数，状态就会变为 <code class="docutils literal notranslate"><span class="pre">(unhealthy)</span></code>。</p>
+<p>为了帮助排障，健康检查命令的输出（包括 <code class="docutils literal notranslate"><span class="pre">stdout</span></code> 以及
+<code class="docutils literal notranslate"><span class="pre">stderr</span></code>）都会被存储于健康状态里，可以用 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">inspect</span></code> 来查看</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker inspect --format <span class="s1">&#39;{{json .State.Health}}&#39;</span> web <span class="p">|</span> python -m json.tool
+</pre></div>
+</div>
+</section>
+<section id="shell">
+<h3><a class="toc-backref" href="#id51">18.SHELL</a><a class="headerlink" href="#shell" title="Permalink to this headline">¶</a></h3>
+<p>格式：<code class="docutils literal notranslate"><span class="pre">SHELL</span> <span class="pre">[&quot;executable&quot;,</span> <span class="pre">&quot;parameters&quot;]</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>SHELL` 指令可以指定 `RUN` `ENTRYPOINT` `CMD` 指令的 shell，Linux 中默认为 `[&quot;/bin/sh&quot;, &quot;-c&quot;]
+</pre></div>
+</div>
+<p>指定其他命令使用shell时的默认shell类型：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SHELL</span> <span class="p">[</span><span class="s2">&quot;executable&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>默认值为<code class="docutils literal notranslate"><span class="pre">[&quot;/bin/sh&quot;，&quot;-c&quot;]</span></code>。</p>
+<p><code class="docutils literal notranslate"><span class="pre">注意</span></code>
+<code class="docutils literal notranslate"><span class="pre">对于Windows系统，Shell路径中使用了“\”作为分隔符，建议在Dockerfile开头添加#escape='来指定转义符。</span></code></p>
+<p>两个 <code class="docutils literal notranslate"><span class="pre">RUN</span></code> 运行同一命令，第二个 <code class="docutils literal notranslate"><span class="pre">RUN</span></code>
+运行的命令会打印出每条命令并当遇到错误时退出。</p>
+<p>当 <code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span></code> <code class="docutils literal notranslate"><span class="pre">CMD</span></code> 以 shell 格式指定时，<code class="docutils literal notranslate"><span class="pre">SHELL</span></code> 指令所指定的
+shell 也会成为这两个指令的 shell</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SHELL</span> <span class="p">[</span><span class="s2">&quot;/bin/sh&quot;</span><span class="p">,</span> <span class="s2">&quot;-cex&quot;</span><span class="p">]</span>
+<span class="c1"># /bin/sh -cex &quot;nginx&quot;</span>
+<span class="n">ENTRYPOINT</span> <span class="n">nginx</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SHELL</span> <span class="p">[</span><span class="s2">&quot;/bin/sh&quot;</span><span class="p">,</span> <span class="s2">&quot;-cex&quot;</span><span class="p">]</span>
+<span class="c1"># /bin/sh -cex &quot;nginx&quot;</span>
+<span class="n">CMD</span> <span class="n">nginx</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2><a class="toc-backref" href="#id52">3.创建镜像</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>例如，指定Dockerfile所在路径为/tmp/docker_builder/，并且希望生成镜像标签为build_repo/first_image，可以使用下面的命令：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker build -t build_repo/first_image /tmp/docker_builder/
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>如果使用非内容路径下的Dockerfile，可以通过-f选项来指定其路径。</p></li>
+<li><p>要指定生成镜像的标签信息，可以使用-t选项。</p></li>
+</ul>
+</section>
+<section id="dockerignore">
+<h2><a class="toc-backref" href="#id53">4.使用.dockerignore文件</a><a class="headerlink" href="#dockerignore" title="Permalink to this headline">¶</a></h2>
+<p>可以通过.dockerignore文件（每一行添加一条匹配模式）来让Docker忽略匹配模式路径下的目录和文件。例如：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># comment
+    */temp*
+    */*/temp*
+    tmp?
+    ~*
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h2><a class="toc-backref" href="#id54">写 Dockerfile 的一些技巧</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<section id="python-m-pip-pip">
+<h3><a class="toc-backref" href="#id55">用 python -m pip 而不是 pip</a><a class="headerlink" href="#python-m-pip-pip" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 升级 pip,让 pip install 更安静,--quiet 参数</span>
+$ python -m pip install --quiet --upgrade pip
+
+<span class="c1"># pip使用国内源</span>
+$ python -m pip install --quiet --upgrade pip <span class="se">\</span>
+<span class="o">&amp;&amp;</span> pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir -r requirements.txt
+</pre></div>
+</div>
+</section>
+<section id="apt-get-install">
+<h3><a class="toc-backref" href="#id56">让 apt-get install 更安静</a><a class="headerlink" href="#apt-get-install" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#我们用 -qq 命令，甚至重定向输出到 /dev/null 让它更安静。</span>
+$ apt-get -qq update
+$ apt-get -qq install -y curl &gt; /dev/null
+</pre></div>
+</div>
+</section>
+<section id="curl-wget">
+<h3><a class="toc-backref" href="#id57">让 curl 和 wget 更安静</a><a class="headerlink" href="#curl-wget" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 首先，如果要下载文件，curl 和 wget 二选一即可。如果用 curl，可以用 --silent 参数。</span>
+$ curl -sLO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+<span class="c1">#wget 有 --quiet 参数。</span>
+$ wget -q https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+</pre></div>
+</div>
+</section>
+<section id="axel-curl-wget">
+<h3><a class="toc-backref" href="#id58">用 axel 而不是 curl 或者 wget</a><a class="headerlink" href="#axel-curl-wget" title="Permalink to this headline">¶</a></h3>
+<p>对于身处国内的开发者，axel 完全可以取代 curl 以及 wget</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cho <span class="s2">&quot;Install Go compiler ...&quot;</span>
+
+<span class="nv">GO_MIRROR_0</span><span class="o">=</span><span class="s2">&quot;http://mirrors.ustc.edu.cn/golang/go1.13.4.linux-amd64.tar.gz&quot;</span>
+
+<span class="nv">GO_MIRROR_1</span><span class="o">=</span><span class="s2">&quot;https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz&quot;</span>
+
+axel --quiet --output go.tar.gz <span class="nv">$GO_MIRROR_0</span> <span class="nv">$GO_MIRROR_1</span>
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h3><a class="toc-backref" href="#id59">设置容器时间与宿主机时间同步</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#设置容器时间与宿主机时间同步</span>
+RUN /bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s1">&#39;Asia/Shanghai&#39;</span> &gt;/etc/timezone
+</pre></div>
+</div>
+<blockquote>
+<div><p>写 Dockerfile 的一些技巧</p>
+<p><a class="reference external" href="https://zhuanlan.zhihu.com/p/147995194">https://zhuanlan.zhihu.com/p/147995194</a></p>
+</div></blockquote>
+</section>
+</section>
+<section id="id11">
+<span id="id12"></span><h2><a class="toc-backref" href="#id60">创建镜像</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>编写完成Dockerfile之后，可以通过</p>
+<p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">[image]</span> <span class="pre">build</span></code>命令来创建镜像。</p>
+<p>基本的格式为<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span> <span class="pre">[OPTIONS]PATH|URL|-</span></code>。</p>
+<p>该命令将读取指定路径下（包括子目录）的Dockerfile，并将该路径下所有数据作为上下文（Context）发送给Docker服务端。Docker服务端在校验Dockerfile格式通过后，逐条执行其中定义的指令，碰到ADD、COPY和RUN指令会生成一层新的镜像。最终如果创建镜像成功，会返回最终镜像的ID。</p>
+<p>如果上下文过大，会导致发送大量数据给服务端，延缓创建过程。因此除非是生成镜像所必需的文件，不然不要放到上下文路径下。如果使用非上下文路径下的Dockerfile，可以通过-f选项来指定其路径。</p>
+<p>要指定生成镜像的标签信息，可以通过-t选项。该选项可以重复使用多次为镜像一次添加多个名称。</p>
+<p>例如，上下文路径为<code class="docutils literal notranslate"><span class="pre">/tmp/docker_builder/</span></code>，并且希望生成镜像标签为<code class="docutils literal notranslate"><span class="pre">builder/first_image:1.0.0</span></code>，可以使用下面的命令：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker build -t builder/first_image:1.0.0 /tmp/docker_builder/
+</pre></div>
+</div>
+<blockquote>
+<div><p>Docker build 命令参考文献：</p>
+<p><a class="reference external" href="https://www.runoob.com/docker/docker-build-command.html">https://www.runoob.com/docker/docker-build-command.html</a></p>
+</div></blockquote>
+<section id="id13">
+<h3><a class="toc-backref" href="#id61">命令选项</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">[image]</span> <span class="pre">build</span></code></p>
+<p>命令支持一系列的选项，可以调整创建镜像过程的行为，参见表。</p>
+<p>创建镜像的命令选项及说明</p>
+<img alt="../_images/dockerfile02.png" src="../_images/dockerfile02.png" />
+<img alt="../_images/dockerfile03.png" src="../_images/dockerfile03.png" />
+</section>
+<section id="buildkit">
+<h3><a class="toc-backref" href="#id62">BuildKit</a><a class="headerlink" href="#buildkit" title="Permalink to this headline">¶</a></h3>
+<p>基于BuildKit优化Dockerfile的构建</p>
+<p><a class="reference external" href="https://mp.weixin.qq.com/s/OjeQsalkthe-YksIe0HtVg">https://mp.weixin.qq.com/s/OjeQsalkthe-YksIe0HtVg</a></p>
+<section id="buildx">
+<h4>安装buildx<a class="headerlink" href="#buildx" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Buildx 0.6+</span>
+$ docker buildx bake <span class="s2">&quot;https://github.com/docker/buildx.git&quot;</span>
+$ mkdir -p ~/.docker/cli-plugins
+$ mv ./bin/buildx ~/.docker/cli-plugins/docker-buildx
+
+<span class="c1"># Docker 19.03+</span>
+$ <span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span><span class="m">1</span> docker build --platform<span class="o">=</span><span class="nb">local</span> -o . <span class="s2">&quot;https://github.com/docker/buildx.git&quot;</span>
+$ mkdir -p ~/.docker/cli-plugins
+$ mv buildx ~/.docker/cli-plugins/docker-buildx
+
+<span class="c1"># Local</span>
+$ git clone https://github.com/docker/buildx.git <span class="o">&amp;&amp;</span> <span class="nb">cd</span> buildx
+$ make install
+</pre></div>
+</div>
+<p>① 第一种方式使用BuildKit特性，设置环境变量</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DOCKER_BUILDKIT</span><span class="o">=</span><span class="mi">1</span> <span class="n">docker</span> <span class="n">build</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>下面的示例Dockerfile使用一个单独的阶段来收集要导出的生成文件：</p>
+<p>示例1</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span>
+<span class="n">Learn</span> <span class="n">more</span> <span class="n">about</span> <span class="n">the</span> <span class="s2">&quot;FROM&quot;</span> <span class="n">Dockerfile</span> <span class="n">command</span><span class="o">.</span>
+ <span class="n">golang</span> <span class="n">AS</span> <span class="n">build</span><span class="o">-</span><span class="n">stage</span>
+<span class="n">RUN</span> <span class="n">go</span> <span class="n">get</span> <span class="o">-</span><span class="n">u</span> <span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">LK4D4</span><span class="o">/</span><span class="n">vndr</span>
+
+<span class="n">FROM</span> <span class="n">scratch</span> <span class="n">AS</span> <span class="n">export</span><span class="o">-</span><span class="n">stage</span>
+<span class="n">COPY</span> <span class="o">--</span><span class="n">from</span><span class="o">=</span><span class="n">build</span><span class="o">-</span><span class="n">stage</span> <span class="o">/</span><span class="n">go</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">vndr</span> <span class="o">/</span>
+</pre></div>
+</div>
+<p>示例2</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span> <span class="s">nodejs:buster-slimv1.0</span> <span class="k">AS</span> <span class="s">builder</span>
+<span class="k">MAINTAINER</span><span class="s"> 1879324764@qq.com</span>
+
+<span class="k">COPY</span> sources.list /etc/apt/sources.list
+<span class="k">COPY</span> gitee-ent-web /home/gitee-ent-web
+
+<span class="k">RUN</span> <span class="nb">set</span> -eux<span class="p">;</span><span class="se">\</span>
+    apt-get update <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    apt-get install -y wget git <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">cd</span> /home/gitee-ent-web <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    yarn install <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    yarn run build-i18n <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    yarn run build-vendor <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    yarn web:prod-ci-runjs
+
+<span class="k">FROM</span> <span class="s">scratch</span> <span class="k">AS</span> <span class="s">export-stage</span>
+<span class="k">COPY</span> --from<span class="o">=</span>builder /home/gitee-ent-web/dist ./dist
+</pre></div>
+</div>
+<p>② 第二种方式使用BuildKit特性</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">buildx</span> <span class="n">build</span> <span class="o">-</span><span class="n">o</span> <span class="n">out</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>下面命令会在当前out目录下生成输出的文件，out如果不存在会自动创建</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DOCKER_BUILDKIT</span><span class="o">=</span><span class="mi">1</span> <span class="n">docker</span> <span class="n">build</span> <span class="o">-</span><span class="n">o</span> <span class="n">out</span> <span class="o">.</span>
+<span class="n">或者</span>
+
+<span class="c1"># 直接使用 docker buildx build 命令构建镜像。</span>
+<span class="n">docker</span> <span class="n">buildx</span> <span class="n">build</span> <span class="o">-</span><span class="n">o</span> <span class="n">out</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p><strong>一个go编译环境的例子</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ ls
+Dockerfile  go.mod  main.go
+
+$ cat Dockerfile
+FROM golang:1.12-alpine as dev
+RUN apk add --no-cache git ca-certificates
+RUN adduser -D appuser
+WORKDIR /src
+COPY . /src/
+CMD <span class="nv">CGO_ENABLED</span><span class="o">=</span><span class="m">0</span> go build -o app . <span class="o">&amp;&amp;</span> ./app
+
+FROM dev as build
+RUN <span class="nv">CGO_ENABLED</span><span class="o">=</span><span class="m">0</span> go build -o app .
+USER appuser
+CMD <span class="o">[</span> <span class="s2">&quot;./app&quot;</span> <span class="o">]</span>
+
+FROM scratch as release
+COPY --from<span class="o">=</span>build /etc/passwd /etc/group /etc/
+COPY --from<span class="o">=</span>build /src/app /app
+USER appuser
+CMD <span class="o">[</span> <span class="s2">&quot;/app&quot;</span> <span class="o">]</span>
+
+FROM scratch as artifact
+COPY --from<span class="o">=</span>build /src/app /app
+
+FROM release
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span><span class="m">1</span> docker build --target artifact --output <span class="nv">type</span><span class="o">=</span>local,dest<span class="o">=</span>. .
+或者
+$ docker buildx build  --output <span class="nv">type</span><span class="o">=</span>local,dest<span class="o">=</span>path/to/output-dir
+</pre></div>
+</div>
+<p>After the build was complete the <code class="docutils literal notranslate"><span class="pre">app</span></code> binary was exported:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls
+Dockerfile  app  go.mod  main.go
+
+$ ./app
+Ready to receive requests on port 8080
+</pre></div>
+</div>
+<p>参考文献</p>
+<p><a class="reference external" href="https://www.yuque.com/morlay/me/docker-buildx">https://www.yuque.com/morlay/me/docker-buildx</a></p>
+</section>
+</section>
+<section id="id14">
+<h3><a class="toc-backref" href="#id63">选择父镜像</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p>大部分情况下，生成新的镜像都需要通过FROM指令来指定父镜像。父镜像是生成镜像的基础，会直接影响到所生成镜像的大小和功能。</p>
+<p>用户可以选择两种镜像作为父镜像，一种是所谓的基础镜像（baseimage），另外一种是普通的镜像（往往由第三方创建，基于基础镜像）。</p>
+<p>基础镜像比较特殊，其Dockerfile中往往不存在FROM指令，或者基于scratch镜像（FROM
+scratch），这意味着其在整个镜像树中处于根的位置。</p>
+<p>下面的Dockerfile定义了一个简单的基础镜像，将用户提前编译好的二进制可执行文件binary复制到镜像中，运行容器时执行binary命令：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>FROM scratch
+ADD binary /
+CMD <span class="o">[</span><span class="s2">&quot;/binary&quot;</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>普通镜像也可以作为父镜像来使用，包括常见的busybox、debian、ubuntu等。</p>
+<p>Docker不同类型镜像之间的继承关系如图</p>
+<p>镜像的继承关系</p>
+<img alt="../_images/docker_jicheng001.png" src="../_images/docker_jicheng001.png" />
+</section>
+<section id="dockerignore-1">
+<span id="id15"></span><h3><a class="toc-backref" href="#id64">使用.dockerignore文件</a><a class="headerlink" href="#dockerignore-1" title="Permalink to this headline">¶</a></h3>
+<p>可以通过.dockerignore文件（每一行添加一条匹配模式）来让Docker忽略匹配路径或文件，在创建镜像时候不将无关数据发送到服务端。</p>
+<p>例如下面的例子中包括了6行忽略的模式（第一行为注释）：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># .dockerignore 文件中可以定义忽略模式</span>
+*/temp*
+*/*/temp*
+tmp?
+~*
+Dockerfile
+!README.md
+</pre></div>
+</div>
+<p>·dockerignore文件中模式语法支持Golang风格的路径正则格式：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>·“*”表示任意多个字符；
+·“？”代表单个字符；
+·“！”表示不匹配（即不忽略指定的路径或文件）。
+</pre></div>
+</div>
+</section>
+<section id="id16">
+<h3><a class="toc-backref" href="#id65">多步骤创建</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<p>自17.05版本开始，Docker支持多步骤镜像创建（Multi-stage
+build）特性，可以精简最终生成的镜像大小。</p>
+<p>对于需要编译的应用（如C、Go或Java语言等）来说，通常情况下至少需要准备两个环境的Docker镜像：</p>
+<p>·编译环境镜像：包括完整的编译引擎、依赖库等，往往比较庞大。作用是编译应用为二进制文件；</p>
+<p>·运行环境镜像：利用编译好的二进制文件，运行应用，由于不需要编译环境，体积比较小。</p>
+<p>使用多步骤创建，可以在保证最终生成的运行环境镜像保持精简的情况下，使用单一的Dockerfile，降低维护复杂度。</p>
+<p>以Go语言应用为例。创建干净目录，进入到目录中，创建main.go文件，内容为：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>// main.go will output <span class="s2">&quot;Hello, Docker&quot;</span>
+package main
+import <span class="o">(</span>
+    <span class="s2">&quot;fmt&quot;</span>
+<span class="o">)</span>
+func main<span class="o">()</span> <span class="o">{</span>
+    fmt.Println<span class="o">(</span><span class="s2">&quot;Hello, Docker&quot;</span><span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>创建Dockerfile，使用golang：1.9镜像编译应用二进制文件为app，使用精简的镜像alpine：latest作为运行环境。Dockerfile完整内容为：</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span> <span class="s">golang:1.9</span> <span class="k">as</span> <span class="s">builder</span> # define stage name as builder
+<span class="k">RUN</span> mkdir -p /go/src/test
+<span class="k">WORKDIR</span><span class="s"> /go/src/test</span>
+<span class="k">COPY</span> main.go .
+<span class="k">RUN</span> <span class="nv">CGO_ENABLED</span><span class="o">=</span><span class="m">0</span> <span class="nv">GOOS</span><span class="o">=</span>linux go build -o app .
+<span class="k">FROM</span> <span class="s">alpine:latest</span>
+<span class="k">RUN</span> apk --no-cache add ca-certificates
+<span class="k">WORKDIR</span><span class="s"> /root/</span>
+<span class="k">COPY</span> --from<span class="o">=</span>builder /go/src/test/app . # copy file from the builder stage
+<span class="k">CMD</span> <span class="p">[</span><span class="s2">&quot;./app&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>执行如下命令创建镜像，并运行应用：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker build -t yeasy/test-multistage:latest .
+Sending build context to Docker daemon  <span class="m">3</span>.072kB
+Step <span class="m">1</span>/10 : FROM golang:1.9
+...
+Successfully built 5fd0cb93dda0
+Successfully tagged yeasy/test-multistage:latest
+$ docker run --rm yeasy/test-multistage:latest
+Hello, Docker
+</pre></div>
+</div>
+<p>查看生成的最终镜像，大小只有6.55 MB：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker images<span class="p">|</span>grep test-multistage
+yeasy/test-multistage   latest              0f21ba20dc58        About a minute ago   <span class="m">8</span>.02MB
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h3><a class="toc-backref" href="#id66">示例1</a><a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">centos</span><span class="p">:</span><span class="mf">7.1</span><span class="o">.</span><span class="mi">1503</span>                     <span class="c1">#表示此镜像以centos:7.1.1503为基础镜像</span>
+<span class="n">RUN</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">mongodb</span><span class="o">/</span><span class="n">data</span> \   <span class="c1">#创建文件夹，存放数据和依赖文件，建议多个命令写成一条，可减少镜像大小</span>
+ <span class="o">&amp;&amp;</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">mongodb</span><span class="o">/</span><span class="nb">bin</span> \
+ <span class="o">&amp;&amp;</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">tomcat</span><span class="o">-</span><span class="mf">7.0</span><span class="o">.</span><span class="mi">82</span> \
+ <span class="o">&amp;&amp;</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">8.0_151</span>
+<span class="n">COPY</span> <span class="o">./</span><span class="n">apache</span><span class="o">-</span><span class="n">tomcat</span><span class="o">-</span><span class="mf">7.0</span><span class="o">.</span><span class="mi">82</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">tomcat</span><span class="o">-</span><span class="mf">7.0</span><span class="o">.</span><span class="mi">82</span> <span class="c1">#将apache-tomcat-7.0.82目录下的文件拷贝到容器目录下</span>
+<span class="n">COPY</span> <span class="o">./</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">8.0_151</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">8.0_151</span>                 <span class="c1">#将jdk1.8.0_151目录下的文件拷贝到容器目录下</span>
+<span class="n">COPY</span> <span class="o">./</span><span class="n">start_tomcat_and_mongo</span><span class="o">.</span><span class="n">sh</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span>                <span class="c1">#将start_tomcat_and_mongo.sh拷贝到容器/root/目录下</span>
+
+<span class="n">RUN</span> <span class="n">chown</span> <span class="n">root</span><span class="p">:</span><span class="n">root</span> <span class="o">-</span><span class="n">R</span> <span class="o">/</span><span class="n">root</span> \
+ <span class="o">&amp;&amp;</span> <span class="n">echo</span> <span class="s2">&quot;JAVA_HOME=/root/jdk1.8.0_151 &quot;</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span>  \      <span class="c1">#注入JAVA环境变量</span>
+ <span class="o">&amp;&amp;</span> <span class="n">echo</span> <span class="s2">&quot;PATH=\$JAVA_HOME/bin:$PATH &quot;</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span>  \
+ <span class="o">&amp;&amp;</span> <span class="n">echo</span> <span class="s2">&quot;CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span>  \
+ <span class="o">&amp;&amp;</span> <span class="n">chmod</span> <span class="o">+</span><span class="n">x</span> <span class="o">/</span><span class="n">root</span> \
+ <span class="o">&amp;&amp;</span> <span class="n">chmod</span> <span class="o">+</span><span class="n">x</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">start_tomcat_and_mongo</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="n">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&quot;/root/start_tomcat_and_mongo.sh&quot;</span><span class="p">]</span>    <span class="c1">#容器启动的时候会自动运行start_tomcat_and_mongo.sh里面的命令，可以一条可以多条，也可以是一个脚本</span>
+</pre></div>
+</div>
+</section>
+<section id="id18">
+<h3><a class="toc-backref" href="#id67">示例2</a><a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>FROM ubuntu:18.04
+
+ARG TF_PKG=tensorflow-cpu==1.15.0
+ARG HOST_ASCEND_BASE=/usr/local/Ascend
+ARG NNAE_PATH=/usr/local/Ascend/nnae/latest
+ARG TF_PLUGIN_PATH=/usr/local/Ascend/tfplugin/latest
+ARG INSTALL_ASCEND_PKGS_SH=install_ascend_pkgs.sh
+ARG PREBUILD_SH=prebuild.sh
+ARG POSTBUILD_SH=postbuild.sh
+WORKDIR /tmp
+COPY . ./
+
+# 触发prebuild.sh
+RUN bash -c &quot;test -f $PREBUILD_SH &amp;&amp; bash $PREBUILD_SH || true&quot;
+
+ENV http_proxy http://xxx.xxx.xxx.xxx:xxx
+ENV https_proxy http://xxx.xxx.xxx.xxx:xxx
+
+# 系统包
+RUN apt update &amp;&amp; \
+    apt install --no-install-recommends \
+        python3.7 python3.7-dev \
+        curl g++ pkg-config unzip \
+        libblas3 liblapack3 liblapack-dev \
+        libblas-dev gfortran libhdf5-dev \
+        libffi-dev libicu60 libxml2 -y
+
+# 配置python pip源
+RUN mkdir -p ~/.pip \
+&amp;&amp; echo &#39;[global] \n\
+index-url=https://pypi.doubanio.com/simple/\n\
+trusted-host=pypi.doubanio.com&#39; &gt;&gt; ~/.pip/pip.conf
+
+# pip3.7
+RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py &amp;&amp; \
+    cd /tmp &amp;&amp; \
+    apt-get download python3-distutils &amp;&amp; \
+    dpkg-deb -x python3-distutils_*.deb / &amp;&amp; \
+    rm python3-distutils_*.deb &amp;&amp; \
+    cd - &amp;&amp; \
+    python3.7 get-pip.py &amp;&amp; \
+    rm get-pip.py
+
+# HwHiAiUser, hwMindX
+RUN useradd -d /home/hwMindX -u 9000 -m -s /bin/bash hwMindX &amp;&amp; \
+    useradd -d /home/HwHiAiUser -u 1000 -m -s /bin/bash HwHiAiUser &amp;&amp; \
+    usermod -a -G HwHiAiUser hwMindX
+
+# python包
+RUN pip3.7 install numpy &amp;&amp; \
+    pip3.7 install decorator &amp;&amp; \
+    pip3.7 install sympy==1.4 &amp;&amp; \
+    pip3.7 install cffi==1.12.3 &amp;&amp; \
+    pip3.7 install pyyaml &amp;&amp; \
+    pip3.7 install pathlib2 &amp;&amp; \
+    pip3.7 install grpcio &amp;&amp; \
+    pip3.7 install grpcio-tools &amp;&amp; \
+    pip3.7 install protobuf &amp;&amp; \
+    pip3.7 install scipy &amp;&amp; \
+    pip3.7 install requests
+
+# Ascend包
+RUN bash $INSTALL_ASCEND_PKGS_SH
+
+# TF安装
+ENV LD_LIBRARY_PATH=\
+/usr/lib/x86_64-linux-gnu/hdf5/serial:\
+$HOST_ASCEND_BASE/add-ons:\
+$NNAE_PATH/fwkacllib/lib64:\
+$HOST_ASCEND_BASE/driver/lib64/common:\
+$HOST_ASCEND_BASE/driver/lib64/driver:$LD_LIBRARY_PATH
+
+RUN pip3.7 install $TF_PKG
+
+# 环境变量
+ENV GLOG_v=2
+ENV TBE_IMPL_PATH=$NNAE_PATH/opp/op_impl/built-in/ai_core/tbe
+ENV TF_PLUGIN_PKG=$TF_PLUGIN_PATH/tfplugin/python/site-packages
+ENV FWK_PYTHON_PATH=$NNAE_PATH/fwkacllib/python/site-packages
+ENV PATH=$NNAE_PATH/fwkacllib/ccec_compiler/bin:$PATH
+ENV ASCEND_OPP_PATH=$NNAE_PATH/opp
+ENV PYTHONPATH=\
+$FWK_PYTHON_PATH:\
+$FWK_PYTHON_PATH/auto_tune.egg:\
+$FWK_PYTHON_PATH/schedule_search.egg:\
+$TF_PLUGIN_PKG:\
+$TBE_IMPL_PATH:\
+$PYTHONPATH
+
+ENV http_proxy &quot;&quot;
+ENV https_proxy &quot;&quot;
+
+# 触发postbuild.sh
+RUN bash -c &quot;test -f $POSTBUILD_SH &amp;&amp; bash $POSTBUILD_SH || true&quot; &amp;&amp; \
+    rm $POSTBUILD_SH
+</pre></div>
+</div>
+</section>
+<section id="id19">
+<h3><a class="toc-backref" href="#id68">示例3</a><a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<p>安装tomcat docker</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>FROM openjdk:11-jre
+
+ENV PATH /usr/local/tomee/bin:$PATH
+RUN mkdir -p /usr/local/tomee
+
+WORKDIR /usr/local/tomee
+
+COPY apache-tomee-8.0.1-plus.tar.gz /usr/local/tomee
+
+ENV TOMEE_VER 8.0.1
+ENV TOMEE_BUILD plus
+
+RUN set -x \
+    &amp;&amp; tar -zxf apache-tomee-8.0.1-plus.tar.gz \
+    &amp;&amp; mv apache-tomee-${TOMEE_BUILD}-${TOMEE_VER}/* /usr/local/tomee \
+    &amp;&amp; rm -Rf apache-tomee-${TOMEE_BUILD}-${TOMEE_VER} \
+    &amp;&amp; rm bin/*.bat \
+    &amp;&amp; rm apache-tomee-8.0.1-plus.tar.gz*
+#   &amp;&amp; useradd -g root tomee \
+#   &amp;&amp; chown -R tomee:root /usr/local/tomee \
+#   &amp;&amp; chmod -R g=u /usr/local/tomee
+
+#USER tomee
+EXPOSE 8080
+CMD [&quot;catalina.sh&quot;, &quot;run&quot;]
+</pre></div>
+</div>
+<p>更多参考案例</p>
+<p><a class="reference external" href="https://support.huaweicloud.com/usermanual-mindxdl202/atlasmindx_02_0060.html">https://support.huaweicloud.com/usermanual-mindxdl202/atlasmindx_02_0060.html</a></p>
+</section>
+</section>
+<section id="id20">
+<h2><a class="toc-backref" href="#id69">最佳实践</a><a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h2>
+<p>所谓最佳实践，就是从需求出发，来定制适合自己、高效方便的镜像。</p>
+<p>首先，要尽量吃透每个指令的含义和执行效果，多编写一些简单的例子进行测试，弄清楚了再撰写正式的Dockerfile。此外，Docker
+Hub官方仓库中提供了大量的优秀镜像和对应的Dockefile，可以通过阅读它们来学习如何撰写高效的Dockerfile。</p>
+</section>
+<section id="id21">
+<h2><a class="toc-backref" href="#id70">书写Dockerfile经验总结</a><a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h2>
+<p>笔者在应用过程中，也总结了一些实践经验。建议读者在生成镜像过程中，尝试从如下角度进行思考，完善所生成镜像：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>·精简镜像用途：尽量让每个镜像的用途都比较集中单一，避免构造大而复杂、多功能的镜像；
+
+·选用合适的基础镜像：容器的核心是应用。选择过大的父镜像（如Ubuntu系统镜像）会造成最终生成应用镜像的臃肿，推荐选用瘦身过的应用镜像（如node：slim），或者较为小巧的系统镜像（如alpine、busybox或debian）；
+
+·提供注释和维护者信息：Dockerfile也是一种代码，需要考虑方便后续的扩展和他人的使用；
+
+·正确使用版本号：使用明确的版本号信息，如1.0，2.0，而非依赖于默认的latest。通过版本号可以避免环境不一致导致的问题；
+
+·减少镜像层数：如果希望所生成镜像的层数尽量少，则要尽量合并RUN、ADD和COPY指令。通常情况下，多个RUN指令可以合并为一条RUN指令；
+
+·恰当使用多步骤创建（17.05+版本支持）：通过多步骤创建，可以将编译和运行等过程分开，保证最终生成的镜像只包括运行应用所需要的最小化环境。当然，用户也可以通过分别构造编译镜像和运行镜像来达到类似的结果，但这种方式需要维护多个Dockerfile。
+
+·使用.dockerignore文件：使用它可以标记在执行docker build时忽略的路径和文件，避免发送不必要的数据内容，从而加快整个镜像创建过程。
+
+·及时删除临时文件和缓存文件：特别是在执行apt-get指令后，/var/cache/apt下面会缓存了一些安装包；
+
+·提高生成速度：如合理使用cache，减少内容目录下的文件，或使用.dockerignore文件指定等；
+
+·调整合理的指令顺序：在开启cache的情况下，内容不变的指令尽量放在前面，这样可以尽量复用；
+
+·减少外部源的干扰：如果确实要从外部引入数据，需要指定持久的地址，并带版本信息等，让他人可以复用而不出错。
+</pre></div>
+</div>
+</section>
+<section id="id22">
+<h2><a class="toc-backref" href="#id71">常用的Dockerfile工程</a><a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/dockerfile">https://github.com/dockerfile</a></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/dockerfile/ubuntu">ubuntu</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dockerfile/ubuntu-desktop">ubuntu-desktop</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dockerfile/nginx">nginx</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dockerfile/java">java</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dockerfile/ansible">ansible</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dockerfile/ruby">ruby</a></p></li>
+</ul>
+<p><strong>参考docker-library</strong></p>
+<p><a class="reference external" href="https://github.com/docker-library?page=1">https://github.com/docker-library?page=1</a></p>
+<p><a class="reference external" href="https://github.com/orgs/docker-library/repositories">https://github.com/orgs/docker-library/repositories</a></p>
+<section id="id23">
+<h3><a class="toc-backref" href="#id72">鲲鹏应用迁移Dockerfile归档仓库</a><a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://gitee.com/kunpeng-app-migration/dockerfiles/blob/develop/README.md">https://gitee.com/kunpeng-app-migration/dockerfiles/blob/develop/README.md</a></p>
+<p>常用Dockerfile例子</p>
+<p><a class="reference external" href="https://gitee.com/gaork/dockerfiles/blob/master/centos-base/docker_files/Dockerfile">https://gitee.com/gaork/dockerfiles/blob/master/centos-base/docker_files/Dockerfile</a></p>
+<p><a class="reference external" href="https://gitee.com/single_yang/Dockerfile?_from=gitee_search">https://gitee.com/single_yang/Dockerfile?_from=gitee_search</a></p>
+</section>
+</section>
+<section id="id24">
+<h2><a class="toc-backref" href="#id73">参考文献</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.cnblogs.com/zhuochong/p/10062884.html">https://www.cnblogs.com/zhuochong/p/10062884.html</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html" class="btn btn-neutral float-left" title="Docker使用网络" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html" class="btn btn-neutral float-right" title="实战案例" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

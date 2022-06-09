@@ -1,0 +1,68 @@
+.. contents::
+   :depth: 3
+..
+
+使用Supervisor运行WordPress
+===========================
+
+::
+
+   使用Supervisor(http://supervisord.org/index.html)来监控并运行MySQL和HTTPD。
+   Supervisor不是一个init系统,而是一个用来控制多个进程的普通程序。
+
+Docker 文件配置如下
+
+::
+
+
+   FROM ubuntu:14.04
+   RUN apt-get update && apt-get -y install \
+   apache2 \
+   php5 \
+   php5-mysql \
+   supervisor \
+   wget
+
+   RUN echo 'mysql-server mysql-server/root_password password root' | \
+   debconf-set-selections && \
+   echo 'mysql-server mysql-server/root_password_again password root' | \
+   debconf-set-selections
+   RUN apt-get install -qqy mysql-server
+   RUN wget http://wordpress.org/latest.tar.gz && \
+   tar xzvf latest.tar.gz && \
+   cp -R ./wordpress/* /var/www/html && \
+   rm /var/www/html/index.html
+   RUN (/usr/bin/mysqld_safe &); sleep 5; mysqladmin -u root -proot create wordpress
+   COPY wp-config.php /var/www/html/wp-config.php
+   COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+   EXPOSE 80
+   CMD ["/usr/bin/supervisord"]
+
+Supervisor 的配置文件 supervisord.conf 如下所示:
+
+::
+
+   [supervisord]
+   nodaemon=true
+   [program:mysqld]
+   command=/usr/bin/mysqld_safe
+   autostart=true
+   autorestart=true
+   user=root
+   [program:httpd]
+   command=/bin/bash -c "rm -rf /run/httpd/* && /usr/sbin/apachectl -D FOREGROUND"
+
+这里定义了两个被监控和运行的服务： mysqld 和 httpd
+。每个程序都可以使用诸如 autorestart 和 autostart 等选项。最重要的指令是
+command ，其定义了如何运行每个程序。 在这个例子中，Docker
+容器只需要运行一个前台进程： supervisord 。从 Dockerfile 中的 CMD
+[“/usr/bin/supervisord”] 这一行也能看出来。
+
+::
+
+   $ docker build -t wordpress .
+   $ docker run -d -p 80:80 wordpress
+
+容器启动后还会在宿主机和 Docker 容器之间为 80
+端口进行端口映射。现在只需要在浏览 器中打开 http://，就可以进入到
+WordPress 的配置页面了。

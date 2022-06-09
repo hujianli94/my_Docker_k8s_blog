@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kubernetes基础 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Kubernetes的资源对象" href="05.Kubernetes%E7%9A%84%E8%B5%84%E6%BA%90%E5%AF%B9%E8%B1%A1.html" />
+    <link rel="prev" title="Docker基础" href="03.Docker%E5%9F%BA%E7%A1%80.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">02.Kubernetes实战指南</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.Kubernetes%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.html">Kubernetes安装配置指南</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Kubespray%E9%83%A8%E7%BD%B2k8s.html">Kubespray部署k8s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.Docker%E5%9F%BA%E7%A1%80.html">Docker基础</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Kubernetes基础</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#master">1. Master节点</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#apiserver">1.1 APIServer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scheduler">1.2 Scheduler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#controller-manager">1.3 Controller Manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#etcd">1.4 Etcd</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#node">2.Node节点</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#kubelet">2.1 Kubelet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kube-proxy">2.2 Kube-Proxy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#docker-engine">2.3 Docker Engine</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">3.小结</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">4. kubernetes的资源对象</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#k8s">4.1 查看k8s资源对象字段对照表</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#webk8syaml">4.2 通过web界面配置k8s的yaml文件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#yaml">4.3 基于图形化的方式自动生成yaml</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">5. 查询Kubernetes的健康状态</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kubectl">6. kubectl 常用命令总结</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id4">6.1 使用相关配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">6.2 创建资源对象</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">6.3 查看资源对象</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">6.4 查看资源描述</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id13">6.5 更新修补资源</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id19">6.6 删除资源对象</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id21">6.7 编辑资源文件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id22">6.8 直接执行命令</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id24">6.9 查看容器日志</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id28">6.10 常用操作总结</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id29">6.11 k8s容器数据拷贝</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id30">7. kubectl命令与资源管理</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id31">7.1 资源管理的操作</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id41">7.2 kubectl插件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id42">7.3 Kubernetes的扩展插件</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#kubectl-1">kubectl部署应用 示例1</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#redis">运行Redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#frontend">运行Frontend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id43">查看所有的service信息</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#guestbook">清理Guestbook</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#kubectl-2">kubectl部署应用 示例2</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#demo">部署一个简单的Demo网站</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#kubectl-3">kubectl部署应用 示例3</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id46">应用编排</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id52">小结</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="05.Kubernetes%E7%9A%84%E8%B5%84%E6%BA%90%E5%AF%B9%E8%B1%A1.html">Kubernetes的资源对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06.Serveice.html">Serveice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07.Ingress.html">Ingress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.Kubernetest%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Kubernetest数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.kubernetes%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">Kubernetes实战案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Kubernetes%E7%9B%91%E6%8E%A7.html">Kubernetes监控</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.%E9%9B%86%E7%BE%A4%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F.html">集群日志系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.%E4%BD%BF%E7%94%A8EFKLK%E6%90%AD%E5%BB%BAKubernetes%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E5%B7%A5%E5%85%B7%E6%A0%88.html">使用EFKLK搭建Kubernetes日志收集工具栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.Kubernetes%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E4%BB%8EDocker%E5%88%87%E6%8D%A2%E6%88%90Containerd.html">Kubernetes容器运行时从Docker切换成Containerd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.%E6%95%B4%E7%90%86%E5%85%A8%E7%BD%91%E6%9C%80%E5%85%A8K8S%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7-%E5%B9%B3%E5%8F%B0.html">整理全网最全K8S集群管理工具-平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.%E5%9F%BA%E4%BA%8EDocker%2BK8S%2BGitLabSVN%2BJenkins%2BHarbor%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E4%BA%A4%E4%BB%98%E7%8E%AF%E5%A2%83.html">基于Docker+K8S+GitLab/SVN+Jenkins+Harbor持续集成交付环境</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.Helm%E7%AE%80%E5%8C%96Kubernetes%E9%83%A8%E7%BD%B2.html">Helm简化Kubernetes部署</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05.Kubernetes%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/index.html">05.Kubernetes入门到实践</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">02.Kubernetes实战指南</a> &raquo;</li>
+      <li>Kubernetes基础</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/02.Kubernetes实战指南/04.Kubernetes基础.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#kubernetes" id="id54">Kubernetes基础</a></p>
+<ul>
+<li><p><a class="reference internal" href="#master" id="id55">1. Master节点</a></p>
+<ul>
+<li><p><a class="reference internal" href="#apiserver" id="id56">1.1 APIServer</a></p></li>
+<li><p><a class="reference internal" href="#scheduler" id="id57">1.2 Scheduler</a></p></li>
+<li><p><a class="reference internal" href="#controller-manager" id="id58">1.3 Controller Manager</a></p></li>
+<li><p><a class="reference internal" href="#etcd" id="id59">1.4 Etcd</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#node" id="id60">2.Node节点</a></p>
+<ul>
+<li><p><a class="reference internal" href="#kubelet" id="id61">2.1 Kubelet</a></p></li>
+<li><p><a class="reference internal" href="#kube-proxy" id="id62">2.2 Kube-Proxy</a></p></li>
+<li><p><a class="reference internal" href="#docker-engine" id="id63">2.3 Docker Engine</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id1" id="id64">3.小结</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id65">4. kubernetes的资源对象</a></p>
+<ul>
+<li><p><a class="reference internal" href="#k8s" id="id66">4.1 查看k8s资源对象字段对照表</a></p></li>
+<li><p><a class="reference internal" href="#webk8syaml" id="id67">4.2 通过web界面配置k8s的yaml文件</a></p></li>
+<li><p><a class="reference internal" href="#yaml" id="id68">4.3 基于图形化的方式自动生成yaml</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id3" id="id69">5. 查询Kubernetes的健康状态</a></p></li>
+<li><p><a class="reference internal" href="#kubectl" id="id70">6. kubectl 常用命令总结</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id4" id="id71">6.1 使用相关配置</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id72">6.2 创建资源对象</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id73">6.3 查看资源对象</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id74">6.4 查看资源描述</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id75">6.5 更新修补资源</a></p></li>
+<li><p><a class="reference internal" href="#id19" id="id76">6.6 删除资源对象</a></p></li>
+<li><p><a class="reference internal" href="#id21" id="id77">6.7 编辑资源文件</a></p></li>
+<li><p><a class="reference internal" href="#id22" id="id78">6.8 直接执行命令</a></p></li>
+<li><p><a class="reference internal" href="#id24" id="id79">6.9 查看容器日志</a></p></li>
+<li><p><a class="reference internal" href="#id28" id="id80">6.10 常用操作总结</a></p></li>
+<li><p><a class="reference internal" href="#id29" id="id81">6.11 k8s容器数据拷贝</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id30" id="id82">7. kubectl命令与资源管理</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id31" id="id83">7.1 资源管理的操作</a></p></li>
+<li><p><a class="reference internal" href="#id41" id="id84">7.2 kubectl插件</a></p></li>
+<li><p><a class="reference internal" href="#id42" id="id85">7.3 Kubernetes的扩展插件</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#kubectl-1" id="id86">kubectl部署应用 示例1</a></p>
+<ul>
+<li><p><a class="reference internal" href="#redis" id="id87">运行Redis</a></p></li>
+<li><p><a class="reference internal" href="#frontend" id="id88">运行Frontend</a></p></li>
+<li><p><a class="reference internal" href="#id43" id="id89">查看所有的service信息</a></p></li>
+<li><p><a class="reference internal" href="#guestbook" id="id90">清理Guestbook</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#kubectl-2" id="id91">kubectl部署应用 示例2</a></p>
+<ul>
+<li><p><a class="reference internal" href="#demo" id="id92">部署一个简单的Demo网站</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#kubectl-3" id="id93">kubectl部署应用 示例3</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id46" id="id94">应用编排</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id52" id="id95">小结</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="kubernetes">
+<h1><a class="toc-backref" href="#id54">Kubernetes基础</a><a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h1>
+<p>Kubernetes致力于提供跨主机集群的自动部署、扩展、高可用以及运行应用程序容器的平台，其遵循主从式架构设计，其组件可以分为管理单个节点（Node）组件和控制平面组件。Kubernetes
+Master是集群的主要控制单元，用于管理其工作负载并指导整个系统的通信。Kubernetes控制平面由各自的进程组成，每个组件都可以在单个主节点上运行，也可以在支持高可用集群的多个节点上运行。</p>
+<p>Kubernetes集群的两种管理角色：<code class="docutils literal notranslate"><span class="pre">Master</span></code>和<code class="docutils literal notranslate"><span class="pre">Node</span></code>。</p>
+<section id="master">
+<h2><a class="toc-backref" href="#id55">1. Master节点</a><a class="headerlink" href="#master" title="Permalink to this headline">¶</a></h2>
+<p>Master节点是Kubernetes集群的控制节点，在生产环境中不建议部署集群核心组件外的任何Pod，<strong>公司业务的Pod更是不建议部署到Master节点上，以免升级或者维护时对业务造成影响</strong>。Master节点的组件包括：</p>
+<section id="apiserver">
+<h3><a class="toc-backref" href="#id56">1.1 APIServer</a><a class="headerlink" href="#apiserver" title="Permalink to this headline">¶</a></h3>
+<p>APIServer是整个集群的控制中枢，提供集群中各个模块之间的数据交换，并将集群状态和信息存储到分布式键－值（key-value）存储系统Etcd集群中。同时它也是集群管理、资源配额、提供完备的集群安全机制的入口，为集群各类资源对象提供增删改查以及watch的REST
+API接口。</p>
+<p>APIServer作为Kubernetes的关键组件，使用Kubernetes API和JSON
+overHTTP提供Kubernetes的内部和外部接口。</p>
+</section>
+<section id="scheduler">
+<h3><a class="toc-backref" href="#id57">1.2 Scheduler</a><a class="headerlink" href="#scheduler" title="Permalink to this headline">¶</a></h3>
+<p>Scheduler是集群Pod的调度中心，主要是通过调度算法将Pod分配到最佳的节点（Node），它通过APIServer监听所有Pod的状态，一旦发现新的未被调度到任何Node节点的Pod（PodSpec.NodeName为空），就会根据一系列策略选择最佳节点进行调度，对每一个Pod创建一个绑定（binding），然后被调度的节点上的Kubelet负责启动该Pod。Scheduler是集群可插拔式组件，它跟踪每个节点上的资源利用率以确保工作负载不会超过可用资源。因此Scheduler必须知道资源需求、资源可用性以及其他约束和策略，例如服务质量、亲和力／反关联性要求、数据位置等。Scheduler将资源供应与工作负载需求相匹配以维持系统的稳定和可靠，因此Scheduler在调度的过程中需要考虑公平、资源高效利用、效率等方面的问题。</p>
+</section>
+<section id="controller-manager">
+<h3><a class="toc-backref" href="#id58">1.3 Controller Manager</a><a class="headerlink" href="#controller-manager" title="Permalink to this headline">¶</a></h3>
+<p>Controller
+Manager是集群状态管理器（它的英文直译名为控制器管理器），以保证Pod或其他资源达到期望值。</p>
+<p>当集群中某个Pod的副本数或其他资源因故障和错误导致无法正常运行，没有达到设定的值时，Controller
+Manager会尝试自动修复并使其达到期望状态。</p>
+<p>Controller
+Manager包含NodeController、ReplicationController、EndpointController、NamespaceController、ServiceAccountController、ResourceQuotaController、ServiceController和TokenController，该控制器管理器可与API服务器进行通信以在需要时创建、更新或删除它所管理的资源，如Pod、服务断点等。</p>
+</section>
+<section id="etcd">
+<h3><a class="toc-backref" href="#id59">1.4 Etcd</a><a class="headerlink" href="#etcd" title="Permalink to this headline">¶</a></h3>
+<p>Etcd由CoreOS开发，用于可靠地存储集群的配置数据，是一种持久性、轻量型、分布式的键－值（key-value）数据存储组件。</p>
+<p>Etcd作为Kubernetes集群的持久化存储系统，集群的灾难恢复和状态信息存储都与其密不可分，所以在Kubernetes高可用集群中，Etcd的高可用是至关重要的一部分，在生产环境中建议部署为大于3的奇数个数的Etcd，以保证数据的安全性和可恢复性。Etcd可与Master组件部署在同一个节点上，大规模集群环境下建议部署在集群外，并且使用高性能服务器来提高Etcd的性能和降低Etcd同步数据的延迟。</p>
+</section>
+</section>
+<section id="node">
+<h2><a class="toc-backref" href="#id60">2.Node节点</a><a class="headerlink" href="#node" title="Permalink to this headline">¶</a></h2>
+<p>Node节点也被称为Worker或Minion，是主要负责部署容器（工作负载）的单机（或虚拟机），集群中的每个节点都必须具备容器的运行环境（runtime），比如Docker及其他组件等。Kubelet作为守护进程运行在Node节点上，负责监听该节点上所有的Pod，同时负责上报该节点上所有Pod的运行状态，确保节点上的所有容器都能正常运行。当Node节点宕机（NotReady状态）时，该节点上运行的Pod会被自动地转移到其他节点上。</p>
+<p>Node节点包括：</p>
+<section id="kubelet">
+<h3><a class="toc-backref" href="#id61">2.1 Kubelet</a><a class="headerlink" href="#kubelet" title="Permalink to this headline">¶</a></h3>
+<p>负责与Master通信协作，管理该节点上的Pod。</p>
+</section>
+<section id="kube-proxy">
+<h3><a class="toc-backref" href="#id62">2.2 Kube-Proxy</a><a class="headerlink" href="#kube-proxy" title="Permalink to this headline">¶</a></h3>
+<p>负责各Pod之间的通信和负载均衡。</p>
+</section>
+<section id="docker-engine">
+<h3><a class="toc-backref" href="#id63">2.3 Docker Engine</a><a class="headerlink" href="#docker-engine" title="Permalink to this headline">¶</a></h3>
+<p>Docker引擎，负载对容器的管理。</p>
+</section>
+</section>
+<section id="id1">
+<h2><a class="toc-backref" href="#id64">3.小结</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看集群中有多少个Node</span>
+$ kubectl get nodes
+NAME        STATUS    AGE
+<span class="m">127</span>.0.0.1   Ready     1d
+
+<span class="c1">#通过kubectl describe node 来查看某个Node的详细信息</span>
+$ kubectl describe node <span class="m">127</span>.0.0.1
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2><a class="toc-backref" href="#id65">4. kubernetes的资源对象</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>kubernetes常用资源对象</p>
+<img alt="../_images/kubernetes_pod_type001.png" src="../_images/kubernetes_pod_type001.png" />
+<p><strong>无状态的应用程序使用的Pod控制器</strong></p>
+<ul class="simple">
+<li><p>[STRIKEOUT:ReplicationController]
+（已经几乎废弃，被ReplicaSet和Deployment代替）</p></li>
+<li><p>ReplicaSet</p></li>
+<li><p>Deployment</p></li>
+</ul>
+<p><strong>有状态的应用程序使用的Pod控制器</strong></p>
+<ul class="simple">
+<li><p>StatefulSet</p></li>
+</ul>
+<p><strong>集群的存储守护进程</strong></p>
+<ul class="simple">
+<li><p>DaemonSet</p></li>
+</ul>
+<p>确保每个节点都运行了pod的一个副本，新增的节点也会被添加此类Pod，节点被移除之后，也会对Pod进行回收。</p>
+<ul class="simple">
+<li><p>DaemonSet常用于运行集群存储守护进程。如glusterd和ceph</p></li>
+<li><p>日志收集进程–fluentd和logstash。</p></li>
+<li><p>监控进程– prometheus的Node Exporter、Ingress等</p></li>
+</ul>
+<section id="k8s">
+<h3><a class="toc-backref" href="#id66">4.1 查看k8s资源对象字段对照表</a><a class="headerlink" href="#k8s" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl explain deploy --recursive<span class="o">=</span><span class="nb">true</span>
+$ kubectl explain pod --recursive<span class="o">=</span><span class="nb">true</span>
+$ kubectl explain server --recursive<span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+</section>
+<section id="webk8syaml">
+<h3><a class="toc-backref" href="#id67">4.2 通过web界面配置k8s的yaml文件</a><a class="headerlink" href="#webk8syaml" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://k8syaml.com/">https://k8syaml.com/</a></p>
+</section>
+<section id="yaml">
+<h3><a class="toc-backref" href="#id68">4.3 基于图形化的方式自动生成yaml</a><a class="headerlink" href="#yaml" title="Permalink to this headline">¶</a></h3>
+<p>本次采用Ratel自动生成yaml文件。</p>
+<p>Ratel安装文档：<a class="reference external" href="https://github.com/dotbalo/ratel-doc/blob/master/cluster/Install.md">https://github.com/dotbalo/ratel-doc/blob/master/cluster/Install.md</a></p>
+</section>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id69">5. 查询Kubernetes的健康状态</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># kubectl cluster-info</span>
+Kubernetes master is running at https://172.16.60.236:6443
+KubeDNS is running at https://172.16.60.236:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use <span class="s1">&#39;kubectl cluster-info dump&#39;</span>.
+
+<span class="c1"># kubectl -s https://172.16.60.236:6443 get componentstatuses</span>
+NAME                 STATUS    MESSAGE             ERROR
+controller-manager   Healthy   ok
+scheduler            Healthy   ok
+etcd-0               Healthy   <span class="o">{</span><span class="s2">&quot;health&quot;</span>:<span class="s2">&quot;true&quot;</span><span class="o">}</span>
+
+
+<span class="c1"># kubectl -s https://172.16.60.236:6443 get node</span>
+NAME         STATUS   ROLES    AGE   VERSION
+k8s-master   Ready    master   46h   v1.18.3
+k8s-node1    Ready    &lt;none&gt;   45h   v1.18.3
+k8s-node2    Ready    &lt;none&gt;   45h   v1.18.3
+k8s-node3    Ready    &lt;none&gt;   45h   v1.18.3
+</pre></div>
+</div>
+</section>
+<section id="kubectl">
+<h2><a class="toc-backref" href="#id70">6. kubectl 常用命令总结</a><a class="headerlink" href="#kubectl" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>参考文献：</p>
+<p><a class="reference external" href="https://www.cnblogs.com/klvchen/p/9585746.html">https://www.cnblogs.com/klvchen/p/9585746.html</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/9995385.html">https://www.cnblogs.com/xiangsikai/p/9995385.html</a></p>
+</div></blockquote>
+<section id="id4">
+<h3><a class="toc-backref" href="#id71">6.1 使用相关配置</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Kubectl自动补全</span>
+$ <span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion zsh<span class="o">)</span>
+$ <span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion bash<span class="o">)</span>
+
+<span class="c1"># 显示合并后的 kubeconfig 配置</span>
+$ kubectl config view
+
+<span class="c1"># 获取pod和svc的文档</span>
+$ kubectl explain pods,svc
+
+<span class="c1"># 查看集群健康状态</span>
+$ kubectl get cs
+
+<span class="c1"># 集群</span>
+kubectl get cs                          <span class="c1"># 集群健康情况</span>
+kubectl cluster-info                 <span class="c1"># 集群核心组件运行情况</span>
+kubectl get namespaces              <span class="c1"># 表空间名</span>
+kubectl version                <span class="c1"># 版本</span>
+kubectl api-versions        <span class="c1"># API</span>
+kubectl get events          <span class="c1"># 查看事件</span>
+kubectl get nodes           <span class="c1">#获取全部节点</span>
+kubectl delete node k8s2    <span class="c1">#删除节点</span>
+kubectl rollout status deploy nginx-test
+kubectl get deployment --all-namespaces
+kubectl get svc --all-namespaces
+
+<span class="c1"># 状态查询</span>
+
+<span class="c1"># 查看集群信息</span>
+kubectl cluster-info
+
+systemctl status kube-apiserver
+systemctl status kubelet
+systemctl status kube-proxy
+systemctl status kube-scheduler
+systemctl status kube-controller-manager
+systemctl status docker
+
+<span class="c1"># 查询api服务</span>
+kubectl get apiservice
+</pre></div>
+</div>
+<section id="id5">
+<h4>6.1.1 调度配置<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 调度配置</span>
+kubectl cordon k8s-node                                                  <span class="c1"># 标记 my-node 不可调度</span>
+kubectl drain k8s-node                                                     <span class="c1"># 清空 my-node 以待维护</span>
+kubectl uncordon k8s-node                                              <span class="c1"># 标记 my-node 可调度</span>
+kubectl top node k8s-node                                              <span class="c1"># 显示 my-node 的指标度量</span>
+
+kubectl taint nodes foo <span class="nv">dedicated</span><span class="o">=</span>special-user:NoSchedule   <span class="c1">#如果该键和影响的污点（taint）已存在，则使用指定的值替换</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h4>6.1.2 配置导出<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">## 导出配置文件</span>
+
+<span class="c1">#导出proxy</span>
+kubectl get ds -n kube-system -l k8s-app<span class="o">=</span>kube-proxy -o yaml&gt;kube-proxy-ds.yaml
+
+<span class="c1">#导出kube-dns</span>
+kubectl get deployment -n kube-system -l k8s-app<span class="o">=</span>kube-dns -o yaml &gt;kube-dns-dp.yaml
+kubectl get services -n kube-system -l k8s-app<span class="o">=</span>kube-dns -o yaml &gt;kube-dns-services.yaml
+
+<span class="c1">#导出所有 configmap</span>
+kubectl get configmap -n kube-system -o wide -o yaml &gt; configmap.yaml
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id7">
+<h3><a class="toc-backref" href="#id72">6.2 创建资源对象</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p><strong>分步骤创建</strong></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># yaml</span>
+kubectl create -f xxx-rc.yaml
+kubectl create -f xxx-service.yaml
+
+<span class="c1"># json</span>
+kubectl create -f ./pod.json
+cat pod.json <span class="p">|</span> kubectl create -f -
+
+<span class="c1"># yaml2json</span>
+kubectl create -f docker-registry.yaml --edit -o json
+
+<span class="c1"># 创建</span>
+kubectl create -f ./nginx.yaml                                  <span class="c1"># 创建资源</span>
+kubectl apply -f xxx.yaml                                       <span class="c1">#（创建+更新，可以重复使用）</span>
+kubectl create -f .                                             <span class="c1"># 创建当前目录下的所有yaml资源</span>
+kubectl create -f ./nginx1.yaml -f ./mysql2.yaml                <span class="c1"># 使用多个文件创建资源</span>
+kubectl create -f ./dir                                         <span class="c1"># 使用目录下的所有清单文件来创建资源</span>
+kubectl create -f https://git.io/vPieo                          <span class="c1"># 使用 url 来创建资源</span>
+kubectl run -i --tty busybox --image<span class="o">=</span>busybox                    <span class="c1"># ----创建带有终端的pod</span>
+kubectl run nginx --image<span class="o">=</span>nginx                                 <span class="c1"># 启动一个 nginx 实例</span>
+kubectl run mybusybox --image<span class="o">=</span>busybox --replicas<span class="o">=</span><span class="m">5</span>              <span class="c1">#----启动多个pod</span>
+kubectl explain pods,svc                                        <span class="c1"># 获取 pod 和 svc 的文档</span>
+
+<span class="c1"># 查看deployment的属性</span>
+$ kubectl explain deployment
+KIND:     Deployment
+VERSION:  apps/v1
+</pre></div>
+</div>
+<p><strong>一次性创建</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">create</span> <span class="o">-</span><span class="n">f</span> <span class="n">xxx</span><span class="o">-</span><span class="n">service</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">f</span> <span class="n">xxx</span><span class="o">-</span><span class="n">rc</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p><strong>根据目录下所有的 yaml 文件定义内容进行创建</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">create</span> <span class="o">-</span><span class="n">f</span> <span class="o">&lt;</span><span class="n">目录</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><strong>使用 url 来创建资源</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">create</span> <span class="o">-</span><span class="n">f</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">git</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">vPieo</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3><a class="toc-backref" href="#id73">6.3 查看资源对象</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<section id="nodenamespace">
+<h4>查看所有Node或Namespace对象<a class="headerlink" href="#nodenamespace" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">get</span> <span class="n">nodes</span>
+<span class="n">kubectl</span> <span class="n">get</span> <span class="n">namespace</span>
+</pre></div>
+</div>
+</section>
+<section id="pod">
+<h4>查看所有Pod对象<a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 查看子命令帮助信息
+kubectl get --help
+
+# 列出默认namespace中的所有pod
+kubectl get pods
+
+# 列出所有namespace中的所有pod
+kubectl get pods --all-namespaces
+
+# 列出指定namespace中的所有pod
+kubectl get pods --namespace=test
+
+# 查看pods具体信息
+kubectl get pods -o wide kubernetes-dashboard-76479d66bb-nj8wr --namespace=kube-system
+
+
+# kubectl get支持以Go Template方式过滤出指定的信息，比如查询Pod的运行状态：
+$ kubectl get pods my-pod --output=go-template --template={{.status.phase}}
+Running
+
+
+# 列出所有pod并显示详细信息
+kubectl get pods -o wide
+kubectl get replicationcontroller web
+kubectl get -k dir/
+kubectl get -f pod.yaml -o json
+kubectl get rc/web service/frontend pods/web-pod-13je7
+kubectl get pods/app-prod-78998bf7c6-ttp9g --namespace=test -o wide
+kubectl get -o template pod/web-pod-13je7 --template={{.status.phase}}
+
+# 列出该namespace中的所有pod包括未初始化的
+kubectl get pods,rc,services --include-uninitialized
+</pre></div>
+</div>
+</section>
+<section id="rc">
+<h4>查看所有RC对象<a class="headerlink" href="#rc" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">get</span> <span class="n">rc</span>
+</pre></div>
+</div>
+</section>
+<section id="deployment">
+<h4>查看所有Deployment对象<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看default下的deployment</span>
+<span class="n">kubectl</span> <span class="n">get</span> <span class="n">deployment</span>
+
+<span class="c1"># 获取所有deployment</span>
+<span class="n">kubectl</span> <span class="n">get</span> <span class="n">deployment</span> <span class="o">--</span><span class="nb">all</span><span class="o">-</span><span class="n">namespaces</span>
+
+<span class="c1"># 列出指定deployment</span>
+<span class="n">kubectl</span> <span class="n">get</span> <span class="n">deployment</span> <span class="n">my</span><span class="o">-</span><span class="n">app</span>
+
+<span class="c1"># 查看kube-system namespace下面的pod/svc/deployment 等等（-o wide 选项可以查看存在哪个对应的节点）</span>
+<span class="n">kubectl</span> <span class="n">get</span> <span class="n">pod</span><span class="p">,</span><span class="n">svc</span><span class="p">,</span><span class="n">deployment</span> <span class="o">-</span><span class="n">n</span> <span class="n">kube</span><span class="o">-</span><span class="n">system</span>
+
+<span class="c1"># 查看rc和servers</span>
+<span class="c1"># 其他控制器类似吧，就是kubectl get 控制器 控制器具体名称</span>
+<span class="n">kubectl</span> <span class="n">get</span> <span class="n">rc</span><span class="p">,</span><span class="n">services</span>
+</pre></div>
+</div>
+</section>
+<section id="service">
+<h4>查看所有Service对象<a class="headerlink" href="#service" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">get</span> <span class="n">svc</span>
+<span class="n">kubectl</span> <span class="n">get</span> <span class="n">service</span>
+</pre></div>
+</div>
+</section>
+<section id="namespacpod">
+<h4>查看不同Namespac下的Pod 对象<a class="headerlink" href="#namespacpod" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">get</span> <span class="n">pods</span> <span class="o">-</span><span class="n">n</span> <span class="n">default</span>
+<span class="n">kubectl</span> <span class="n">get</span> <span class="n">pods</span> <span class="o">--</span><span class="nb">all</span><span class="o">-</span><span class="n">namespace</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h4>查询<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看nodes节点</span>
+kubectl get nodes
+
+<span class="c1"># 通过yaml文件查询</span>
+kubectl get -f xxx-yaml/
+
+<span class="c1"># 查询全部类型</span>
+kubectl get all
+
+<span class="c1"># 查询资源</span>
+kubectl get resourcequota
+
+<span class="c1"># endpoints端</span>
+kubectl get endpoints
+
+<span class="c1"># 查看pods</span>
+
+<span class="c1"># 查看指定空间`kube-system`的pods</span>
+kubectl get po -n kube-system
+
+<span class="c1"># 查看所有空间的</span>
+kubectl get pods -o wide --all-namespaces
+
+<span class="c1"># 其他的写法</span>
+kubectl get pod -o wide --namespace<span class="o">=</span>kube-system
+
+<span class="c1"># 获取svc</span>
+kubectl get svc --all-namespaces
+
+<span class="c1"># 其他写法</span>
+kubectl get services --all-namespaces
+
+<span class="c1"># 通过lable查询</span>
+kubectl get pods -l <span class="nv">app</span><span class="o">=</span>nginx -o yaml<span class="p">|</span>grep podIP
+
+<span class="c1"># 当我们发现一个pod迟迟无法创建时，描述一个pods</span>
+kubectl describe pod xxx
+
+<span class="c1"># 查询事件</span>
+kubectl get events --all-namespaces
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id10">
+<h3><a class="toc-backref" href="#id74">6.4 查看资源描述</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<section id="id11">
+<h4>显示Pod详细信息<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">describe</span> <span class="n">pods</span><span class="o">/</span><span class="n">nginx</span>
+<span class="n">kubectl</span> <span class="n">describe</span> <span class="n">pods</span> <span class="n">my</span><span class="o">-</span><span class="n">pod</span>
+<span class="n">kubectl</span> <span class="n">describe</span> <span class="o">-</span><span class="n">f</span> <span class="n">pod</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h4>查看Node详细信息<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">describe</span> <span class="n">nodes</span> <span class="n">c1</span>
+</pre></div>
+</div>
+</section>
+<section id="rcpod">
+<h4>查看RC关联的Pod信息<a class="headerlink" href="#rcpod" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">describe</span> <span class="n">pods</span> <span class="o">&lt;</span><span class="n">rc</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id13">
+<h3><a class="toc-backref" href="#id75">6.5 更新修补资源</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<section id="id14">
+<h4>滚动更新<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 滚动更新 pod frontend-v1</span>
+kubectl rolling-update frontend-v1 -f frontend-v2.json
+
+<span class="c1"># 更新资源名称并更新镜像</span>
+kubectl rolling-update frontend-v1 frontend-v2 --image<span class="o">=</span>image:v2
+
+<span class="c1"># 更新 frontend pod 中的镜像</span>
+kubectl rolling-update frontend --image<span class="o">=</span>image:v2
+
+<span class="c1"># 退出已存在的进行中的滚动更新</span>
+kubectl rolling-update frontend-v1 frontend-v2 --rollback
+
+<span class="c1"># 强制替换; 删除后重新创建资源; 服务会中断</span>
+kubectl replace --force -f ./pod.json
+
+<span class="c1"># 添加标签</span>
+kubectl label pods my-pod new-label<span class="o">=</span>awesome
+
+<span class="c1"># 添加注解</span>
+kubectl annotate pods my-pod icon-url<span class="o">=</span>http://goo.gl/XXBTWq
+
+<span class="c1"># 重启deployment</span>
+kubectl rollout restart deploy/traefik-ingress-controller -n kube-system
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 更新</span>
+kubectl rolling-update python-v1 -f python-v2.json                     <span class="c1"># 滚动更新 pod frontend-v1</span>
+kubectl rolling-update python-v1 python-v2 --image<span class="o">=</span>image:v2     <span class="c1"># 更新资源名称并更新镜像</span>
+kubectl rolling-update python --image<span class="o">=</span>image:v2                          <span class="c1"># 更新 frontend pod 中的镜像</span>
+kubectl rolling-update python-v1 python-v2 --rollback               <span class="c1"># 退出已存在的进行中的滚动更新</span>
+cat pod.json <span class="p">|</span> kubectl replace -f -                                                 <span class="c1"># 基于 stdin 输入的 JSON 替换 pod</span>
+
+<span class="c1"># 为 nginx RC 创建服务，启用本地 80 端口连接到容器上的 8000 端口</span>
+kubectl expose rc nginx --port<span class="o">=</span><span class="m">80</span> --target-port<span class="o">=</span><span class="m">8000</span>
+
+
+<span class="c1"># 更新单容器 pod 的镜像版本（tag）到 v4</span>
+kubectl get pod nginx-pod -o yaml <span class="p">|</span> sed <span class="s1">&#39;s/\(image: myimage\):.*$/\1:v4/&#39;</span> <span class="p">|</span> kubectl replace -f -
+kubectl label pods nginx-pod new-label<span class="o">=</span>awesome                      <span class="c1"># 添加标签</span>
+kubectl annotate pods nginx-pod icon-url<span class="o">=</span>http://goo.gl/XXBTWq       <span class="c1"># 添加注解</span>
+kubectl autoscale deployment foo --min<span class="o">=</span><span class="m">2</span> --max<span class="o">=</span><span class="m">10</span>                <span class="c1"># 自动扩展 deployment “foo”</span>
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h4>滚动<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 升级</span>
+kubectl apply -f xxx.yaml --record
+
+<span class="c1"># 回滚</span>
+kubectl rollout undo deployment javademo
+
+<span class="c1"># 查看滚动升级记录</span>
+kubectl rollout <span class="nb">history</span> deployment <span class="o">{</span>名称<span class="o">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id16">
+<h4>修补资源<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 部分更新节点</span>
+kubectl patch node k8s-node-1 -p <span class="s1">&#39;{&quot;spec&quot;:{&quot;unschedulable&quot;:true}}&#39;</span>
+
+<span class="c1"># 更新容器镜像；spec.containers[*].name 是必须的，因为这是合并的关键字</span>
+kubectl patch pod valid-pod -p <span class="se">\</span>
+    <span class="s1">&#39;{&quot;spec&quot;:{&quot;containers&quot;:[{&quot;name&quot;:&quot;kubernetes-serve-hostname&quot;,&quot;image&quot;:&quot;new image&quot;}]}}&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="scale">
+<h4>Scale 动态伸缩资源<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scale a replicaset named &#39;foo&#39; to 3</span>
+kubectl scale --replicas<span class="o">=</span><span class="m">3</span> rs/foo
+
+<span class="c1"># Scale a resource specified in &quot;foo.yaml&quot; to 3</span>
+kubectl scale --replicas<span class="o">=</span><span class="m">3</span> -f foo.yaml
+
+<span class="c1"># If the deployment named mysql&#39;s current size is 2, scale mysql to 3</span>
+kubectl scale --current-replicas<span class="o">=</span><span class="m">2</span> --replicas<span class="o">=</span><span class="m">3</span> deployment/mysql
+
+<span class="c1"># Scale multiple replication controllers</span>
+kubectl scale --replicas<span class="o">=</span><span class="m">5</span> rc/foo rc/bar rc/baz
+
+
+<span class="c1"># 动态伸缩pod</span>
+kubectl scale --replicas<span class="o">=</span><span class="m">3</span> rs/foo                                       <span class="c1"># 将foo副本集变成3个</span>
+kubectl scale --replicas<span class="o">=</span><span class="m">3</span> -f foo.yaml                                  <span class="c1"># 缩放“foo”中指定的资源。</span>
+kubectl scale --current-replicas<span class="o">=</span><span class="m">2</span> --replicas<span class="o">=</span><span class="m">3</span> deployment/mysql        <span class="c1"># 将deployment/mysql从2个变成3个</span>
+kubectl scale --replicas<span class="o">=</span><span class="m">5</span> rc/foo rc/bar rc/baz                         <span class="c1"># 变更多个控制器的数量</span>
+kubectl rollout status deploy deployment/mysql                          <span class="c1"># 查看变更进度</span>
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h4>扩展<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 扩展副本</span>
+kubectl scale rc xxxx --replicas<span class="o">=</span><span class="m">3</span>
+kubectl scale rc mysql --replicas<span class="o">=</span><span class="m">1</span>
+kubectl scale --replicas<span class="o">=</span><span class="m">3</span> -f foo.yaml
+</pre></div>
+</div>
+</section>
+<section id="id18">
+<h4>其他<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 创建和删除</span>
+kubectl create -f dashboard-controller.yaml
+kubectl delete -f dashboard-dashboard.yaml
+
+<span class="c1"># 替换&amp;&amp;应用</span>
+kubectl apply -f xxx.yaml
+kubectl replace -f xxx.yaml
+
+<span class="c1"># 查看指定pods的环境变量</span>
+kubectl <span class="nb">exec</span> xxx env
+
+<span class="c1"># 判断dns是否通</span>
+kubectl <span class="nb">exec</span> busybox -- nslookup kube-dns.kube-system
+
+<span class="c1"># kube-proxy状态</span>
+systemctl status kube-proxy -l
+
+<span class="c1"># token的</span>
+kubectl get serviceaccount/kube-dns --namespace<span class="o">=</span>kube-system -o yaml<span class="p">|</span>grep token
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id19">
+<h3><a class="toc-backref" href="#id76">6.6 删除资源对象</a><a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<section id="xxx-yaml-pod">
+<h4>基于 xxx.yaml 文件删除 Pod 对象<a class="headerlink" href="#xxx-yaml-pod" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># yaml文件名字按照你创建时的文件一致</span>
+<span class="n">kubectl</span> <span class="n">delete</span> <span class="o">-</span><span class="n">f</span> <span class="n">xxx</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+</section>
+<section id="label-pod">
+<h4>删除包括某个 label 的 pod 对象<a class="headerlink" href="#label-pod" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">delete</span> <span class="n">pods</span> <span class="o">-</span><span class="n">l</span> <span class="n">name</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="label-service">
+<h4>删除包括某个 label 的 service 对象<a class="headerlink" href="#label-service" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">delete</span> <span class="n">services</span> <span class="o">-</span><span class="n">l</span> <span class="n">name</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="label-pod-service">
+<h4>删除包括某个 label 的 pod 和 service 对象<a class="headerlink" href="#label-pod-service" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">delete</span> <span class="n">pods</span><span class="p">,</span><span class="n">services</span> <span class="o">-</span><span class="n">l</span> <span class="n">name</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="pod-services">
+<h4>删除所有 pod/services 对象<a class="headerlink" href="#pod-services" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">delete</span> <span class="n">pods</span> <span class="o">--</span><span class="nb">all</span>
+<span class="n">kubectl</span> <span class="n">delete</span> <span class="n">service</span> <span class="o">--</span><span class="nb">all</span>
+<span class="n">kubectl</span> <span class="n">delete</span> <span class="n">deployment</span> <span class="o">--</span><span class="nb">all</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 删除</span>
+kubectl delete pod -l <span class="nv">app</span><span class="o">=</span>flannel -n kube-system                              <span class="c1"># 根据label删除：</span>
+kubectl delete -f ./pod.json                                                        <span class="c1"># 删除 pod.json 文件中定义的类型和名称的 pod</span>
+kubectl delete pod,service baz foo                                               <span class="c1"># 删除名为“baz”的 pod 和名为“foo”的 service</span>
+kubectl delete pods,services -l <span class="nv">name</span><span class="o">=</span>myLabel                              <span class="c1"># 删除具有 name=myLabel 标签的 pod 和 serivce</span>
+kubectl delete pods,services -l <span class="nv">name</span><span class="o">=</span>myLabel --include-uninitialized      <span class="c1"># 删除具有 name=myLabel 标签的 pod 和 service，包括尚未初始化的</span>
+kubectl -n my-ns delete po,svc --all                                        <span class="c1"># 删除 my-ns namespace下的所有 pod 和 serivce，包括尚未初始化的</span>
+kubectl delete pods prometheus-7fcfcb9f89-qkkf7 --grace-period<span class="o">=</span><span class="m">0</span> --force 强制删除
+kubectl delete deployment kubernetes-dashboard --namespace<span class="o">=</span>kube-system
+kubectl delete svc kubernetes-dashboard --namespace<span class="o">=</span>kube-system
+kubectl delete -f kubernetes-dashboard.yaml
+kubectl replace --force -f ./pod.json                   <span class="c1"># 强制替换，删除后重新创建资源。会导致服务中断。</span>
+</pre></div>
+</div>
+</section>
+<section id="id20">
+<h4>删除所有pod<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 删除所有pods</span>
+kubectl delete pods --all
+
+<span class="c1"># 删除所有包含某个lable的pod和serivce</span>
+kubectl delete pods,services -l <span class="nv">name</span><span class="o">=</span>&lt;lable-name&gt;
+
+<span class="c1"># 删除ui server,然后重建</span>
+kubectl delete deployments kubernetes-dashboard --namespace<span class="o">=</span>kube-system
+kubectl delete services kubernetes-dashboard --namespace<span class="o">=</span>kube-system
+
+<span class="c1"># 强制删除部署</span>
+kubectl delete deployment kafka-1
+
+<span class="c1"># 删除rc</span>
+kubectl delete rs --all <span class="o">&amp;&amp;</span> kubectl delete rc --all
+
+<span class="c1">## 强制删除Terminating状态的pod</span>
+kubectl delete deployment kafka-1 --grace-period<span class="o">=</span><span class="m">0</span> --force
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id21">
+<h3><a class="toc-backref" href="#id77">6.7 编辑资源文件</a><a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<p>在编辑器中编辑任何 API 资源</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 编辑名为docker-registry的service</span>
+<span class="n">kubectl</span> <span class="n">edit</span> <span class="n">svc</span><span class="o">/</span><span class="n">docker</span><span class="o">-</span><span class="n">registry</span>
+</pre></div>
+</div>
+</section>
+<section id="id22">
+<h3><a class="toc-backref" href="#id78">6.8 直接执行命令</a><a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<p>在寄主机上，不进入容器直接执行命令</p>
+<section id="pod-date-pod">
+<h4>执行 pod 的 date 命令，默认使用 pod 的第一个容器执行<a class="headerlink" href="#pod-date-pod" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">exec</span> <span class="n">mypod</span> <span class="o">--</span> <span class="n">date</span>
+<span class="n">kubectl</span> <span class="n">exec</span> <span class="n">mypod</span> <span class="o">--</span><span class="n">namespace</span><span class="o">=</span><span class="n">test</span> <span class="o">--</span> <span class="n">date</span>
+</pre></div>
+</div>
+</section>
+<section id="pod-date">
+<h4>指定 pod 中某个容器执行 date 命令<a class="headerlink" href="#pod-date" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">exec</span> <span class="n">mypod</span> <span class="o">-</span><span class="n">c</span> <span class="n">ruby</span><span class="o">-</span><span class="n">container</span> <span class="o">--</span> <span class="n">date</span>
+</pre></div>
+</div>
+</section>
+<section id="id23">
+<h4>进入某个容器<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">exec</span> <span class="n">mypod</span> <span class="o">-</span><span class="n">c</span> <span class="n">ruby</span><span class="o">-</span><span class="n">container</span> <span class="o">-</span><span class="n">it</span> <span class="o">--</span> <span class="n">bash</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">run</span> <span class="o">-</span><span class="n">i</span> <span class="o">--</span><span class="n">tty</span> <span class="n">busybox</span> <span class="o">--</span><span class="n">image</span><span class="o">=</span><span class="n">busybox</span> <span class="o">--</span> <span class="n">sh</span>      <span class="c1"># 交互式 shell 的方式运行 pod</span>
+<span class="n">kubectl</span> <span class="n">attach</span> <span class="n">nginx</span><span class="o">-</span><span class="n">pod</span> <span class="o">-</span><span class="n">i</span>                                       <span class="c1"># 连接到运行中的容器</span>
+<span class="n">kubectl</span> <span class="n">port</span><span class="o">-</span><span class="n">forward</span> <span class="n">nginx</span><span class="o">-</span><span class="n">pod</span> <span class="mi">5000</span><span class="p">:</span><span class="mi">6000</span>                       <span class="c1"># 转发 pod 中的 6000 端口到本地的 5000 端口</span>
+<span class="n">kubectl</span> <span class="n">exec</span> <span class="n">nginx</span><span class="o">-</span><span class="n">pod</span> <span class="o">--</span> <span class="n">ls</span> <span class="o">/</span>                                  <span class="c1"># 在已存在的容器中执行命令（只有一个容器的情况下）</span>
+<span class="n">kubectl</span> <span class="n">exec</span> <span class="n">nginx</span><span class="o">-</span><span class="n">pod</span> <span class="o">-</span><span class="n">c</span> <span class="n">my</span><span class="o">-</span><span class="n">container</span> <span class="o">--</span> <span class="n">ls</span> <span class="o">/</span>                 <span class="c1"># 在已存在的容器中执行命令（pod 中有多个容器的情况下）</span>
+<span class="n">kubectl</span> <span class="n">top</span> <span class="n">pod</span> <span class="n">POD_NAME</span> <span class="o">--</span><span class="n">containers</span>                    <span class="c1"># 显示指定 pod和容器的指标度量</span>
+<span class="n">kubectl</span> <span class="n">exec</span> <span class="o">-</span><span class="n">ti</span> <span class="n">podName</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>                    <span class="c1"># 进入pod</span>
+<span class="n">kubectl</span> <span class="n">exec</span> <span class="o">-</span><span class="n">it</span> <span class="n">pod</span><span class="o">/</span><span class="n">grafana</span><span class="o">-</span><span class="mi">98</span><span class="n">bc68fc</span><span class="o">-</span><span class="mi">6</span><span class="n">dqv8</span> <span class="o">-</span><span class="n">c</span> <span class="n">grafana</span> <span class="o">-</span><span class="n">n</span> <span class="n">monitoring</span> <span class="o">--</span> <span class="n">grafana</span><span class="o">-</span><span class="n">cli</span> <span class="n">plugins</span> <span class="n">install</span> <span class="n">grafana</span><span class="o">-</span><span class="n">piechart</span><span class="o">-</span><span class="n">panel</span>  <span class="c1">#为grafana安装插件</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id24">
+<h3><a class="toc-backref" href="#id79">6.9 查看容器日志</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<section id="id25">
+<h4>直接查看日志<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 不实时刷新kubectl logs mypod
+kubectl logs mypod --namespace=test
+
+
+# 查看pod日志
+kubectl logs $POD_NAME
+</pre></div>
+</div>
+</section>
+<section id="id26">
+<h4>查看日志实时刷新<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">logs</span> <span class="o">-</span><span class="n">f</span> <span class="n">mypod</span> <span class="o">-</span><span class="n">c</span> <span class="n">ruby</span><span class="o">-</span><span class="n">containe</span>
+</pre></div>
+</div>
+</section>
+<section id="id27">
+<h4>查看日志<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看指定镜像的日志</span>
+<span class="n">kubectl</span> <span class="n">logs</span> <span class="o">-</span><span class="n">f</span> <span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="o">-</span><span class="mi">699984412</span><span class="o">-</span><span class="n">vz1q6</span> <span class="o">-</span><span class="n">n</span> <span class="n">kube</span><span class="o">-</span><span class="n">system</span>
+
+<span class="n">kubectl</span> <span class="n">logs</span> <span class="o">--</span><span class="n">tail</span><span class="o">=</span><span class="mi">10</span> <span class="n">nginx</span>
+
+<span class="c1">#指定其中一个查看日志</span>
+<span class="n">kubectl</span> <span class="n">logs</span> <span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="o">-</span><span class="mi">699984412</span><span class="o">-</span><span class="n">n5zkz</span> <span class="o">-</span><span class="n">c</span> <span class="n">kubedns</span> <span class="o">--</span><span class="n">namespace</span><span class="o">=</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span>
+<span class="n">kubectl</span> <span class="n">logs</span> <span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="o">-</span><span class="mi">699984412</span><span class="o">-</span><span class="n">vz1q6</span> <span class="o">-</span><span class="n">c</span> <span class="n">dnsmasq</span> <span class="o">--</span><span class="n">namespace</span><span class="o">=</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span>
+<span class="n">kubectl</span> <span class="n">logs</span> <span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="o">-</span><span class="mi">699984412</span><span class="o">-</span><span class="n">mqb14</span> <span class="o">-</span><span class="n">c</span> <span class="n">sidecar</span> <span class="o">--</span><span class="n">namespace</span><span class="o">=</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span>
+
+<span class="c1"># 看日志</span>
+<span class="n">journalctl</span> <span class="o">-</span><span class="n">f</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id28">
+<h3><a class="toc-backref" href="#id80">6.10 常用操作总结</a><a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看所有 pod 列表,  -n 后跟 namespace, 查看指定的命名空间</span>
+kubectl get pod
+kubectl get pod -n kube
+kubectl get pod -o wide
+
+
+<span class="c1"># 重启Kubernetes Pod的几种方式</span>
+<span class="c1">#方法1</span>
+kubectl scale deployment XXXX --replicas<span class="o">=</span><span class="m">0</span> -n <span class="o">{</span>namespace<span class="o">}</span>
+kubectl scale deployment XXXX --replicas<span class="o">=</span><span class="m">1</span> -n <span class="o">{</span>namespace<span class="o">}</span>
+<span class="c1">#方法2</span>
+kubectl delete pod <span class="o">{</span>podname<span class="o">}</span> -n <span class="o">{</span>namespace<span class="o">}</span>
+<span class="c1">#方法3</span>
+kubectl get pod <span class="o">{</span>podname<span class="o">}</span> -n <span class="o">{</span>namespace<span class="o">}</span> -o yaml <span class="p">|</span> kubectl replace --force -f -
+<span class="c1">#方法4</span>
+<span class="c1">#Kubernetes 1.15开始才有</span>
+kubectl rollout restart deploy <span class="o">{</span>your_deployment_name<span class="o">}</span>
+
+<span class="c1">#在 Kubernetes 中，可以通过 kubectl 的 scale 命令控制 Deployment 资源缩成 0 个副本，然后再扩展成 1 个副本，这样 Pod 会被先删除，再进行重启，执行的命令如下:</span>
+<span class="c1">## 缩放副本到 0 使 Grafana Pod 关闭</span>
+$ kubectl scale deployment grafana --replicas<span class="o">=</span><span class="m">0</span> -n kube-system
+
+<span class="c1">## 扩展副本到 1 使 Grafana Pod 启动</span>
+$ kubectl scale deployment grafana --replicas<span class="o">=</span><span class="m">1</span> -n kube-system
+
+
+<span class="c1"># 查看 RC 和 service 列表， -o wide 查看详细信息</span>
+kubectl get rc,svc
+kubectl get pod,svc -o wide
+kubectl get pod &lt;pod-name&gt; -o yaml
+
+
+<span class="c1"># 显示 Node 的详细信息</span>
+kubectl describe node <span class="m">192</span>.168.0.212
+
+
+<span class="c1"># 显示 Pod 的详细信息, 特别是查看 pod 无法创建的时候的日志</span>
+kubectl describe pod &lt;pod-name&gt;
+eg:
+kubectl describe pod redis-master-tqds9
+
+
+<span class="c1"># 根据 yaml 创建资源, apply 可以重复执行，create 不行</span>
+kubectl create -f pod.yaml
+kubectl apply -f pod.yaml
+
+
+<span class="c1"># 基于 pod.yaml 定义的名称删除 pod</span>
+kubectl delete -f pod.yaml
+
+
+<span class="c1"># 删除所有包含某个 label 的pod 和 service</span>
+kubectl delete pod,svc -l <span class="nv">name</span><span class="o">=</span>&lt;label-name&gt;
+
+
+<span class="c1"># 删除所有 Pod</span>
+kubectl delete pod --all
+
+
+<span class="c1"># 查看 endpoint 列表</span>
+kubectl get endpoints
+
+
+<span class="c1"># 执行 pod 的 date 命令</span>
+kubectl <span class="nb">exec</span> &lt;pod-name&gt; -- date
+kubectl <span class="nb">exec</span> &lt;pod-name&gt; -- bash
+kubectl <span class="nb">exec</span> &lt;pod-name&gt; -- ping <span class="m">10</span>.24.51.9
+
+
+<span class="c1"># 通过bash获得 pod 中某个容器的TTY，相当于登录容器</span>
+kubectl <span class="nb">exec</span> -it &lt;pod-name&gt; -c &lt;container-name&gt; -- bash
+eg:
+kubectl <span class="nb">exec</span> -it redis-master-cln81 -- bash
+
+
+<span class="c1"># 查看容器的日志</span>
+kubectl logs &lt;pod-name&gt;
+kubectl logs -f &lt;pod-name&gt; <span class="c1"># 实时查看日志</span>
+kubectl log  &lt;pod-name&gt;  -c &lt;container_name&gt; <span class="c1"># 若 pod 只有一个容器，可以不加 -c</span>
+
+kubectl logs -l <span class="nv">app</span><span class="o">=</span>frontend <span class="c1"># 返回所有标记为 app=frontend 的 pod 的合并日志。</span>
+
+
+<span class="c1"># 查看注释</span>
+kubectl explain pod
+kubectl explain pod.apiVersion
+
+<span class="c1"># 查看节点 labels</span>
+kubectl get node --show-labels
+
+<span class="c1"># 重启 pod</span>
+kubectl get pod &lt;POD名称&gt; -n &lt;NAMESPACE名称&gt; -o yaml <span class="p">|</span> kubectl replace --force -f -
+
+<span class="c1"># 重启deployment</span>
+kubectl rollout restart deploy/traefik-ingress-controller -n kube-system
+
+<span class="c1"># 修改网络类型</span>
+kubectl patch service istio-ingressgateway -n istio-system -p <span class="s1">&#39;{&quot;spec&quot;:{&quot;type&quot;:&quot;NodePort&quot;}}&#39;</span>
+
+<span class="c1"># 伸缩 pod 副本</span>
+<span class="c1"># 可用于将Deployment及其Pod缩小为零个副本，实际上杀死了所有副本。当您将其缩放回1/1时，将创建一个新的Pod，重新启动您的应用程序。</span>
+kubectl scale deploy/nginx-1 --replicas<span class="o">=</span><span class="m">0</span>
+kubectl scale deploy/nginx-1 --replicas<span class="o">=</span><span class="m">1</span>
+
+<span class="c1"># 查看前一个 pod 的日志，logs -p 选项</span>
+kubectl logs --tail <span class="m">100</span> -p user-klvchen-v1.0-6f67dcc46b-5b4qb &gt; pre.log
+</pre></div>
+</div>
+</section>
+<section id="id29">
+<h3><a class="toc-backref" href="#id81">6.11 k8s容器数据拷贝</a><a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master1</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get pod</span>
+<span class="n">NAME</span>                   <span class="n">READY</span>   <span class="n">STATUS</span>      <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">web</span><span class="o">-</span><span class="mi">5</span><span class="n">c987b8447</span><span class="o">-</span><span class="mi">6</span><span class="n">b6bx</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>     <span class="mi">0</span>          <span class="mi">3</span><span class="n">d20h</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">master1</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl cp  ./temp web-5c987b8447-6b6bx:/tmp</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id30">
+<h2><a class="toc-backref" href="#id82">7. kubectl命令与资源管理</a><a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h2>
+<p>Kubernetes
+API是管理各种资源对象的唯一入口，它提供了一个RESTful风格的CRUD（Create、Read、Update和Delete）接口用于查询和修改集群状态，并将结果存储在集群状态存储系统etcd中。事实上，API
+Server也是用于更新etcd中资源对象状态的唯一途径，Kubernetes的其他所有组件和客户端都要通过它完成查询或修改操作。</p>
+<img alt="../_images/kubectl_0001.png" src="../_images/kubectl_0001.png" />
+<section id="id31">
+<h3><a class="toc-backref" href="#id83">7.1 资源管理的操作</a><a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<p>Kubernetes API资源管理的操作可简单归结为增、删、改、查这4种，</p>
+<p>kubectl提供了一系列子命令用于执行此类任务，例如create、delete、patch、apply、replace、edit、get等。</p>
+<section id="id32">
+<h4>7. 1.1 kubectl命令常用操作示例<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h4>
+<section id="id33">
+<span id="id34"></span><h5>1.1.1 创建资源对象<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h5>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 新增</span>
+$ kubectl create namespace dev
+
+<span class="c1"># --dry-run可用于命令的测试运行，但并未真正执行资源对象的创建过程</span>
+$ kubectl run myapp --image<span class="o">=</span>ikubernetes/myapp:v1 --port<span class="o">=</span><span class="m">80</span> --replicas<span class="o">=</span><span class="m">1</span> --dry-run
+
+<span class="c1"># 确认测试命令无误后，可移除“--dry-run”选项后再次执行命令以完成资源对象的创建</span>
+$ kubectl run myapp --image<span class="o">=</span>ikubernetes/myapp:v1 --port<span class="o">=</span><span class="m">80</span> --replicas<span class="o">=</span><span class="m">1</span>
+
+$ kubectl create deployment demoapp --image<span class="o">=</span><span class="s2">&quot;ikubernetes/demoapp:v1.0&quot;</span> -n dev deployment.apps/demoapp created
+
+$ kubectl create service clusterip demoapp --tcp<span class="o">=</span><span class="m">80</span> -n dev
+
+
+<span class="c1">## 创建一个用于测试的pod</span>
+kubectl run client --rm -it --image<span class="o">=</span>busybox --restart<span class="o">=</span>Never   -- /bin/sh
+
+
+<span class="c1">## 创建一个用于测试的pod</span>
+<span class="c1"># CirrOS是设计用来进行云计算环境测试的Linux微型发行版，它拥有HTTP客户端工具curl等。</span>
+kubectl run cirros-<span class="nv">$RANDOM</span> --rm -it --image<span class="o">=</span>cirros -- bash
+kubectl run cirros-<span class="nv">$RANDOM</span> --rm -it --image<span class="o">=</span>cirros -- sh
+
+<span class="c1">#创建 deployment模板</span>
+kubectl create deployment nginx --image<span class="o">=</span>nginx --dry-run -o yaml &gt; deployment.yaml
+
+
+<span class="c1">#启动nginx pod</span>
+kubectl  apply  -f  deployment.yaml
+
+<span class="c1"># 创建service资源</span>
+kubectl expose deployment nginx --port<span class="o">=</span><span class="m">80</span> --target-port<span class="o">=</span><span class="m">80</span> --type<span class="o">=</span>NodePort --dry-run -o yaml &gt; service.yaml
+<span class="c1"># 启动service服务</span>
+kubectl apply -f service.yaml
+
+
+
+
+
+<span class="c1">#例如下面的命令分别创建了名为nginx-deploy的Deployment控制器资源对象，以及名为nginx-svc的Service资源对象：</span>
+$ kubectl run nginx-deploy --image<span class="o">=</span>nginx:1.12 --replicas<span class="o">=</span><span class="m">2</span>
+$ kubectl expose deployment/nginx --name<span class="o">=</span>nginx-svc --port<span class="o">=</span><span class="m">80</span>
+
+
+<span class="c1"># 查询</span>
+$ kubectl get deployment -n dev
+
+$ kubectl get pod -n dev -o wide
+
+$ kubectl get svc -n dev
+
+
+
+<span class="c1"># 删除</span>
+$ kubectl delete deployment demoapp -n dev
+$ kubectl delete svc demoapp -n dev
+$ kubectl delete ns dev
+</pre></div>
+</div>
+<p>将资源导出为命令配置文件</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 打印并导出资源对象的详细信息</span>
+$ kubectl get pod metrics-server-7477b75789-xlx4b -n kube-system  -o yaml
+
+<span class="c1">#查看kube-system名称空间中拥有标签component=kube-apiserver的Pod对象的资源配置清单（期望的状态）及当前的状态信息，并输出为yaml格式，</span>
+$ kubectl get pods-l <span class="nv">component</span><span class="o">=</span>kube-apiserver-o yaml-n kube-system
+
+<span class="c1"># 导出资源对象的详细信息</span>
+$ kubectl get ns dev -o yaml &gt; dev-ns.yaml
+$ kubectl get pod -n dev -o yaml &gt; demo-pod.yaml
+$ kubectl get service -n dev -o yaml &gt; demo-svc.yaml
+</pre></div>
+</div>
+<p>使用命令式对象配置文件方式创建部署</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ ll
+total <span class="m">16</span>
+-rw-r--r-- <span class="m">1</span> root root <span class="m">5349</span> Apr  <span class="m">2</span> <span class="m">10</span>:47 demo-pod.yaml
+-rw-r--r-- <span class="m">1</span> root root <span class="m">1189</span> Apr  <span class="m">2</span> <span class="m">10</span>:47 demo-svc.yaml
+
+
+$ kubectl create ns dev
+
+$ kubectl create -f demo-pod.yaml
+
+$ kubectl create -f demo-svc.yaml
+
+<span class="c1"># 删除所有资源</span>
+kubectl delete -f example01/
+
+$ kubectl create ns dev
+
+$ kubectl apply -f example01/
+pod/demoapp-6c5d545684-bn5t8 created
+service/demoapp created
+
+$ kubectl delete ns dev
+</pre></div>
+</div>
+</section>
+<section id="id35">
+<span id="id36"></span><h5>1.1.2 查看资源对象<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h5>
+<p>1）kubectl
+describe：显示资源的详情，包括运行状态、事件等信息，但不同的资源类型其输出内容不尽相同。</p>
+<p>2）kubectl
+logs：查看Pod对象中容器输出在控制台的日志信息。在Pod中运行有多个容器时，需要使用选项“-c”指定容器名称。</p>
+<p>3）kubectl exec：在Pod对象某容器内运行指定的程序，其功能类似于“docker
+exec”命令，可用于了解容器各方面的相关信息或执行必需的设定操作等，其具体功能取决于容器内可用的程序。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看资源对象</span>
+$ kubectl get namespaces
+
+<span class="c1"># 例如，列出默认名称空间内的所有Pod和Service对象，并输出额外信息</span>
+$ kubectl get pod,svc -o wide
+
+<span class="c1"># 下面的命令能够取出kube-system名称空间中带有k8s-app=kube-dns标签的Pod对象的资源名称。</span>
+$ kubectl get pods-l k8s-app-n kube-system
+</pre></div>
+</div>
+<p>kubectl
+describe命令还能显示当前对象相关的其他资源对象，如Event或Controller等。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl describe pod metrics-server-7477b75789-xlx4b -n kube-system
+
+<span class="c1"># 查看kube-system名称空间中拥有标签component=kube-apiserver的Pod对象的详细描述信息</span>
+$ kubectl describe pods-l <span class="nv">component</span><span class="o">=</span>kube-apiserver-n kube-system
+</pre></div>
+</div>
+<p>打印容器中的日志信息</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl logs pod/demoapp -n dev
+
+<span class="c1">#例如，查看名称空间kube-system中仅有一个容器的Pod对象kube-apiserver-master.ilinux.io的日志</span>
+$ kubectl logs kube-apiserver-master.ilinux.io-n kube-system
+
+-f”选项，还能用于持续监控指定容器中的日志输出
+$ kubectl logs -f kube-apiserver-master.ilinux.io-n kube-system
+</pre></div>
+</div>
+</section>
+<section id="id37">
+<h5>1.1.3 使用yaml文件<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h5>
+<p>使用和查看命令如下</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f .
+deployment.apps/demoapp created
+service/demoapp created
+
+$ kubectl get pod,svc,ep -n dev
+.....
+</pre></div>
+</div>
+<p>yaml文件如下</p>
+<p><code class="docutils literal notranslate"><span class="pre">demo-deployment.yaml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">k8s.kuboard.cn/layer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web</span>
+    <span class="nt">k8s.kuboard.cn/name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">demoapp</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">demoapp</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dev</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">k8s.kuboard.cn/layer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web</span>
+      <span class="nt">k8s.kuboard.cn/name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">demoapp</span>
+
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">k8s.kuboard.cn/layer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web</span>
+        <span class="nt">k8s.kuboard.cn/name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">demoapp</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">image</span><span class="p">:</span> <span class="s">&#39;ikubernetes/demoapp:v1.0&#39;</span>
+          <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Always</span>
+          <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">demoapp-pod</span>
+      <span class="nt">dnsPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterFirst</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Always</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">demo-svc.yaml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">k8s.kuboard.cn/layer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web</span>
+    <span class="nt">k8s.kuboard.cn/name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">demoapp</span>
+
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">demoapp</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dev</span>
+
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">externalTrafficPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Cluster</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dijebj</span>
+      <span class="nt">nodePort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30001</span>
+      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+      <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">k8s.kuboard.cn/layer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web</span>
+    <span class="nt">k8s.kuboard.cn/name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">demoapp</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NodePort</span>
+</pre></div>
+</div>
+</section>
+<section id="id38">
+<h5>1.1.4 在容器中执行命令<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h5>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl <span class="nb">exec</span> -it demoapp-5f8989b6c5-hpq9w -- sh -n dev
+
+$ kubectl <span class="nb">exec</span> kube-apiserver-master.ilinux.io-n kube-system --ps
+
+<span class="c1">#注意，若Pod对象中存在多个容器，则需要以-c选项指定容器后再运行。</span>
+kubectl <span class="nb">exec</span> -it cigiteebe-6f998dc5-n2jvp -c cigiteebe -n ci-gitee-release -- bash
+</pre></div>
+</div>
+</section>
+<section id="id39">
+<h5>1.1.5 删除资源<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h5>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl delete svc demoapp -n dev
+$ kubectl delete deployment demoapp -n dev
+$ kubectl delete ns dev
+
+<span class="c1"># 删除kube-system名称空间中拥有标签“k8s-app=kube-proxy”的所有Pod对象</span>
+<span class="nv">$kubectl</span> delete pods-l <span class="nv">app</span><span class="o">=</span>monitor-n kube-system
+
+<span class="c1">#  删除命名空间中的所有pod对象</span>
+$ kubectl delete pods --all -n kube-public
+
+<span class="c1"># 强制删除pod对象</span>
+ $ kubectl delete pods demoapp --force --grace-period<span class="o">=</span><span class="m">0</span>
+</pre></div>
+</div>
+<p>需要特别说明的是，对于受控于控制器的对象来说，仅删除受控对象自身，其控制器可能会重建出类似的对象，例如Deployment控制器下的Pod对象被删除时即会被重建。</p>
+<p><strong>强制删除terminating状态的资源</strong></p>
+<p>参考文献</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">cnblogs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Dev0ps</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="mf">12642501.</span><span class="n">html</span>
+
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">cnblogs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Dev0ps</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="mf">10888815.</span><span class="n">html</span>
+</pre></div>
+</div>
+<p>k8s强制删除 namespace</p>
+<p><a class="reference external" href="https://xibolun.github.io/post/k8s/k8s%E5%88%A0%E9%99%A4namespace/">https://xibolun.github.io/post/k8s/k8s%E5%88%A0%E9%99%A4namespace/</a></p>
+<p>强制删除namespace，有时kubectl delete删除会删不掉</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">get</span> <span class="n">namespace</span> <span class="n">tigera</span><span class="o">-</span><span class="n">operator</span> <span class="o">-</span><span class="n">o</span> <span class="n">json</span> \
+            <span class="o">|</span> <span class="n">tr</span> <span class="o">-</span><span class="n">d</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">|</span> <span class="n">sed</span> <span class="s2">&quot;s/</span><span class="se">\&quot;</span><span class="s2">finalizers</span><span class="se">\&quot;</span><span class="s2">: \[[^]]\+\]/</span><span class="se">\&quot;</span><span class="s2">finalizers</span><span class="se">\&quot;</span><span class="s2">: []/&quot;</span> \
+            <span class="o">|</span> <span class="n">kubectl</span> <span class="n">replace</span> <span class="o">--</span><span class="n">raw</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/</span><span class="n">tigera</span><span class="o">-</span><span class="n">operator</span><span class="o">/</span><span class="n">finalize</span> <span class="o">-</span><span class="n">f</span> <span class="o">-</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p><strong>k8s pv,pvc无法删除问题</strong></p>
+<p><a class="reference external" href="https://www.cnblogs.com/weifeng1463/p/11490399.html">https://www.cnblogs.com/weifeng1463/p/11490399.html</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/weifeng1463/p/11490399.html">https://www.cnblogs.com/weifeng1463/p/11490399.html</a></p>
+</div></blockquote>
+</section>
+<section id="id40">
+<h5>1.1.6 常用的清理Kubernetes集群资源命令<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h5>
+<blockquote>
+<div><p>参考文献 <a class="reference external" href="https://www.bococ.cn/default/122.html">https://www.bococ.cn/default/122.html</a></p>
+</div></blockquote>
+</section>
+</section>
+</section>
+<section id="id41">
+<h3><a class="toc-backref" href="#id84">7.2 kubectl插件</a><a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+<p>kubectl插件是指能够由kubectl调用的外部独立应用程序，这类应用程序都以kubectl-<span class="math notranslate nohighlight">\(plugin_name格式命名，表现为kubectl的名字是\)</span>plugin_name的子命令。例如，应用程序/usr/bin/kubectl-whoami就是whoami插件，我们可以使用kubectl
+whoami的格式来运行它。因此，可为kubectl插件添加新的可用子命令，丰富kubectl的功能。</p>
+<p>Kubernetes SIG
+CLI社区还提供了一个插件管理器——Krew，它能够帮助用户打包、分发、查找、安装和管理kubectl插件，</p>
+<p>项目地址为https://krew.sigs.k8s.io/。Krew以跨平台的方式打包和分发插件，因此单一打包格式即能适配主流的系统平台（Linux、Windows或macOS等）。为了便于插件分发，Krew还维护有一个插件索引，以方便用户发现主流的可用插件。</p>
+<p>Krew自身也表现为kubectl的一个插件，需要以手动方式独立安装。下面的脚本（krew-install.sh）能自动完成Krew插件的安装，该脚本仅适用于类UNIX系统平台，并以bash解释器运行，其他平台上的部署方式请参考Krew项目的官方文档。</p>
+<p><code class="docutils literal notranslate"><span class="pre">krew-install.sh</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装kubectl插件krew</span>
+<span class="n">curl</span> <span class="o">-</span><span class="n">fsSLO</span> <span class="s2">&quot;https://storage.googleapis.com/krew/v0.2.1/krew.{tar.gz,yaml}&quot;</span>
+
+<span class="n">tar</span> <span class="n">zxvf</span> <span class="n">krew</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<span class="o">./</span><span class="n">krew</span><span class="o">-</span><span class="n">linux_amd64</span> <span class="n">install</span> <span class="o">--</span><span class="n">manifest</span><span class="o">=</span><span class="n">krew</span><span class="o">.</span><span class="n">yaml</span> <span class="o">--</span><span class="n">archive</span><span class="o">=</span><span class="n">krew</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<span class="n">echo</span> <span class="s2">&quot;export PATH=</span><span class="se">\&quot;</span><span class="s2">\${KREW_ROOT:-\$HOME/.krew}/bin:\$PATH</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">&gt;&gt;/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span>
+<span class="n">source</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span>
+
+<span class="c1"># 更新插件列表</span>
+<span class="n">kubectl</span> <span class="n">krew</span> <span class="n">update</span>
+
+<span class="c1"># 查看插件列表</span>
+<span class="n">kubectl</span> <span class="n">krew</span> <span class="nb">list</span>
+</pre></div>
+</div>
+<p>编辑$HOME/.bash_profile文件，将export一行命令添加其中，并重启当前shell解释器。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8smaster1</span> <span class="n">krew</span><span class="p">]</span><span class="c1"># echo &#39;export PATH=&quot;${PATH}:${HOME}/.krew/bin&quot;&#39; &gt;&gt; $HOME/.bash_profile</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8smaster1</span> <span class="n">krew</span><span class="p">]</span><span class="c1"># source $HOME/.bash_profile</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8smaster1</span> <span class="n">krew</span><span class="p">]</span><span class="c1"># exec $SHELL</span>
+</pre></div>
+</div>
+<p>设定完成后，kubectl
+krew子命令便能执行Krew插件管理器的相关功能，例如查找和安装所需要的插件，它拥有help、list、search、info、install、upgrade和uninstall等二级子命令。</p>
+<p>下面的命令搜索Krew索引中包含字符串who的插件。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8smaster1</span> <span class="n">krew</span><span class="p">]</span><span class="c1"># kubectl krew update</span>
+<span class="n">Updated</span> <span class="n">the</span> <span class="n">local</span> <span class="n">copy</span> <span class="n">of</span> <span class="n">plugin</span> <span class="n">index</span><span class="o">.</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@k8smaster1</span> <span class="n">krew</span><span class="p">]</span><span class="c1"># kubectl krew search who</span>
+<span class="n">NAME</span>          <span class="n">DESCRIPTION</span>                                         <span class="n">INSTALLED</span>
+<span class="n">view</span><span class="o">-</span><span class="n">webhook</span>  <span class="n">Visualize</span> <span class="n">your</span> <span class="n">webhook</span> <span class="n">configurations</span>               <span class="n">no</span>
+<span class="n">who</span><span class="o">-</span><span class="n">can</span>       <span class="n">Shows</span> <span class="n">who</span> <span class="n">has</span> <span class="n">RBAC</span> <span class="n">permissions</span> <span class="n">to</span> <span class="n">access</span> <span class="n">Kubern</span><span class="o">...</span>  <span class="n">no</span>
+<span class="n">whoami</span>        <span class="n">Show</span> <span class="n">the</span> <span class="n">subject</span> <span class="n">that</span><span class="s1">&#39;s currently authenticated...  no</span>
+
+<span class="o">//</span> <span class="n">安装whoami插件</span>
+<span class="n">kubectl</span> <span class="n">krew</span> <span class="n">install</span> <span class="n">whoami</span>
+<span class="n">kubectl</span> <span class="n">krew</span> <span class="n">install</span> <span class="n">ns</span> <span class="n">ctx</span> <span class="n">rbac</span><span class="o">-</span><span class="n">view</span>
+<span class="o">//</span> <span class="n">使用插件</span>
+<span class="n">kubectl</span> <span class="n">whoami</span>
+</pre></div>
+</div>
+<p>Krew索引中的各插件几乎都从更便捷、更丰富或更完整等角度进一步完善了kubectl功能。例如status能够以更加简便、直观的方式返回资源的简要状态，ctx以更便捷的方式完成kubeconfig中的context切换等。</p>
+<p><strong>kubectl 高效使用技巧</strong></p>
+<p><a class="reference external" href="https://mp.weixin.qq.com/s?__biz=MzU4MjQ0MTU4Ng==&amp;mid=2247495729&amp;idx=1&amp;sn=624f89693474109616ad18f85c46ffab&amp;chksm=fdbaff2ccacd763acac050f85f68905be35a9c4ee3a7a2b4ad19c17bb3038b435277b7698e7f&amp;scene=178&amp;cur_album_id=1500247521078607877#rd">https://mp.weixin.qq.com/s?__biz=MzU4MjQ0MTU4Ng==&amp;mid=2247495729&amp;idx=1&amp;sn=624f89693474109616ad18f85c46ffab&amp;chksm=fdbaff2ccacd763acac050f85f68905be35a9c4ee3a7a2b4ad19c17bb3038b435277b7698e7f&amp;scene=178&amp;cur_album_id=1500247521078607877#rd</a></p>
+</section>
+<section id="id42">
+<h3><a class="toc-backref" href="#id85">7.3 Kubernetes的扩展插件</a><a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+<p><strong>安装Cluster DNS</strong></p>
+<p>参考文献：</p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/11413970.html">https://www.cnblogs.com/xiangsikai/p/11413970.html</a></p>
+</section>
+</section>
+<section id="kubectl-1">
+<h2><a class="toc-backref" href="#id86">kubectl部署应用 示例1</a><a class="headerlink" href="#kubectl-1" title="Permalink to this headline">¶</a></h2>
+<p>本章要演示的示例应用是一个名叫Guestbook的应用，Guestbook是一个典型的Web应用。Guestbook的部署运行结构如图所示。</p>
+<p>Guestbook结构</p>
+<img alt="../_images/guestbook00001.png" src="../_images/guestbook00001.png" />
+<p>Guestbook包含两部分。</p>
+<ul class="simple">
+<li><p>Frontend</p></li>
+</ul>
+<p>Guestbook的Web前端部分，无状态节点，可以方便伸缩，本例中将运行3个实例。</p>
+<ul class="simple">
+<li><p>Redis</p></li>
+</ul>
+<p>Guestbook的存储部分，Redis采用主备模式，即运行1个Redis Master和2个Redis
+Slave，Redis Slave会从Redis Master同步数据。</p>
+<p>Guestbook提供一个非常简单的功能：在Frontend页面提交数据，Frontend则将数据保存到Redis
+Master，然后从Redis Slave读取数据显示到页面上。</p>
+<p>Guestbook定义文件在Kubernetes发布包的examples/guestbook目录下：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/kubernetes/kubernetes/releases/download/v1.1.1/kubernetes.tar.gz
+$ tar zxvf kubernetes.tar.gz
+$ <span class="nb">cd</span> kubernetes/examples/guestbook
+</pre></div>
+</div>
+<section id="redis">
+<h3><a class="toc-backref" href="#id87">运行Redis</a><a class="headerlink" href="#redis" title="Permalink to this headline">¶</a></h3>
+<p>首先在Kubernetes上部署运行Redis，包括Redis Master和Redis Slave。</p>
+<section id="redis-master-pod">
+<h4>创建Redis Master Pod<a class="headerlink" href="#redis-master-pod" title="Permalink to this headline">¶</a></h4>
+<p>Redis Master Replication
+Controller的定义文件redis-master-controller.yaml：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ReplicationController</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-master</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-master</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-master</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-master</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">master</span>
+          <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis</span>
+          <span class="nt">ports</span><span class="p">:</span>
+            <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6379</span>
+</pre></div>
+</div>
+<p>通过定义文件创建Redis Master Replication Controller：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f redis-master-controller.yaml
+replicationcontroller <span class="s2">&quot;redis-master&quot;</span> created
+</pre></div>
+</div>
+<p>创建成功后，可查询Redis Master Replication Controller：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get replicationcontroller redis-master
+CONTROLLER     CONTAINER<span class="o">(</span>S<span class="o">)</span>  IMAGE<span class="o">(</span>S<span class="o">)</span>  SELECTOR              REPLICAS AGE
+redis-master   master         redis      <span class="nv">name</span><span class="o">=</span>redis-master   <span class="m">1</span>            15s
+</pre></div>
+</div>
+<p>Redis Master Replication Controller将会创建1个Redis Master
+Pod，创建出来的Pod就会带上Label name=redis-master：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod --selector <span class="nv">name</span><span class="o">=</span>redis-master
+NAME                     READY     STATUS    RESTARTS   AGE
+redis-master-vdkfp   <span class="m">1</span>/1        Running   <span class="m">0</span>           31s
+</pre></div>
+</div>
+<p>Replication
+Controller在创建出Pod以后，将会保证Pod按照指定副本数目持续运行，而通过Replication
+Controller也可以对Pod进行一系列操作，包括滚动升级和弹性伸缩等。</p>
+</section>
+<section id="redis-master-service">
+<h4>创建Redis Master Service<a class="headerlink" href="#redis-master-service" title="Permalink to this headline">¶</a></h4>
+<p>Kubernetes中Pod是变化的，特别是当受到Replication
+Controller控制的时候，而当Pod发生变化的时候，Pod的IP也是变化的。</p>
+<p>这就导致了一个问题：在Kubernetes集群中，Pod之间如何互相发现并访问呢?比如我们已经运行了Redis
+Master Pod，那么Redis Slave Pod如何获取Redis Master
+Pod的访问地址呢？为此Kubernetes提供了Service来实现服务发现。</p>
+<p>Kubernetes中Service是真实应用的抽象，将用来代理Pod，对外提供固定IP作为访问入口，这样通过访问Service便能访问到相应的Pod，而对访问者来说只需知道Service的访问地址，而不需要感知Pod的变化。</p>
+<p>上一步中已经运行起Redis Master Pod，现在创建Redis Master
+Service来代理Redis Master Pod，Redis Master
+Service的定义文件redis-master-service.yaml：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-master</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-master</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">ports</span><span class="p">:</span>
+  <span class="c1"># the port that this service should serve on</span>
+  <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6379</span>
+    <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6379</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-master</span>
+</pre></div>
+</div>
+<p>Service是通过Label来关联Pod的，在Service的定义中，设置.spec.selector为name=
+redis-master，将关联上Redis Master Pod。</p>
+<p>通过定义文件创建Redis Master Service：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f redis-master-service.yaml
+service <span class="s2">&quot;redis-master&quot;</span> created
+</pre></div>
+</div>
+<p>创建成功后查看Redis Master Service：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get service redis-master
+NAME           TYPE        CLUSTER-IP    EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>    AGE
+redis-master   ClusterIP   <span class="m">10</span>.99.22.49   &lt;none&gt;        <span class="m">6379</span>/TCP   11m
+</pre></div>
+</div>
+<p>Redis Master Service的查询信息中显示属性CLUSTER_IP为
+10.99.22.49，属性PORT(S)为6379/TCP，其中
+10.99.22.49是Kubernetes分配给Redis Master
+Service的虚拟IP，6379/TCP则是Service会转发的端口（通过Service定义文件中的.spec.ports[0].port指定），Kubernetes会将所有访问
+10.99.22.49:6379的TCP请求转发到Redis Master
+Pod中，目标端口是6379/TCP（通过Service定义文件中的spec.ports[0].targetPort指定）。</p>
+<p>因为创建了Redis Master Service来代理Redis Master Pod，所以Redis Slave
+Pod通过Redis Master Service的虚拟IP 10.99.22.49就可以访问到Redis Master
+Pod，但是如果只是硬配置Service的虚拟IP到Redis Slave
+Pod中，这样还不是真正的服务发现，Kubernetes提供了两种发现Service的方法。</p>
+<ul class="simple">
+<li><p>环境变量
+当Pod运行的时候，Kubernetes会将之前存在的Service的信息通过环境变量写到Pod中，以Redis
+Master Service为例，它的信息会被写到Pod中：</p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">REDIS_MASTER_SERVICE_HOST</span><span class="o">=</span><span class="m">10</span>.99.22.49
+<span class="nv">REDIS_MASTER_PORT_6379_TCP_PROTO</span><span class="o">=</span>tcp
+<span class="nv">REDIS_MASTER_SERVICE_PORT</span><span class="o">=</span><span class="m">6379</span>
+<span class="nv">REDIS_MASTER_PORT</span><span class="o">=</span>tcp://10.99.22.49
+<span class="nv">REDIS_MASTER_PORT_6379_TCP</span><span class="o">=</span>tcp://10.99.22.49
+<span class="nv">REDIS_MASTER_PORT_6379_TCP_PORT</span><span class="o">=</span><span class="m">6379</span>
+<span class="nv">REDIS_MASTER_PORT_6379_TCP_ADDR</span><span class="o">=</span><span class="m">10</span>.99.22.49
+</pre></div>
+</div>
+<p>这种方法要求Pod必须在Service之后启动，之前启动的Pod没有这些环境变量。采用DNS方式就没有这个限制。</p>
+<ul class="simple">
+<li><p>DNS 当有新的Service创建时，就会自动生成一条DNS记录，以Redis Master
+Service为例，有一条DNS记录：</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">redis</span><span class="o">-</span><span class="n">master</span> <span class="o">=&gt;</span> <span class="mf">10.99</span><span class="o">.</span><span class="mf">22.49</span>
+</pre></div>
+</div>
+</section>
+<section id="redis-slave-pod">
+<h4>创建Redis Slave Pod<a class="headerlink" href="#redis-slave-pod" title="Permalink to this headline">¶</a></h4>
+<p>redisslave镜像Dockerfile下载链接地址</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">tree</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">guestbook</span><span class="o">/</span><span class="n">redis</span><span class="o">-</span><span class="n">slave</span>
+</pre></div>
+</div>
+<p>通过Replication Controller可创建Redis Slave Pod，将创建两个Redis Slave
+Pod。Redis Slave Replication
+Controller的定义文件redis-slave-controller.yaml：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ReplicationController</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-slave</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-slave</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-slave</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-slave</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">worker</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1879324764/hjl-redisslave:v1</span>
+        <span class="nt">env</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GET_HOSTS_FROM</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dns</span>
+
+        <span class="nt">ports</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6379</span>
+</pre></div>
+</div>
+<p>查看Pod信息</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#通过自定义文件创建  Redis Slave Replication Controller</span>
+$ kubectl create -f redis-slave-controller.yaml
+replicationcontroller/redis-slave created
+
+<span class="c1">#创建成功后，查询Redis Slave Replication Controller</span>
+$ kubectl get replicationcontroller redis-slave
+NAME          DESIRED   CURRENT   READY   AGE
+redis-slave   <span class="m">2</span>         <span class="m">2</span>         <span class="m">0</span>       6s
+
+<span class="c1">#Redis Slave Replication Controller创建运行两个Redis Slave Pod</span>
+$ kubectl get pod --selector <span class="nv">name</span><span class="o">=</span>redis-slave
+NAME                READY   STATUS    RESTARTS   AGE
+redis-slave-dzdjc   <span class="m">1</span>/1     Running   <span class="m">0</span>          100s
+redis-slave-qpzn4   <span class="m">1</span>/1     Running   <span class="m">0</span>          100s
+</pre></div>
+</div>
+</section>
+<section id="redis-slave-service">
+<h4>创建Redis Slave Service<a class="headerlink" href="#redis-slave-service" title="Permalink to this headline">¶</a></h4>
+<p>创建Redis Salve Service来代理Redis Salve Pod，Redis Salve
+Service的定义文件redis-slave-service.yaml：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-slave</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-slave</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="c1"># the port that this service should serve on</span>
+  <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6379</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">redis-slave</span>
+</pre></div>
+</div>
+<p>查看service信息</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 通过定义文件创建Redis Salve Service</span>
+$ kubectl create -f redis-slave-service.yaml
+service/redis-slave created
+
+<span class="c1"># 查询Redis Salve Service</span>
+$ kubectl get service redis-slave
+NAME          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>    AGE
+redis-slave   ClusterIP   <span class="m">10</span>.109.114.132   &lt;none&gt;        <span class="m">6379</span>/TCP   16s
+</pre></div>
+</div>
+</section>
+</section>
+<section id="frontend">
+<h3><a class="toc-backref" href="#id88">运行Frontend</a><a class="headerlink" href="#frontend" title="Permalink to this headline">¶</a></h3>
+<section id="frontend-pod">
+<h4>创建Frontend Pod<a class="headerlink" href="#frontend-pod" title="Permalink to this headline">¶</a></h4>
+<p>通过Frontend Replication Controller来创建Frontend Pod，将创建3个Frontend
+Pod。</p>
+<p>gb-frontend:v3的Dockerfile下载链接</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">guestbook</span><span class="o">/</span><span class="n">php</span><span class="o">-</span><span class="n">redis</span><span class="o">/</span><span class="n">Dockerfile</span>
+</pre></div>
+</div>
+<p>Frontend Replication Controller的定义文件frontend-controller.yaml：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ReplicationController</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">php-redis</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1879324764/hjl-frontend:v3</span>
+        <span class="nt">env</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GET_HOSTS_FROM</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dns</span>
+
+        <span class="nt">ports</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>查看Pod信息</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#通过自定义文件创建Frontend Replication Controller</span>
+$ kubectl create -f frontend-controller.yaml
+replicationcontroller/frontend created
+
+<span class="c1">#创建成功后，查询Frontend Replication Controller</span>
+$ kubectl get replicationcontroller frontend
+NAME       DESIRED   CURRENT   READY   AGE
+frontend   <span class="m">3</span>         <span class="m">3</span>         <span class="m">0</span>       18s
+
+<span class="c1">#Frontend Replication Controller创建运行3个Frontend Pod</span>
+$ kubectl get pod --selector <span class="nv">name</span><span class="o">=</span>frontend
+NAME             READY   STATUS    RESTARTS   AGE
+frontend-8bfcq   <span class="m">1</span>/1     Running   <span class="m">0</span>          2m51s
+frontend-8c2cp   <span class="m">1</span>/1     Running   <span class="m">0</span>          2m51s
+frontend-mflxl   <span class="m">1</span>/1     Running   <span class="m">0</span>          2m51s
+</pre></div>
+</div>
+</section>
+<section id="frontend-service">
+<h4>创建Frontend Service<a class="headerlink" href="#frontend-service" title="Permalink to this headline">¶</a></h4>
+<p>创建Frontend Service代理Frontend Pod，Frontend
+Service的定义文件frontend-service.yaml：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">ports</span><span class="p">:</span>
+  <span class="c1"># the port that this service should serve on</span>
+  <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+</pre></div>
+</div>
+<p>查看service信息</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 通过定义文件创建Frontend Service</span>
+$ kubectl create -f frontend-service.yaml
+service/frontend created
+
+<span class="c1"># 查询Frontend Service</span>
+$ kubectl get service frontend
+NAME       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>   AGE
+frontend   ClusterIP   <span class="m">10</span>.98.214.195   &lt;none&gt;        <span class="m">80</span>/TCP    10s
+</pre></div>
+</div>
+</section>
+<section id="guesbook">
+<h4>设置Guesbook外网访问<a class="headerlink" href="#guesbook" title="Permalink to this headline">¶</a></h4>
+<p>Service的虚拟IP是由Kubernetes虚拟出来的内部网络，而外部网络是无法寻址到的，这时候就需要增加一层网络转发，即外网到内网的转发。实现方式有很多种，我们这里采用一种叫作NodePort的方式来实现。即Kubernetes将会在每个Node上设置端口，称为NodePort，通过NodePort端口可以访问到Pod。</p>
+<p>修改Frontend
+Service的定义文件frontend-service.yaml，设置spec.type为NodePort：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NodePort</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+</pre></div>
+</div>
+<p>查看service信息</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 重新创建Frontend Service</span>
+$ kubectl replace -f frontend-service.yaml --force
+service/frontend replaced
+
+<span class="c1"># 查看frontend对外映射的端口</span>
+$ kubectl get service frontend
+NAME       TYPE       CLUSTER-IP   EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>        AGE
+frontend   NodePort   <span class="m">10</span>.96.36.2   &lt;none&gt;        <span class="m">80</span>:30610/TCP
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id43">
+<h3><a class="toc-backref" href="#id89">查看所有的service信息</a><a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
+<img alt="../_images/k8s_guestbooks00001.png" src="../_images/k8s_guestbooks00001.png" />
+<img alt="../_images/k8s-guestbooks00002.png" src="../_images/k8s-guestbooks00002.png" />
+</section>
+<section id="guestbook">
+<h3><a class="toc-backref" href="#id90">清理Guestbook</a><a class="headerlink" href="#guestbook" title="Permalink to this headline">¶</a></h3>
+<p>清理Guestbook，只需要分别删除创建出的Replication Controller和Service：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl delete replicationcontroller redis-master redis-slave frontend
+replicationcontroller <span class="s2">&quot;redis-master&quot;</span> deleted
+replicationcontroller <span class="s2">&quot;redis-slave&quot;</span> deleted
+replicationcontroller <span class="s2">&quot;frontend&quot;</span> deleted
+
+$ kubectl delete service redis-master redis-slave  frontend
+service <span class="s2">&quot;redis-master&quot;</span> deleted
+service <span class="s2">&quot;redis-slave&quot;</span> deleted
+service <span class="s2">&quot;frontend&quot;</span> deleted
+</pre></div>
+</div>
+</section>
+</section>
+<section id="kubectl-2">
+<h2><a class="toc-backref" href="#id91">kubectl部署应用 示例2</a><a class="headerlink" href="#kubectl-2" title="Permalink to this headline">¶</a></h2>
+<section id="demo">
+<h3><a class="toc-backref" href="#id92">部署一个简单的Demo网站</a><a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h3>
+<section id="id44">
+<h4>1．编写Deployment对象的配置文件<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h4>
+<p>我们定义一个简单的Deployment配置</p>
+<p><code class="docutils literal notranslate"><span class="pre">deployment-demo.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cat deployment-demo.yaml
+#API对象版本，可通过“kubectl api-versions”命令查看
+apiVersion: apps/v1
+#资源类型，区分大小写，可通过“kubectl api-resources”命令查看，这里使用Deployment对象
+kind: Deployment
+#标准的元数据
+metadata:
+   #当前Deployment对象名称，同一个命名空间下必须唯一
+  name: demo-deployment
+#部署规范（目标），Deployment控制器会根据此模板调整当前Pod到最终的期望状态
+spec:
+# Pod数量，这里指运行2个Pod
+  replicas: 2
+  #选择器，其定义了Deployment控制器如何找到要管理的Pod
+  selector:
+    #匹配标签
+    matchLabels:
+     #待匹配的标签键值对
+      app: demo
+  template:   # Pod模板定义
+    metadata: #标准的元数据
+      labels: #Pod标签
+        app: demo #定义Pod标签，由键值对组成
+    spec: #Pod规范
+      containers: #容器列表，Pod中至少有一个容器
+      - name: demo  #容器名称
+        image: microsoft/dotnet-samples:aspnetapp #镜像地址
+        ports:  #端口列表
+        - containerPort: 80 #设置容器端口
+</pre></div>
+</div>
+</section>
+<section id="kubectl-create">
+<h4>2．使用“kubectl create”执行资源创建<a class="headerlink" href="#kubectl-create" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f deployment-demo.yaml
+
+//检查部署对象是否已经创建、部署是否已经完成
+$ kubectl get Deployment demo-deployment
+NAME              READY   UP-TO-DATE   AVAILABLE   AGE
+demo-deployment   2/2     2            2           87m
+
+// 查看副本集（ReplicaSet）对象
+$ kubectl get rs -lapp=demo
+NAME                         DESIRED   CURRENT   READY   AGE
+demo-deployment-68b59dd5b8   2         2         2       87m
+
+$ kubectl get rs -lapp=demo --show-labels
+NAME                         DESIRED   CURRENT   READY   AGE   LABELS
+demo-deployment-68b59dd5b8   2         2         2       88m   app=demo,pod-template-hash=68b59dd5b8
+</pre></div>
+</div>
+</section>
+<section id="id45">
+<h4>3. 通过Service访问应用<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h4>
+<p>正常可以访问pod的ip。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl --head http://10.100.85.197
+HTTP/1.1 200 OK
+Date: Tue, 22 Dec 2020 08:44:20 GMT
+Content-Type: text/html; charset=utf-8
+Server: Kestrel
+
+
+$ curl --head http://10.100.85.196
+HTTP/1.1 200 OK
+Date: Tue, 22 Dec 2020 08:44:32 GMT
+Content-Type: text/html; charset=utf-8
+Server: Kestrel
+</pre></div>
+</div>
+<p>删除pod后会重建，此时pod的ip地址已经发生改变</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl delete pods -lapp=demo
+pod &quot;demo-deployment-68b59dd5b8-5gw7q&quot; deleted
+pod &quot;demo-deployment-68b59dd5b8-hd9pm&quot; deleted
+
+$ kubectl get pods -lapp=demo -o wide
+NAME                               READY   STATUS    RESTARTS   AGE   IP              NODE         NOMINATED NODE   READINESS GATES
+demo-deployment-68b59dd5b8-gtf45   1/1     Running   0          48s   10.100.85.200   k8s-node01   &lt;none&gt;           &lt;none&gt;
+demo-deployment-68b59dd5b8-r6c9s   1/1     Running   0          48s   10.100.85.199   k8s-node01   &lt;none&gt;           &lt;none&gt;
+</pre></div>
+</div>
+<section id="clusterip-service">
+<h5>3.1 通过ClusterIP Service在集群内部访问<a class="headerlink" href="#clusterip-service" title="Permalink to this headline">¶</a></h5>
+<p><code class="docutils literal notranslate"><span class="pre">clusterIPService.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span> <span class="c1">#资源类型</span>
+<span class="n">metadata</span><span class="p">:</span> <span class="c1">#标准元数据</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">demo</span><span class="o">-</span><span class="n">service</span> <span class="c1">#服务名称</span>
+<span class="n">spec</span><span class="p">:</span> <span class="c1">#规范定义</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">ClusterIP</span> <span class="c1">#服务类型，不填写此字段则默认为ClusterIP类型，也就是集群IP类型</span>
+  <span class="n">selector</span><span class="p">:</span> <span class="c1">#标签选择器</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">demo</span> <span class="c1">#标签</span>
+  <span class="n">ports</span><span class="p">:</span>  <span class="c1">#端口</span>
+  <span class="o">-</span> <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span> <span class="c1">#协议，能够支持TCP和UDP</span>
+    <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>  <span class="c1">#当前端口</span>
+    <span class="n">targetPort</span><span class="p">:</span> <span class="mi">80</span> <span class="c1">#目标端口</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>执行Service的创建并分别查询Service和EndPoints</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f clusterIPService.yaml
+service/demo-service created
+$ kubectl get svc demo-service -o wide
+NAME           TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE   SELECTOR
+demo-service   ClusterIP   10.96.212.33   &lt;none&gt;        80/TCP    12s   app=demo
+
+
+$ kubectl get endpoints demo-service -o wide
+NAME           ENDPOINTS                           AGE
+demo-service   10.100.85.199:80,10.100.85.200:80   72s
+</pre></div>
+</div>
+<p>我们可以在集群内部进行访问了。如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl --head 10.96.212.33
+HTTP/1.1 200 OK
+Date: Tue, 22 Dec 2020 08:58:14 GMT
+Content-Type: text/html; charset=utf-8
+Server: Kestrel
+</pre></div>
+</div>
+</section>
+<section id="nodeport-service">
+<h5>3.2 通过NodePort Service在外部访问集群应用<a class="headerlink" href="#nodeport-service" title="Permalink to this headline">¶</a></h5>
+<p><code class="docutils literal notranslate"><span class="pre">nodePortService.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kind</span><span class="p">:</span> <span class="n">Service</span> <span class="c1">#资源类型</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">metadata</span><span class="p">:</span> <span class="c1">#标准元数据</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">nodeport</span><span class="o">-</span><span class="n">service</span>  <span class="c1">#服务名称</span>
+<span class="n">spec</span><span class="p">:</span>  <span class="c1">#规范定义</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">NodePort</span> <span class="c1">#服务类型，这里是节点端口</span>
+  <span class="n">ports</span><span class="p">:</span>  <span class="c1">#端口列表</span>
+    <span class="o">-</span> <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>  <span class="c1">#Pod端口</span>
+      <span class="n">nodePort</span><span class="p">:</span> <span class="mi">31001</span> <span class="c1">#节点端口，注意默认的端口范围为“30000-32767”，注意不要冲突</span>
+  <span class="n">selector</span><span class="p">:</span> <span class="c1">#标签选择器</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">demo</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>执行Service的创建并分别查询Service和EndPoints</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f nodePortService.yaml
+service/nodeport-service created
+
+$ kubectl get svc nodeport-service
+NAME               TYPE       CLUSTER-IP   EXTERNAL-IP   PORT(S)        AGE
+nodeport-service   NodePort   10.96.30.5   &lt;none&gt;        80:31001/TCP   11s
+
+$ kubectl get svc
+NAME               TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)        AGE
+kubernetes         ClusterIP   10.96.0.1    &lt;none&gt;        443/TCP        7h12m
+nodeport-service   NodePort    10.96.30.5   &lt;none&gt;        80:31001/TCP   20s
+</pre></div>
+</div>
+<p>我们创建了名为“nodeport-service”的Service。该Service映射“31001”节点端口，并且创建了“10.96.30.5”的集群IP。也就是说，Service可以通过“节点IP：节点端口”或“集群IP（spec.clusterIp）：端口”进行访问。</p>
+<p>虽然我们可以在外部访问集群中的应用，但是也可以看到该方案有不少不足之处：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>（1）每个端口仅能支持一个服务，不能冲突。
+
+（2）端口范围必须为“30000-32767”，非常不友好。
+
+（3）如果节点IP发生变化，服务也将无法访问。
+</pre></div>
+</div>
+</section>
+<section id="loadbalancer-service">
+<h5>3.3 通过LoadBalancer Service在外部访问集群应用<a class="headerlink" href="#loadbalancer-service" title="Permalink to this headline">¶</a></h5>
+<p><code class="docutils literal notranslate"><span class="pre">LoadBalancer_Service.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>  <span class="c1">#api版本</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span> <span class="c1">#Service</span>
+<span class="n">metadata</span><span class="p">:</span> <span class="c1">#标准元数据</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">demo</span>  <span class="c1">#名称</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">default</span> <span class="c1">#命名空间</span>
+<span class="n">spec</span><span class="p">:</span> <span class="c1">#规范</span>
+  <span class="n">clusterIP</span><span class="p">:</span> <span class="mf">10.3</span><span class="o">.</span><span class="mf">255.28</span> <span class="c1">#集群IP</span>
+  <span class="n">loadBalancerIP</span><span class="p">:</span> <span class="mf">106.52</span><span class="o">.</span><span class="mf">99.55</span> <span class="c1">#负载均衡IP</span>
+  <span class="n">ports</span><span class="p">:</span>  <span class="c1">#端口列表</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">tcp</span><span class="o">-</span><span class="mi">80</span><span class="o">-</span><span class="mi">80</span>
+    <span class="n">nodePort</span><span class="p">:</span> <span class="mi">31504</span> <span class="c1">#节点IP</span>
+    <span class="n">port</span><span class="p">:</span> <span class="mi">80</span> <span class="c1">#Pod端口</span>
+    <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span> <span class="c1">#协议</span>
+    <span class="n">targetPort</span><span class="p">:</span> <span class="mi">80</span> <span class="c1">#服务端口</span>
+  <span class="n">selector</span><span class="p">:</span> <span class="c1">#选择器</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">demo</span>
+    <span class="n">k8s</span><span class="o">-</span><span class="n">app</span><span class="p">:</span> <span class="n">demo</span>
+    <span class="n">qcloud</span><span class="o">-</span><span class="n">app</span><span class="p">:</span> <span class="n">demo</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">LoadBalancer</span> <span class="c1">#服务类型，这里为负载均衡服务类型</span>
+</pre></div>
+</div>
+<p>如上述定义所示，我们创建了Service，设置集群IP为“10.3.255.28”、负载均衡IP（loadBalancerIP）为“106.52.99.55”、节点端口为“31504”。Service定义好了以后对负载均衡服务进行配置：配置一个TCP监听器.</p>
+</section>
+</section>
+</section>
+</section>
+<section id="kubectl-3">
+<h2><a class="toc-backref" href="#id93">kubectl部署应用 示例3</a><a class="headerlink" href="#kubectl-3" title="Permalink to this headline">¶</a></h2>
+<p>使用示例镜像ikubernetes/demoapp:v1.0演示容器应用编排的基础操作：应用部署、访问、查看，服务暴露和应用扩缩容等。</p>
+<p>Kubernetes之上应用程序的基础管理操作由如下几个部分组成:</p>
+<p>1）通过合用的控制器类的资源（例如Deployment或ReplicationController）创建并管控Pod对象以运行特定的应用程序：</p>
+<ul class="simple">
+<li><p>无状态（stateless）应用的部署和控制通常使用Deployment控制器</p></li>
+<li><p>有状态应用则需要使用StatefulSet控制器或扩展的Operator。</p></li>
+</ul>
+<p>2）为Pod对象创建Service对象，以便向客户端提供固定的访问端点，并能够借助KubeDNS进行服务发现。</p>
+<p>3）随时按需获取各资源对象的简要或详细信息，以了解其运行状态。</p>
+<p>4）如有需要，对支持扩缩容的应用按需进行扩容或缩容；</p>
+<p>5）应用程序的镜像出现新版本时，对其执行更新操作，若相应的控制器支持，修改指定的控制器资源中Pod模板的容器镜像为指定的新版本即可自动触发更新过程。</p>
+<p>下面示例仅演示的部分功能，即应用部署、访问、查看，以及服务暴露。</p>
+<section id="id46">
+<h3><a class="toc-backref" href="#id94">应用编排</a><a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
+<section id="id47">
+<h4>1. 创建Deployment控制器对象<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h4>
+<p>下面的命令会创建一个名为demoapp的Deployment控制器对象，它使用镜像ikubernetes/demoapp:v1.0创建Pod对象，但仅用于测试，运行后即退出。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl create deployment demoapp --image=&quot;ikubernetes/demoapp:v1.0&quot; --dry-run=client</span>
+<span class="n">deployment</span><span class="o">.</span><span class="n">apps</span><span class="o">/</span><span class="n">demoapp</span> <span class="n">created</span> <span class="p">(</span><span class="n">dry</span> <span class="n">run</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>确认测试命令无误后，可在移除–dry-run选项后再次执行命令以完成资源对象的</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl create deployment demoapp --image=&quot;ikubernetes/demoapp:v1.0&quot;</span>
+<span class="n">deployment</span><span class="o">.</span><span class="n">apps</span><span class="o">/</span><span class="n">demoapp</span> <span class="n">created</span>
+</pre></div>
+</div>
+<p>该命令创建的Deployment/demoapp对象会借助指定的镜像生成一个Pod，并自动为其添加app=demoapp标签，</p>
+<p>而控制器对象自身也将使用该标签作为标签选择器。镜像ikubernetes/demoapp:v1.0中定义的容器主进程为默认监听于80端口的Web应用程序demoapp。</p>
+</section>
+<section id="id48">
+<h4>2.打印资源对象的相关信息<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get deployments/demoapp</span>
+<span class="n">NAME</span>      <span class="n">READY</span>   <span class="n">UP</span><span class="o">-</span><span class="n">TO</span><span class="o">-</span><span class="n">DATE</span>   <span class="n">AVAILABLE</span>   <span class="n">AGE</span>
+<span class="n">demoapp</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="mi">1</span>            <span class="mi">1</span>           <span class="mi">84</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>Deployment/demoapp创建的唯一Pod对象运行正常与否、该对象被调度至哪个节点运行，以及当前是否就绪等也是用户在创建完成后应该关注的重点信息。由控制器创建的Pod对象的名称通常是以其隶属的ReplicaSet对象的名称为前缀，以随机字符为后缀，例如下面命令以app=demoapp为标签选择器打印筛选出的Pod对象的相关信息。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get pods -l app=demoapp -o wide</span>
+<span class="n">NAME</span>                       <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>     <span class="n">IP</span>             <span class="n">NODE</span>    <span class="n">NOMINATED</span> <span class="n">NODE</span>   <span class="n">READINESS</span> <span class="n">GATES</span>
+<span class="n">demoapp</span><span class="o">-</span><span class="mi">6</span><span class="n">c5d545684</span><span class="o">-</span><span class="mi">59</span><span class="n">mx6</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">m35s</span>   <span class="mf">10.244</span><span class="o">.</span><span class="mf">38.30</span>   <span class="n">k8</span><span class="o">-</span><span class="n">w8</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>接下来，我们可在集群中任意一个节点上使用curl命令</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@ci-base ~]# POD_IP=$(kubectl get pods -l app=demoapp -o jsonpath={.items[0].status.podIP})
+[root@ci-base ~]# echo $POD_IP
+10.244.38.30
+[root@k8s-w1 ~]# curl 10.244.38.30
+iKubernetes demoapp v1.0 !! ClientIP: 10.244.228.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+</pre></div>
+</div>
+</section>
+<section id="id49">
+<h4>3.部署Service对象<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h4>
+<p>Service对象就是一组Pod的逻辑组合，它通过称为ClusterIP的地址和服务端口接收客户端请求，并将这些请求代理至使用标签选择器来过滤一个符合条件的Pod对象。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl create service nodeport demoapp --tcp=80</span>
+<span class="n">service</span><span class="o">/</span><span class="n">demoapp</span> <span class="n">created</span>
+</pre></div>
+</div>
+<p>nodeport是指Service对象的类型，它会在集群中各节点上随机选择一个节点端口（hostPort）为该Service对象接入集群外部的访问流量，集群内部流量则由Service资源通过ClusterIP直接接入。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get pod,svc,ep</span>
+<span class="n">NAME</span>                           <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">pod</span><span class="o">/</span><span class="n">demoapp</span><span class="o">-</span><span class="mi">6</span><span class="n">c5d545684</span><span class="o">-</span><span class="mi">59</span><span class="n">mx6</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">9</span><span class="n">m19s</span>
+
+<span class="n">NAME</span>                 <span class="n">TYPE</span>        <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>      <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>        <span class="n">AGE</span>
+<span class="n">service</span><span class="o">/</span><span class="n">demoapp</span>      <span class="n">NodePort</span>    <span class="mf">10.100</span><span class="o">.</span><span class="mf">89.254</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">80</span><span class="p">:</span><span class="mi">32140</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">2</span><span class="n">m41s</span>
+<span class="n">service</span><span class="o">/</span><span class="n">kubernetes</span>   <span class="n">ClusterIP</span>   <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.1</span>       <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">443</span><span class="o">/</span><span class="n">TCP</span>        <span class="mi">57</span><span class="n">d</span>
+
+<span class="n">NAME</span>                   <span class="n">ENDPOINTS</span>                                               <span class="n">AGE</span>
+<span class="n">endpoints</span><span class="o">/</span><span class="n">demoapp</span>      <span class="mf">10.244</span><span class="o">.</span><span class="mf">38.30</span><span class="p">:</span><span class="mi">80</span>                                         <span class="mi">2</span><span class="n">m41s</span>
+<span class="n">endpoints</span><span class="o">/</span><span class="n">kubernetes</span>   <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.72</span><span class="p">:</span><span class="mi">8443</span><span class="p">,</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.73</span><span class="p">:</span><span class="mi">8443</span><span class="p">,</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.74</span><span class="p">:</span><span class="mi">8443</span>   <span class="mi">57</span><span class="n">d</span>
+</pre></div>
+</div>
+<p>在节点之间可以使用</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@k8s-w1 ~]# curl 10.244.38.30
+iKubernetes demoapp v1.0 !! ClientIP: 10.244.228.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+[root@k8s-w1 ~]# curl 10.100.89.254
+iKubernetes demoapp v1.0 !! ClientIP: 10.244.228.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+</pre></div>
+</div>
+<p>节点外使用</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodeIP</span><span class="p">:</span><span class="mi">32140</span><span class="n">进行访问</span>
+</pre></div>
+</div>
+</section>
+<section id="id50">
+<h4>4.扩容与缩容<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h4>
+<p>kubectl
+scale命令就是专用于变动控制器应用规模的命令，它支持对Deployment、ReplicaSet、StatefulSet等类型资源对象的扩容和缩容操作。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl scale deployment/demoapp --replicas=3</span>
+<span class="n">deployment</span><span class="o">.</span><span class="n">apps</span><span class="o">/</span><span class="n">demoapp</span> <span class="n">scaled</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get pods -l app=demoapp</span>
+<span class="n">NAME</span>                       <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">demoapp</span><span class="o">-</span><span class="mi">6</span><span class="n">c5d545684</span><span class="o">-</span><span class="mi">59</span><span class="n">mx6</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">12</span><span class="n">m</span>
+<span class="n">demoapp</span><span class="o">-</span><span class="mi">6</span><span class="n">c5d545684</span><span class="o">-</span><span class="mi">6</span><span class="n">thgq</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">52</span><span class="n">s</span>
+<span class="n">demoapp</span><span class="o">-</span><span class="mi">6</span><span class="n">c5d545684</span><span class="o">-</span><span class="mi">8</span><span class="n">m8w7</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">52</span><span class="n">s</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl describe deployment/demoapp</span>
+<span class="n">Name</span><span class="p">:</span>                   <span class="n">demoapp</span>
+<span class="n">Namespace</span><span class="p">:</span>              <span class="n">default</span>
+<span class="n">CreationTimestamp</span><span class="p">:</span>      <span class="n">Sun</span><span class="p">,</span> <span class="mi">04</span> <span class="n">Apr</span> <span class="mi">2021</span> <span class="mi">17</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">03</span> <span class="o">+</span><span class="mi">0800</span>
+<span class="n">Labels</span><span class="p">:</span>                 <span class="n">app</span><span class="o">=</span><span class="n">demoapp</span>
+<span class="n">Annotations</span><span class="p">:</span>            <span class="n">deployment</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">revision</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">Selector</span><span class="p">:</span>               <span class="n">app</span><span class="o">=</span><span class="n">demoapp</span>
+<span class="n">Replicas</span><span class="p">:</span>               <span class="mi">3</span> <span class="n">desired</span> <span class="o">|</span> <span class="mi">3</span> <span class="n">updated</span> <span class="o">|</span> <span class="mi">3</span> <span class="n">total</span> <span class="o">|</span> <span class="mi">3</span> <span class="n">available</span> <span class="o">|</span> <span class="mi">0</span> <span class="n">unavailable</span>
+<span class="o">......</span>
+  <span class="o">----</span>           <span class="o">------</span>  <span class="o">------</span>
+  <span class="n">Progressing</span>    <span class="kc">True</span>    <span class="n">NewReplicaSetAvailable</span>
+  <span class="n">Available</span>      <span class="kc">True</span>    <span class="n">MinimumReplicasAvailable</span>
+<span class="n">OldReplicaSets</span><span class="p">:</span>  <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">NewReplicaSet</span><span class="p">:</span>   <span class="n">demoapp</span><span class="o">-</span><span class="mi">6</span><span class="n">c5d545684</span> <span class="p">(</span><span class="mi">3</span><span class="o">/</span><span class="mi">3</span> <span class="n">replicas</span> <span class="n">created</span><span class="p">)</span>
+<span class="n">Events</span><span class="p">:</span>
+  <span class="n">Type</span>    <span class="n">Reason</span>             <span class="n">Age</span>    <span class="n">From</span>                   <span class="n">Message</span>
+  <span class="o">----</span>    <span class="o">------</span>             <span class="o">----</span>   <span class="o">----</span>                   <span class="o">-------</span>
+  <span class="n">Normal</span>  <span class="n">ScalingReplicaSet</span>  <span class="mi">14</span><span class="n">m</span>    <span class="n">deployment</span><span class="o">-</span><span class="n">controller</span>  <span class="n">Scaled</span> <span class="n">up</span> <span class="n">replica</span> <span class="nb">set</span> <span class="n">demoapp</span><span class="o">-</span><span class="mi">6</span><span class="n">c5d545684</span> <span class="n">to</span> <span class="mi">1</span>
+  <span class="n">Normal</span>  <span class="n">ScalingReplicaSet</span>  <span class="mi">2</span><span class="n">m14s</span>  <span class="n">deployment</span><span class="o">-</span><span class="n">controller</span>  <span class="n">Scaled</span> <span class="n">up</span> <span class="n">replica</span> <span class="nb">set</span> <span class="n">demoapp</span><span class="o">-</span><span class="mi">6</span><span class="n">c5d545684</span> <span class="n">to</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>由命令结果可以看出，其Pod副本数量的各项指标都已经转换为新的目标数量，而其事件信息中也有相应事件显示其扩增操作已成功完成。</p>
+<p>Service对象demoapp的标签选择器动态纳入的新Pod副本也将成为该Service对象可用的代理后端，所有流量会被调度至其后端的所有Pod对象之上。每个能够接收流量的后端称为一个端点，它通常表现为相应主机或容器上可接收特定流量的访问入口（套接字），如下面命令结果中的Endpoints字段所示</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl describe svc/demoapp</span>
+<span class="n">Name</span><span class="p">:</span>                     <span class="n">demoapp</span>
+<span class="n">Namespace</span><span class="p">:</span>                <span class="n">default</span>
+<span class="n">Labels</span><span class="p">:</span>                   <span class="n">app</span><span class="o">=</span><span class="n">demoapp</span>
+<span class="n">Annotations</span><span class="p">:</span>              <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">Selector</span><span class="p">:</span>                 <span class="n">app</span><span class="o">=</span><span class="n">demoapp</span>
+<span class="n">Type</span><span class="p">:</span>                     <span class="n">NodePort</span>
+<span class="n">IP</span><span class="p">:</span>                       <span class="mf">10.100</span><span class="o">.</span><span class="mf">89.254</span>
+<span class="n">Port</span><span class="p">:</span>                     <span class="mi">80</span>  <span class="mi">80</span><span class="o">/</span><span class="n">TCP</span>
+<span class="n">TargetPort</span><span class="p">:</span>               <span class="mi">80</span><span class="o">/</span><span class="n">TCP</span>
+<span class="n">NodePort</span><span class="p">:</span>                 <span class="mi">80</span>  <span class="mi">32140</span><span class="o">/</span><span class="n">TCP</span>
+<span class="n">Endpoints</span><span class="p">:</span>                <span class="mf">10.244</span><span class="o">.</span><span class="mf">14.22</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span><span class="mf">10.244</span><span class="o">.</span><span class="mf">228.68</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span><span class="mf">10.244</span><span class="o">.</span><span class="mf">38.30</span><span class="p">:</span><span class="mi">80</span>
+<span class="n">Session</span> <span class="n">Affinity</span><span class="p">:</span>         <span class="kc">None</span>
+<span class="n">External</span> <span class="n">Traffic</span> <span class="n">Policy</span><span class="p">:</span>  <span class="n">Cluster</span>
+<span class="n">Events</span><span class="p">:</span>                   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get endpoints</span>
+<span class="n">NAME</span>         <span class="n">ENDPOINTS</span>                                               <span class="n">AGE</span>
+<span class="n">demoapp</span>      <span class="mf">10.244</span><span class="o">.</span><span class="mf">14.22</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span><span class="mf">10.244</span><span class="o">.</span><span class="mf">228.68</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span><span class="mf">10.244</span><span class="o">.</span><span class="mf">38.30</span><span class="p">:</span><span class="mi">80</span>        <span class="mi">9</span><span class="n">m29s</span>
+<span class="n">kubernetes</span>   <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.72</span><span class="p">:</span><span class="mi">8443</span><span class="p">,</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.73</span><span class="p">:</span><span class="mi">8443</span><span class="p">,</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.74</span><span class="p">:</span><span class="mi">8443</span>   <span class="mi">57</span><span class="n">d</span>
+</pre></div>
+</div>
+<p>我们可以通过任何客户端对Service/demoapp的服务发起访问请求进行测试，这次我们在集群外的主机172.29.0.1上通过NodePort对该服务发起持续访问，以测试Service对象的流量调度机制是否能够正常工作。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>18793@DESKTOP-PMJTNGI ~
+$ while true;do curl http://192.168.1.75:32140;sleep 0.5;done
+iKubernetes demoapp v1.0 !! ClientIP: 10.244.215.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+iKubernetes demoapp v1.0 !! ClientIP: 10.244.215.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+iKubernetes demoapp v1.0 !! ClientIP: 10.244.215.64, ServerName: demoapp-6c5d545684-59mx6, ServerIP: 10.244.38.30!
+</pre></div>
+</div>
+<p>应用规模缩容的方式和扩容相似，只不过是将Pod副本的数量调至比原来小的数字。例如，将demoapp的Pod副本缩减至2个，可以使用类似如下命令进行。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl scale deployment/demoapp --replicas=2</span>
+</pre></div>
+</div>
+</section>
+<section id="id51">
+<h4>5.修改与删除对象<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h4>
+<p>下面的命令能够删除service/demoapp资源对象：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl delete service/demoapp</span>
+<span class="n">service</span> <span class="s2">&quot;demoapp&quot;</span> <span class="n">deleted</span>
+</pre></div>
+</div>
+<p>有时候需要清空某一类型下的所有对象，此时只需要将上面命令对象名称换成–all选项便能实现。例如，删除dafault名称空间中所有的Deployment控制器：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl delete deployment --all</span>
+<span class="n">deployment</span><span class="o">.</span><span class="n">apps</span> <span class="s2">&quot;demoapp&quot;</span> <span class="n">deleted</span>
+</pre></div>
+</div>
+<p>需要注意的是，受控于控制器的Pod对象在删除后会被重建，因而删除此类对象需要直接删除其控制器对象。默认情况下，删除Deployment一类的工作负载型控制器资源会级联删除相关的所有Pod对象，若要禁用该功能，需要在删除命令中使用–cascade=false选项。</p>
+</section>
+</section>
+</section>
+<section id="id52">
+<span id="id53"></span><h2><a class="toc-backref" href="#id95">小结</a><a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>▪ kubeadm是由Kubernetes原生提供的集群部署工具，支持高可用控制平面；kubeadminit可快速拉起一个控制平面，而kubeadm join则用于将节点加入集群之中。
+
+
+▪ Pod是运行容器化应用及调度的原子单元，同一个Pod中可同时运行多个容器，这些容器共享Mount、UTS及Network等Linux内核名称空间，并能够访问同一组存储卷。
+
+
+▪ Deployment是最常用的无状态应用控制器，它支持应用的扩缩容、滚动更新等操作，为容器化应用赋予了极具弹性的功能。
+
+
+▪ Service为弹性变动且存在生命周期的Pod对象提供了一个固定的访问接口，用于服务发现和服务访问。
+
+
+▪ kubectl是Kubernetes API Server最常用的客户端程序之一，它功能强大、特性丰富，几乎能完成除了安装部署之外的所有管理操作。
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="03.Docker%E5%9F%BA%E7%A1%80.html" class="btn btn-neutral float-left" title="Docker基础" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="05.Kubernetes%E7%9A%84%E8%B5%84%E6%BA%90%E5%AF%B9%E8%B1%A1.html" class="btn btn-neutral float-right" title="Kubernetes的资源对象" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

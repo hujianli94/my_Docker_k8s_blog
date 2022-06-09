@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serveice &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Ingress" href="07.Ingress.html" />
+    <link rel="prev" title="Kubernetes的资源对象" href="05.Kubernetes%E7%9A%84%E8%B5%84%E6%BA%90%E5%AF%B9%E8%B1%A1.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">02.Kubernetes实战指南</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01.Kubernetes%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.html">Kubernetes安装配置指南</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02.Kubespray%E9%83%A8%E7%BD%B2k8s.html">Kubespray部署k8s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03.Docker%E5%9F%BA%E7%A1%80.html">Docker基础</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04.Kubernetes%E5%9F%BA%E7%A1%80.html">Kubernetes基础</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05.Kubernetes%E7%9A%84%E8%B5%84%E6%BA%90%E5%AF%B9%E8%B1%A1.html">Kubernetes的资源对象</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Serveice</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">服务代理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">服务发现</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">1.环境变量</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kubedns">2.KubeDNS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#coredns">3.CoreDns</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">发布服务</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="07.Ingress.html">Ingress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.Kubernetest%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Kubernetest数据管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09.kubernetes%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">Kubernetes实战案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10.Kubernetes%E7%9B%91%E6%8E%A7.html">Kubernetes监控</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11.%E9%9B%86%E7%BE%A4%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F.html">集群日志系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12.%E4%BD%BF%E7%94%A8EFKLK%E6%90%AD%E5%BB%BAKubernetes%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E5%B7%A5%E5%85%B7%E6%A0%88.html">使用EFKLK搭建Kubernetes日志收集工具栈</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13.Kubernetes%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E4%BB%8EDocker%E5%88%87%E6%8D%A2%E6%88%90Containerd.html">Kubernetes容器运行时从Docker切换成Containerd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14.%E6%95%B4%E7%90%86%E5%85%A8%E7%BD%91%E6%9C%80%E5%85%A8K8S%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7-%E5%B9%B3%E5%8F%B0.html">整理全网最全K8S集群管理工具-平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15.%E5%9F%BA%E4%BA%8EDocker%2BK8S%2BGitLabSVN%2BJenkins%2BHarbor%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E4%BA%A4%E4%BB%98%E7%8E%AF%E5%A2%83.html">基于Docker+K8S+GitLab/SVN+Jenkins+Harbor持续集成交付环境</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20.Helm%E7%AE%80%E5%8C%96Kubernetes%E9%83%A8%E7%BD%B2.html">Helm简化Kubernetes部署</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05.Kubernetes%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/index.html">05.Kubernetes入门到实践</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">02.Kubernetes实战指南</a> &raquo;</li>
+      <li>Serveice</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/02.Kubernetes实战指南/06.Serveice.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#serveice" id="id5">Serveice</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id6">服务代理</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id7">服务发现</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id3" id="id8">1.环境变量</a></p></li>
+<li><p><a class="reference internal" href="#kubedns" id="id9">2.KubeDNS</a></p></li>
+<li><p><a class="reference internal" href="#coredns" id="id10">3.CoreDns</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id4" id="id11">发布服务</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="serveice">
+<h1><a class="toc-backref" href="#id5">Serveice</a><a class="headerlink" href="#serveice" title="Permalink to this headline">¶</a></h1>
+<p>Service在kubernetes集群中是非常重要的，它将请求转发到后端具体Pod中，对外有负载均衡功能，提供一个统一的入口，以此来代理所有应用的Pod。</p>
+<section id="id1">
+<h2><a class="toc-backref" href="#id6">服务代理</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>创建Service时需要创建Service对象，代码如下</p>
+<p><code class="docutils literal notranslate"><span class="pre">Service02.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">workload</span><span class="p">:</span> <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>
+
+  <span class="n">name</span><span class="p">:</span> <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">default</span>
+
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">http</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">80</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">https</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">443</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">443</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">ClusterIP</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl create -f service02.yaml</span>
+<span class="n">service</span><span class="o">/</span><span class="n">my</span><span class="o">-</span><span class="n">service</span> <span class="n">created</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get svc</span>
+<span class="n">NAME</span>         <span class="n">TYPE</span>        <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>     <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>          <span class="n">AGE</span>
+<span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>     <span class="n">ClusterIP</span>   <span class="mf">10.98</span><span class="o">.</span><span class="mf">124.82</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">80</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">443</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">46</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>my-service是刚创建的，默认类型是ClusterIP,也会被分配一个ClusterIP</p>
+<p>使用<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">endpoints</span></code>命令可以查看具体的Service后端的Pod的IP。命令如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get ep</span>
+<span class="n">NAME</span>         <span class="n">ENDPOINTS</span>                                               <span class="n">AGE</span>
+<span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>     <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>                                                  <span class="mi">14</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>my-service并没有Pod的IP，这是因为在<code class="docutils literal notranslate"><span class="pre">Service.yaml</span></code>文件中并没有匹配到某个Deployment可以为它代理，它唯一的匹配就是标签选择器，所以，一般创建一个项目并部署到集群中，首先需要创建一个Deployment，再创建一个Service，他们之间通过标签进行关联。</p>
+<p>So，我们来创建一个Deployment。</p>
+<p><code class="docutils literal notranslate"><span class="pre">deploy-nginx.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">workload</span><span class="p">:</span> <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>
+
+  <span class="n">name</span><span class="p">:</span> <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">default</span>
+
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">http</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">80</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">https</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">443</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">443</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">layer</span><span class="p">:</span> <span class="n">cloud</span>
+    <span class="n">k8s</span><span class="o">.</span><span class="n">kuboard</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">name</span><span class="p">:</span> <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">ClusterIP</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl create -f deploy-nginx.yaml</span>
+<span class="n">deployment</span><span class="o">.</span><span class="n">apps</span><span class="o">/</span><span class="n">mynginx</span> <span class="n">created</span>
+
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get deployment</span>
+<span class="n">NAME</span>       <span class="n">READY</span>   <span class="n">UP</span><span class="o">-</span><span class="n">TO</span><span class="o">-</span><span class="n">DATE</span>   <span class="n">AVAILABLE</span>   <span class="n">AGE</span>
+<span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>   <span class="mi">2</span><span class="o">/</span><span class="mi">2</span>     <span class="mi">2</span>            <span class="mi">2</span>           <span class="mi">16</span><span class="n">s</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get pod</span>
+<span class="n">NAME</span>                        <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">hu</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="mi">6584</span><span class="n">bd694c</span><span class="o">-</span><span class="mi">2</span><span class="n">n22w</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">27</span><span class="n">s</span>
+<span class="n">hu</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="mi">6584</span><span class="n">bd694c</span><span class="o">-</span><span class="n">pvfbb</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">27</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>再次查看<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">endpoints</span></code>发现IP映射在了hu-nginx中，Service在前面就相当于一个负载均衡器的作用。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get ep</span>
+<span class="n">NAME</span>         <span class="n">ENDPOINTS</span>                                                          <span class="n">AGE</span>
+<span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>     <span class="mf">10.244</span><span class="o">.</span><span class="mf">228.65</span><span class="p">:</span><span class="mi">443</span><span class="p">,</span><span class="mf">10.244</span><span class="o">.</span><span class="mf">23.106</span><span class="p">:</span><span class="mi">443</span><span class="p">,</span><span class="mf">10.244</span><span class="o">.</span><span class="mf">228.65</span><span class="p">:</span><span class="mi">80</span> <span class="o">+</span> <span class="mi">1</span> <span class="n">more</span><span class="o">...</span>   <span class="mi">2</span><span class="n">m53s</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>注意：</p>
+<p>任意节点都可以通过Cluster-IP访问后端负载均衡的Pod</p>
+</div></blockquote>
+</section>
+<section id="id2">
+<h2><a class="toc-backref" href="#id7">服务发现</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<section id="id3">
+<h3><a class="toc-backref" href="#id8">1.环境变量</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>当一个Pod运行到节点时，kubelet会为每个容器添加一组环境变量，Pod容器中的程序就可以使用这些环境变量发现Service。</p>
+<p><code class="docutils literal notranslate"><span class="pre">busybox.yaml</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Pod</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">busybox</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">default</span>
+
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">containers</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">image</span><span class="p">:</span> <span class="n">busybox</span>
+      <span class="n">command</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">sleep</span>
+        <span class="o">-</span> <span class="s2">&quot;3600&quot;</span>
+      <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">IfNotPresent</span>
+      <span class="n">name</span><span class="p">:</span> <span class="n">busybox</span>
+  <span class="n">restartPolicy</span><span class="p">:</span> <span class="n">Always</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl create -f busybox.yaml</span>
+<span class="n">pod</span><span class="o">/</span><span class="n">busybox</span> <span class="n">created</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get pod</span>
+<span class="n">NAME</span>      <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">busybox</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">s</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl exec -it busybox sh</span>
+<span class="o">/</span> <span class="c1"># env</span>
+<span class="n">KUBERNETES_PORT</span><span class="o">=</span><span class="n">tcp</span><span class="p">:</span><span class="o">//</span><span class="mf">10.96</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">443</span>
+<span class="n">KUBERNETES_SERVICE_PORT</span><span class="o">=</span><span class="mi">443</span>
+<span class="n">HOSTNAME</span><span class="o">=</span><span class="n">busybox</span>
+<span class="n">SHLVL</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">HOME</span><span class="o">=/</span><span class="n">root</span>
+<span class="n">HU_NGINX_PORT_80_TCP</span><span class="o">=</span><span class="n">tcp</span><span class="p">:</span><span class="o">//</span><span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span><span class="p">:</span><span class="mi">80</span>
+<span class="n">HU_NGINX_PORT_443_TCP_ADDR</span><span class="o">=</span><span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span>
+<span class="n">HU_NGINX_PORT_443_TCP_PORT</span><span class="o">=</span><span class="mi">443</span>
+<span class="n">HU_NGINX_PORT_443_TCP_PROTO</span><span class="o">=</span><span class="n">tcp</span>
+<span class="n">HU_NGINX_SERVICE_PORT_HTTP</span><span class="o">=</span><span class="mi">80</span>
+<span class="n">TERM</span><span class="o">=</span><span class="n">xterm</span>
+<span class="n">KUBERNETES_PORT_443_TCP_ADDR</span><span class="o">=</span><span class="mf">10.96</span><span class="o">.</span><span class="mf">0.1</span>
+<span class="n">HU_NGINX_SERVICE_PORT_HTTPS</span><span class="o">=</span><span class="mi">443</span>
+<span class="n">HU_NGINX_PORT_443_TCP</span><span class="o">=</span><span class="n">tcp</span><span class="p">:</span><span class="o">//</span><span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span><span class="p">:</span><span class="mi">443</span>
+<span class="n">PATH</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="p">:</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="nb">bin</span>
+<span class="n">HU_NGINX_SERVICE_HOST</span><span class="o">=</span><span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span>
+<span class="n">KUBERNETES_PORT_443_TCP_PORT</span><span class="o">=</span><span class="mi">443</span>
+<span class="n">KUBERNETES_PORT_443_TCP_PROTO</span><span class="o">=</span><span class="n">tcp</span>
+<span class="n">HU_NGINX_SERVICE_PORT</span><span class="o">=</span><span class="mi">80</span>
+<span class="n">HU_NGINX_PORT</span><span class="o">=</span><span class="n">tcp</span><span class="p">:</span><span class="o">//</span><span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span><span class="p">:</span><span class="mi">80</span>
+<span class="n">KUBERNETES_PORT_443_TCP</span><span class="o">=</span><span class="n">tcp</span><span class="p">:</span><span class="o">//</span><span class="mf">10.96</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">443</span>
+<span class="n">KUBERNETES_SERVICE_PORT_HTTPS</span><span class="o">=</span><span class="mi">443</span>
+<span class="n">KUBERNETES_SERVICE_HOST</span><span class="o">=</span><span class="mf">10.96</span><span class="o">.</span><span class="mf">0.1</span>
+<span class="n">PWD</span><span class="o">=/</span>
+<span class="n">HU_NGINX_PORT_80_TCP_ADDR</span><span class="o">=</span><span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span>
+<span class="n">HU_NGINX_PORT_80_TCP_PORT</span><span class="o">=</span><span class="mi">80</span>
+<span class="n">HU_NGINX_PORT_80_TCP_PROTO</span><span class="o">=</span><span class="n">tcp</span>
+
+<span class="o">/</span> <span class="c1"># echo ${HU_NGINX_SERVICE_HOST}</span>
+<span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span>
+<span class="o">/</span> <span class="c1"># echo ${HU_NGINX_SERVICE_PORT}</span>
+<span class="mi">80</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get svc</span>
+<span class="n">NAME</span>         <span class="n">TYPE</span>        <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>      <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>          <span class="n">AGE</span>
+<span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>     <span class="n">ClusterIP</span>   <span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">80</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">443</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">7</span><span class="n">m52s</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>注意：</p>
+<ol class="arabic simple">
+<li><p>Pod和Service的创建顺序是有要求的，Service必须在Pod创建之前创建，新创建的Pod会自动注入Service的环境变量。必须先声明Service为Pod做代理，再创建Pod，这样Pod就有了Service的环境变量</p></li>
+<li><p>Pod只能获取同一Namespace中的Service的环境变量，如果Service和Pod跨命名空间，则无法获取环境变量。</p></li>
+</ol>
+</div></blockquote>
+</section>
+<section id="kubedns">
+<h3><a class="toc-backref" href="#id9">2.KubeDNS</a><a class="headerlink" href="#kubedns" title="Permalink to this headline">¶</a></h3>
+<p>集群中运行了DNS服务，创建的每个Service都有DNS记录，所有的Pod可以通过DNS名称解析相应的Service
+IP，所以在实际生产环境中，一般都会采用DNS。</p>
+<p>Kube-dns的工作原理如下图：</p>
+<img alt="../_images/k8s-kube-dns001.png" src="../_images/k8s-kube-dns001.png" />
+<p>已经没有使用了，被CoreDns替换了，所以这里不进行拓展。</p>
+</section>
+<section id="coredns">
+<h3><a class="toc-backref" href="#id10">3.CoreDns</a><a class="headerlink" href="#coredns" title="Permalink to this headline">¶</a></h3>
+<p>从Kubernetes 1.11版本开始，Kubernetes集群的DNS服务由CoreDNS
+提供。CoreDNS是CNCF基金会的一个项目，是用Go语言实现的高性能、插件式、易扩展的DNS服务端。CoreDNS解决了KubeDNS的一些问题，例如dnsmasq的安全漏洞、externalName不能使用stubDomains设置，等等。</p>
+<p>CoreDNS的总体架构：</p>
+<img alt="../_images/k8s-coreDns0001.png" src="../_images/k8s-coreDns0001.png" />
+<p>部署官网：<a class="reference external" href="https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/dns/coredns">https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/dns/coredns</a></p>
+<p>为服务提供名称域名的访问。</p>
+<ul class="simple">
+<li><p>DNS服务监视Kubernetes API，为每一个Service创建DNS记录用于域名解析。</p></li>
+<li><p>ClusterIP
+A记录格式：<code class="docutils literal notranslate"><span class="pre">&lt;service-name&gt;.&lt;namespace-name&gt;.svc.cluster.local</span></code>
+示例：<code class="docutils literal notranslate"><span class="pre">my-svc.my-namespace.svc.cluster.local</span></code></p></li>
+</ul>
+<section id="service">
+<h4>1.查看已有解析service<a class="headerlink" href="#service" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get svc</span>
+<span class="n">NAME</span>         <span class="n">TYPE</span>        <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>      <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>          <span class="n">AGE</span>
+<span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>     <span class="n">ClusterIP</span>   <span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">80</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">443</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">6</span><span class="n">h2m</span>
+<span class="n">kubernetes</span>   <span class="n">ClusterIP</span>   <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.1</span>       <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">443</span><span class="o">/</span><span class="n">TCP</span>          <span class="mi">59</span><span class="n">d</span>
+
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get ep</span>
+<span class="n">NAME</span>         <span class="n">ENDPOINTS</span>                                                         <span class="n">AGE</span>
+<span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>     <span class="mf">10.244</span><span class="o">.</span><span class="mf">14.61</span><span class="p">:</span><span class="mi">443</span><span class="p">,</span><span class="mf">10.244</span><span class="o">.</span><span class="mf">228.115</span><span class="p">:</span><span class="mi">443</span><span class="p">,</span><span class="mf">10.244</span><span class="o">.</span><span class="mf">14.61</span><span class="p">:</span><span class="mi">80</span> <span class="o">+</span> <span class="mi">1</span> <span class="n">more</span><span class="o">...</span>   <span class="mi">6</span><span class="n">h3m</span>
+<span class="n">kubernetes</span>   <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.72</span><span class="p">:</span><span class="mi">8443</span><span class="p">,</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.73</span><span class="p">:</span><span class="mi">8443</span><span class="p">,</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.74</span><span class="p">:</span><span class="mi">8443</span>             <span class="mi">59</span><span class="n">d</span>
+</pre></div>
+</div>
+</section>
+<section id="dns">
+<h4>2.测试dns是否正常<a class="headerlink" href="#dns" title="Permalink to this headline">¶</a></h4>
+<p><strong>2.1 启用一个临时容器</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">--</span><span class="n">image</span><span class="o">=</span><span class="n">busybox</span><span class="p">:</span><span class="mf">1.28</span><span class="o">.</span><span class="mi">4</span> <span class="o">--</span><span class="n">rm</span> <span class="o">--</span><span class="n">restart</span><span class="o">=</span><span class="n">Never</span> <span class="n">sh</span>
+</pre></div>
+</div>
+<p><strong>2.2 进入容器并进行解析</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl exec -it sh /bin/sh</span>
+<span class="n">kubectl</span> <span class="n">exec</span> <span class="p">[</span><span class="n">POD</span><span class="p">]</span> <span class="p">[</span><span class="n">COMMAND</span><span class="p">]</span> <span class="ow">is</span> <span class="n">DEPRECATED</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span><span class="o">.</span> <span class="n">Use</span> <span class="n">kubectl</span> <span class="n">kubectl</span> <span class="n">exec</span> <span class="p">[</span><span class="n">POD</span><span class="p">]</span> <span class="o">--</span> <span class="p">[</span><span class="n">COMMAND</span><span class="p">]</span> <span class="n">instead</span><span class="o">.</span>
+<span class="o">/</span> <span class="c1"># nslookup hu-nginx</span>
+<span class="n">Server</span><span class="p">:</span>    <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span> <span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+
+<span class="n">Name</span><span class="p">:</span>      <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span> <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+<span class="o">/</span> <span class="c1"># nslookup kubernetes</span>
+<span class="n">Server</span><span class="p">:</span>    <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span> <span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+
+<span class="n">Name</span><span class="p">:</span>      <span class="n">kubernetes</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.1</span> <span class="n">kubernetes</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+</pre></div>
+</div>
+<p><strong>2.3 创建另一个容器测试</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看ns在kube-system中的svc信息</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get svc -n kube-system</span>
+<span class="n">NAME</span>             <span class="n">TYPE</span>        <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>       <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>                  <span class="n">AGE</span>
+<span class="n">calico</span><span class="o">-</span><span class="n">typha</span>     <span class="n">ClusterIP</span>   <span class="mf">10.99</span><span class="o">.</span><span class="mf">96.27</span>      <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">5473</span><span class="o">/</span><span class="n">TCP</span>                 <span class="mi">59</span><span class="n">d</span>
+<span class="n">kube</span><span class="o">-</span><span class="n">dns</span>         <span class="n">ClusterIP</span>   <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span>       <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">53</span><span class="o">/</span><span class="n">UDP</span><span class="p">,</span><span class="mi">53</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">9153</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">59</span><span class="n">d</span>
+<span class="n">kuboard</span>          <span class="n">NodePort</span>    <span class="mf">10.105</span><span class="o">.</span><span class="mf">236.9</span>     <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">80</span><span class="p">:</span><span class="mi">32567</span><span class="o">/</span><span class="n">TCP</span>             <span class="mi">34</span><span class="n">h</span>
+<span class="n">metrics</span><span class="o">-</span><span class="n">server</span>   <span class="n">ClusterIP</span>   <span class="mf">10.109</span><span class="o">.</span><span class="mf">213.146</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">443</span><span class="o">/</span><span class="n">TCP</span>                  <span class="mi">58</span><span class="n">d</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 创建一个ns在kube-system中的容器</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl run -it --image=busybox:1.28.4 --rm --restart=Never sh -n kube-system</span>
+<span class="n">If</span> <span class="n">you</span> <span class="n">don</span><span class="s1">&#39;t see a command prompt, try pressing enter.</span>
+
+<span class="c1"># 查看同一个ns中的svc，直接使用svc名称</span>
+<span class="o">/</span> <span class="c1"># nslookup kuboard</span>
+<span class="n">Server</span><span class="p">:</span>    <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span> <span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+
+<span class="n">Name</span><span class="p">:</span>      <span class="n">kuboard</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.105</span><span class="o">.</span><span class="mf">236.9</span> <span class="n">kuboard</span><span class="o">.</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+
+<span class="c1"># 查看同一个ns中的svc，直接使用svc名称</span>
+<span class="o">/</span> <span class="c1"># nslookup metrics-server</span>
+<span class="n">Server</span><span class="p">:</span>    <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span> <span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+
+<span class="n">Name</span><span class="p">:</span>      <span class="n">metrics</span><span class="o">-</span><span class="n">server</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.109</span><span class="o">.</span><span class="mf">213.146</span> <span class="n">metrics</span><span class="o">-</span><span class="n">server</span><span class="o">.</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+<span class="o">/</span> <span class="c1"># nslookup hu-nginx.default</span>
+<span class="n">Server</span><span class="p">:</span>    <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span> <span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+
+<span class="c1"># Service域名格式：$(service name).$(namespace).svc.cluster.local，其中 cluster.local 为指定的集群的域名</span>
+<span class="c1"># 查看不同ns中的svc，使用svc.&lt;namespace-name&gt;.svc.cluster.local</span>
+
+<span class="o">/</span> <span class="c1"># nslookup hu-nginx.default.svc.cluster.local</span>
+<span class="n">Server</span><span class="p">:</span>    <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.10</span> <span class="n">kube</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+
+<span class="n">Name</span><span class="p">:</span>      <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+<span class="n">Address</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">10.102</span><span class="o">.</span><span class="mf">125.25</span> <span class="n">hu</span><span class="o">-</span><span class="n">nginx</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">svc</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">local</span>
+</pre></div>
+</div>
+<p><strong># 注意事项</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>注：在api的service证书签发内留下dns的ip地址
+
+# 报错：Failed to list *v1.Namespace: Get https://10.0.0.1:443/api/v1/namespaces?limit=500&amp;resourceVersion=0: dial tcp 10.0.0.1:443: i/o timeout
+
+解决方案：重启Node上的kube-proxy、重新创建coredns。
+</pre></div>
+</div>
+<p>参考文献：</p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/11413970.html">Kubernetes
+部署集群内部DNS服务</a></p>
+</section>
+</section>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id11">发布服务</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>发布服务的类型有：<strong>ClusterIP、NodePort和LoadBalancer</strong></p>
+<ul class="simple">
+<li><p>ClusterIP：分配的一个内部集群的IP地址，只能在集群内部访问
+，同Namespace类的Pod，默认是ServiceType。</p></li>
+<li><p>NodePort：分配的一个内部集群的IP地址，每个节点启用一个端口来暴露服务，可以在集群外部访问，默认启动的端口是30000+、访问地址是：<code class="docutils literal notranslate"><span class="pre">&lt;NodeIP&gt;：&lt;NodePort&gt;</span></code>。</p></li>
+<li><p>LoadBalancer：分配的一个内部集群的IP地址，每个节点上启用一个端口来暴露服务，除此之外，K8S会请求云平台上的负载均衡器，将每个节点（<code class="docutils literal notranslate"><span class="pre">&lt;NodeIP&gt;：&lt;NodePort&gt;</span></code>）作为后端添加进去。</p></li>
+</ul>
+<p>示例文件</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Pod</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">mypod</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">containers</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span>
+      <span class="n">image</span><span class="p">:</span> <span class="n">nginx</span><span class="p">:</span><span class="mf">1.16</span><span class="o">.</span><span class="mi">1</span>
+      <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">Always</span>
+<span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">service</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">nginx</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="nb">type</span><span class="p">:</span> <span class="n">NodePort</span>        <span class="c1"># 随机暴露Node上一个30000+端口</span>
+  <span class="n">ports</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
+    <span class="n">targetPort</span><span class="p">:</span> <span class="mi">80</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">mypod</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get pod,svc</span>
+<span class="n">NAME</span>                               <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>
+<span class="n">pod</span><span class="o">/</span><span class="n">cloud</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="mi">6</span><span class="n">b68f94dc5</span><span class="o">-</span><span class="n">l549j</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">14</span><span class="n">s</span>
+
+<span class="n">NAME</span>                 <span class="n">TYPE</span>        <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>      <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>        <span class="n">AGE</span>
+<span class="n">service</span><span class="o">/</span><span class="n">kubernetes</span>   <span class="n">ClusterIP</span>   <span class="mf">10.96</span><span class="o">.</span><span class="mf">0.1</span>       <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">443</span><span class="o">/</span><span class="n">TCP</span>        <span class="mi">58</span><span class="n">d</span>
+<span class="n">service</span><span class="o">/</span><span class="n">nginx</span>        <span class="n">NodePort</span>    <span class="mf">10.106</span><span class="o">.</span><span class="mf">89.158</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">80</span><span class="p">:</span><span class="mi">30279</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">5</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>在node节点上可以访问CLUSTER-IP，如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@k8s-w1 ~]# curl 10.106.89.158
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+&lt;style&gt;
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Welcome to nginx!&lt;/h1&gt;
+&lt;p&gt;If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.&lt;/p&gt;
+
+&lt;p&gt;For online documentation and support please refer to
+&lt;a href=&quot;http://nginx.org/&quot;&gt;nginx.org&lt;/a&gt;.&lt;br/&gt;
+Commercial support is available at
+&lt;a href=&quot;http://nginx.com/&quot;&gt;nginx.com&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Thank you for using nginx.&lt;/em&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></div>
+</div>
+<p>在集群节点外，访问如下：</p>
+<p><code class="docutils literal notranslate"><span class="pre">Node节点IP+30279</span></code></p>
+<img alt="../_images/k8s-svc001.png" src="../_images/k8s-svc001.png" />
+<p>NodePort端口范围是可以自定义的，在apiserver中可以看到，默认是30000+，可以值得1000~65535端口的范围，只要在/opt/kubernetes/cfg/kube-apiserver文件中定义即可。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">spec</span><span class="p">:</span>
+  <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">h2tji5</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">8089</span>            <span class="c1">#暴露端口</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">80</span>        <span class="c1"># 容器端口</span>
+</pre></div>
+</div>
+<p>如上所示，可以将容器中的80端口对应服务的8089端口。</p>
+<p>查看具体Serveice后端Pod的IP</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">pod</span><span class="p">]</span><span class="c1"># kubectl get ep|grep nginx</span>
+<span class="n">nginx</span>        <span class="mf">10.244</span><span class="o">.</span><span class="mf">228.106</span><span class="p">:</span><span class="mi">80</span>                                       <span class="mi">37</span><span class="n">m</span>
+</pre></div>
+</div>
+<p>参考文献：</p>
+<p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/11413913.html">https://www.cnblogs.com/xiangsikai/p/11413913.html</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="05.Kubernetes%E7%9A%84%E8%B5%84%E6%BA%90%E5%AF%B9%E8%B1%A1.html" class="btn btn-neutral float-left" title="Kubernetes的资源对象" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="07.Ingress.html" class="btn btn-neutral float-right" title="Ingress" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

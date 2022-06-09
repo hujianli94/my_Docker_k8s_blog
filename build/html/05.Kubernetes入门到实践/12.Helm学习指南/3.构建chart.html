@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>构建chart &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="开发模板" href="4.%E5%BC%80%E5%8F%91%E6%A8%A1%E6%9D%BF.html" />
+    <link rel="prev" title="Helm的高级功能" href="2.Helm%E7%9A%84%E9%AB%98%E7%BA%A7%E5%8A%9F%E8%83%BD.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../5.%E6%8E%A7%E5%88%B6%E5%99%A8/index.html">5.控制器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html">7.存储与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html">8.Kubernetes资源的管理及调度</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../11.%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E6%A1%88%E4%BE%8B/index.html">11.项目部署案例</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">12.Helm学习指南</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="1.%E4%BD%BF%E7%94%A8Helm.html">使用Helm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2.Helm%E7%9A%84%E9%AB%98%E7%BA%A7%E5%8A%9F%E8%83%BD.html">Helm的高级功能</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">构建chart</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">1.chart创建命令</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#chart-yaml">2. Chart.yaml文件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">3. 修改模板</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#values">4. 使用values文件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">5. 打包chart</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">6. 校验chart代码</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="4.%E5%BC%80%E5%8F%91%E6%A8%A1%E6%9D%BF.html">开发模板</a></li>
+<li class="toctree-l3"><a class="reference internal" href="5.chart%E7%9A%84%E9%AB%98%E7%BA%A7%E5%8A%9F%E8%83%BD.html">chart的高级功能</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../13.Kubernetes-DevOps/index.html">13.Kubernetes-DevOps</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">12.Helm学习指南</a> &raquo;</li>
+      <li>构建chart</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/12.Helm学习指南/3.构建chart.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#chart" id="id5">构建chart</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id6">1.chart创建命令</a></p></li>
+<li><p><a class="reference internal" href="#chart-yaml" id="id7">2. Chart.yaml文件</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id8">3. 修改模板</a></p></li>
+<li><p><a class="reference internal" href="#values" id="id9">4. 使用values文件</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id10">5. 打包chart</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id11">6. 校验chart代码</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="chart">
+<h1><a class="toc-backref" href="#id5">构建chart</a><a class="headerlink" href="#chart" title="Permalink to this headline">¶</a></h1>
+<section id="id1">
+<h2><a class="toc-backref" href="#id6">1.chart创建命令</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ helm create anvil
+</pre></div>
+</div>
+<p>chart目录结构</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ tree anvil/
+anvil/
+├── charts
+├── Chart.yaml
+├── templates
+│   ├── deployment.yaml
+│   ├── _helpers.tpl
+│   ├── hpa.yaml
+│   ├── ingress.yaml
+│   ├── NOTES.txt
+│   ├── serviceaccount.yaml
+│   ├── service.yaml
+│   └── tests
+│       └── test-connection.yaml
+└── values.yaml
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>这个Chart.yaml文件包含元数据和chart的一些功能控件。</p></li>
+<li><p>依赖的chart可以选择保存在charts目录中。</p></li>
+<li><p>用于生成Kubernetes清单的模板存储在templates目录中</p></li>
+<li><p>这个NOTES.txt文件是一个特殊的模板。安装chart时，NOTES.txt文件模板是被渲染和显示到（而不是被安装到）集群中。模板可以包含未作为install或upgrade命令的一部分安装的测试。此chart包括由helm
+test命令使用的测试。</p></li>
+<li><p>当Helm渲染清单时传递给模板的默认值位于values.yaml文件中。实例化chart时，可以覆盖这些值。</p></li>
+</ul>
+<p>安装这个新创建的chart，无须任何修改</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm install myapp anvil/
+</pre></div>
+</div>
+<p>如果已将此chart安装到集群中进行测试，则可以通过运行以下命令从集群中删除该实例：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm delete myapp
+</pre></div>
+</div>
+</section>
+<section id="chart-yaml">
+<h2><a class="toc-backref" href="#id7">2. Chart.yaml文件</a><a class="headerlink" href="#chart-yaml" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Chart.yaml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v2</span>
+<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">anvil</span>
+<span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A surprise to catch something speedy.</span>
+<span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
+<span class="nt">appVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9.17.49</span>
+<span class="nt">icon</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://wile.example.com/anvil.svg</span>
+<span class="nt">keywords</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">road runner</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">anvil</span>
+<span class="nt">home</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://wile.example.com/</span>
+<span class="nt">sources</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">https://github.com/masterminds/learning-helm/blob/master/chapter5/anvil</span>
+<span class="nt">maintainers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ACME Corp</span>
+    <span class="nt">email</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">maintainers@example.com</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Wile E. Coyote</span>
+    <span class="nt">email</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wile@example.com</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2><a class="toc-backref" href="#id8">3. 修改模板</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">deployment.yaml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="p p-Indicator">{{</span> <span class="nv">include &quot;anvil.fullname&quot; .</span> <span class="p p-Indicator">}}</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="p p-Indicator">{{</span><span class="nv">- include &quot;anvil.labels&quot; . | nindent 4</span> <span class="p p-Indicator">}}</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="p p-Indicator">{{</span><span class="nv">- if not .Values.autoscaling.enabled</span> <span class="p p-Indicator">}}</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="p p-Indicator">{{</span> <span class="nv">.Values.replicaCount</span> <span class="p p-Indicator">}}</span>
+<span class="p p-Indicator">{{</span><span class="nv">- end</span> <span class="p p-Indicator">}}</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="p p-Indicator">{{</span><span class="nv">- include &quot;anvil.selectorLabels&quot; . | nindent 6</span> <span class="p p-Indicator">}}</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+    <span class="p p-Indicator">{{</span><span class="nv">- with .Values.podAnnotations</span> <span class="p p-Indicator">}}</span>
+      <span class="nt">annotations</span><span class="p">:</span>
+        <span class="p p-Indicator">{{</span><span class="nv">- toYaml . | nindent 8</span> <span class="p p-Indicator">}}</span>
+    <span class="p p-Indicator">{{</span><span class="nv">- end</span> <span class="p p-Indicator">}}</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="p p-Indicator">{{</span><span class="nv">- include &quot;anvil.selectorLabels&quot; . | nindent 8</span> <span class="p p-Indicator">}}</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="p p-Indicator">{{</span><span class="nv">- with .Values.imagePullSecrets</span> <span class="p p-Indicator">}}</span>
+      <span class="nt">imagePullSecrets</span><span class="p">:</span>
+        <span class="p p-Indicator">{{</span><span class="nv">- toYaml . | nindent 8</span> <span class="p p-Indicator">}}</span>
+      <span class="p p-Indicator">{{</span><span class="nv">- end</span> <span class="p p-Indicator">}}</span>
+      <span class="nt">serviceAccountName</span><span class="p">:</span> <span class="p p-Indicator">{{</span> <span class="nv">include &quot;anvil.serviceAccountName&quot; .</span> <span class="p p-Indicator">}}</span>
+      <span class="nt">securityContext</span><span class="p">:</span>
+        <span class="p p-Indicator">{{</span><span class="nv">- toYaml .Values.podSecurityContext | nindent 8</span> <span class="p p-Indicator">}}</span>
+      <span class="nt">containers</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="p p-Indicator">{{</span> <span class="nv">.Chart.Name</span> <span class="p p-Indicator">}}</span>
+          <span class="nt">securityContext</span><span class="p">:</span>
+            <span class="p p-Indicator">{{</span><span class="nv">- toYaml .Values.securityContext | nindent 12</span> <span class="p p-Indicator">}}</span>
+          <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">.Values.image.repository</span><span class="nv"> </span><span class="s">}}:{{</span><span class="nv"> </span><span class="s">.Values.image.tag</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default</span><span class="nv"> </span><span class="s">.Chart.AppVersion</span><span class="nv"> </span><span class="s">}}&quot;</span>
+          <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="p p-Indicator">{{</span> <span class="nv">.Values.image.pullPolicy</span> <span class="p p-Indicator">}}</span>
+          <span class="nt">ports</span><span class="p">:</span>
+            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http</span>
+              <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+              <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+          <span class="nt">livenessProbe</span><span class="p">:</span>
+            <span class="nt">httpGet</span><span class="p">:</span>
+              <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/</span>
+              <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http</span>
+          <span class="nt">readinessProbe</span><span class="p">:</span>
+            <span class="nt">httpGet</span><span class="p">:</span>
+              <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/</span>
+              <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http</span>
+          <span class="nt">resources</span><span class="p">:</span>
+            <span class="p p-Indicator">{{</span><span class="nv">- toYaml .Values.resources | nindent 12</span> <span class="p p-Indicator">}}</span>
+      <span class="p p-Indicator">{{</span><span class="nv">- with .Values.nodeSelector</span> <span class="p p-Indicator">}}</span>
+      <span class="nt">nodeSelector</span><span class="p">:</span>
+        <span class="p p-Indicator">{{</span><span class="nv">- toYaml . | nindent 8</span> <span class="p p-Indicator">}}</span>
+      <span class="p p-Indicator">{{</span><span class="nv">- end</span> <span class="p p-Indicator">}}</span>
+      <span class="p p-Indicator">{{</span><span class="nv">- with .Values.affinity</span> <span class="p p-Indicator">}}</span>
+      <span class="nt">affinity</span><span class="p">:</span>
+        <span class="p p-Indicator">{{</span><span class="nv">- toYaml . | nindent 8</span> <span class="p p-Indicator">}}</span>
+      <span class="p p-Indicator">{{</span><span class="nv">- end</span> <span class="p p-Indicator">}}</span>
+      <span class="p p-Indicator">{{</span><span class="nv">- with .Values.tolerations</span> <span class="p p-Indicator">}}</span>
+      <span class="nt">tolerations</span><span class="p">:</span>
+        <span class="p p-Indicator">{{</span><span class="nv">- toYaml . | nindent 8</span> <span class="p p-Indicator">}}</span>
+      <span class="p p-Indicator">{{</span><span class="nv">- end</span> <span class="p p-Indicator">}}</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="p">{{</span> <span class="n">include</span> <span class="s2">&quot;anvil.fullname&quot;</span> <span class="o">.</span> <span class="p">}}</span>
+  <span class="n">labels</span><span class="p">:</span>
+    <span class="p">{{</span><span class="o">-</span> <span class="n">include</span> <span class="s2">&quot;anvil.labels&quot;</span> <span class="o">.</span> <span class="o">|</span> <span class="n">nindent</span> <span class="mi">4</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>include模板函数允许将一个模板的输出包含在另一个模板中，这在管道中也能工作。include函数的第一个参数是要使用的模板的名称。作为第二个参数传入的“.”是根对象。因为根对象被传入，所以根对象上的属性和函数可以在被调用的模板中使用。</p>
+<p>anvil.fullname以及anvil.labels是通过_helpers.tpl文件引入的两个可重用模板（名称开头的“_”会使它上升到目录列表的顶部，以便你可以在模板中轻松找到它。Helm不会将它们渲染到Kubernetes清单中，但确实会使其中的模板可用）。</p>
+<p>anvil.fullname根据实例化chart时选择的名称提供名称，而anvil.labels提供遵循Kubernetes最佳实践的标签。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">spec</span><span class="p">:</span>
+<span class="p">{{</span><span class="o">-</span> <span class="k">if</span> <span class="ow">not</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">autoscaling</span><span class="o">.</span><span class="n">enabled</span> <span class="p">}}</span>
+  <span class="n">replicas</span><span class="p">:</span> <span class="p">{{</span> <span class="o">.</span><span class="n">Values</span><span class="o">.</span><span class="n">replicaCount</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>.Values上的属性是基于许多因素计算的。默认值和起点基于在chart的values.yaml文件中的输入</p>
+<p>这些值可以被实例化chart时传入的值覆盖。helm
+CLI具有直接传入值的标志（即–set、–set-file和–set-string）或传递带有值（即，-f或–values）的文件的标志。这些值被合并在一起，后传入的值优先采用。</p>
+</section>
+<section id="values">
+<h2><a class="toc-backref" href="#id9">4. 使用values文件</a><a class="headerlink" href="#values" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">values.yaml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">replicaCount</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">image</span><span class="p">:</span>
+  <span class="nt">repository</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+  <span class="nt">pullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+  <span class="nt">tag</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="nt">imagePullSecrets</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
+<span class="nt">nameOverride</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="nt">fullnameOverride</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="nt">serviceAccount</span><span class="p">:</span>
+  <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">annotations</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="nt">podAnnotations</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+<span class="nt">podSecurityContext</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+<span class="nt">securityContext</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+<span class="nt">service</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
+  <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="nt">ingress</span><span class="p">:</span>
+  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+  <span class="nt">annotations</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+  <span class="nt">hosts</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">chart-example.local</span>
+      <span class="nt">paths</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
+  <span class="nt">tls</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
+<span class="nt">resources</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+<span class="nt">autoscaling</span><span class="p">:</span>
+  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+  <span class="nt">minReplicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">maxReplicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">100</span>
+  <span class="nt">targetCPUUtilizationPercentage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="nt">nodeSelector</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+<span class="nt">tolerations</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
+<span class="nt">affinity</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id10">5. 打包chart</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>参考：</p>
+<p><a class="reference external" href="https://www.yuque.com/cuiliang-s1qrv/k8s/ztps4d">https://www.yuque.com/cuiliang-s1qrv/k8s/ztps4d</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/lvzhenjiang/p/14878430.html#23-chart%E8%87%AA%E5%BB%BA">https://www.cnblogs.com/lvzhenjiang/p/14878430.html#23-chart%E8%87%AA%E5%BB%BA</a></p>
+<p><a class="reference external" href="https://www.cnblogs.com/hankuikui/p/10038494.html">harbor 管理Helm
+Chart包</a></p>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id11">6. 校验chart代码</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm lint anvil/
+<span class="o">==</span>&gt; Linting anvil/
+<span class="o">[</span>INFO<span class="o">]</span> Chart.yaml: icon is recommended
+</pre></div>
+</div>
+<p>此命令可以在一个命令中校验多个chart。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm lint anvil/ drupal/
+<span class="o">==</span>&gt; Linting anvil/
+<span class="o">[</span>INFO<span class="o">]</span> Chart.yaml: icon is <span class="nv">recommended</span>
+
+<span class="o">==</span>&gt; Linting drupal/
+
+<span class="m">2</span> chart<span class="o">(</span>s<span class="o">)</span> linted, <span class="m">0</span> chart<span class="o">(</span>s<span class="o">)</span> failed
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="2.Helm%E7%9A%84%E9%AB%98%E7%BA%A7%E5%8A%9F%E8%83%BD.html" class="btn btn-neutral float-left" title="Helm的高级功能" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="4.%E5%BC%80%E5%8F%91%E6%A8%A1%E6%9D%BF.html" class="btn btn-neutral float-right" title="开发模板" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
