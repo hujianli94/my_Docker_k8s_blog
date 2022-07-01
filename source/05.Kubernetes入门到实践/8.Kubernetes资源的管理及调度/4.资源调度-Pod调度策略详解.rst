@@ -237,6 +237,32 @@ Kubernetes非常灵活，还可以自己定义新的预选和优选策略并添�
                        kubernetes.io/hostname=gitee-k8s-w29
                        kubernetes.io/os=linux
 
+.. code:: shell
+
+   # 设置标签
+   $ kubectl label node gitee-k8s-w02 monitor=prometheus
+   node/gitee-k8s-w02 labeled
+   # 带有prometheus标识符的标签
+   $ kubectl label nodes gitee-k8s-w02 node-role.kubernetes.io/prometheus="true"
+
+
+   # 删除标签
+   $ kubectl label nodes gitee-k8s-w02 monitor-
+   node/gitee-k8s-w02 labeled
+   # 带有prometheus标识符的标签
+   $ kubectl label nodes gitee-k8s-w02 node-role.kubernetes.io/prometheus-
+
+
+   # 修改一个label的值，需要加上–overwrite参数：
+   $ kubectl label nodes k8s-test01 gpu=false --overwrite
+
+
+   # 查看所有的lables信息
+   $ kubectl get nodes --show-labels
+
+   # 或者
+   $ kubectl describe nodes k8s-test01
+
 除了自己定义的标签之外，Kubernetes还会为每个节点自动生成系统级标签。
 
 -  Kubernetes.io/hostname：机器名称，例如，gitee-k8s-w29。
