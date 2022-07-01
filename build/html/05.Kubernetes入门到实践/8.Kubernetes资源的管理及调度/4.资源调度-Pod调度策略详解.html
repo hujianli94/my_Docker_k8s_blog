@@ -338,6 +338,31 @@ Labels:             beta.kubernetes.io/arch<span class="o">=</span>amd64
                     kubernetes.io/os<span class="o">=</span>linux
 </pre></div>
 </div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置标签</span>
+$ kubectl label node gitee-k8s-w02 <span class="nv">monitor</span><span class="o">=</span>prometheus
+node/gitee-k8s-w02 labeled
+<span class="c1"># 带有prometheus标识符的标签</span>
+$ kubectl label nodes gitee-k8s-w02 node-role.kubernetes.io/prometheus<span class="o">=</span><span class="s2">&quot;true&quot;</span>
+
+
+<span class="c1"># 删除标签</span>
+$ kubectl label nodes gitee-k8s-w02 monitor-
+node/gitee-k8s-w02 labeled
+<span class="c1"># 带有prometheus标识符的标签</span>
+$ kubectl label nodes gitee-k8s-w02 node-role.kubernetes.io/prometheus-
+
+
+<span class="c1"># 修改一个label的值，需要加上–overwrite参数：</span>
+$ kubectl label nodes k8s-test01 <span class="nv">gpu</span><span class="o">=</span><span class="nb">false</span> --overwrite
+
+
+<span class="c1"># 查看所有的lables信息</span>
+$ kubectl get nodes --show-labels
+
+<span class="c1"># 或者</span>
+$ kubectl describe nodes k8s-test01
+</pre></div>
+</div>
 <p>除了自己定义的标签之外，Kubernetes还会为每个节点自动生成系统级标签。</p>
 <ul class="simple">
 <li><p>Kubernetes.io/hostname：机器名称，例如，gitee-k8s-w29。</p></li>
