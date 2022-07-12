@@ -53,13 +53,13 @@
 <li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html">使用Dockerfile创建镜像</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Docker核心实现技术</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">基本架构</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">1.基本架构</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id2">1.服务端</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">2.客户端</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id4">3.镜像仓库</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">命名空间</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">2.命名空间</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id6">1.进程命名空间</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ipc">2.IPC命名空间</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id7">3.网络命名空间</a></li>
@@ -68,14 +68,14 @@
 <li class="toctree-l4"><a class="reference internal" href="#id9">6.用户命名空间</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id10">控制组</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id11">联合文件系统</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">3.控制组</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">4.联合文件系统</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id12">1.Docker存储原理</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id13">2.Docker存储结构</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id14">3.多种文件系统比较</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#linux">Linux网络虚拟化</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#linux">5.Linux网络虚拟化</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id15">1.基本原理</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id16">2.网络创建过程</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id17">3.手动配置网络</a></li>
@@ -137,14 +137,14 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#docker" id="id19">Docker核心实现技术</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id20">基本架构</a></p>
+<li><p><a class="reference internal" href="#id1" id="id20">1.基本架构</a></p>
 <ul>
 <li><p><a class="reference internal" href="#id2" id="id21">1.服务端</a></p></li>
 <li><p><a class="reference internal" href="#id3" id="id22">2.客户端</a></p></li>
 <li><p><a class="reference internal" href="#id4" id="id23">3.镜像仓库</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id5" id="id24">命名空间</a></p>
+<li><p><a class="reference internal" href="#id5" id="id24">2.命名空间</a></p>
 <ul>
 <li><p><a class="reference internal" href="#id6" id="id25">1.进程命名空间</a></p></li>
 <li><p><a class="reference internal" href="#ipc" id="id26">2.IPC命名空间</a></p></li>
@@ -154,15 +154,15 @@
 <li><p><a class="reference internal" href="#id9" id="id30">6.用户命名空间</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id10" id="id31">控制组</a></p></li>
-<li><p><a class="reference internal" href="#id11" id="id32">联合文件系统</a></p>
+<li><p><a class="reference internal" href="#id10" id="id31">3.控制组</a></p></li>
+<li><p><a class="reference internal" href="#id11" id="id32">4.联合文件系统</a></p>
 <ul>
 <li><p><a class="reference internal" href="#id12" id="id33">1.Docker存储原理</a></p></li>
 <li><p><a class="reference internal" href="#id13" id="id34">2.Docker存储结构</a></p></li>
 <li><p><a class="reference internal" href="#id14" id="id35">3.多种文件系统比较</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#linux" id="id36">Linux网络虚拟化</a></p>
+<li><p><a class="reference internal" href="#linux" id="id36">5.Linux网络虚拟化</a></p>
 <ul>
 <li><p><a class="reference internal" href="#id15" id="id37">1.基本原理</a></p></li>
 <li><p><a class="reference internal" href="#id16" id="id38">2.网络创建过程</a></p></li>
@@ -177,7 +177,7 @@
 <section id="docker">
 <h1><a class="toc-backref" href="#id19">Docker核心实现技术</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
-<h2><a class="toc-backref" href="#id20">基本架构</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id20">1.基本架构</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>作为最流行的容器虚拟化手段，Docker深度应用了操作系统相关领域的多项底层技术。</p>
 <p>最早期版本的Docker基于已经相对成熟的Linux
 Container（LXC）技术快速实现。自0.9版本起，Docker逐渐摆脱传统LXC的限制，转移到全新设计的libcontainer之上，后来更是以此为基础推出了开放容器运行时支持runc（<a class="reference external" href="https://github.com/opencontainers/runc">https://github.com/opencontainers/runc</a>
@@ -250,7 +250,7 @@ API，接收来自dockerd的命令，包括拉取、上传镜像等。</p>
 </section>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id24">命名空间</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id24">2.命名空间</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <p>命名空间（namespace）是Linux内核的一个强大特性，为容器虚拟化的实现带来极大便利。利用这一特性，每个容器都可以拥有自己单独的命名空间，运行在其中的应用都像是在独立的操作系统环境中一样。命名空间机制保证了容器之间彼此互不影响。</p>
 <p>在操作系统中，包括内核、文件系统、网络、进程号（Process
 ID，PID）、用户号（User ID，UID）、进程间通信（InterProcess
@@ -381,7 +381,7 @@ cat: /proc/1/environ: Permission denied
 </section>
 </section>
 <section id="id10">
-<h2><a class="toc-backref" href="#id31">控制组</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id31">3.控制组</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <p>控制组（CGroups）是Linux内核的一个特性，主要用来对共享资源进行隔离、限制、审计等。只有将分配到容器的资源进行控制，才能避免多个容器同时运行时对宿主机系统的资源竞争。每个控制组是一组对资源的限制，支持层级化结构。</p>
 <p>控制组技术最早是由Google的程序员在2006年提出的，Linux内核自2.6.24开始原生支持，可以提供对容器的内存、CPU、磁盘IO等资源进行限制和计费管理。最初的设计目标是为不同的应用情况提供统一的接口，从控制单一进程（比如nice工具）到系统级虚拟化（包括OpenVZ，Linux-VServer，LXC等）。</p>
 <p>具体来看，控制组提供如下功能：</p>
@@ -459,7 +459,7 @@ total_unevictable <span class="m">0</span>
 <p>同时，可以在创建或启动容器时为每个容器指定资源的限制，例如使用-c|–cpu-shares[=0]参数可调整容器使用CPU的权重；使用-m|–memory[=MEMORY]参数可调整容器最多使用内存的大小。</p>
 </section>
 <section id="id11">
-<h2><a class="toc-backref" href="#id32">联合文件系统</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id32">4.联合文件系统</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
 <p>联合文件系统（UnionFS）是一种轻量级的高性能分层文件系统，它支持将文件系统中的修改信息作为一次提交，并层层叠加，同时可以将不同目录挂载到同一个虚拟文件系统下，应用看到的是挂载的最终结果。联合文件系统是实现Docker镜像的技术基础。</p>
 <p>Docker镜像可以通过分层来进行继承。例如，用户基于基础镜像（用来生成其他镜像的基础，往往没有父镜像）来制作各种不同的应用镜像。这些镜像共享同一个基础镜像层，提高了存储效率。此外，当用户改变了一个Docker镜像（比如升级程序到新的版本），则会创建一个新的层（layer）。因此，用户不用替换整个原镜像或者重新建立，只需要添加新层即可。用户分发镜像的时候，也只需要分发被改动的新层内容（增量部分）。这让Docker的镜像管理变得十分轻量和快速。</p>
 <section id="id12">
@@ -529,7 +529,7 @@ Mapper、overlay、over-lay2、vfs、zfs等。多种文件系统目前的支持�
 </section>
 </section>
 <section id="linux">
-<h2><a class="toc-backref" href="#id36">Linux网络虚拟化</a><a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id36">5.Linux网络虚拟化</a><a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
 <p>Docker的本地网络实现其实就是利用了Linux上的网络命名空间和虚拟网络设备（特别是veth
 pair）。熟悉这两部分的基本概念有助于理解Docker网络的实现过程。</p>
 <section id="id15">

@@ -5,8 +5,8 @@
 搭建本地私有仓库
 ================
 
-使用registry镜像创建私有仓库
-----------------------------
+1. 使用registry镜像创建私有仓库
+-------------------------------
 
 .. code:: shell
 
@@ -20,8 +20,8 @@
    #将上传的镜像放到/opt/data/registry目录，在本地将启动一个私有仓库服务，监听端口为5000
    [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker run -d -p 5000:5000 -v /opt/data/registry/:/tmp/registry registry
 
-管理私有仓库
-------------
+2. 管理私有仓库
+---------------
 
 .. code:: shell
 
@@ -53,8 +53,8 @@
    ：
    docker tag 10.0.2.2:5000/test ubuntu:14.04
 
-建立私有镜像仓库
-----------------
+3. 建立私有镜像仓库
+-------------------
 
 Docker公司官方提供的Docker
 Hub镜像仓库由于服务器在国外，网速会非常慢且存在不安全因素，而国内第三方公共仓库不受自己控制，因此具有一定规模的企业都会建立自己的私有镜像仓库，上传镜像到私有镜像参考，在构建容器化应用时，可以快速地下载镜像文件使用。
@@ -95,30 +95,34 @@ Hub镜像仓库由于服务器在国外，网速会非常慢且存在不安全�
    docker pull 10.47.43.100:5000/MySQL
    然后再执行docker images,可以看到10.47.43.100:5000/MySQL,说明下载成功了。
 
-企业私有仓库harbor部署
-----------------------
+4. 企业私有仓库harbor部署
+-------------------------
+
+4.1 测试环境harbor部署
+~~~~~~~~~~~~~~~~~~~~~~
 
 Harbor是由VMware公司开源的企业级的Docker Registry管理项目
 
-::
+.. code:: shell
 
-   [root@support yum.repos.d]# wget -b https://storage.googleapis.com/harbor-releases/release-1.9.0/harbor-offline-installer-v1.9.0.tgz
+   $ wget -b https://storage.googleapis.com/harbor-releases/release-1.9.0/harbor-offline-installer-v1.9.0.tgz
    Continuing in background, pid 9771.
    Output will be written to ‘wget-log’.
-   [root@support ~]# tar zxf harbor-offline-installer-v1.9.0.tgz
-   [root@support ~]# cd harbor
-   [root@i1-CICD harbor]# cat harbor.yml |grep -v "^$"|grep -v "#"
+
+   $ tar zxf harbor-offline-installer-v1.9.0.tgz
+   $ cd harbor
+   $ cat harbor.yml |grep -v "^$"|grep -v "#"
    hostname: 172.16.0.37
    http:
      port: 9090
 
 部署
 
-::
+.. code:: shell
 
-   [root@i1-CICD harbor]# ./prepare 
-   [root@i1-CICD harbor]# ./install.sh 
-   [root@i1-CICD harbor]# docker-compose ps
+   $ ./prepare 
+   $ ./install.sh 
+   $ docker-compose ps
          Name                     Command               State             Ports          
    --------------------------------------------------------------------------------------
    harbor-core         /harbor/harbor_core              Up                               
@@ -130,13 +134,23 @@ Harbor是由VMware公司开源的企业级的Docker Registry管理项目
    redis               redis-server /etc/redis.conf     Up      6379/tcp                 
    registry            /entrypoint.sh /etc/regist ...   Up      5000/tcp                 
    registryctl         /harbor/start.sh                 Up                   
-   harbor修改配置文件后重启
-   # docker-compose down
-   # ./prepare
-   # docker-compose up -d
 
-Harbor 默认管理员用户为 admin ， 密码在 harbor.cfg
-中设置过，默认的是Harbor12345 Harbor创建一个登陆用户。此用户用于推送镜像
-|image1|
+   # harbor修改配置文件后重启
+   $ docker-compose down
+   $ ./prepare
+   $ docker-compose up -d
+
+Harbor 默认管理员用户为 admin ，密码在 harbor.cfg
+中设置过，默认的是Harbor12345
+
+Harbor创建一个登陆用户。此用户用于推送镜像 |image1|
+
+4.2 构建企业级镜像仓库
+~~~~~~~~~~~~~~~~~~~~~~
+
+参考文献：
+
+`harbor
+构建企业级镜像仓库 <https://www.cnblogs.com/superlinux/p/15120502.html>`__
 
 .. |image1| image:: ../_static/docker_harbor001.png

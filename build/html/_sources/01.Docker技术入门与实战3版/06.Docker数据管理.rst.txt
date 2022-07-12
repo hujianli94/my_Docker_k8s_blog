@@ -5,40 +5,42 @@
 Docker数据管理
 ==============
 
-::
+容器中管理数据主要有两种方式：
 
-   容器中管理数据主要有两种方式：
-       ·数据卷（Data Volumes）：容器内数据直接映射到本地主机环境； 
-       ·数据卷容器（Data Volume Containers）：使用特定容器维护数据卷。
+-  数据卷（Data Volumes）：容器内数据直接映射到本地主机环境；
+-  数据卷容器（Data Volume Containers）：使用特定容器维护数据卷。
 
-| ​
-| ## 数据卷
+1.数据卷
+--------
 
-::
+数据卷是一个可供容器使用的特殊目录，它将主机操作系统目录直接映射进容器，类似于Linux中的mount操作。
 
-   #数据卷是一个可供容器使用的特殊目录，它将主机操作系统目录直接映射进容器，类似于Linux中的mount操作。
-   数据卷可以提供很多有用的特性，如下所示： 
-       ·数据卷可以在容器之间共享和重用，容器间传递数据将变得高效方便； 
-       ·对数据卷内数据的修改会立马生效，无论是容器内操作还是本地操作； 
-       ·对数据卷的更新不会影响镜像，解耦了应用和数据； ·卷会一直存在，直到没有容器使用，可以安全地卸载它。
+数据卷可以提供很多有用的特性，如下所示：
 
-在容器内创建一个数据卷
-----------------------
+-  数据卷可以在容器之间共享和重用，容器间传递数据将变得高效方便；
+-  对数据卷内数据的修改会立马生效，无论是容器内操作还是本地操作；
+-  对数据卷的更新不会影响镜像，解耦了应用和数据；
+-  卷会一直存在，直到没有容器使用，可以安全地卸载它。
+
+1.1 创建一个数据卷
+~~~~~~~~~~~~~~~~~~
 
 .. code:: shell
 
-   1.将宿主机的html目录挂载到容器中，实现修改宿主机文件，容器index.html网页也修改 
-   #在用docker run命令的时候，使用-v标记可以在容器内创建一个数据卷。多次重复使用-v标记可以创建多个数据卷。多个-v同时可以使用
+   # 在用docker run命令的时候，使用-v标记可以在容器内创建一个数据卷。
+   # 多次重复使用-v标记可以创建多个数据卷。多个-v同时可以使用
 
-   #官网下载nginx镜像
+   # 将宿主机的html目录挂载到容器中，实现修改宿主机文件，容器index.html网页也修改 
+   # 官网下载nginx镜像
    docker pull nginx
 
    # 创建宿主机要挂载的目录
    mkdir -p /home/soft/nginx/html
 
-   [root@iZ2ze38chylj63vuj6fqiaZ nginx]# docker run --name hu_nginx -d -p 8080:80 -v /home/soft/nginx/html/:/usr/share/nginx/html nginx
+   $ docker run --name hu_nginx -d -p 8080:80 -v /home/soft/nginx/html/:/usr/share/nginx/html nginx
    34ed3bd8224c4307efbb9545f2e87545fdfc12380b2e84473712c6697b36ee6d
-   [root@iZ2ze38chylj63vuj6fqiaZ nginx]# docker ps
+
+   $ docker ps
    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
    34ed3bd8224c        nginx               "nginx -g 'daemon ..."   6 seconds ago       Up 5 seconds        0.0.0.0:8080->80/tcp   hu_nginx
 
@@ -46,10 +48,10 @@ Docker数据管理
    cd /home/soft/nginx/html
    echo "testcd html/cd html/huajineli index" > index.html
 
-   [root@iZ2ze38chylj63vuj6fqiaZ html]# curl 127.0.0.1:8080
+   $ curl 127.0.0.1:8080
    testcd html/cd html/huajineli index
 
-   [root@iZ2ze38chylj63vuj6fqiaZ html]# cat >index.html<<EOF
+   $ cat >index.html<<EOF
    > curl 127.0.0.1:8080
    > <html>
    > <head><title>403 Forbidden</title></head>
@@ -63,48 +65,48 @@ Docker数据管理
 
    curl 127.0.0.1:8080 再次查看
 
-挂载一个主机目录作为数据卷
---------------------------
+1.2 挂载主机目录作为数据卷
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: shell
 
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker run -d -P --name web -v /src/webapp:/opt/webapp training/webapp python app.py
+   $ docker run -d -P --name web -v /src/webapp:/opt/webapp training/webapp python app.py
    #上面的命令加载主机的/src/webapp目录到容器的/opt/webapp目录。
 
    Docker挂载数据卷的默认权限是读写（rw），用户也可以通过ro指定为只读：
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker run -d -P --name web -v /src/webapp:/opt/webapp:ro training/webapp python app.py
+   $ docker run -d -P --name web -v /src/webapp:/opt/webapp:ro training/webapp python app.py
    cc9bb6df41e1e44a7f701a2abcb4e901c4c216b1c542da6d8657abe055c3807c
 
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker ps
+   $ docker ps
    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker ps -a
+   $ docker ps -a
    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
    cc9bb6df41e1        training/webapp     "python app.py"     5 seconds ago       Exited (2) 4 seconds ago                       web
 
    # 加了：ro之后，容器内对所挂载数据卷内的数据就无法修改了。
 
-挂载一个本地主机文件作为数据卷
-------------------------------
+1.3 挂载本地主机文件作为数据卷
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: shell
 
    # -v标记也可以从主机挂载单个文件到容器中作为数据卷（不推荐）。
-   docker run --rm -it -v ~/.bash_history:/.bash_history ubuntu /bin/bash
+   $ docker run --rm -it -v ~/.bash_history:/.bash_history ubuntu /bin/bash
 
-数据卷容器
-----------
+2. 数据卷容器
+-------------
 
 .. code:: shell
 
     # 如果用户需要在多个容器之间共享一些持续更新的数据，最简单的方式是使用数据卷容器。数据卷容器也是一个容器，但是它的目的是专门用来提供数据卷供其他容器挂载。
 
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker run -it -v /dbdata --name dbdata ubuntu
+   $ docker run -it -v /dbdata --name dbdata ubuntu
 
-   root@462f17402bc3:/# ls
+   $ ls
    bin  boot  dbdata  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
 
    然后，可以在其他容器中使用--volumes-from来挂载dbdata容器中的数据卷，例如创建db1和db2两个容器，并从dbdata容器挂载数据卷：
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker run -it --volumes-from dbdata --name db1 ubuntu
+   $ docker run -it --volumes-from dbdata --name db1 ubuntu
    root@d3121e65cda2:/# exit
    exit
    [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker run -it --volumes-from dbdata --name db2 ubuntu
@@ -113,27 +115,29 @@ Docker数据管理
 
 
    #在容器dbdata中创建一个测试文件
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker start dbdata
+   $ docker start dbdata
    dbdata
 
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker exec -it dbdata /bin/bash
+   $ docker exec -it dbdata /bin/bash
 
    root@462f17402bc3:/# cd /dbdata/
    root@462f17402bc3:/dbdata# touch huajinli_text
 
    # 启动db1和db2，查看/dbdata目录下文件是否同步
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker start db1
+   $ docker start db1
    db1
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker start db2
+
+   $ docker start db2
    db2
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker ps
+
+   $ docker ps
    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
    4efa5f74a404        ubuntu              "/bin/bash"         3 minutes ago       Up 2 seconds                            db2
    d3121e65cda2        ubuntu              "/bin/bash"         3 minutes ago       Up 3 seconds                            db1
    462f17402bc3        ubuntu              "/bin/bash"         6 minutes ago       Up About a minute                       dbdata
 
    #db1上查看
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker exec -it db1 /bin/bash
+   $ docker exec -it db1 /bin/bash
    root@d3121e65cda2:/# ll /dbdata/
    total 8
    drwxr-xr-x 2 root root 4096 May 30 08:25 ./
@@ -142,7 +146,7 @@ Docker数据管理
 
 
    #db2上查看
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker exec -it db2 /bin/bash
+   $ docker exec -it db2 /bin/bash
    root@4efa5f74a404:/# ll /dbdata/
    total 8
    drwxr-xr-x 2 root root 4096 May 30 08:25 ./
@@ -151,26 +155,28 @@ Docker数据管理
 
    注意: 使用--volumes-from参数所挂载数据卷的容器自身并不需要保持在运行状态。
    #如果删除了挂载的容器（包括dbdata、db1和db2），数据卷并不会被自动删除。如果要删除一个数据卷，必须在删除最后一个还挂载着它的容器时显式使用docker rm-v命令来指定同时删除关联的容器。
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker rm db1
+   $ docker rm db1
    db1
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker rm db2
+   $ docker rm db2
    db
-   [root@iZ2ze38chylj63vuj6fqiaZ ~]# docker rm -v dbdata
+   $ docker rm -v dbdata
    dbdata
 
-``注意``
+..
 
-``使用--volumes-from参数所挂载数据卷的容器自身并不需要保持在运行状态。``
-``如果删除了挂载的容器（包括dbdata、db1和db2），数据卷并不会被自动删除。如果要删除一个数据卷，必须在删除最后一个还挂载着它的容器时显式使用docker rm-v命令来指定同时删除关联的容器。``
+   注意
 
-利用数据卷容器来迁移数据
-------------------------
+使用–volumes-from参数所挂载数据卷的容器自身并不需要保持在运行状态。
+如果删除了挂载的容器（包括dbdata、db1和db2），数据卷并不会被自动删除。如果要删除一个数据卷，必须在删除最后一个还挂载着它的容器时显式使用docker
+rm-v命令来指定同时删除关联的容器。
+
+3.利用数据卷容器来迁移数据
+--------------------------
 
 利用数据卷容器来备份、恢复、迁移数据卷
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-备份
-^^^^
+3.1 备份
+~~~~~~~~
 
 .. code:: shell
 
@@ -179,8 +185,8 @@ Docker数据管理
    sudo docker run --volumes-from dbdata -v $(pwd):/backup ubuntu tar cvf /backup/backup.tar /dbdata
    容器启动后，使用了tar命令来将 dbdata 卷备份为容器中 /backup/backup.tar文件，也就是主机当前目录下的名为backup.tar的文件。
 
-恢复
-^^^^
+3.2 恢复
+~~~~~~~~
 
 .. code:: shell
 
@@ -193,33 +199,32 @@ Docker数据管理
    #为了查看/验证恢复的数据，可以再启动一个容器挂载同样的容器卷来查看
    sudo docker run --volumes-from dbdata2 busybox /bin/ls /dbdata
 
-容器连接
---------
+4.容器连接
+----------
 
-容器命名
-~~~~~~~~
+4.1 容器命名
+~~~~~~~~~~~~
 
-::
-
-   容器连接依赖于容器名，所以当需要使用容器连接时，首先需要命名容器，然后使用 --link 参数进行连接。
+容器连接依赖于容器名，所以当需要使用容器连接时，首先需要命名容器，然后使用
+–link 参数进行连接。
 
 容器命名的好处：
 
-``① 一个有意义的名字能够表明该容器的用途，这样方便记忆``
+1. 一个有意义的名字能够表明该容器的用途，这样方便记忆
 
-``② 命名后的容器在容器连接中能够清晰地表征容器之间的逻辑依赖关系。``
+2. 命名后的容器在容器连接中能够清晰地表征容器之间的逻辑依赖关系。
 
 通过 –name 参数来命名容器，具体操作为：
 
 .. code:: shell
 
-   [root@k8s-master ~]# docker run -d -P --name web training/webapp python app.py
+   $ docker run -d -P --name web training/webapp python app.py
 
 查看容器运行状况
 
 .. code:: shell
 
-   [root@k8s-master ~]# docker ps -l
+   $ docker ps -l
    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                     NAMES
    76a4b3be32dd        training/webapp     "python app.py"     45 seconds ago      Up 44 seconds       0.0.0.0:32768->5000/tcp   web
 
@@ -227,8 +232,8 @@ Docker数据管理
 
 .. _容器连接-1:
 
-容器连接
-~~~~~~~~
+4.2 容器连接
+~~~~~~~~~~~~
 
 连接的格式为 –link name:alias ，其中 name 是源容器的名称， alias
 是这个连接的别名.
@@ -239,25 +244,24 @@ Docker数据管理
 
 .. code:: shell
 
-   docker run -d --name dbdata training/postgres
+   $ docker run -d --name dbdata training/postgres
 
 然后，建立一个Web容器 web ，将其连接到 dbdata 容器，具体操作为：
 
 .. code:: shell
 
-   docker run -d -P --name web --link dbdata:db training/webapp python app.py
+   $ docker run -d -P --name web --link dbdata:db training/webapp python app.py
 
 通过 docker inpsect 命令，看到和连接相关的字段
 
 .. code:: shell
 
-   [root@k8s-master ~]# docker inspect web
+   $ docker inspect web
                "Links": [
                    "/dbdata:/web/db"
                ],
 
 Docker给目标容器提供了如下两种方式来暴露连接提供的服务：
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  环境变量；
 
@@ -267,7 +271,7 @@ Docker给目标容器提供了如下两种方式来暴露连接提供的服务�
 
 .. code:: shell
 
-   [root@k8s-master ~]# docker run --rm --name web2 --link dbdata:webdb training/webapp env
+   $ docker run --rm --name web2 --link dbdata:webdb training/webapp env
    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
    HOSTNAME=8b8f0f64203b
    WEBDB_PORT=tcp://172.17.0.2:5432
@@ -283,7 +287,7 @@ Docker给目标容器提供了如下两种方式来暴露连接提供的服务�
 
 .. code:: shell
 
-   [root@k8s-master ~]#  docker run -i -t --rm --name web2 --link dbdata:webdb training/webapp /bin/bash
+   $ docker run -i -t --rm --name web2 --link dbdata:webdb training/webapp /bin/bash
    root@84e1a7665c8f:/opt/webapp# cat /etc/hosts
    127.0.0.1   localhost
    ::1 localhost ip6-localhost ip6-loopback
