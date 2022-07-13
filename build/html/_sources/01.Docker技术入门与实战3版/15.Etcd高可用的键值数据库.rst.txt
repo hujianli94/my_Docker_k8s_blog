@@ -11,8 +11,8 @@ Fleet和Salesforce等。
 
 在这一章里面，笔者将详细介绍该项目的相关知识，包括安装和使用，以及集群管理的相关知识等。
 
-Etcd简介
---------
+1.Etcd简介
+----------
 
 Etcd是CoreOS团队于2013年6月发起的开源项目，它的目标是构建一个高可用的分布式键值（key-value）仓库，遵循Apache
 v2许可，基于Go语言实现。
@@ -52,8 +52,8 @@ Raft是一套通过选举主节点来实现分布式系统一致性的算法，�
 Ongaro和John Ousterhout
 提出。更多细节可以参考https://raftconsensus.github.io。
 
-安装和使用Etcd
---------------
+2.安装和使用Etcd
+----------------
 
 Etcd基于Go语言实现，因此，用户可以从项目主页：\ https://github.com/coreos/etcd
 下载源代码自行编译（最新版本需要Go
@@ -69,25 +69,17 @@ Etcd基于Go语言实现，因此，用户可以从项目主页：\ https://gith
 
 例如，下面的命令使用curl工具下载压缩包，并解压到本地：
 
---------------
-
 .. code:: shell
 
    $ curl -L https://github.com/coreos/etcd/releases/download/v3.3.1/etcd-v3.3.1-linux-amd64.tar.gz | tar xzvf
 
---------------
-
 解压后，可以看到文件包括若干二进制文件和文档文件：
-
---------------
 
 .. code:: shell
 
    $ cd etcd-v3.3.1-linux-amd64
    $ ls
    Documentation  etcd  etcdctl  README-etcdctl.md  README.md  READMEv2-etcdctl.md
-
---------------
 
 其中etcd是服务主文件，etcdctl是提供给用户的命令客户端，其他都是文档文件。
 
@@ -97,13 +89,9 @@ Etcd基于Go语言实现，因此，用户可以从项目主页：\ https://gith
 
 通过下面的命令将所需要的二进制文件都放到系统可执行路径/usr/local/bin/下：
 
---------------
-
 .. code:: shell
 
    $ sudo cp etcd* /usr/local/bin/
-
---------------
 
 Etcd安装到此完成。
 
@@ -113,8 +101,6 @@ Etcd安装到此完成。
 
 可通过如下命令查看etcd的版本信息：
 
---------------
-
 .. code:: shell
 
    $ etcd --version
@@ -123,13 +109,9 @@ Etcd安装到此完成。
    Go Version: go1.9.4
    Go OS/Arch: linux/amd64
 
---------------
-
 接下来，直接执行Etcd命令，将启动一个服务节点，监听在本地的2379（客户端请求端口）和2380（其他节点连接端口）。
 
 显示类似如下的信息：
-
---------------
 
 .. code:: shell
 
@@ -145,23 +127,15 @@ Etcd安装到此完成。
    13:20:36.572548 I | etcdserver: name = default
    ...
 
---------------
-
 此时，可以通过REST API直接查看集群健康状态：
-
---------------
 
 .. code:: shell
 
    $ curl -L http://127.0.0.1:2379/health
    {"health": "true"}
 
---------------
-
 当然，也可以使用自带的etcdctl命令进行查看（实际上是封装了REST
 API调用）：
-
---------------
 
 .. code:: shell
 
@@ -169,12 +143,8 @@ API调用）：
    member ce2a822cea30bfca is healthy: got healthy result from http://localhost:2379
    cluster is healthy
 
---------------
-
 通过etcdctl设置和获取键值也十分方便，例如设置键值对testkey：“hello
 world”：
-
---------------
 
 .. code:: shell
 
@@ -183,13 +153,9 @@ world”：
    $ etcdctl get testkey
    hello world
 
---------------
-
 说明键值对已经设置成功了。
 
 当然，除了etcdctl命令外，也可以直接通过HTTP访问本地2379端口的方式来进行操作，例如查看testkey的值：
-
---------------
 
 .. code:: shell
 
@@ -198,16 +164,12 @@ world”：
    $ curl -L http://localhost:2379/v2/keys/testkey
    {"action":"get","node":{"key":"/testkey","value":"hello world","modifiedIndex":5, "createdIndex":5}}
 
---------------
-
 注意目前API版本为v2，将来出了新版本后，API路径中则对应为新版本号。
 
 2.Docker镜像方式下载
 
 以Etcd
 3.3.1为例，镜像名称为quay.io/coreos/etcd：v3.3.1，可以通过下面的命令启动etcd服务监听到本地的2379和2380端口：
-
---------------
 
 .. code:: shell
 
@@ -217,25 +179,17 @@ world”：
        -v /etc/ssl/certs/:/etc/ssl/certs/
        quay.io/coreos/etcd:v3.3.1
 
---------------
-
 3.数据目录
 
 作为数据库，最重要的自然是数据存放位置。Etcd默认创建的本地数据目录为\ :math:`{name}.etcd，其中`\ {name}为节点别名。默认情况下本地数据路径为default.etcd。
 
 用户也可以通过–data-dir选项来指定本地数据存放的位置，下面命令指定Etcd节点别名为test，数据存放目录为test.etcd：
 
---------------
-
 ::
 
    $ etcd --name "test" --data-dir test.etcd
 
---------------
-
 查看数据目录下内容：
-
---------------
 
 ::
 
@@ -248,8 +202,6 @@ world”：
            ├── 0000000000000000-0000000000000000.wal
            └── 0.tmp
    3 directories, 3 files
-
---------------
 
 其中，snap目录下将定期记录节点的状态快照信息，wal目录下则记录数据库的操作日志信息（可以通过–wal-dir参数来指定存放到特定目录）。
 
@@ -301,8 +253,8 @@ Etcd服务启动的时候支持一些参数，用户可以通过这些参数来�
 
 .. image:: ../_static/docker_etcd00007.png
 
-使用客户端命令
---------------
+3.使用客户端命令
+----------------
 
 etcdctl是Etcd官方提供的命令行客户端，它支持一些基于HTTP
 API封装好的命令，供用户直接跟Etcd服务打交道，而无须基于API的方式。当然，这些命令跟API实际上是对应的，最终效果上并无不同之处。
@@ -313,13 +265,9 @@ Etcd项目二进制发行包中已经包含了etcdctl工具，没有的话，可
 
 etcdctl的命令格式为：
 
---------------
-
 ::
 
    $ etcdctl [ 全局选项] 命令 [ 命令选项] [ 命令参数]
-
---------------
 
 全局选项参数见表22-6。
 
@@ -345,8 +293,8 @@ Etcd作为一个分布式数据库，与ZooKeeper类似，采用了类似文件�
 
 下面分别来看各个操作的主要用法和功能。
 
-数据类操作
-----------
+4.数据类操作
+------------
 
 数据类操作围绕对键值和目录的CRUD（符合REST风格的一套操作：Create）完整生命周期的管理。
 
@@ -360,14 +308,10 @@ CRUD即Create，Read，Update，Delete，是符合REST风格的一套API操作�
 
 设置某个键的值为给定值。例如：
 
---------------
-
 .. code:: shell
 
    $ etcdctl set /testdir/testkey "Hello world"
    Hello world
-
---------------
 
 支持的选项包括：
 
@@ -386,8 +330,6 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 获取指定键的值。例如：
 
---------------
-
 .. code:: shell
 
    $ etcdctl set testkey hello
@@ -395,18 +337,12 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
    $ etcdctl update testkey world
    world
 
---------------
-
 当键不存在时，则会报错。例如：
-
---------------
 
 .. code:: shell
 
    $ etcdctl get testkey2
    Error: 100: Key not found (/testkey2) [1]
-
---------------
 
 支持的选项为：
 
@@ -418,8 +354,6 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 当键存在时，更新值内容。例如：
 
---------------
-
 .. code:: shell
 
    $ etcdctl set testkey hello
@@ -427,18 +361,12 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
    $ etcdctl update testkey world
    world
 
---------------
-
 当键不存在时，则会报错。例如：
-
---------------
 
 .. code:: shell
 
    $ etcdctl update testkey2 world
    Error:  100: Key not found (/testkey2) [1]
-
---------------
 
 支持的选项为-ttl‘0’：超时时间（单位为秒），默认为0，意味着永不超时。
 
@@ -446,18 +374,12 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 如果给定的键不存在，则创建一个新的键值。例如：
 
---------------
-
 .. code:: shell
 
    $ etcdctl mk /testdir/testkey "Hello world"
    Hello world
 
---------------
-
 当键存在的时候，执行该命令会报错，例如：
-
---------------
 
 .. code:: shell
 
@@ -465,8 +387,6 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
    Hello world
    $ ./etcdctl mk testkey "Hello world"
    Error:  105: Key already exists (/testkey) [2]
-
---------------
 
 支持的选项为：
 
@@ -478,24 +398,16 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 删除某个键值。例如：
 
---------------
-
 .. code:: shell
 
    $ etcdctl rm testkey
 
---------------
-
 当键不存在时，则会报错。例如：
-
---------------
 
 .. code:: shell
 
    $ etcdctl rm testkey2
    Error: 100: Key not found (/testkey2) [8]
-
---------------
 
 支持的选项为：
 
@@ -512,14 +424,10 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 例如，用户更新testkey键值为Hello world：
 
---------------
-
 .. code:: shell
 
    $ etcdctl watch testkey
    Hello world
-
---------------
 
 支持的选项包括：
 
@@ -535,8 +443,6 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 例如，一旦检测到testkey键值被更新，则执行ls命令：
 
---------------
-
 .. code:: shell
 
    $ etcdctl exec-watch testkey -- sh -c 'ls'
@@ -547,8 +453,6 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
    etcd-migrate
    README-etcdctl.md
    README.md
-
---------------
 
 支持的选项包括：
 
@@ -561,8 +465,6 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 列出目录（默认为根目录）下的键或者子目录，默认不显示子目录中内容。例如：
 
---------------
-
 .. code:: shell
 
    $ etcdctl set testkey 'hi'
@@ -574,8 +476,6 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
    /dir
    $ etcdctl ls dir
    /dir/test
-
---------------
 
 支持的选项包括：
 
@@ -590,25 +490,17 @@ value：若该键现在的索引值是指定索引，则进行设置操作，默
 
 如果给定的键目录不存在，则创建一个新的键目录。例如：
 
---------------
-
 .. code:: shell
 
    $ etcdctl mkdir testdir
 
---------------
-
 当键目录存在的时候，执行该命令会报错，例如：
-
---------------
 
 .. code:: shell
 
    $ etcdctl mkdir testdir
    $ etcdctl mkdir testdir
    Error:  105: Key already exists (/testdir) [7]
-
---------------
 
 支持的选项为-ttl
 value：超时时间（单位为秒），默认值为0，意味着永不超时。
@@ -617,8 +509,6 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
 
 删除一个空目录，或者键值对。若目录不空，会报错，例如：
 
---------------
-
 .. code:: shell
 
    $ etcdctl set /dir/testkey hi
@@ -626,13 +516,9 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
    $ etcdctl rmdir /dir
    Error:  108: Directory not empty (/dir) [13]
 
---------------
-
 11.setdir
 
 创建一个键目录，无论存在与否。实际上，目前版本当目录已经存在的时候会报错，例如：
-
---------------
 
 .. code:: shell
 
@@ -641,8 +527,6 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
    /test
    /test/test
 
---------------
-
 支持的选项为-ttl
 value：超时时间（单位为秒），默认值为0，意味着永不超时。
 
@@ -650,20 +534,16 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
 
 更新一个已经存在的目录的属性（目前只有存活时间），例如：
 
---------------
-
 .. code:: shell
 
    $ etcdctl mkdir /test/test --ttl 100
    $ etcdctl updatedir /test/test --ttl 200
 
---------------
-
 支持的选项为-ttl
 value：超时时间（单位为秒），默认值为0，意味着永不超时。
 
-非数据类操作
-------------
+5.非数据类操作
+--------------
 
 非数据类操作不直接对数据本身进行管理，而是负责围绕集群自身的一些配置。
 
@@ -683,24 +563,16 @@ value：超时时间（单位为秒），默认值为0，意味着永不超时�
 
 例如，备份默认配置的信息到当前路径下的tmp子目录：
 
---------------
-
 ::
 
    $ etcdctl backup --data-dir default.etcd --backup-dir tmp
 
---------------
-
 可以查看tmp目录下面多了一个member目录：
-
---------------
 
 ::
 
    $ ls tmp/member
    snap wal
-
---------------
 
 其中，snap为快照目录，保存节点状态快照文件（注意这些快照文件定期生成）；wal保存了数据库预写日志（write
 ahead log）信息。
@@ -713,15 +585,11 @@ ahead log）信息。
 
 查看Etcd集群的健康状态。例如：
 
---------------
-
 ::
 
    $ etcdctl cluster-health
    member ce2a822cea30bfca is healthy: got healthy result from http://localhost:2379
    cluster is healthy
-
---------------
 
 支持的选项包括-forever，-f：每隔10秒钟检查一次，直到手动终止(通过Ctrl+C命令)。
 
@@ -729,14 +597,10 @@ ahead log）信息。
 
 通过list、add、remove等子命令列出、添加、删除Etcd实例到Etcd集群中。例如，本地启动一个Etcd服务实例后，可以用如下命令进行查看默认的实例成员：
 
---------------
-
 ::
 
    $ etcdctl member list
    ce2a822cea30bfca: name=default peerURLs=http://localhost:2380,http://local-host:7001 clientURLs=http://localhost:2379,http://localhost:4001
-
---------------
 
 4.user
 
@@ -758,35 +622,23 @@ ahead log）信息。
 
 默认情况下，需要先创建（启用）root用户作为etcd集群的最高权限管理员：
 
---------------
-
 .. code:: shell
 
    $ etcdctl user add root
    New password:
 
---------------
-
 创建一个testuser用户，会提示输入密码：
-
---------------
 
 .. code:: shell
 
    $ etcdctl user add testuser
    New password:
 
---------------
-
 分配某些已有角色给用户：
-
---------------
 
 .. code:: shell
 
    $ etcdctl user grant testuser -roles testrole
-
---------------
 
 5.role
 
@@ -803,27 +655,21 @@ ahead log）信息。
 
 默认带有root、guest两种角色，前者为全局最高权限，后者为不带验证情况下的用户。例如：
 
---------------
-
 .. code:: shell
 
    $ etcdctl role add testrole
    $ etcdctl role grant testrole -path '/key/*' -read
 
---------------
-
 6.auth
 
 是否启用访问验证。enable为启用，disable为禁用。例如，在root用户创建后，启用认证：
-
---------------
 
 .. code:: shell
 
    $ etcdctl auth enable
 
-Etcd集群管理
-------------
+6.Etcd集群管理
+--------------
 
 Etcd的集群也采用了典型的“主-从”模型，通过Raft协议来保证在一段时间内有一个节点为主节点，其他节点为从节点。一旦主节点发生故障，其他节点可以自动再重新选举出新的主节点。
 
@@ -833,8 +679,8 @@ Etcd的集群也采用了典型的“主-从”模型，通过Raft协议来保�
 
 在分布式系统中有一个很重要的概念：quorum，意味着一个集群正常工作需要能参加投票的节点个数的最小值，非拜占庭容错情况下为集群的一半再加一。
 
-构建集群
-~~~~~~~~
+6.1构建集群
+~~~~~~~~~~~
 
 构建集群无非是让节点们知道自己加入了哪个集群，其他对等节点的访问信息是啥。
 
@@ -855,21 +701,15 @@ Node3 10.0.0.3
 
 首先在各个节点上将地址和别名信息添加到/etc/hosts：
 
---------------
-
 .. code:: shell
 
    10.0.0.1 Node1
    10.0.0.2 Node2
    10.0.0.3 Node3
 
---------------
-
 可以通过如下命令来启动各个节点上的etcd服务，分别命名为n1、n2和n3。
 
 在节点1上，执行如下命令：
-
---------------
 
 .. code:: shell
 
@@ -882,11 +722,7 @@ Node3 10.0.0.3
        --initial-advertise-peer-urls http://Node1:2380 \
        --initial-cluster n1=http://Node1:2380,n2=http://Node2:2380,n3=http://Node3:2380
 
---------------
-
 在节点2上，执行：
-
---------------
 
 .. code:: shell
 
@@ -899,11 +735,7 @@ Node3 10.0.0.3
        --initial-advertise-peer-urls http://Node2:2380 \
        --initial-cluster n1=http://Node1:2380,n2=http://Node2:2380,n3=http://Node3:2380
 
---------------
-
 在节点3上，执行：
-
---------------
 
 .. code:: shell
 
@@ -916,11 +748,7 @@ Node3 10.0.0.3
        --initial-advertise-peer-urls http://Node3:2380 \
        --initial-cluster n1=http://Node1:2380,n2=http://Node2:2380,n3=http://Node3:2380
 
---------------
-
 成功后，可以在任一节点上通过etcdctl来查看当前集群中的成员信息：
-
---------------
 
 .. code:: shell
 
@@ -940,20 +768,14 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 首先，为要创建的集群申请一个独一无二的uuid，需要提供的唯一参数为集群中节点的个数：
 
---------------
-
 ::
 
    $ curl https://discovery.etcd.io/new?size=3
    https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
 
---------------
-
 返回的地址就是该集群要实现动态发现的独一无二的地址。分别在各个节点上指定服务发现地址信息，替代掉原先动态指定的节点列表。
 
 在节点1上，执行：
-
---------------
 
 ::
 
@@ -966,11 +788,7 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
        --initial-advertise-peer-urls http://Node1:2380 \
        --discovery https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
 
---------------
-
 在节点2上，执行：
-
---------------
 
 ::
 
@@ -983,11 +801,7 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
        --initial-advertise-peer-urls http://Node2:2380 \
        --discovery https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
 
---------------
-
 在节点3上，执行：
-
---------------
 
 ::
 
@@ -999,8 +813,6 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
        --advertise-client-urls http://Node3:2379 \
        --initial-advertise-peer-urls http://Node3:2380 \
        --discovery https://discovery.etcd.io/7f66dc8d468a1c940969a8c329ee329a
-
---------------
 
 当然，用户也可以配置私有的服务。
 
@@ -1014,8 +826,8 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 则启动参数中的集群节点列表信息可以替换为-discovery-srv mycluster.com。
 
-集群参数配置
-~~~~~~~~~~~~
+6.2集群参数配置
+~~~~~~~~~~~~~~~
 
 影响集群性能的因素可能有很多，包括时间同步、网络抖动、存储压力、读写压力，等等，需要通过优化配置尽量减少这些因素的影响。
 
@@ -1026,14 +838,10 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 因此，各个节点要启动同步时钟协议。以Ubuntu系统为例：
 
---------------
-
 ::
 
    $ sudo aptitude install ntp
    $ sudo service ntp restart
-
---------------
 
 用户也可以修改/etc/ntp.conf文件，来指定NTP服务器地址，建议多个节点采用统一的配置。
 
@@ -1048,23 +856,15 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 
 例如，一般情况下，跨数据中心的集群可以配置为：
 
---------------
-
 ::
 
    $ etcd -heartbeat-interval=200 -election-timeout=2000
 
---------------
-
 也可通过环境变量指定：
-
---------------
 
 ::
 
    $ ETCD_HEARTBEAT_INTERVAL=100 ETCD_ELECTION_TIMEOUT=500 etcd
-
---------------
 
 对于跨地域的网络（例如中美之间的数据中心RTT往往在数百ms），还可以适当延长。
 
@@ -1074,23 +874,15 @@ CoreOS提供了一个公开的Etcd发现服务，地址在\ `https://discovery.e
 Etcd会定期将数据的修改存储为snapshot，默认情况下每10
 000次修改才会存一个snapshot。在存储的时候会有大量数据进行写入，影响Etcd的性能。建议将这个值调整的小一些，例如每提交2000个事务就做一次snapshot：
 
---------------
-
 ::
 
    $ etcd -snapshot-count=2000
 
---------------
-
 也可通过环境变量指定：
-
---------------
 
 ::
 
    ETCD_SNAPSHOT_COUNT=2000 etcd
-
---------------
 
 4.修改节点
 ^^^^^^^^^^
@@ -1120,7 +912,7 @@ Etcd提供了-strict-reconfig-check选项，确保当集群状态不稳定时候
 这个时候，最保险的办法是找到一个数据记录完整且比较新的节点，先以它为唯一节点创建新的集群，然后将其他节点一个一个地添加进来，添加过程中注意保证集群的稳定性。
 
 本章小结
-~~~~~~~~
+--------
 
 本章介绍了强大的分布式键值仓库Etcd，包括如何利用它进行读写数据等操作，以及Etcd集群管理的一些要点。Etcd提供了很多有用的功能，包括数据监听、定期快照等。
 

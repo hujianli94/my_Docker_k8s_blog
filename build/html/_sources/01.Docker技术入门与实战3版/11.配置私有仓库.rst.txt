@@ -9,8 +9,8 @@
 
 在第一部分中，笔者曾介绍快速使用Registry镜像搭建一个私有仓库的方法。本章将具体讲解Registry的使用技巧，并通过案例来展示如何搭建一个功能完善的私有镜像仓库。在搭建完成本地的私有仓库服务后，来会剖析Registry的配置参数，最后会介绍通过编写脚本来实现对镜像的快速批量化管理。
 
-安装Docker Registry
--------------------
+1.安装Docker Registry
+---------------------
 
 Docker
 Registry工具目前最新为2.0系列版本，这一版本和一些类库和工具一起被打包为负责容器内容分发的工具集：Docker
@@ -24,20 +24,14 @@ Distribution。目前其核心的功能组件仍为负责镜像仓库的管理�
 
 基于容器的运行方式十分简单，只需要一条命令：
 
---------------
-
 .. code:: shell
 
    $ docker run -d -p 5000:5000 --restart=always --name registry registry:2
-
---------------
 
 启动后，服务监听在本地的5000端口，可以通过访问\ http://localhost:5000/v2/
 测试启动成功。
 
 Registry比较关键的参数是配置文件和仓库存储路径。默认的配置文件为/etc/docker/registry/config.yml，因此，通过如下命令，可以指定使用本地主机上的配置文件（如/home/user/registry-conf）：
-
---------------
 
 .. code:: shell
 
@@ -47,13 +41,9 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
        -v /home/user/registry-conf/config.yml:/etc/docker/registry/config.yml \
        registry:2
 
---------------
-
 默认的存储位置为/var/lib/registry，可以通过-v参数来映射本地的路径到容器内。
 
 例如，下面将镜像存储到本地/opt/data/registry目录：
-
---------------
 
 .. code:: shell
 
@@ -63,8 +53,6 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
        -v /opt/data/registry:/var/lib/registry \
        registry:2
 
---------------
-
 2.本地安装运行
 ~~~~~~~~~~~~~~
 
@@ -72,21 +60,15 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
 
 首先安装Golang环境支持，以Ubuntu为例，可以执行如下命令：
 
---------------
-
 .. code:: shell
 
    $ sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
    $ sudo apt-get update
    $ sudo apt-get install golang
 
---------------
-
 确认Golang环境安装成功，并配置$GOPATH环境变量，例如/go。
 
 创建$GOPATH/src/github.com/docker/目录，并获取源码：
-
---------------
 
 .. code:: shell
 
@@ -95,42 +77,26 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
    $ git clone https://github.com/docker/distribution.git
    $ cd distribution
 
---------------
-
 将自带的模板配置文件复制到/etc/docker/registry/路径下，创建存储目录/var/lib/registry：
-
---------------
 
 .. code:: shell
 
    $ cp cmd/registry/config-dev.yml /etc/docker/registry/config.yml
    $ mkdir -p /var/lib/registry
 
---------------
-
 然后执行安装操作：
-
---------------
 
 .. code:: shell
 
    $ make PREFIX=/go clean binaries
 
---------------
-
 编译成功后，可以通过下面的命令来启动：
-
---------------
 
 .. code:: shell
 
    $ registry serve /etc/docker/registry/config.yml
 
---------------
-
 此时使用访问本地的5000端口，看到返回信息为200 OK，则说明运行成功：
-
---------------
 
 .. code:: shell
 
@@ -143,33 +109,25 @@ Registry比较关键的参数是配置文件和仓库存储路径。默认的配
    Date: Wed, 31 Sep 2016 06:36:10 GMT
    {}
 
-配置TLS证书
------------
+2.配置TLS证书
+-------------
 
 当本地主机运行Registry服务后，所有能访问到该主机的Docker
 Host都可以把它作为私有仓库使用，只需要在镜像名称前面添加上具体的服务器地址即可。
 
 例如将本地的ubuntu：latest镜像上传到私有仓库myrepo.com：
 
---------------
-
 .. code:: shell
 
    $ docker tag ubuntu:latest myrepo.com:5000/ubuntu:latest
    $ docker push myrepo.com:5000/ubuntu:latest
 
---------------
-
 或者从私有仓库myrepo.com下载镜像到本地：
-
---------------
 
 .. code:: shell
 
    $ docker pull myrepo.com:5000/ubuntu
    $ docker tag myrepo.com:5000/ubuntu ubuntu
-
---------------
 
 私有仓库需要启用TLS认证，否则会报错。在第一部分中，我们介绍了通过添加DOCKER_OPTS="–insecure-registry
 myrepo.com：5000来避免这个问题。在这里将介绍如何获取和生成TLS证书。
@@ -179,27 +137,19 @@ myrepo.com：5000来避免这个问题。在这里将介绍如何获取和生成
 
 使用Openssl工具可以很容易地生成私人证书文件：
 
---------------
-
 .. code:: shell
 
    $ mkdir -p certs
    $ openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/myrepo.key -x509 -days 365 -out certs/myrepo.crt
-
---------------
 
 生成过程中会提示填入各种信息，注意CN一栏的信息要填入跟访问的地址相同的域名，例如这里应该为myrepo.com。
 
 生成结果为秘钥文件myrepo.key，以及证书文件myrepo.crt。其中证书文件需要发送给用户，并且配置到用户Docker
 Host上，注意路径需要跟域名一致，例如：
 
---------------
-
 .. code:: shell
 
    /etc/docker/certs.d/myrepo.com:5000/ca.crt
-
---------------
 
 2.从代理商申请证书
 ~~~~~~~~~~~~~~~~~~
@@ -209,8 +159,6 @@ Host上，注意路径需要跟域名一致，例如：
 3.启用证书
 
 当拥有秘钥文件和证书文件后，可以配置Registry启用证书支持，主要通过使用REGI-STRY_HTTP_TLS_CERTIFICATE和REGISTRY_HTTP_TLS_KEY参数：
-
---------------
 
 .. code:: shell
 
@@ -224,8 +172,8 @@ Host上，注意路径需要跟域名一致，例如：
        -p 443:443 \
        registry:2
 
-管理访问权限
-------------
+3.管理访问权限
+--------------
 
 通常在生产场景中，对私有仓库还需要进行访问代理并提供认证和用户管理。
 
@@ -275,19 +223,13 @@ Portus等）外，还可以通过Nginx代理方式来配置基于用户名和密
 
 首先，安装Nginx：
 
---------------
-
 .. code:: shell
 
    $ sudo apt-get -y install nginx
 
---------------
-
 在/etc/nginx/sites-available/目录下，创建新的站点配置文件/etc/nginx/sites-available/docker-registry.conf，代理本地的15000端口转发到5000端口。
 
 配置文件内容如下：
-
---------------
 
 .. code:: shell
 
@@ -324,39 +266,27 @@ Portus等）外，还可以通过Nginx代理方式来配置基于用户名和密
        }
    }
 
---------------
-
 建立配置文件软连接，放到/etc/nginx/sites-enabled/下面，让Nginx启用它，最后重启Nginx服务：
-
---------------
 
 .. code:: shell
 
    $ sudo ln -s /etc/nginx/sites-available/docker-registry.conf /etc/nginx/sites-enabled/docker-registry.conf
    $ service nginx restart
 
---------------
-
 之后，可以通过上传镜像来测试服务是否正常。
 
 测试上传本地的ubuntu：latest镜像：
-
---------------
 
 .. code:: shell
 
    $ docker tag ubuntu:16.04 127.0.0.1:15000/ubuntu:latest
    $ docker push 127.0.0.1:15000/ubuntu:latest
 
---------------
-
 3.添加用户认证
 
 公共仓库DockerHub是通过注册索引（index）服务来实现的。由于index服务并没有完善的开源实现，在这里介绍基于Nginx代理的用户访问管理方案。Nginx支持基于用户名和密码的访问管理。
 
 首先，在配置文件的location/字段中添加两行：
-
---------------
 
 .. code:: shell
 
@@ -369,14 +299,10 @@ Portus等）外，还可以通过Nginx代理方式来配置基于用户名和密
        }
     ...
 
---------------
-
 其中，auth_basic行说明启用认证服务，不通过的请求将无法转发。auth_basic_user_file
 docker-registry-htpasswd；行指定了验证的用户名和密码存储文件为本地（/etc/nginx/下）的docker-registry-htpasswd文件。
 
 docker-registry-htpasswd文件中存储用户名和密码的格式为每行放一个用户名、密码对。例如：
-
---------------
 
 .. code:: shell
 
@@ -385,25 +311,17 @@ docker-registry-htpasswd文件中存储用户名和密码的格式为每行放�
    user2:password2
    ...
 
---------------
-
 需要注意的是，密码字段存储的并不是明文，而是使用crypt函数加密过的字符串。
 
 要生成加密后的字符串，可以使用htpasswd工具，首先安装apache2-utils：
-
---------------
 
 .. code:: shell
 
    $ sudo aptitude install apache2-utils -y
 
---------------
-
 创建用户user1，并添加密码。
 
 例如，如下的操作会创建/etc/nginx/docker-registry-htpasswd文件来保存用户名和加密后的密码信息，并创建user1和对应密码：
-
---------------
 
 .. code:: shell
 
@@ -412,36 +330,24 @@ docker-registry-htpasswd文件中存储用户名和密码的格式为每行放�
    $ Re-type new password:
    $ Adding password for user user1
 
---------------
-
 添加更多用户，可以重复上面的命令（密码文件存在后，不需要再使用-c选项来新创建）。
 
 最后，重新启动Nginx服务：
 
---------------
-
 .. code:: shell
 
    $ sudo service nginx restart
-
---------------
 
 此时，通过浏览器访问本地的服务\ http://127.0.0.1:15000/v2/
 ，会弹出对话框，提示需要输入用户名和密码。
 
 通过命令行访问，需要在地址前面带上用户名和密码才能正常返回：
 
---------------
-
 ::
 
    $ curl USERNAME:PASSWORD@127.0.0.1:15000/v2/
 
---------------
-
 除了使用Nginx作为反向代理外，Registry自身也支持简单的基于用户名和密码的认证，以及基于token的认证，可以通过如下环境变量来指定：
-
---------------
 
 ::
 
@@ -449,14 +355,10 @@ docker-registry-htpasswd文件中存储用户名和密码的格式为每行放�
    REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
    REGISTRY_AUTH_HTPASSWD_REALM: basic
 
---------------
-
 4.用Compose启动Registry
 
 一般情况下，用户使用Registry需要的配置包括存储路径、TLS证书和用户认证。这里提供一个基于Docker
 Compose的快速启动Registry的模板：
-
---------------
 
 .. code:: shell
 
@@ -476,8 +378,8 @@ Compose的快速启动Registry的模板：
            - /path/to/certs:/certs
            - /path/to/auth:/auth
 
-配置Registry
-------------
+4.配置Registry
+--------------
 
 Docker
 Registry利用提供了一些样例配置，用户可以直接使用它们进行开发或生产部署。
@@ -556,8 +458,6 @@ Registry利用提供了一些样例配置，用户可以直接使用它们进行
            interval: 10s
            threshold: 3
 
---------------
-
 2.选项
 ~~~~~~
 
@@ -565,31 +465,21 @@ Registry利用提供了一些样例配置，用户可以直接使用它们进行
 
 默认情况下变量可以从环境变量中读取，例如log.level：debug可以配置为：
 
---------------
-
 ::
 
    export LOG_LEVEL=debug
-
---------------
 
 比较重要的选项包括版本信息、log选项、hooks选项、存储选项、认证选项、HTTP选项、通知选项、redis选项、健康监控选项、代理选项和验证选项等。下面分别介绍。
 
 （1）版本信息
 
---------------
-
 ::
 
    version: 0.1
 
---------------
-
 （2）log选项
 
 日志相关，代码如下：
-
---------------
 
 ::
 
@@ -599,8 +489,6 @@ Registry利用提供了一些样例配置，用户可以直接使用它们进行
        fields:
            service: registry
            environment: staging
-
---------------
 
 其中：
 
@@ -613,8 +501,6 @@ Registry利用提供了一些样例配置，用户可以直接使用它们进行
 （3）hooks选项
 
 配置当仓库发生异常时，通过邮件发送日志时的参数，代码如下：
-
---------------
 
 ::
 
@@ -632,14 +518,10 @@ Registry利用提供了一些样例配置，用户可以直接使用它们进行
                to:
                    - name@receivehost.com
 
---------------
-
 （4）存储选项
 
 storage选项将配置存储的引擎，默认支持包括本地文件系统、Google云存储、AWS
 S3云存储和OpenStack Swift分布式存储等，代码如下：
-
---------------
 
 ::
 
@@ -707,8 +589,6 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
        redirect:
            disable: false
 
---------------
-
 比较重要的选项如下：
 
 ·maintenance：配置维护相关的功能，包括对孤立旧文件的清理、开启只读模式等；
@@ -720,8 +600,6 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
 （5）认证选项
 
 对认证类型的配置，代码如下：
-
---------------
 
 ::
 
@@ -738,8 +616,6 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
            realm: basic-realm
            path: /path/to/htpasswd
 
---------------
-
 其中：
 
 ·silly：仅供测试使用，只要请求头带有认证域即可，不做内容检查；
@@ -751,8 +627,6 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
 （6）HTTP选项
 
 与HTTP服务相关的配置，代码如下：
-
---------------
 
 ::
 
@@ -779,8 +653,6 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
        http2:
            disabled: false
 
---------------
-
 其中：
 
 ·addr：必选，服务监听地址；
@@ -795,8 +667,6 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
 
 有事件发生时候的通知系统：
 
---------------
-
 ::
 
    notifications:
@@ -809,13 +679,9 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：
              threshold: 5
              backoff: 1000
 
---------------
-
 （8）redis选项
 
 Registry可以用Redis来缓存文件块，这里可以配置相关选项：
-
---------------
 
 ::
 
@@ -831,13 +697,9 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
            maxactive: 64
            idletimeout: 300s
 
---------------
-
 （9）健康监控选项
 
 与健康监控相关，主要是对配置服务进行检测判断系统状态，代码如下：
-
---------------
 
 ::
 
@@ -863,15 +725,11 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
              interval: 10s
              threshold: 3
 
---------------
-
 默认并未启用。
 
 （10）代理选项
 
 配置Registry作为一个pull代理，从远端（目前仅支持官方仓库）下拉Docker镜像，代码如下：
-
---------------
 
 ::
 
@@ -880,23 +738,15 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
        username: [username]
        password: [password]
 
---------------
-
 之后，用户可以通过如下命令来配置Docker使用代理：
-
---------------
 
 ::
 
    $ docker --registry-mirror=https://myrepo.com:5000 daemon
 
---------------
-
 （11）验证选项
 
 限定来自指定地址的客户端才可以执行push操作，代码如下：
-
---------------
 
 ::
 
@@ -909,8 +759,8 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
                deny:
                    - ^https?://www\.example\.com/
 
-批量管理镜像
-------------
+5.批量管理镜像
+--------------
 
 在之前章节中，笔者介绍了如何对单个镜像进行上传、下载的操作。有时候，本地镜像很多，逐个打标记进行操作将十分浪费时间。这里将以批量上传镜像为例，介绍如何利用脚本实现对镜像的批量化处理。
 
@@ -919,9 +769,7 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
 
 可以使用下面的push_images.sh脚本，批量上传本地的镜像到注册服务器中，默认是本地注册服务器127.0.0.1：5000，用户可以通过修改registry=127.0.0.1：5000这行来指定目标注册服务器：
 
---------------
-
-::
+.. code:: shell
 
    #!/bin/sh
    # This script will upload the given local images to a registry server ($registry is the default value).
@@ -964,21 +812,13 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
        echo_g "Done"
    done
 
---------------
-
 建议把脚本存放到本地可执行路径下，例如放在/usr/local/bin/下面。然后添加可执行权限，就可以使用该脚本了：
-
---------------
 
 ::
 
    $ sudo chmod a+x /usr/local/bin/push_images.sh
 
---------------
-
 例如，推送本地的ubuntu：latest和centos：centos7两个镜像到本地仓库：
-
---------------
 
 ::
 
@@ -1011,16 +851,12 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
    Untagged: 127.0.0.1:5000/centos:centos7
    Done
 
---------------
-
 上传后，查看本地镜像，会发现上传中创建的临时标签也同时被清理了。
 
 2.上传本地所有镜像
 ~~~~~~~~~~~~~~~~~~
 
 在push_images工具的基础上，还可以进一步地创建push_all工具，来上传本地所有镜像：
-
---------------
 
 ::
 
@@ -1035,14 +871,12 @@ Registry可以用Redis来缓存文件块，这里可以配置相关选项：
        push_images.sh $image
    done
 
---------------
-
 另外，推荐读者把它放在/usr/local/bin/下面，并添加可执行权限。这样就可以通过push_all命令来同步本地所有镜像到本地私有仓库了。
 
 同样的，读者可以试着修改脚本，实现批量化下载镜像、删除镜像、更新镜像标签等更多的操作。
 
-使用通知系统
-------------
+6.使用通知系统
+--------------
 
 Docker Registry
 v2还内置提供了Notification功能，提供了非常方便、快捷地集成接口，避免了v1中需要用户自己实现的麻烦。
@@ -1057,8 +891,6 @@ Registry服务器的事件会通过HTTP协议发送到用户定义的所有Endpo
 
 Notification在Docker Registry中的相关配置如下：
 
---------------
-
 ::
 
    notifications:
@@ -1072,23 +904,15 @@ Notification在Docker Registry中的相关配置如下：
                threshold: 5
                backoff: 10s
 
---------------
-
 上面的配置会在pull或者push发生时向http://cd-service-host/api/v1/cd-service发送事件，并在HTTP请求的header中传入认证信息，可以是Basic、token、Bearer等模式，主要用于接收事件方进行身份认证。更新配置后，需要重启Registry服务器，如果配置正确，会在日志中看到对应的提示信息，比如：
-
---------------
 
 ::
 
    configuring endpoint listener (http://cd-service-host/api/v1/cd-service), time-out=1s, headers=map[Authorization: [token ******]]
 
---------------
-
 此时，用户再通过docker客户端进行push、pull，或者查询一些manifiest信息时，就会有相应的事件发送到定义的Endpoint上。
 
 接下来看一下事件的格式及其主要属性：
-
---------------
 
 ::
 
@@ -1124,8 +948,6 @@ Notification在Docker Registry中的相关配置如下：
        ]
    }
 
---------------
-
 每个事件的payload，都是一个定义好的JSON格式的数据。通知系统的主要属性主要包括action、target.mediaType、target.repository、target.url、request.method、request.useragent、actor.name等，参见表18-1。
 
 表18-1　通知系统的主要属性及描述
@@ -1157,6 +979,27 @@ Registry服务器时候，自动创建或者更新对应的服务，这样可以
 Registry
 v2.4.0及以上的版本，在这个版本中对应的manifest事件中将会携带tag的属性，来标识该动作涉及的镜像版本信息。
 
+7. 基于Docker容器的内部循环开发工作流
+-------------------------------------
+
+相关步骤说明如下：
+
+（1）开发。根据需求开发应用程序，和传统开发没有什么变化，不限编程语言。
+
+（2）编写Dockerfile。Dockerfile是由一系列命令和参数构成的脚本，用来构建镜像。
+
+（3）创建自定义镜像。基于“docker build”命令构建自定义镜像。
+
+（4）定义docker-compose。Docker
+Compose是一个用于定义和运行多个Docker应用程序的工具，非常适合进行开发和测试，尤其适用于微服务架构。
+
+（5）启动Docker应用。docker run命令启动docker容器，docker-compose
+up启动多个容器。
+
+（6）测试。测试人员基于容器环境进行测试，无须开发人员介入，随时部署或摧毁。
+
+（7）部署或继续开发。基于容器实现持续交付和部署。
+
 本章小结
 --------
 
@@ -1167,24 +1010,3 @@ Registry配置文件中各个选项的含义和使用。最后演示如何通过
 读者通过本章的学习，将能轻松搭建一套私有的仓库服务环境，并对其进行管理操作。私有仓库服务是集中存储镜像的场所，它的性能和稳定性将影响基于Docker容器的开发和部署过程。
 
 在生产环境中，笔者推荐使用负载均衡来提高仓库服务的性能；还可以利用HAProxy等方式对仓库服务增加容错功能。同时，为了安全考虑，要为仓库访问启用HTTPS等加密协议来确保通信安全。
-
-基于Docker容器的内部循环开发工作流
-----------------------------------
-
-相关步骤说明如下：
-
-::
-
-   （1）开发。根据需求开发应用程序，和传统开发没有什么变化，不限编程语言。
-
-   （2）编写Dockerfile。Dockerfile是由一系列命令和参数构成的脚本，用来构建镜像。
-
-   （3）创建自定义镜像。基于“docker build”命令构建自定义镜像。
-
-   （4）定义docker-compose。Docker Compose是一个用于定义和运行多个Docker应用程序的工具，非常适合进行开发和测试，尤其适用于微服务架构。
-
-   （5）启动Docker应用。docker run命令启动docker容器，docker-compose up启动多个容器。
-
-   （6）测试。测试人员基于容器环境进行测试，无须开发人员介入，随时部署或摧毁。
-
-   （7）部署或继续开发。基于容器实现持续交付和部署。

@@ -228,22 +228,17 @@ OS平台，两者的安装过程大同小异。安装Compose之前，要先安�
 <h3><a class="toc-backref" href="#id15">1.pip安装</a><a class="headerlink" href="#pip" title="Permalink to this headline">¶</a></h3>
 <p>这种方式是将Compose当作一个Python应用从PyPI源中安装。</p>
 <p>执行安装命令：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo pip install -U docker-compose
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>可以看到类似如下输出，说明安装成功：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Collecting docker-compose
     Downloading docker_compose-1.19.0-py2.py3-none-any.whl <span class="o">(</span>115kB<span class="o">)</span>
 ...
 Successfully installed cached-property-1.3.1 certifi-2018.1.18 chardet-3.0.4 docker-2.7.0 docker-compose-1.19.0 docker-pycreds-0.2.2 idna-2.6 ipaddress-1.0.19 requests-2.18.4 six-1.10.0 texttable-0.9.1 urllib3-1.22 websocket-client-0.47.0
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>安装成功后，可以查看docker-compose命令的基本用法：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker-compose -h
 Define and run multi-container applications with Docker.
 Usage:
@@ -295,28 +290,22 @@ Commands:
     version            Show the Docker-Compose version information
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>之后，可以添加bash补全命令：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl -L https://raw.githubusercontent.com/docker/compose/1.19.0/contrib/com-pletion/bash/docker-compose &gt; /etc/bash_completion.d/docker-compose
 </pre></div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="id3">
 <h3><a class="toc-backref" href="#id16">2.二进制包</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>官方定义编译好二进制包，供大家使用。这些发布的二进制包可以在<a class="reference external" href="https://github.com/docker/compose/releases">https://github.com/docker/compose/releases</a>
 页面找到。</p>
 <p>将这些二进制文件下载后直接放到执行路径下，并添加执行权限即可。例如，在Linux平台上：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo curl -L <span class="s2">&quot;https://github.com/docker/compose/releases/download/1.26.0/docker-compose-</span><span class="k">$(</span>uname -s<span class="k">)</span><span class="s2">-</span><span class="k">$(</span>uname -m<span class="k">)</span><span class="s2">&quot;</span> -o /usr/local/bin/docker-compose
 
 $ sudo chmod a+x /usr/local/bin/docker-compose
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>可以使用docker-compose version命令来查看版本信息，以测试是否安装成功：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker-compose version
 docker-compose version <span class="m">1</span>.19.0, build 9e633ef
 docker-py version: <span class="m">2</span>.7.0
@@ -324,21 +313,17 @@ CPython version: <span class="m">2</span>.7.12
 OpenSSL version: OpenSSL <span class="m">1</span>.0.2g  <span class="m">1</span> Mar <span class="m">2016</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>参考文献
 <a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12377113.html">centos7安装docker-compose</a></p>
 </section>
 <section id="id4">
 <h3><a class="toc-backref" href="#id17">3.容器中执行</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>Compose既然是一个Python应用，自然也可以直接用容器来执行它：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl -L https://github.com/docker/compose/releases/download/1.19.0/run.sh &gt; /usr/local/bin/docker-compose
 $ chmod +x /usr/local/bin/docker-compose
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>实际上，查看下载的run.sh脚本内容，如下：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> -e
 <span class="nv">VERSION</span><span class="o">=</span><span class="s2">&quot;1.19.0&quot;</span>
 <span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;docker/compose:</span><span class="nv">$VERSION</span><span class="s2">&quot;</span>
@@ -375,7 +360,6 @@ $ chmod +x /usr/local/bin/docker-compose
 <span class="nb">exec</span> docker run --rm <span class="nv">$DOCKER_RUN_OPTIONS</span> <span class="nv">$DOCKER_ADDR</span> <span class="nv">$COMPOSE_OPTIONS</span> <span class="nv">$VOLUMES</span> -w <span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$IMAGE</span> <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>可以看到，它其实是下载了docker/compose镜像并运行。</p>
 <p>如果下载很慢，可以去 daocloud 上面下载：</p>
 <blockquote>
@@ -394,13 +378,10 @@ cli 的子命令，称为 Compose V2。</p>
 <section id="id5">
 <h3><a class="toc-backref" href="#id19">5.卸载</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>如果是二进制包方式安装的，删除二进制文件即可：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo rm /usr/local/bin/docker-compose
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>如果是通过Python pip工具安装的，则可以执行如下命令删除：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo pip uninstall docker-compose
 </pre></div>
 </div>
@@ -411,7 +392,6 @@ cli 的子命令，称为 Compose V2。</p>
 <p>模板文件是使用Compose的核心，涉及的指令关键字也比较多。但大家不用担心，这里的大部分指令与docker[container]create|run相关参数的含义都是类似的。</p>
 <p>默认的模板文件名称为docker-compose.yml，格式为YAML格式，目前最新的版本为v3。</p>
 <p>版本1的Compose文件结构十分简单，每个顶级元素为服务名称，次级元素为服务容器的配置信息，例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">webapp</span><span class="p">:</span>
     <span class="n">image</span><span class="p">:</span> <span class="n">examples</span><span class="o">/</span><span class="n">web</span>
     <span class="n">ports</span><span class="p">:</span>
@@ -420,10 +400,8 @@ cli 的子命令，称为 Compose V2。</p>
         <span class="o">-</span> <span class="s2">&quot;/data&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>版本2和3扩展了Compose的语法，同时尽量保持跟旧版本的兼容，除了可以声明网络和存储信息外，最大的不同一是添加了版本信息，另一个是需要将所有的服务放到services根下面。</p>
 <p>例如，上面例子改写为版本3，并启用资源限制，内容如下：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">version:&quot;3&quot;</span>
 <span class="l l-Scalar l-Scalar-Plain">services</span><span class="p p-Indicator">:</span>
     <span class="nt">webapp</span><span class="p">:</span>
@@ -446,7 +424,6 @@ cli 的子命令，称为 Compose V2。</p>
     <span class="nt">mynet</span><span class="p">:</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>注意每个服务都必须通过image指令指定镜像或build指令（需要Dockerfile）等来自动构建生成镜像。</p>
 <p>如果使用build指令，在Dockerfile中设置的选项（例如：CMD、EXPOSE、VOLUME、ENV等）将会自动被获取，无须在docker-compose.yml中再次设置。</p>
 <p>命令列表参见表24-1。</p>
@@ -480,16 +457,13 @@ environment:
 <p>可以参考菜鸟教程： <a class="reference external" href="https://www.runoob.com/docker/docker-compose.html">https://www.runoob.com/docker/docker-compose.html</a></p>
 <p>1.build</p>
 <p>指定Dockerfile所在文件夹的路径（可以是绝对路径，或者相对docker-compose.yml文件的路径）。Compose将会利用它自动构建应用镜像，然后使用这个镜像，例如：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">app</span><span class="p">:</span>
         <span class="nt">build</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/path/to/build/dir</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>build指令还可以指定创建镜像的上下文、Dockerfile路径、标签、Shm大小、参数和缓存来源等，例如：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">app</span><span class="p">:</span>
@@ -507,39 +481,29 @@ environment:
                 <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">myApp:1.0</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>2.cap_add，cap_drop</p>
 <p>指定容器的内核能力（capacity）分配。例如，让容器拥有所有能力可以指定为：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cap_add</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">ALL</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>去掉NET_ADMIN能力可以指定为：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cap_drop</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">NET_ADMIN</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>3.command</p>
 <p>覆盖容器启动后默认执行的命令，可以为字符串格式或JSON数组格式。例如：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>command: <span class="nb">echo</span> <span class="s2">&quot;hello world&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>或者：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>command: <span class="o">[</span><span class="s2">&quot;bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;echo&quot;</span>, <span class="s2">&quot;hello world&quot;</span><span class="o">]</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>4.configs</p>
 <p>在Docker
 Swarm模式下，可以通过configs来管理和访问非敏感的配置信息。支持从文件读取或外部读取。例如：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&quot;3.3&quot;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">app</span><span class="p">:</span>
@@ -556,77 +520,59 @@ Swarm模式下，可以通过configs来管理和访问非敏感的配置信息�
         <span class="nt">external</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>5.cgroup_parent</p>
 <p>指定父cgroup组，意味着将继承该组的资源限制。目前不支持在Swarm模式中使用。例如，创建了一个cgroup组名称为cgroups_1：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cgroup_parent</span><span class="p">:</span> <span class="n">cgroups_1</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>6.container_name</p>
 <p>指定容器名称。默认将会使用“项目名称_服务名称_序号”这样的格式。目前不支持在Swarm模式中使用。例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">container_name</span><span class="p">:</span> <span class="n">docker</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">container</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>需要注意，指定容器名称后，该服务将无法进行扩展，因为Docker不允许多个容器实例重名。</p>
 <p>7.devices</p>
 <p>指定设备映射关系，不支持Swarm模式。例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">devices</span><span class="p">:</span>
     <span class="o">-</span> <span class="s2">&quot;/dev/ttyUSB1:/dev/ttyUSB0&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>8.depends_on</p>
 <p>指定多个服务之间的依赖关系。启动时，会先启动被依赖服务。例如，可以指定依赖于db服务：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">depends_on</span><span class="p">:</span> <span class="n">db</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>9.dns</p>
 <p>自定义DNS服务器。可以是一个值，也可以是一个列表。例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dns</span><span class="p">:</span> <span class="mf">8.8</span><span class="o">.</span><span class="mf">8.8</span>
 <span class="n">dns</span><span class="p">:</span>
     <span class="o">-</span> <span class="mf">8.8</span><span class="o">.</span><span class="mf">8.8</span>
     <span class="o">-</span> <span class="mf">9.9</span><span class="o">.</span><span class="mf">9.9</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>10.dns_search</p>
 <p>配置DNS搜索域。可以是一个值，也可以是一个列表。例如：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dns_search</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">example.com</span>
 <span class="nt">dns_search</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">domain1.example.com</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">domain2.example.com</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>11.dockerfile</p>
 <p>如果需要，指定额外的编译镜像的Dockefile文件，可以通过该指令来指定。例如：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dockerfile: Dockerfile-alternate
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>注意</p>
 <p>该指令不能跟image同时使用，否则Compose将不知道根据哪个指令来生成最终的服务镜像。</p>
 <p>12.entrypoint</p>
 <p>覆盖容器中默认的入口命令。注意，也会取消掉镜像中指定的入口命令和默认启动命令。例如，覆盖为新的入口命令：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">entrypoint</span><span class="p">:</span> <span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>13.env_file</p>
 <p>从文件中获取环境变量，可以为单独的文件路径或列表。如果通过docker-compose-f
 FILE方式来指定Compose模板文件，则env_file中变量的路径会基于模板文件路径。如果有变量名称与environment指令冲突，则按照惯例，以后者为准。例如：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">env_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.env</span>
 <span class="nt">env_file</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">./common.env</span>
@@ -634,52 +580,40 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/opt/secrets.env</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>环境变量文件中每一行必须符合格式，支持#开头的注释行，例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># common.env: Set development environment</span>
 <span class="n">PROG_ENV</span><span class="o">=</span><span class="n">development</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>14.environment</p>
 <p>设置环境变量，可以使用数组或字典两种格式。只给定名称的变量会自动获取运行Compose主机上对应变量的值，可以用来防止泄露不必要的数据。例如：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">environment</span><span class="p">:</span>
     <span class="nt">RACK_ENV</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">development</span>
     <span class="nt">SESSION_SECRET</span><span class="p">:</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>或者：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">environment</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">RACK_ENV=development</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">SESSION_SECRET</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>注意，如果变量名称或者值中用到true|false，yes|no等表达布尔含义的词汇，最好放到引号里，避免YAML自动解析某些内容为对应的布尔语义：</p>
 <p><a class="reference external" href="http://yaml.org/type/bool.html">http://yaml.org/type/bool.html</a>中给出了这些特定词汇，包括</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">y</span><span class="o">|</span><span class="n">Y</span><span class="o">|</span><span class="n">yes</span><span class="o">|</span><span class="n">Yes</span><span class="o">|</span><span class="n">YES</span><span class="o">|</span><span class="n">n</span><span class="o">|</span><span class="n">N</span><span class="o">|</span><span class="n">no</span><span class="o">|</span><span class="n">No</span><span class="o">|</span><span class="n">NO</span>
 <span class="o">|</span><span class="n">true</span><span class="o">|</span><span class="kc">True</span><span class="o">|</span><span class="n">TRUE</span><span class="o">|</span><span class="n">false</span><span class="o">|</span><span class="kc">False</span><span class="o">|</span><span class="n">FALSE</span>
 <span class="o">|</span><span class="n">on</span><span class="o">|</span><span class="n">On</span><span class="o">|</span><span class="n">ON</span><span class="o">|</span><span class="n">off</span><span class="o">|</span><span class="n">Off</span><span class="o">|</span><span class="n">OFF</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>15.expose</p>
 <p>暴露端口，但不映射到宿主机，只被连接的服务访问。仅可以指定内部端口为参数，如下所示：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">expose</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="s">&quot;3000&quot;</span>
     <span class="p p-Indicator">-</span> <span class="s">&quot;8000&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>16.extends</p>
 <p>基于其他模板文件进行扩展。例如，我们已经有了一个webapp服务，定义一个基础模板文件为common.yml，如下所示：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># common.yml</span>
 <span class="nt">webapp</span><span class="p">:</span>
     <span class="nt">build</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">./webapp</span>
@@ -688,9 +622,7 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
         <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">SEND_EMAILS=false</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>再编写一个新的development.yml文件，使用common.yml中的webapp服务进行扩展：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># development.yml</span>
 <span class="nt">web</span><span class="p">:</span>
     <span class="nt">extends</span><span class="p">:</span>
@@ -706,42 +638,34 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
     <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">postgres</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>后者会自动继承common.yml中的webapp服务及环境变量定义。使用extends需要注意以下两点：</p>
 <p>·要避免出现循环依赖，例如A依赖B，B依赖C，C反过来依赖A的情况。</p>
 <p>·extends不会继承links和volumes_from中定义的容器和数据卷资源。</p>
 <p>一般情况下，推荐在基础模板中只定义一些可以共享的镜像和环境变量，在扩展模板中具体指定应用变量、链接、数据卷等信息。</p>
 <p>17.external_links</p>
 <p>链接到docker-compose.yml外部的容器，甚至并非Compose管理的外部容器。参数格式跟links类似。</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">external_links</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">redis_1</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">project_db_1:mysql</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">project_db_1:postgresql</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>18.extra_hosts</p>
 <p>类似Docker中的–add-host参数，指定额外的host名称映射信息。</p>
 <p>例如：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">extra_hosts</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="s">&quot;googledns:8.8.8.8&quot;</span>
     <span class="p p-Indicator">-</span> <span class="s">&quot;dockerhub:52.1.157.61&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>会在启动后的服务容器中/etc/hosts文件中添加如下两条条目。</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">8.8.8.8 googledns</span>
 <span class="l l-Scalar l-Scalar-Plain">52.1.157.61 dockerhub</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>19.healthcheck</p>
 <p>指定检测应用健康状态的机制，包括检测方法（test）、间隔（interval）、超时（timeout）、重试次数（retries）、启动等待时间（start_period）等。</p>
 <p>例如，指定检测方法为访问8080端口，间隔为30秒，超时为15秒，重试3次，启动后等待30秒再做检查。</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">healthcheck</span><span class="p">:</span>
     <span class="nt">test</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;CMD&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;curl&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;-f&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;http://localhost:8080&quot;</span><span class="p p-Indicator">]</span>
     <span class="nt">interval</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30s</span>
@@ -750,70 +674,56 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
     <span class="nt">start_period</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30s</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>20.image</p>
 <p>指定为镜像名称或镜像ID。如果镜像在本地不存在，Compose将会尝试拉去这个镜像。</p>
 <p>例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">image</span><span class="p">:</span> <span class="n">ubuntu</span>
 <span class="n">image</span><span class="p">:</span> <span class="n">orchardup</span><span class="o">/</span><span class="n">postgresql</span>
 <span class="n">image</span><span class="p">:</span> <span class="n">a4bc65fd</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>21.isolation</p>
 <p>配置容器隔离的机制，包括default、process和hyperv。</p>
 <p>22.labels</p>
 <p>为容器添加Docker元数据（metadata）信息。例如可以为容器添加辅助说明信息。</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span><span class="p">:</span>
     <span class="n">com</span><span class="o">.</span><span class="n">startupteam</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="s2">&quot;webapp for a startup team&quot;</span>
     <span class="n">com</span><span class="o">.</span><span class="n">startupteam</span><span class="o">.</span><span class="n">department</span><span class="p">:</span> <span class="s2">&quot;devops department&quot;</span>
     <span class="n">com</span><span class="o">.</span><span class="n">startupteam</span><span class="o">.</span><span class="n">release</span><span class="p">:</span> <span class="s2">&quot;rc3 for v1.0&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>23.links</p>
 <p>注意：links命令属于旧的用法，可能在后续版本中被移除。</p>
 <p>链接到其他服务中的容器。使用服务名称（同时作为别名）或服务名称：服务别名（SERVICE：ALIAS）格式都可以。</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">links</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">db</span>
     <span class="o">-</span> <span class="n">db</span><span class="p">:</span><span class="n">database</span>
     <span class="o">-</span> <span class="n">redis</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>使用的别名将会自动在服务容器中的/etc/hosts里创建。例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">172.17</span><span class="o">.</span><span class="mf">2.186</span>  <span class="n">db</span>
 <span class="mf">172.17</span><span class="o">.</span><span class="mf">2.186</span>  <span class="n">database</span>
 <span class="mf">172.17</span><span class="o">.</span><span class="mf">2.187</span>  <span class="n">redis</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>被链接容器中相应的环境变量也将被创建。</p>
 <p>24.logging</p>
 <p>跟日志相关的配置，包括一系列子配置。</p>
 <p>logging.driver：类似于Docker中的–log-driver参数，指定日志驱动类型。目前支持三种日志驱动类型：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span><span class="p">:</span> <span class="s2">&quot;json-file&quot;</span>
 <span class="n">driver</span><span class="p">:</span> <span class="s2">&quot;syslog&quot;</span>
 <span class="n">driver</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>logging.options：日志驱动的相关参数。例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">logging</span><span class="p">:</span>
     <span class="n">driver</span><span class="p">:</span> <span class="s2">&quot;syslog&quot;</span>
     <span class="n">options</span><span class="p">:</span>
         <span class="n">syslog</span><span class="o">-</span><span class="n">address</span><span class="p">:</span> <span class="s2">&quot;tcp://192.168.0.42:123&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>或：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">logging</span><span class="p">:</span>
     <span class="n">driver</span><span class="p">:</span> <span class="s2">&quot;json-file&quot;</span>
     <span class="n">options</span><span class="p">:</span>
@@ -821,10 +731,8 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
         <span class="nb">max</span><span class="o">-</span><span class="n">file</span><span class="p">:</span> <span class="s2">&quot;20&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>25.network_mode</p>
 <p>设置网络模式。使用和docker client的–net参数一样的值。</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">network_mode</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span>
 <span class="n">network_mode</span><span class="p">:</span> <span class="s2">&quot;bridge&quot;</span>
 <span class="n">network_mode</span><span class="p">:</span> <span class="s2">&quot;host&quot;</span>
@@ -832,11 +740,9 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
 <span class="n">network_mode</span><span class="p">:</span> <span class="s2">&quot;container:[name or id]&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>26.networks</p>
 <p>所加入的网络。需要在顶级的networks字段中定义具体的网络信息。</p>
 <p>例如，指定web服务的网络为web_net，并添加服务在网络中别名为web_app。</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
     <span class="nt">web</span><span class="p">:</span>
         <span class="nt">networks</span><span class="p">:</span>
@@ -853,18 +759,14 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
                 <span class="nt">subnet</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">172.16.0.0/24</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>27.pid</p>
 <p>跟主机系统共享进程命名空间。打开该选项的容器之间，以及容器和宿主机系统之间可以通过进程ID来相互访问和操作。</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pid</span><span class="p">:</span> <span class="s2">&quot;host&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>28.ports</p>
 <p>暴露端口信息。</p>
 <p>使用宿主：容器（HOST：CONTAINER）格式，或者仅仅指定容器的端口（宿主将会随机选择端口）都可以。</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ports</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="s">&quot;3000&quot;</span>
     <span class="p p-Indicator">-</span> <span class="s">&quot;8000:8000&quot;</span>
@@ -872,9 +774,7 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
     <span class="p p-Indicator">-</span> <span class="s">&quot;127.0.0.1:8001:8001&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>或者：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ports</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">target</span><span class="p">:</span> <span class="mi">80</span>
       <span class="n">published</span><span class="p">:</span> <span class="mi">8080</span>
@@ -888,7 +788,6 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
 <p>配置应用的秘密数据。</p>
 <p>可以指定来源秘密、挂载后名称、权限等。</p>
 <p>例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s2">&quot;3.1&quot;</span>
 <span class="n">services</span><span class="p">:</span>
     <span class="n">web</span><span class="p">:</span>
@@ -906,17 +805,14 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
         <span class="n">file</span><span class="p">:</span> <span class="o">./</span><span class="n">web_secret</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>30.security_opt</p>
 <p>指定容器模板标签（label）机制的默认属性（用户、角色、类型、级别等）。</p>
 <p>例如，配置标签的用户名和角色名：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">security_opt</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">label</span><span class="p">:</span><span class="n">user</span><span class="p">:</span><span class="n">USER</span>
     <span class="o">-</span> <span class="n">label</span><span class="p">:</span><span class="n">role</span><span class="p">:</span><span class="n">ROLE</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>31.stop_grace_period</p>
 <p>指定应用停止时，容器的优雅停止期限。过期后则通过SIGKILL强制退出。</p>
 <p>默认值为10s。</p>
@@ -925,17 +821,14 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
 <p>33.sysctls</p>
 <p>配置容器内的内核参数。Swarm模式中不支持。</p>
 <p>例如，指定连接数为4096和开启TCP的syncookies：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sysctls</span><span class="p">:</span>
     <span class="n">net</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">somaxconn</span><span class="p">:</span> <span class="mi">4096</span>
     <span class="n">net</span><span class="o">.</span><span class="n">ipv4</span><span class="o">.</span><span class="n">tcp_syncookies</span><span class="p">:</span> <span class="mi">1</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>34.ulimits</p>
 <p>指定容器的ulimits限制值。</p>
 <p>例如，指定最大进程数为65535，指定文件句柄数为20000（软限制，应用可以随时修改，不能超过硬限制）和40000（系统硬限制，只能root用户提高）。</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ulimits</span><span class="p">:</span>
     <span class="n">nproc</span><span class="p">:</span> <span class="mi">65535</span>
     <span class="n">nofile</span><span class="p">:</span>
@@ -943,28 +836,22 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
       <span class="n">hard</span><span class="p">:</span> <span class="mi">40000</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>35.userns_mode</p>
 <p>指定用户命名空间模式。Swarm模式中不支持。例如，使用主机上的用户命名空间：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">userns_mode</span><span class="p">:</span> <span class="s2">&quot;host&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>36.volumes</p>
 <p>数据卷所挂载路径设置。可以设置宿主机路径（HOST：CONTAINER）或加上访问模式（HOST：CONTAINER：ro）。</p>
 <p>支持driver、driver_opts、external、labels、name等子配置。</p>
 <p>该指令中路径支持相对路径。例如</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">volumes</span><span class="p">:</span>
     <span class="o">-</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span>
     <span class="o">-</span> <span class="n">cache</span><span class="o">/</span><span class="p">:</span><span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">cache</span>
     <span class="o">-</span> <span class="o">~/</span><span class="n">configs</span><span class="p">:</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">configs</span><span class="o">/</span><span class="p">:</span><span class="n">ro</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>或者可以使用更详细的语法格式：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">volumes</span><span class="p">:</span>
     <span class="o">-</span> <span class="nb">type</span><span class="p">:</span> <span class="n">volume</span>
         <span class="n">source</span><span class="p">:</span> <span class="n">mydata</span>
@@ -975,21 +862,17 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
     <span class="n">mydata</span><span class="p">:</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>37.restart</p>
 <p>指定重启策略，可以为no（不重启）、always（总是）、on-failure（失败时）、unless-stopped（除非停止）。</p>
 <p>注意Swarm模式下要使用restart_policy。在生产环境中推荐配置为always或者unless-stopped。</p>
 <p>例如，配置除非停止：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>38.deploy</p>
 <p>指定部署和运行时的容器相关配置。该命令只在Swarm模式下生效，且只支持docker
 stack deploy命令部署。</p>
 <p>例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span>
 <span class="n">services</span><span class="p">:</span>
     <span class="n">redis</span><span class="p">:</span>
@@ -1003,14 +886,12 @@ stack deploy命令部署。</p>
                 <span class="n">condition</span><span class="p">:</span> <span class="n">on</span><span class="o">-</span><span class="n">failure</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>deploy命令中包括endpoint_mode、labels、mode、placement、replicas、resources、restart_policy、update_config等配置项。</p>
 <p>（1）endpoint_mode</p>
 <p>指定服务端点模式。包括两种类型：</p>
 <p>vip：Swarm分配一个前端的虚拟地址，客户端通过给地址访问服务，而无须关心后端的应用容器个数；</p>
 <p>dnsrr：Swarm分配一个域名给服务，用户访问域名时候回按照轮流顺序返回容器地址。</p>
 <p>例如：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">redis</span><span class="p">:</span>
@@ -1021,11 +902,9 @@ stack deploy命令部署。</p>
             <span class="nt">endpoint_mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">vip</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>（2）labels</p>
 <p>指定服务的标签。注意标签信息不会影响到服务内的容器。</p>
 <p>例如：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&quot;3&quot;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">web</span><span class="p">:</span>
@@ -1035,13 +914,11 @@ stack deploy命令部署。</p>
                 <span class="nt">description</span><span class="p">:</span> <span class="s">&quot;This</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">web</span><span class="nv"> </span><span class="s">application</span><span class="nv"> </span><span class="s">service.&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>（3）mode</p>
 <p>定义容器副本模式，可以为：</p>
 <p>global：每个Swarm节点上只有一个该应用容器；</p>
 <p>replicated：整个集群中存在指定份数的应用容器副本，默认值。</p>
 <p>例如，指定集群中web应用保持3个副本：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&quot;3&quot;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">web</span><span class="p">:</span>
@@ -1051,10 +928,8 @@ stack deploy命令部署。</p>
             <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>（4）placement</p>
 <p>定义容器放置的限制（constraints）和配置（preferences）。限制可以指定只有符合要求的节点上才能运行该应用容器；配置可以指定容器的分配策略。例如，指定集群中web应用容器只存在于高安全的节点上，并且在带有zone标签的节点上均匀分配。：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">db</span><span class="p">:</span>
@@ -1067,13 +942,11 @@ stack deploy命令部署。</p>
                     <span class="p p-Indicator">-</span> <span class="nt">spread</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">node.labels.zone</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>（5）replicas</p>
 <p>容器副本模式为默认的replicated时，指定副本的个数。</p>
 <p>（6）resources</p>
 <p>指定使用资源的限制，包括CPU、内存资源等。例如，指定应用使用的CPU份额为10%～25%，内存为200
 MB到500 MB。</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">redis</span><span class="p">:</span>
@@ -1088,10 +961,8 @@ MB到500 MB。</p>
                     <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200M</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>（7）restart_policy</p>
 <p>指定容器重启的策略。例如，指定重启策略为失败时重启，等待2s，重启最多尝试3次，检测状态的等待时间为10s。</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&quot;3&quot;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">redis</span><span class="p">:</span>
@@ -1104,10 +975,8 @@ MB到500 MB。</p>
                 <span class="nt">window</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10s</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>（8）update_config</p>
 <p>有些时候需要对容器内容进行更新，可以使用该配置指定升级的行为。包括每次升级多少个容器（parallelism）、升级的延迟（delay）、升级失败后的行动（failure_action）、检测升级后状态的等待时间（monitor）、升级后容忍的最大失败比例（max_failure_ratio）、升级顺序（order）等。例如，指定每次更新两个容器、更新等待10s、先停止旧容器再升级。</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&quot;3.4&quot;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">redis</span><span class="p">:</span>
@@ -1120,42 +989,32 @@ MB到500 MB。</p>
                 <span class="nt">order</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">stop-first</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>39.其他指令</p>
 <p>此外，还有包括domainname、hostname、ipc、mac_address、privileged、read_only、shm_size、stdin_open、tty、user、working_dir等指令，基本跟docker-run中对应参数的功能一致。例如，指定容器中工作目录：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>working_dir: /code
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>指定容器中搜索域名、主机名、mac地址等：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>domainname: your_website.com
 hostname: <span class="nb">test</span>
 mac_address: <span class="m">08</span>-00-27-00-0C-0A
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>允许容器中运行一些特权命令：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>privileged: <span class="nb">true</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>40.读取环境变量</p>
 <p>从1.5.0版本开始，Compose模板文件支持动态读取主机的系统环境变量。例如，下面的Compose文件将从运行它的环境中读取变量${MONGO_VERSION}的值（不指定时则采用默认值3.2），并写入执行的指令中。</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>db:
     image: <span class="s2">&quot;mongo:</span><span class="si">${</span><span class="nv">MONGO_VERSION</span><span class="p">-3.2</span><span class="si">}</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>如果直接执行docker-compose
 up则会启动一个mongo：3.2镜像的容器；如果执行MONGO_VERSION=2.8
 docker-compose up则会启动一个mongo：2.8镜像的容器。</p>
 <p>41.扩展特性</p>
 <p>从3.4开始，Compose还支持用户自定义的扩展字段。利用YAML语法里的锚点引用功能来引用自定义字段内容。例如：</p>
-<hr class="docutils" />
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3.4&#39;</span>
 <span class="nt">x-logging</span><span class="p">:</span>
     <span class="nl">&amp;default-logging</span>
@@ -1176,11 +1035,9 @@ docker-compose up则会启动一个mongo：2.8镜像的容器。</p>
 <p>执行docker-compose[COMMAND]–help或者docker-compose
 help[COMMAND]可以查看具体某个命令的使用格式。</p>
 <p>Compose命令的基本的使用格式是：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="o">=&lt;</span><span class="n">arg</span><span class="o">&gt;...</span><span class="p">]</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="p">[</span><span class="n">COMMAND</span><span class="p">]</span> <span class="p">[</span><span class="n">ARGS</span><span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>命令选项如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·-f，--file FILE：指定使用的Compose模板文件，默认为docker-compose.yml，可以多次指定；
 
@@ -1301,12 +1158,10 @@ Bundle，DAB）的配置包，包括整个服务栈的所有数据，他人可�
 <p>格式为<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">kill</span> <span class="pre">[options]</span> <span class="pre">[SERVICE...]。</span></code></p>
 <p>通过发送SIGKILL信号来强制停止服务容器。</p>
 <p>支持通过-s参数来指定发送的信号，例如通过如下指令发送SIGINT信号。</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-compose kill -s SIGINT
 </pre></div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="logs">
 <h4>10.logs<a class="headerlink" href="#logs" title="Permalink to this headline">¶</a></h4>
 <p>格式为<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">logs</span> <span class="pre">[options]</span> <span class="pre">[SERVICE...]。</span></code></p>
@@ -1380,11 +1235,9 @@ stop命令来停止容器。</p>
 <p>格式为<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">run</span> <span class="pre">[options]</span> <span class="pre">[-p</span> <span class="pre">PORT...]</span> <span class="pre">[-e</span> <span class="pre">KEY=VAL...]</span> <span class="pre">SERVICE</span> <span class="pre">[COMMAND]</span> <span class="pre">[ARGS...]。</span></code></p>
 <p>在指定服务上执行一个命令。</p>
 <p>例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-compose run ubuntu ping docker.com
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>将会启动一个ubuntu服务容器，并执行ping docker.com命令。</p>
 <p>默认情况下，如果存在关联，则所有关联的服务将会自动被启动，除非这些服务已经在运行中。</p>
 <p>该命令类似启动容器后运行指定的命令，相关卷、链接等等都将会按照配置自动创建。</p>
@@ -1392,11 +1245,9 @@ stop命令来停止容器。</p>
 <p>·给定命令将会覆盖原有的自动运行命令；</p>
 <p>·会自动创建端口，以避免冲突。</p>
 <p>如果不希望自动启动关联的容器，可以使用–no-deps选项，例如</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-compose run --no-deps web python manage.py shell
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>将不会启动web容器所关联的其他容器。</p>
 <p>选项：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·-d：后台运行容器；
@@ -1417,11 +1268,9 @@ stop命令来停止容器。</p>
 <p>格式为<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">scale[options]</span> <span class="pre">[SERVICE=NUM...]。</span></code></p>
 <p>设置指定服务运行的容器个数。</p>
 <p>通过service=num的参数来设置数量。例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-compose scale web=3 db=2
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>将启动3个容器运行web服务，2个容器运行db服务。</p>
 <p>一般的，当指定数目多于该服务当前实际运行容器，将新创建并启动容器；反之，将停止容器。</p>
 <p>选项包括-t，–timeout TIMEOUT：停止容器时候的超时（默认为10秒）。</p>
@@ -1569,15 +1418,11 @@ class HandlerClass<span class="o">(</span>SimpleHTTPRequestHandler<span class="o
         exit<span class="o">()</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>生成一个临时的index.html文件，其内容会被index.py来更新：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ touch index.html
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>生成一个Dockerfile，部署该Web应用，内容为：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>FROM python:2.7
 WORKDIR /code
 ADD . /code
@@ -1586,11 +1431,9 @@ CMD python index.py
 </pre></div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="haproxy">
 <h3><a class="toc-backref" href="#id27">2.haproxy目录</a><a class="headerlink" href="#haproxy" title="Permalink to this headline">¶</a></h3>
 <p>该目录将配置haproxy镜像。在其中生成一个haproxy.cfg文件，内容为：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>global
     log <span class="m">127</span>.0.0.1 local0
     log <span class="m">127</span>.0.0.1 local1 notice
@@ -1627,10 +1470,8 @@ backend web_backends
     http-check expect status <span class="m">200</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>3.docker-compose.yml</p>
 <p>在haproxy_web目录下编写一个docker-compose.yml文件，该文件是Compose使用的主模板文件。其中，指定启动3个Web容器（weba、webb、webc），以及1个haproxy容器：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># This will start a haproxy and three web services. haproxy will act as a loadbalancer.</span>
 <span class="c1"># Authors: yeasy.github.com</span>
 weba:
@@ -1659,10 +1500,8 @@ haproxy:
         - <span class="s2">&quot;70:70&quot;</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>4.运行compose项目</p>
 <p>现在haproxy_web目录应该长成下面的样子：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>root@k8s-node1 haproxy_web<span class="o">]</span><span class="c1"># tree -L 3</span>
 .
 ├── docker-compose.yml
@@ -1676,10 +1515,8 @@ haproxy:
 <span class="m">2</span> directories, <span class="m">5</span> files
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>在该目录下执行sudo docker-compose
 up命令，控制台会整合打印出所有容器的输出信息：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo docker-compose up
 Recreating haproxyweb_webb_1...
 Recreating haproxyweb_webc_1...
@@ -1688,7 +1525,6 @@ Recreating composehaproxyweb_haproxy_1...
 Attaching to composehaproxyweb_webb_1, composehaproxyweb_webc_1, composeha-proxyweb_weba_1, composehaproxyweb_haproxy_1
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>此时通过浏览器访问本地的80端口，会获取到页面信息，如图所示。</p>
 <img alt="../_images/docker_haproxy00001.png" src="../_images/docker_haproxy00001.png" />
 <p>图24-1　访问本地80端口</p>
@@ -1696,7 +1532,6 @@ Attaching to composehaproxyweb_webb_1, composehaproxyweb_webc_1, composeha-proxy
 <p>访问本地70端口，可以查看到haproxy的统计信息，如图所示。</p>
 <img alt="../_images/docker_haproxy00002.png" src="../_images/docker_haproxy00002.png" />
 <p>查看本地的镜像，会发现Compose自动创建的haproxyweb_weba、haproxyweb_webb、haproxyweb_webc镜像：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker images
 REPOSITORY         TAG         IMAGE ID         CREATED            VIRTUAL SIZE
 haproxyweb_webb    latest      33d5e6f5e20b     <span class="m">44</span> minutes ago     <span class="m">675</span>.2 MB
@@ -1704,7 +1539,6 @@ haproxyweb_weba    latest      33d5e6f5e20b     <span class="m">44</span> minute
 haproxyweb_webc    latest      33d5e6f5e20b     <span class="m">44</span> minutes ago     <span class="m">675</span>.2 MB
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>当然，还可以进一步使用consul等方案来实现服务自动发现，这样就可以不用手动指定后端的Web容器了，更为灵活。</p>
 <p>Docker快速搭建一套PHP、Nginx、MySQL、Redis、Xdebug、Memcached
 开发环境并演进。</p>

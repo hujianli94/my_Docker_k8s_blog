@@ -55,12 +55,12 @@
 <li class="toctree-l2"><a class="reference internal" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html">Docker核心实现技术</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11.%E9%85%8D%E7%BD%AE%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">配置私有仓库</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">安全防护与配置</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id2">命名空间隔离的安全</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">控制组资源控制的安全</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">内核能力机制</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#docker">Docker服务端的防护</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">更多安全特性的使用</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id6">使用第三方检测工具</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">1.命名空间隔离的安全</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">2.控制组资源控制的安全</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">3.内核能力机制</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker">4.Docker服务端的防护</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">5.更多安全特性的使用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">6.使用第三方检测工具</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#docker-bench">Docker Bench</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#clair">clair</a></li>
 </ul>
@@ -119,12 +119,12 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#id1" id="id8">安全防护与配置</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id2" id="id9">命名空间隔离的安全</a></p></li>
-<li><p><a class="reference internal" href="#id3" id="id10">控制组资源控制的安全</a></p></li>
-<li><p><a class="reference internal" href="#id4" id="id11">内核能力机制</a></p></li>
-<li><p><a class="reference internal" href="#docker" id="id12">Docker服务端的防护</a></p></li>
-<li><p><a class="reference internal" href="#id5" id="id13">更多安全特性的使用</a></p></li>
-<li><p><a class="reference internal" href="#id6" id="id14">使用第三方检测工具</a></p>
+<li><p><a class="reference internal" href="#id2" id="id9">1.命名空间隔离的安全</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id10">2.控制组资源控制的安全</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id11">3.内核能力机制</a></p></li>
+<li><p><a class="reference internal" href="#docker" id="id12">4.Docker服务端的防护</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id13">5.更多安全特性的使用</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id14">6.使用第三方检测工具</a></p>
 <ul>
 <li><p><a class="reference internal" href="#docker-bench" id="id15">Docker Bench</a></p></li>
 <li><p><a class="reference internal" href="#clair" id="id16">clair</a></p></li>
@@ -139,14 +139,16 @@
 <h1><a class="toc-backref" href="#id8">安全防护与配置</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <p>Docker是基于Linux操作系统实现的应用虚拟化。运行在容器内的进程，与运行在本地系统中的进程在本质上并无区别，因此，配置的安全策略不合适将可能给本地系统带来安全风险。</p>
 <p>可见，Docker的安全性在生产环境中是十分关键的衡量因素。Docker容器的安全性，在很大程度上依赖于Linux系统自身。目前，在评估Docker的安全性时，主要考虑下面几个方面：</p>
-<p>·Linux内核的命名空间机制提供的容器隔离安全；</p>
-<p>·Linux控制组机制对容器资源的控制能力安全；</p>
-<p>·Linux内核的能力机制所带来的操作权限安全；</p>
-<p>·Docker程序（特别是服务端）本身的抗攻击性；</p>
-<p>·其他安全增强机制（包括AppArmor、SELinux等）对容器安全性的影响；</p>
-<p>·通过第三方工具（如Docker Bench工具）对Docker环境的安全性进行评估。</p>
+<ul class="simple">
+<li><p>Linux内核的命名空间机制提供的容器隔离安全；</p></li>
+<li><p>Linux控制组机制对容器资源的控制能力安全；</p></li>
+<li><p>Linux内核的能力机制所带来的操作权限安全；</p></li>
+<li><p>Docker程序（特别是服务端）本身的抗攻击性；</p></li>
+<li><p>其他安全增强机制（包括AppArmor、SELinux等）对容器安全性的影响；</p></li>
+<li><p>通过第三方工具（如Docker Bench工具）对Docker环境的安全性进行评估。</p></li>
+</ul>
 <section id="id2">
-<h2><a class="toc-backref" href="#id9">命名空间隔离的安全</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">1.命名空间隔离的安全</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>Docker容器和LXC容器在实现上很相似，所提供的安全特性也基本一致。当用docker[container]run命令启动一个容器时，Docker将在后台为容器创建一个独立的命名空间。命名空间提供了最基础也是最直接的隔离，在容器中运行的进程不会被运行在本地主机上的进程和其他容器通过正常渠道发现和影响。</p>
 <p>例如，通过命名空间机制，每个容器都有自己独有的网络栈，意味着它们不能访问其他容器的套接字（socket）或接口。当然，容器默认可以与本地主机网络连通，如果主机系统上做了相应的交换设置，容器可以像跟主机交互一样的和其他容器交互。启动容器时，指定公共端口或使用连接系统，容器可以相互通信了（用户可以根据配置来限制通信的策略）。</p>
 <p>从网络架构的角度来看，所有的容器实际上是通过本地主机的网桥接口（docker0）进行相互通信，就像物理机器通过物理交换机通信一样。</p>
@@ -155,7 +157,7 @@
 <p>Docker自1.3.0版本起对镜像管理引入了签名系统，加强了对镜像安全性的防护，用户可以通过签名来验证镜像的完整性和正确性。</p>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id10">控制组资源控制的安全</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">2.控制组资源控制的安全</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>控制组是Linux容器机制中的另外一个关键组件，它负责实现资源的审计和限制。</p>
 <p>控制组机制的相关技术出现于2006年，Linux内核从2.6.24版本开始正式引入该技术。当用户执行docker[container]run命令启动一个Docker容器时，Docker将通过Linux相关的调用，在后台为容器创建一个独立的控制组策略集合，该集合将限制容器内应用对资源的消耗。</p>
 <p>控制组提供了很多有用的特性。它可以确保各个容器公平地分享主机的内存、CPU、磁盘IO等资源；当然，更重要的是，通过控制组可以限制容器对资源的占用，确保了当某个容器对资源消耗过大时，不会影响到本地主机系统和其他容器。</p>
@@ -163,7 +165,7 @@
 <p>对于支持多用户的服务平台（比如公有的各种PaaS、容器云）上，控制组尤其重要。例如，当个别应用容器出现异常的时候，可以保证本地系统和其他容器正常运行而不受影响，从而避免引发“雪崩”灾难。</p>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id11">内核能力机制</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">3.内核能力机制</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>能力机制（capability）是Linux内核一个强大的特性，可以提供细粒度的权限访问控制。传统的Unix系统对进程权限只有根权限（用户id为0，即为root用户）和非根权限（用户非root用户）两种粗粒度的区别。</p>
 <p>Linux内核自2.2版本起支持能力机制，将权限划分为更加细粒度的操作能力，既可以作用在进程上，也可以作用在文件上。例如，一个Web服务进程只需要绑定一个低于1024端口的权限，并不需要完整的root权限，那么给它授权net_bind_service能力即可。此外，还可以赋予很多其他类似能力来避免进程获取root权限。</p>
 <p>默认情况下，Docker启动的容器有严格限制，只允许使用内核的一部分能力，包括chown、dac_override、fowner、kill、setgid、setuid、setpcap、net_bind_service、net_raw、sys_chroot、mknod、setfcap、audit_write，等等。</p>
@@ -184,7 +186,7 @@
 <p>当然，用户也可以根据自身需求为Docker容器启用额外的权限。</p>
 </section>
 <section id="docker">
-<h2><a class="toc-backref" href="#id12">Docker服务端的防护</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">4.Docker服务端的防护</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
 <p>使用Docker容器的核心是Docker服务端。Docker服务的运行目前还需要root权限的支持，因此服务端的安全性十分关键。</p>
 <p>首先，必须确保只有可信的用户才能访问到Docker服务。Docker允许用户在主机和容器间共享文件夹，同时不需要限制容器的访问权限，这就容易让容器突破资源限制。例如，恶意用户启动容器的时候将主机的根目录/映射到容器的/host目录中，那么容器理论上就可以对主机的文件系统进行任意修改了。事实上，几乎所有虚拟化系统都允许类似的资源共享，而没法阻止恶意用户共享主机根文件系统到虚拟机系统。</p>
 <p>这将会造成很严重的安全后果。因此，当提供容器创建服务时（例如通过一个Web服务器），要更加注意进行参数的安全检查，防止恶意用户用特定参数来创建一些破坏性的容器。</p>
@@ -198,7 +200,7 @@ API访问。建议使用安全机制，确保只有可信的网络或VPN网络�
 <p>·允许Docker服务端在非root权限下运行，利用安全可靠的子进程来代理执行需要特权权限的操作。这些子进程将只允许在限定范围内进行操作，例如仅仅负责虚拟网络设定或文件系统管理、配置操作等。</p>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id13">更多安全特性的使用</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">5.更多安全特性的使用</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <p>除了默认启用的能力机制之外，还可以利用一些现有的安全软件或机制来增强Docker的安全性，例如GRSEC、AppArmor、SELinux等：</p>
 <p>·在内核中启用GRSEC和PAX，这将增加更多的编译和运行时的安全检查；并且通过地址随机化机制来避免恶意探测等。启用该特性不需要Docker进行任何配置；</p>
 <p>·使用一些增强安全特性的容器模板，比如带AppArmor的模板和RedHat带SELinux策略的模板。这些模板提供了额外的安全特性；</p>
@@ -207,7 +209,7 @@ API访问。建议使用安全机制，确保只有可信的网络或VPN网络�
 <p>同时，对于应用容器场景下，Docker内启动应用的用户都应为非特权用户（可以进一步禁用用户权限，如访问Shell），避免出现故障时对容器内其他资源造成损害。</p>
 </section>
 <section id="id6">
-<h2><a class="toc-backref" href="#id14">使用第三方检测工具</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">6.使用第三方检测工具</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>前面笔者介绍了大量增强Docker安全性的手段。要逐一去检查会比较繁琐，好在已经有了一些进行自动化检查的开源工具，比较出名的有Docker
 Bench和clair。</p>
 <section id="docker-bench">
@@ -220,7 +222,6 @@ Security，CIS）对于Docker
 Docker规范在主机配置、Docker引擎、配置文件权限、镜像管理、容器运行时环境、安全项等六大方面都进行了相关的约束和规定，推荐大家在生产环境中使用Docker时，采用该规范作为部署的安全标准。</p>
 <p>Docker
 Bench自身也提供了Docker镜像，采用如下命令，可以快速对本地环境进行安全检查：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker run -it --net host --pid host --userns host --cap-add audit_control <span class="se">\</span>
     -e <span class="nv">DOCKER_CONTENT_TRUST</span><span class="o">=</span><span class="nv">$DOCKER_CONTENT_TRUST</span> <span class="se">\</span>
     -v /var/lib:/var/lib <span class="se">\</span>
@@ -228,14 +229,14 @@ Bench自身也提供了Docker镜像，采用如下命令，可以快速对本地
     -v /usr/lib/systemd:/usr/lib/systemd <span class="se">\</span>
     -v /etc:/etc --label docker_bench_security <span class="se">\</span>
     docker/docker-bench-security
-<span class="c1"># ------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
 <span class="c1"># Docker Bench for Security v1.3.4</span>
 <span class="c1">#</span>
 <span class="c1"># Docker, Inc. (c) 2015-</span>
 <span class="c1">#</span>
 <span class="c1"># Checks for dozens of common best-practices around deploying Docker containers in production.</span>
 <span class="c1"># Inspired by the CIS Docker Community Edition Benchmark v1.1.0.</span>
-<span class="c1"># ------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
 Initializing
 <span class="o">[</span>INFO<span class="o">]</span> <span class="m">1</span> - Host Configuration
 <span class="o">[</span>WARN<span class="o">]</span> <span class="m">1</span>.1  - Ensure a separate partition <span class="k">for</span> containers has been created
@@ -258,10 +259,8 @@ Initializing
 ...
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>输出结果中，带有不同的级别，说明问题的严重程度，最后会给出整体检查结果和评分。一般要尽量避免出现WARN或以上的问题。</p>
 <p>用户也可以通过获取最新开源代码方式启动检测：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/docker/docker-bench-security.git
 $ <span class="nb">cd</span> docker-bench-security
 $ docker-compose run --rm docker-bench-security
@@ -274,7 +273,6 @@ $ docker-compose run --rm docker-bench-security
 Bench外，还有CoreOS团队推出的clair，它基于Go语言实现，支持对容器（支持appc和Docker）的文件层进行静态扫描发现潜在漏洞。项目地址为<a class="reference external" href="https://github.com/coreos/clair">https://github.com/coreos/clair</a>
 。读者可以使用Docker或Docker-compose方式快速进行体验。</p>
 <p>使用Docker方式启动clair，如下所示：</p>
-<hr class="docutils" />
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mkdir <span class="nv">$PWD</span>/clair_config
 $ curl -L
     https://raw.githubusercontent.com/coreos/clair/master/config.yaml.sample -o <span class="nv">$PWD</span>/clair_config/config.yaml

@@ -157,8 +157,10 @@ Machine是Docker官方三剑客项目之一，负责使用Docker容器的第一�
 上开源，遵循Apache-2.0许可，目前最新版本为0.13.0。</p>
 <p>Machine项目主要由Go语言编写，用户可以在本地任意指定由Machine管理的Docker主机，并对其进行操作。</p>
 <p>其基本功能包括：</p>
-<p>·在指定节点或平台上安装Docker引擎，配置其为可使用的Docker环境；</p>
-<p>·集中管理（包括启动、查看等）所安装的Docker环境。</p>
+<ul class="simple">
+<li><p>在指定节点或平台上安装Docker引擎，配置其为可使用的Docker环境；</p></li>
+<li><p>集中管理（包括启动、查看等）所安装的Docker环境。</p></li>
+</ul>
 <p>Machine连接不同类型的操作平台是通过对应驱动来实现的，目前已经集成了包括AWS、IBM、Google，以及OpenStack、VirtualBox、vSphere等多种云平台的支持。</p>
 <p>Docker Machine可以在多种操作系统平台上安装，包括Linux、Mac
 OS以及Windows，下面分别介绍。</p>
@@ -169,46 +171,37 @@ OS以及Windows，下面分别介绍。</p>
 <p>在Linux平台上的安装十分简单，推荐从官方Release库（<a class="reference external" href="https://github.com/docker/ma-chine/releases">https://github.com/docker/ma-chine/releases</a>
 ）直接下载编译好的二进制文件即可。</p>
 <p>例如，在Linux 64位系统上直接下载对应的二进制包，以最新的0.13.0为例：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo curl -L https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-&#39;uname -s&#39;-&#39;uname -m&#39; &gt; docker-machine
 $ sudo mv docker-machine /usr/local/bin/docker-machine
 $ sudo chmod +x /usr/local/bin/docker-machine
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>安装完成后，查看版本信息，验证运行正常：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine -v
 docker-machine version 0.13.0, build 9ba6da9
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>为了支持命令自动补全，还可以安装补全脚本：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ scripts=( docker-machine-prompt.bash docker-machine-wrapper.bash docker-machine.bash ); for i in &quot;${scripts[@]}&quot;; do sudo wget https://raw.githubuser-content.com/docker/machine/v0.13.0/contrib/completion/bash/${i} -P /etc/bash_completion.d; done
 </pre></div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="mac-os">
 <h3><a class="toc-backref" href="#id12">2.Mac OS系统上的安装</a><a class="headerlink" href="#mac-os" title="Permalink to this headline">¶</a></h3>
 <p>Mac
 OS平台上的安装跟Linux平台十分类似，唯一不同的是下载二进制文件的路径不同。例如，同样是0.13.0版本，Mac
 OS平台上的安装命令为：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl -L https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-&#39;uname -s&#39;-&#39;uname -m&#39; &gt;/usr/local/bin/docker-machine
 $ chmod +x /usr/local/bin/docker-machine
 </pre></div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="windows">
 <h3><a class="toc-backref" href="#id13">3.Windows系统上的安装</a><a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
 <p>Windows平台的安装要复杂一些，首先需要安装git-bash（<a class="reference external" href="https://git-for-windows.github.io/">https://git-for-windows.github.io</a>
 ）。git-bash是Windows下的git客户端软件包，会提供类似Linux下的一些基本的工具，例如bash、curl、ssh命令等，最新版本为2.16。</p>
 <p>安装之后，启动一个git-bash的命令行界面，仍然通过下载二进制包方式安装Docker
 Machine：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ if [[ ! -d &quot;$HOME/bin&quot; ]]; then mkdir -p &quot;$HOME/bin&quot;; fi
 $ curl -L https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-Windows-x86_64.exe &gt; &quot;$HOME/bin/docker-machine.exe&quot; &amp;&amp; \
 chmod +x &quot;$HOME/bin/docker-machine.exe&quot;
@@ -223,15 +216,12 @@ Machine通过多种后端驱动来管理不同的资源，包括虚拟机、本�
 <section id="id2">
 <h3><a class="toc-backref" href="#id15">1.虚拟机</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>可以通过virtualbox驱动支持本地（需要已安装virtualbox）启动一个虚拟机环境，并配置为Docker主机：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine create --driver=virtualbox test
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>将启动一个全新的虚拟机，并安装Docker引擎。</p>
 <p>安装成功后，可以通过docker-machine
 env命令查看访问所创建Docker环境所需要的配置信息：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine env test
     export DOCKER_TLS_VERIFY=&quot;1&quot;
     export DOCKER_HOST=&quot;tcp://192.168.56.101:2376&quot;
@@ -241,20 +231,16 @@ env命令查看访问所创建Docker环境所需要的配置信息：</p>
     # eval &quot;$(docker-machine env test)&quot;
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>使用完毕后，可以通过如下命令来停止Docker主机：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine stop test
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>此外，Machine还支持Microsoft Hyper-V虚拟化平台。</p>
 </section>
 <section id="id3">
 <h3><a class="toc-backref" href="#id16">2.本地主机</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>这种驱动适合主机操作系统和SSH服务都已经安装好，需要对其安装Docker引擎。</p>
 <p>首先确保本地主机可以通过user账号的key直接ssh到目标主机。使用generic类型的驱动，注册一台Docker主机，命名为test：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine create -d generic --generic-ip-address=10.0.100.102 --generic-ssh-user=user test
 Running pre-create checks...
 Creating machine...
@@ -267,28 +253,23 @@ Provisioning created instance...
 ...
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>从命令输出上可以看到，Machine通过SSH连接到指定节点，并在上面安装Docker引擎。</p>
 <p>创建主机成功后，可以通过docker-machine
 ls命令来查看注册到本地管理列表中的Docker主机：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine ls
 NAME   ACTIVE  DRIVER   STATE   URL                      SWARM  DOCKER   ERRORS
 test   -       generic  Running tcp://10.0.100.102:2376           v18.3
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>还可以通过inspect命令查看指定Docker主机的具体信息。</p>
 </section>
 <section id="id4">
 <h3><a class="toc-backref" href="#id17">3.云平台驱动</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>以Amazon Web Services云平台为例，配置其上的虚拟机为Docker主机。</p>
 <p>需要指定Access Key ID、Secret Access Key、VPC ID等信息。例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine create --driver amazonec2 --amazonec2-access-key AKI******* --amazonec2-secret-key 8T93C********* --amazonec2-vpc-id vpc-****** aws_instance
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>其他支持的云平台还包括Microsoft Azure、Digital Ocean、Exoscale、Google
 Compute Engine、Rackspace、IBM Softlayer等，用户可根据自身情况选择使用。</p>
 </section>
@@ -300,11 +281,9 @@ Compute Engine、Rackspace、IBM Softlayer等，用户可根据自身情况选�
 <section id="id6">
 <h3><a class="toc-backref" href="#id19">Machine命令</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>Machine提供了一系列的子命令，每个命令都带有一系列参数，可以通过如下命令查看具体用法：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine &lt;COMMAND&gt; -h
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>命令参见表23-1。</p>
 <p>表23-1　Machine命令列表</p>
 <img alt="../_images/docker_machine002.png" src="../_images/docker_machine002.png" />
@@ -313,7 +292,6 @@ Compute Engine、Rackspace、IBM Softlayer等，用户可根据自身情况选�
 <h4>1.active<a class="headerlink" href="#active" title="Permalink to this headline">¶</a></h4>
 <p>格式为<code class="docutils literal notranslate"><span class="pre">docker-machine</span> <span class="pre">active[arg...]</span></code>。</p>
 <p>支持-timeout，-t“10”选项，代表超时时间，默认为10s。查看当前激活状态的Docker主机。激活状态意味着当前的DOCKER_HOST环境变量指向该主机。例如，下面命令列出当前激活主机为dev主机：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine ls
 NAME      ACTIVE   DRIVER         STATE     URL
 dev                virtualbox     Running   tcp://192.168.56.102:2376
@@ -325,18 +303,15 @@ staging
 </pre></div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="config">
 <h4>2.config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h4>
 <p>格式为<code class="docutils literal notranslate"><span class="pre">docker-machine</span> <span class="pre">config[OPTIONS]</span> <span class="pre">[arg...]</span></code>。</p>
 <p>支持-swarm参数，表示打印Swarm集群信息，而不是Docker信息。查看到Docker主机的连接配置信息。例如，下面显示dev主机的连接信息：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine config dev
 --tlsverify --tlscacert=&quot;/home/docker_user/.docker/machines/dev/ca.pem&quot; --tl-scert=&quot;/home/docker_user/.docker/machines/dev/cert.pem&quot; --tlskey=&quot;/home/docker_user/.docker/machines/dev/key.pem&quot; -H tcp://192.168.56.102:2376
 </pre></div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="create">
 <h4>3.create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h4>
 <p>格式为<code class="docutils literal notranslate"><span class="pre">docker-machine</span> <span class="pre">create[OPTIONS</span></code>][arg…]。创建一个Docker主机环境。支持的选项包括：</p>
@@ -358,7 +333,6 @@ option：以键值对格式指定所创建Docker引擎允许访问的不支持�
 <p>·-swarm-host“tcp：//0.0.0.0：3376”：指定地址将监听Swarm master节点请求；</p>
 <p>·-swarm-addr：从指定地址发送广播加入Swarm集群服务。</p>
 <p>例如，通过如下命令可以创建一个Docker主机的虚拟机镜像：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine create -d virtualbox \
     --engine-storage-driver overlay \
     --engine-label name=testmachine \
@@ -369,7 +343,6 @@ option：以键值对格式指定所创建Docker引擎允许访问的不支持�
     mydockermachine
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>所创建Docker主机虚拟机中的Docker引擎将：</p>
 <p>·使用overlay类型的存储驱动；</p>
 <p>·带有name=testmachine和year=2015两个标签；</p>
@@ -386,7 +359,6 @@ option：以键值对格式指定所创建Docker引擎允许访问的不支持�
 <p>·-unset，-u：取消对应的环境变量；</p>
 <p>·-no-proxy：添加对象主机地址到NO_PROXY环境变量。</p>
 <p>例如，显示连接到default主机所需要的环境变量：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine env default
 export DOCKER_TLS_VERIFY=&quot;1&quot;
 export DOCKER_HOST=&quot;tcp://192.168.56.102:2376&quot;
@@ -395,12 +367,10 @@ export DOCKER_MACHINE_NAME=&quot;default&quot;
 </pre></div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="inspect">
 <h4>5.inspect<a class="headerlink" href="#inspect" title="Permalink to this headline">¶</a></h4>
 <p>格式为<code class="docutils literal notranslate"><span class="pre">docker-machine</span> <span class="pre">inspect[OPTIONS]</span> <span class="pre">[arg...]</span></code>。</p>
 <p>以json格式输出指定Docker主机的详细信息。支持-format，-f选项使用指定的Go模板格式化输出。例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine inspect default
 {
     &quot;DriverName&quot;: &quot;virtualbox&quot;,
@@ -417,17 +387,14 @@ export DOCKER_MACHINE_NAME=&quot;default&quot;
 </pre></div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="ip">
 <h4>6.ip<a class="headerlink" href="#ip" title="Permalink to this headline">¶</a></h4>
 <p>获取指定Docker主机地址。例如，获取default主机的地址，可以用如下命令：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine ip default
 192.168.56.102
 </pre></div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="kill">
 <h4>7.kill<a class="headerlink" href="#kill" title="Permalink to this headline">¶</a></h4>
 <p>直接杀死指定的Docker主机。</p>
@@ -436,7 +403,6 @@ export DOCKER_MACHINE_NAME=&quot;default&quot;
 <section id="ls">
 <h4>8.ls<a class="headerlink" href="#ls" title="Permalink to this headline">¶</a></h4>
 <p>列出所有管理的主机。格式为<code class="docutils literal notranslate"><span class="pre">docker-machine</span> <span class="pre">ls[OPTIONS]</span> <span class="pre">[arg...]</span></code>。例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine ls
 NAME       ACTIVE   DRIVER       STATE      URL
 default    -        virtualbox   Stopped
@@ -445,15 +411,12 @@ test1      -        virtualbox   Running    tcp://192.168.56.106:2376
 test2      *        virtualbox   Running    tcp://192.168.56.107:2376
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>可以通过–filter只输出某些Docker主机，支持过滤器包括名称正则表达式、驱动类型、Swarm管理节点名称、状态等。例如：</p>
-<hr class="docutils" />
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker-machine ls --filter state=Stopped
 NAME   ACTIVE   DRIVER       STATE     URL   SWARM
 default    -        virtualbox   Stopped
 </pre></div>
 </div>
-<hr class="docutils" />
 <p>支持选项包括：</p>
 <p>·–quiet，-q：减少无关输出信息；</p>
 <p>·–filter[–filter option–filter option]：只输出符合过滤条件主机；</p>
