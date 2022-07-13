@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HPA 控制器 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="其他控制器" href="6.%E5%85%B6%E4%BB%96%E6%8E%A7%E5%88%B6%E5%99%A8.html" />
+    <link rel="prev" title="StatefulSet控制器" href="4.StatefulSet%E6%8E%A7%E5%88%B6%E5%99%A8.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">5.控制器</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="1.Deployment%E6%8E%A7%E5%88%B6%E5%99%A8.html">Deployment控制器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2.DaemonSet%E6%8E%A7%E5%88%B6%E5%99%A8.html">DaemonSet控制器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="3.Job%E4%B8%8ECronJob%E6%8E%A7%E5%88%B6%E5%99%A8.html">Job与CronJob控制器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4.StatefulSet%E6%8E%A7%E5%88%B6%E5%99%A8.html">StatefulSet控制器</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">HPA 控制器</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metrics-server">1.Metrics Server</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#api">2.聚合 API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">3.安装</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">4.HPA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#demo">5.demo示例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="6.%E5%85%B6%E4%BB%96%E6%8E%A7%E5%88%B6%E5%99%A8.html">其他控制器</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html">7.存储与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html">8.Kubernetes资源的管理及调度</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../11.%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E6%A1%88%E4%BE%8B/index.html">11.项目部署案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../12.Helm%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/index.html">12.Helm学习指南</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../13.Kubernetes-DevOps/index.html">13.Kubernetes-DevOps</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">5.控制器</a> &raquo;</li>
+      <li>HPA 控制器</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/5.控制器/5.HPA.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#hpa" id="id3">HPA 控制器</a></p>
+<ul>
+<li><p><a class="reference internal" href="#metrics-server" id="id4">1.Metrics Server</a></p></li>
+<li><p><a class="reference internal" href="#api" id="id5">2.聚合 API</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id6">3.安装</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id7">4.HPA</a></p></li>
+<li><p><a class="reference internal" href="#demo" id="id8">5.demo示例</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="hpa">
+<h1><a class="toc-backref" href="#id3">HPA 控制器</a><a class="headerlink" href="#hpa" title="Permalink to this headline">¶</a></h1>
+<p>在前面的学习中我们使用用一个 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">scale</span></code> 命令可以来实现 Pod
+的扩缩容功能，但是这个毕竟是完全手动操作的，要应对线上的各种复杂情况，我们需要能够做到自动化去感知业务，来自动进行扩缩容。</p>
+<p>为此，Kubernetes
+也为我们提供了这样的一个资源对象：<code class="docutils literal notranslate"><span class="pre">Horizontal</span> <span class="pre">Pod</span> <span class="pre">Autoscaling（Pod</span> <span class="pre">水平自动伸缩）</span></code>，简称<code class="docutils literal notranslate"><span class="pre">HPA</span></code>，HPA
+通过监控分析一些控制器控制的所有 Pod 的负载变化情况来确定是否需要调整
+Pod 的副本数量，这是 HPA 最基本的原理：</p>
+<img alt="../../_images/image-20220713145411601.png" src="../../_images/image-20220713145411601.png" />
+<p>我们可以简单的通过 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">autoscale</span></code> 命令来创建一个 HPA
+资源对象，<code class="docutils literal notranslate"><span class="pre">HPA</span> <span class="pre">Controller</span></code>默认<code class="docutils literal notranslate"><span class="pre">30s</span></code>轮询一次（可通过
+<code class="docutils literal notranslate"><span class="pre">kube-controller-manager</span></code>
+的<code class="docutils literal notranslate"><span class="pre">--horizontal-pod-autoscaler-sync-period</span></code>
+参数进行设置），查询指定的资源中的 Pod
+资源使用率，并且与创建时设定的值和指标做对比，从而实现自动伸缩的功能。</p>
+<section id="metrics-server">
+<h2><a class="toc-backref" href="#id4">1.Metrics Server</a><a class="headerlink" href="#metrics-server" title="Permalink to this headline">¶</a></h2>
+<p>在 HPA 的第一个版本中，我们需要 <code class="docutils literal notranslate"><span class="pre">Heapster</span></code> 提供 CPU 和内存指标，在 HPA
+v2 过后就需要安装 Metrcis Server 了，<code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code> 可以通过标准的
+Kubernetes API 把监控数据暴露出来，有了 <code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code>
+之后，我们就完全可以通过标准的 Kubernetes API
+来访问我们想要获取的监控数据了：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="mf">10.96</span><span class="o">.</span><span class="mf">0.1</span><span class="o">/</span><span class="n">apis</span><span class="o">/</span><span class="n">metrics</span><span class="o">.</span><span class="n">k8s</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">v1beta1</span><span class="o">/</span><span class="n">namespaces</span><span class="o">/&lt;</span><span class="n">namespace</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;/</span><span class="n">pods</span><span class="o">/&lt;</span><span class="n">pod</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>比如当我们访问上面的 API 的时候，我们就可以获取到该 Pod
+的资源数据，这些数据其实是来自于 kubelet 的 <code class="docutils literal notranslate"><span class="pre">Summary</span> <span class="pre">API</span></code>
+采集而来的。不过需要说明的是我们这里可以通过标准的 API
+来获取资源监控数据，并不是因为 <code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code> 就是 APIServer
+的一部分，而是通过 Kubernetes 提供的 <code class="docutils literal notranslate"><span class="pre">Aggregator</span></code>
+汇聚插件来实现的，是独立于 APIServer 之外运行的。</p>
+<img alt="../../_images/image-20220713145956919.png" src="../../_images/image-20220713145956919.png" />
+</section>
+<section id="api">
+<h2><a class="toc-backref" href="#id5">2.聚合 API</a><a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Aggregator</span></code> 允许开发人员编写一个自己的服务，把这个服务注册到
+Kubernetes 的 APIServer 里面去，这样我们就可以像原生的 APIServer 提供的
+API 使用自己的 API 了，我们把自己的服务运行在 Kubernetes 集群里面，然后
+Kubernetes 的 <code class="docutils literal notranslate"><span class="pre">Aggregator</span></code> 通过 Service 名称就可以转发到我们自己写的
+Service 里面去了。这样这个聚合层就带来了很多好处：</p>
+<ul class="simple">
+<li><p>增加了 API 的扩展性，开发人员可以编写自己的 API 服务来暴露他们想要的
+API。</p></li>
+<li><p>丰富了 API，核心 kubernetes 团队阻止了很多新的 API
+提案，通过允许开发人员将他们的 API
+作为单独的服务公开，这样就无须社区繁杂的审查了。</p></li>
+<li><p>开发分阶段实验性 API，新的 API
+可以在单独的聚合服务中开发，当它稳定之后，在合并会 APIServer
+就很容易了。</p></li>
+<li><p>确保新 API 遵循 Kubernetes
+约定，如果没有这里提出的机制，社区成员可能会被迫推出自己的东西，这样很可能造成社区成员和社区约定不一致。</p></li>
+</ul>
+</section>
+<section id="id1">
+<h2><a class="toc-backref" href="#id6">3.安装</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>所以现在我们要使用 HPA，就需要在集群中安装 <code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code>
+服务，要安装 <code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code> 就需要开启 <code class="docutils literal notranslate"><span class="pre">Aggregator</span></code>，因为
+<code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code> 就是通过该代理进行扩展的，不过我们集群是通过 Kubeadm
+搭建的，默认已经开启了，如果是二进制方式安装的集群，需要单独配置
+kube-apsierver 添加如下所示的参数：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">requestheader</span><span class="o">-</span><span class="n">client</span><span class="o">-</span><span class="n">ca</span><span class="o">-</span><span class="n">file</span><span class="o">=&lt;</span><span class="n">path</span> <span class="n">to</span> <span class="n">aggregator</span> <span class="n">CA</span> <span class="n">cert</span><span class="o">&gt;</span>
+<span class="o">--</span><span class="n">requestheader</span><span class="o">-</span><span class="n">allowed</span><span class="o">-</span><span class="n">names</span><span class="o">=</span><span class="n">aggregator</span>
+<span class="o">--</span><span class="n">requestheader</span><span class="o">-</span><span class="n">extra</span><span class="o">-</span><span class="n">headers</span><span class="o">-</span><span class="n">prefix</span><span class="o">=</span><span class="n">X</span><span class="o">-</span><span class="n">Remote</span><span class="o">-</span><span class="n">Extra</span><span class="o">-</span>
+<span class="o">--</span><span class="n">requestheader</span><span class="o">-</span><span class="n">group</span><span class="o">-</span><span class="n">headers</span><span class="o">=</span><span class="n">X</span><span class="o">-</span><span class="n">Remote</span><span class="o">-</span><span class="n">Group</span>
+<span class="o">--</span><span class="n">requestheader</span><span class="o">-</span><span class="n">username</span><span class="o">-</span><span class="n">headers</span><span class="o">=</span><span class="n">X</span><span class="o">-</span><span class="n">Remote</span><span class="o">-</span><span class="n">User</span>
+<span class="o">--</span><span class="n">proxy</span><span class="o">-</span><span class="n">client</span><span class="o">-</span><span class="n">cert</span><span class="o">-</span><span class="n">file</span><span class="o">=&lt;</span><span class="n">path</span> <span class="n">to</span> <span class="n">aggregator</span> <span class="n">proxy</span> <span class="n">cert</span><span class="o">&gt;</span>
+<span class="o">--</span><span class="n">proxy</span><span class="o">-</span><span class="n">client</span><span class="o">-</span><span class="n">key</span><span class="o">-</span><span class="n">file</span><span class="o">=&lt;</span><span class="n">path</span> <span class="n">to</span> <span class="n">aggregator</span> <span class="n">proxy</span> <span class="n">key</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">kube-proxy</span></code> 没有和 APIServer
+运行在同一台主机上，那么需要确保启用了如下 kube-apsierver 的参数：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">aggregator</span><span class="o">-</span><span class="n">routing</span><span class="o">=</span><span class="n">true</span>
+</pre></div>
+</div>
+<p>对于这些证书的生成方式，我们可以查看官方文档：<a class="reference external" href="https://github.com/kubernetes-sigs/apiserver-builder-alpha/blob/master/docs/concepts/auth.md">https://github.com/kubernetes-sigs/apiserver-builder-alpha/blob/master/docs/concepts/auth.md</a>。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Aggregator</span></code> 聚合层启动完成后，就可以来安装 <code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code>
+了，我们可以获取该仓库的官方安装资源清单：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 官方仓库地址：https://github.com/kubernetes-sigs/metrics-server
+$ wget https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml
+</pre></div>
+</div>
+<p>等部署完成后，可以查看 Pod 日志是否正常：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f components.yaml
+$ kubectl get pods -n kube-system -l k8s-app=metrics-server
+NAME                              READY   STATUS    RESTARTS   AGE
+metrics-server-6886856d7c-g5k6q   1/1     Running   0          2m39s
+$ kubectl logs -f metrics-server-6886856d7c-g5k6q -n kube-system
+......
+E1119 09:05:57.234312       1 manager.go:111] unable to fully collect metrics: [unable to fully scrape metrics from source kubelet_summary:ydzs-node1: unable to fetch metrics from Kubelet ydzs-node1 (ydzs-node1): Get https://ydzs-node1:10250/stats/summary?only_cpu_and_memory=true: dial tcp: lookup ydzs-node1 on 10.96.0.10:53: no such host, unable to fully scrape metrics from source kubelet_summary:ydzs-node4: unable to fetch metrics from Kubelet ydzs-node4 (ydzs-node4): Get https://ydzs-node4:10250/stats/summary?only_cpu_and_memory=true: dial tcp: lookup ydzs-node4 on 10.96.0.10:53: no such host, unable to fully scrape metrics from source kubelet_summary:ydzs-node3: unable to fetch metrics from Kubelet ydzs-node3 (ydzs-node3): Get https://ydzs-node3:10250/stats/summary?only_cpu_and_memory=true: dial tcp: lookup ydzs-node3 on 10.96.0.10:53: no such host, unable to fully scrape metrics from source kubelet_summary:ydzs-master: unable to fetch metrics from Kubelet ydzs-master (ydzs-master): Get https://ydzs-master:10250/stats/summary?only_cpu_and_memory=true: dial tcp: lookup ydzs-master on 10.96.0.10:53: no such host, unable to fully scrape metrics from source kubelet_summary:ydzs-node2: unable to fetch metrics from Kubelet ydzs-node2 (ydzs-node2): Get https://ydzs-node2:10250/stats/summary?only_cpu_and_memory=true: dial tcp: lookup ydzs-node2 on 10.96.0.10:53: no such host]
+</pre></div>
+</div>
+<p>我们可以发现 Pod
+中出现了一些错误信息：<code class="docutils literal notranslate"><span class="pre">xxx:</span> <span class="pre">no</span> <span class="pre">such</span> <span class="pre">host</span></code>，我们看到这个错误信息一般就可以确定是
+DNS 解析不了造成的，我们可以看到 Metrics Server 会通过 kubelet 的 10250
+端口获取信息，使用的是 hostname，我们部署集群的时候在节点的
+<code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code> 里面添加了节点的 hostname 和 ip 的映射，但是是我们的
+Metrics Server 的 Pod 内部并没有这个 hosts 信息，当然也就不识别 hostname
+了，要解决这个问题，有两种方法：</p>
+<p>第一种方法就是在集群内部的 DNS 服务里面添加上 hostname
+的解析，比如我们这里集群中使用的是 <code class="docutils literal notranslate"><span class="pre">CoreDNS</span></code>，我们就可以去修改下
+CoreDNS 的 Configmap 信息，添加上 hosts 信息：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl edit configmap coredns -n kube-system
+apiVersion: v1
+data:
+  Corefile: <span class="p">|</span>
+    .:53 <span class="o">{</span>
+        errors
+        health
+        hosts <span class="o">{</span>  <span class="c1"># 添加集群节点hosts隐射信息</span>
+          <span class="m">10</span>.151.30.11 ydzs-master
+          <span class="m">10</span>.151.30.57 ydzs-node3
+          <span class="m">10</span>.151.30.59 ydzs-node4
+          <span class="m">10</span>.151.30.22 ydzs-node1
+          <span class="m">10</span>.151.30.23 ydzs-node2
+          fallthrough
+        <span class="o">}</span>
+        kubernetes cluster.local <span class="k">in</span>-addr.arpa ip6.arpa <span class="o">{</span>
+           pods insecure
+           upstream
+           fallthrough <span class="k">in</span>-addr.arpa ip6.arpa
+        <span class="o">}</span>
+        prometheus :9153
+        proxy . /etc/resolv.conf
+        cache <span class="m">30</span>
+        reload
+    <span class="o">}</span>
+kind: ConfigMap
+metadata:
+  creationTimestamp: <span class="m">2019</span>-05-18T11:07:46Z
+  name: coredns
+  namespace: kube-system
+</pre></div>
+</div>
+<p>这样当在集群内部访问集群的 hostname 的时候就可以解析到对应的 ip
+了，另外一种方法就是在 metrics-server 的启动参数中修改
+<code class="docutils literal notranslate"><span class="pre">kubelet-preferred-address-types</span></code> 参数，如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">args</span><span class="p">:</span>
+<span class="o">-</span> <span class="o">--</span><span class="n">cert</span><span class="o">-</span><span class="nb">dir</span><span class="o">=/</span><span class="n">tmp</span>
+<span class="o">-</span> <span class="o">--</span><span class="n">secure</span><span class="o">-</span><span class="n">port</span><span class="o">=</span><span class="mi">4443</span>
+<span class="o">-</span> <span class="o">--</span><span class="n">kubelet</span><span class="o">-</span><span class="n">preferred</span><span class="o">-</span><span class="n">address</span><span class="o">-</span><span class="n">types</span><span class="o">=</span><span class="n">InternalIP</span>
+</pre></div>
+</div>
+<p>我们这里使用第二种方式，然后重新安装：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f components.yaml
+$ kubectl get pods -n kube-system -l k8s-app=metrics-server
+NAME                              READY   STATUS    RESTARTS   AGE
+metrics-server-5d4dbb78bb-6klw6   1/1     Running   0          14s
+$ kubectl logs -f metrics-server-5d4dbb78bb-6klw6 -n kube-system
+I1119 09:10:44.249092       1 serving.go:312] Generated self-signed cert (/tmp/apiserver.crt, /tmp/apiserver.key)
+I1119 09:10:45.264076       1 secure_serving.go:116] Serving securely on [::]:4443
+$ kubectl get apiservice | grep metrics
+v1beta1.metrics.k8s.io                 kube-system/metrics-server   True        9m
+$ kubectl get --raw &quot;/apis/metrics.k8s.io/v1beta1/nodes&quot;
+{&quot;kind&quot;:&quot;NodeMetricsList&quot;,&quot;apiVersion&quot;:&quot;metrics.k8s.io/v1beta1&quot;,&quot;metadata&quot;:{&quot;selfLink&quot;:&quot;/apis/metrics.k8s.io/v1beta1/nodes&quot;},&quot;items&quot;:[{&quot;metadata&quot;:{&quot;name&quot;:&quot;ydzs-node3&quot;,&quot;selfLink&quot;:&quot;/apis/metrics.k8s.io/v1beta1/nodes/ydzs-node3&quot;,&quot;creationTimestamp&quot;:&quot;2019-11-19T09:11:53Z&quot;},&quot;timestamp&quot;:&quot;2019-11-19T09:11:38Z&quot;,&quot;window&quot;:&quot;30s&quot;,&quot;usage&quot;:{&quot;cpu&quot;:&quot;240965441n&quot;,&quot;memory&quot;:&quot;3004360Ki&quot;}},{&quot;metadata&quot;:{&quot;name&quot;:&quot;ydzs-node4&quot;,&quot;selfLink&quot;:&quot;/apis/metrics.k8s.io/v1beta1/nodes/ydzs-node4&quot;,&quot;creationTimestamp&quot;:&quot;2019-11-19T09:11:53Z&quot;},&quot;timestamp&quot;:&quot;2019-11-19T09:11:37Z&quot;,&quot;window&quot;:&quot;30s&quot;,&quot;usage&quot;:{&quot;cpu&quot;:&quot;167036681n&quot;,&quot;memory&quot;:&quot;2574664Ki&quot;}},{&quot;metadata&quot;:{&quot;name&quot;:&quot;ydzs-master&quot;,&quot;selfLink&quot;:&quot;/apis/metrics.k8s.io/v1beta1/nodes/ydzs-master&quot;,&quot;creationTimestamp&quot;:&quot;2019-11-19T09:11:53Z&quot;},&quot;timestamp&quot;:&quot;2019-11-19T09:11:38Z&quot;,&quot;window&quot;:&quot;30s&quot;,&quot;usage&quot;:{&quot;cpu&quot;:&quot;350907350n&quot;,&quot;memory&quot;:&quot;2986716Ki&quot;}},{&quot;metadata&quot;:{&quot;name&quot;:&quot;ydzs-node1&quot;,&quot;selfLink&quot;:&quot;/apis/metrics.k8s.io/v1beta1/nodes/ydzs-node1&quot;,&quot;creationTimestamp&quot;:&quot;2019-11-19T09:11:53Z&quot;},&quot;timestamp&quot;:&quot;2019-11-19T09:11:39Z&quot;,&quot;window&quot;:&quot;30s&quot;,&quot;usage&quot;:{&quot;cpu&quot;:&quot;1319638039n&quot;,&quot;memory&quot;:&quot;2094376Ki&quot;}},{&quot;metadata&quot;:{&quot;name&quot;:&quot;ydzs-node2&quot;,&quot;selfLink&quot;:&quot;/apis/metrics.k8s.io/v1beta1/nodes/ydzs-node2&quot;,&quot;creationTimestamp&quot;:&quot;2019-11-19T09:11:53Z&quot;},&quot;timestamp&quot;:&quot;2019-11-19T09:11:36Z&quot;,&quot;window&quot;:&quot;30s&quot;,&quot;usage&quot;:{&quot;cpu&quot;:&quot;320381888n&quot;,&quot;memory&quot;:&quot;3270368Ki&quot;}}]}
+$ kubectl top nodes
+NAME          CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+ydzs-master   351m         17%    2916Mi          79%
+ydzs-node1    1320m        33%    2045Mi          26%
+ydzs-node2    321m         8%     3193Mi          41%
+ydzs-node3    241m         6%     2933Mi          37%
+ydzs-node4    168m         4%     2514Mi          32%
+</pre></div>
+</div>
+<p>现在我们可以通过 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">top</span></code> 命令来获取到资源数据了，证明
+<code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code> 已经安装成功了。</p>
+</section>
+<section id="id2">
+<h2><a class="toc-backref" href="#id7">4.HPA</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>现在我们用 Deployment 来创建一个 Nginx Pod，然后利用 <code class="docutils literal notranslate"><span class="pre">HPA</span></code>
+来进行自动扩缩容。资源清单如下所示：</p>
+<p><code class="docutils literal notranslate"><span class="pre">hpa-demo.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hpa-demo</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+</pre></div>
+</div>
+<p>然后直接创建 Deployment：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f hpa-demo.yaml
+deployment.apps/hpa-demo created
+
+$ kubectl get pods -l <span class="nv">app</span><span class="o">=</span>nginx
+NAME                        READY   STATUS    RESTARTS   AGE
+hpa-demo-85ff79dd56-pz8th   <span class="m">1</span>/1     Running   <span class="m">0</span>          21s
+</pre></div>
+</div>
+<p>现在我们来创建一个 <code class="docutils literal notranslate"><span class="pre">HPA</span></code>
+资源对象，可以使用<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">autoscale</span></code>命令来创建：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl autoscale deployment hpa-demo --cpu-percent<span class="o">=</span><span class="m">10</span> --min<span class="o">=</span><span class="m">1</span> --max<span class="o">=</span><span class="m">10</span>
+horizontalpodautoscaler.autoscaling/hpa-demo autoscaled
+
+$ kubectl get hpa
+NAME       REFERENCE             TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+hpa-demo   Deployment/hpa-demo   &lt;unknown&gt;/10%   <span class="m">1</span>         <span class="m">10</span>        <span class="m">1</span>          16s
+</pre></div>
+</div>
+<p>此命令创建了一个关联资源 hpa-demo 的 HPA，最小的 Pod
+副本数为1，最大为10。HPA 会根据设定的 cpu
+使用率（10%）动态的增加或者减少 Pod 数量。</p>
+<p>当然我们依然还是可以通过创建 YAML 文件的形式来创建 HPA
+资源对象。如果我们不知道怎么编写的话，可以查看上面命令行创建的HPA的YAML文件：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get hpa hpa-demo -o yaml
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  annotations:
+    autoscaling.alpha.kubernetes.io/conditions: <span class="s1">&#39;[{&quot;type&quot;:&quot;AbleToScale&quot;,&quot;status&quot;:&quot;True&quot;,&quot;lastTransitionTime&quot;:&quot;2022-07-13T07:07:52Z&quot;,&quot;reason&quot;:&quot;SucceededGetScale&quot;,&quot;message&quot;:&quot;the</span>
+<span class="s1">      HPA controller was able to get the target&#39;&#39;s current scale&quot;},{&quot;type&quot;:&quot;ScalingActive&quot;,&quot;status&quot;:&quot;False&quot;,&quot;lastTransitionTime&quot;:&quot;2022-07-13T07:07:52Z&quot;,&quot;reason&quot;:&quot;FailedGetResourceMetric&quot;,&quot;message&quot;:&quot;the</span>
+<span class="s1">      HPA was unable to compute the replica count: failed to get cpu utilization:</span>
+<span class="s1">      missing request for cpu&quot;}]&#39;</span>
+  creationTimestamp: <span class="s2">&quot;2022-07-13T07:07:37Z&quot;</span>
+  managedFields:
+  - apiVersion: autoscaling/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:spec:
+        f:maxReplicas: <span class="o">{}</span>
+        f:minReplicas: <span class="o">{}</span>
+        f:scaleTargetRef:
+          f:apiVersion: <span class="o">{}</span>
+          f:kind: <span class="o">{}</span>
+          f:name: <span class="o">{}</span>
+        f:targetCPUUtilizationPercentage: <span class="o">{}</span>
+    manager: kubectl-autoscale
+    operation: Update
+    time: <span class="s2">&quot;2022-07-13T07:07:37Z&quot;</span>
+  - apiVersion: autoscaling/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: <span class="o">{}</span>
+          f:autoscaling.alpha.kubernetes.io/conditions: <span class="o">{}</span>
+      f:status:
+        f:currentReplicas: <span class="o">{}</span>
+    manager: kube-controller-manager
+    operation: Update
+    time: <span class="s2">&quot;2022-07-13T07:07:52Z&quot;</span>
+  name: hpa-demo
+  namespace: default
+  resourceVersion: <span class="s2">&quot;148343486&quot;</span>
+  selfLink: /apis/autoscaling/v1/namespaces/default/horizontalpodautoscalers/hpa-demo
+  uid: fecf4a6c-d735-4d22-a53f-7d76959891ea
+spec:
+  maxReplicas: <span class="m">10</span>
+  minReplicas: <span class="m">1</span>
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: hpa-demo
+  targetCPUUtilizationPercentage: <span class="m">10</span>
+status:
+  currentReplicas: <span class="m">1</span>
+  desiredReplicas: <span class="m">0</span>
+</pre></div>
+</div>
+<p>然后我们可以根据上面的 YAML 文件就可以自己来创建一个基于 YAML 的 HPA
+描述文件了。但是我们发现上面信息里面出现了一些 Fail
+信息，我们来查看下这个 HPA 对象的信息：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl describe hpa hpa-demo
+Name:                                                  hpa-demo
+Namespace:                                             default
+Labels:                                                &lt;none&gt;
+Annotations:                                           &lt;none&gt;
+CreationTimestamp:                                     Tue, 19 Nov 2019 17:14:56 +0800
+Reference:                                             Deployment/hpa-demo
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  &lt;unknown&gt; / 10%
+Min replicas:                                          1
+Max replicas:                                          10
+Deployment pods:                                       1 current / 0 desired
+Conditions:
+  Type           Status  Reason                   Message
+  ----           ------  ------                   -------
+  AbleToScale    True    SucceededGetScale        the HPA controller was able to get the target&#39;s current scale
+  ScalingActive  False   FailedGetResourceMetric  the HPA was unable to compute the replica count: missing request for cpu
+Events:
+  Type     Reason                        Age                From                       Message
+  ----     ------                        ----               ----                       -------
+  Warning  FailedGetResourceMetric       14s (x4 over 60s)  horizontal-pod-autoscaler  missing request for cpu
+  Warning  FailedComputeMetricsReplicas  14s (x4 over 60s)  horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu utilization: missing request for cpu
+</pre></div>
+</div>
+<p>我们可以看到上面的事件信息里面出现了
+<code class="docutils literal notranslate"><span class="pre">failed</span> <span class="pre">to</span> <span class="pre">get</span> <span class="pre">cpu</span> <span class="pre">utilization:</span> <span class="pre">missing</span> <span class="pre">request</span> <span class="pre">for</span> <span class="pre">cpu</span></code>
+这样的错误信息。</p>
+<p>这是因为我们上面创建的 Pod 对象没有添加 request 资源声明，这样导致 HPA
+读取不到 CPU 指标信息，所以如果要想让 HPA 生效，对应的 Pod 资源必须添加
+requests 资源声明，更新我们的资源清单文件：</p>
+<p><code class="docutils literal notranslate"><span class="pre">hpa-demo.yml</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hpa-demo</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+        <span class="nt">resources</span><span class="p">:</span>
+          <span class="nt">requests</span><span class="p">:</span>
+            <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50Mi</span>
+            <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50m</span>
+</pre></div>
+</div>
+<p>然后重新更新 Deployment，重新创建 HPA 对象：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f hpa-demo.yml
+deployment.apps/hpa-demo configured
+
+$ kubectl get pods -o wide -l <span class="nv">app</span><span class="o">=</span>nginx
+NAME                        READY   STATUS    RESTARTS   AGE     IP            NODE         NOMINATED NODE   READINESS GATES
+hpa-demo-69968bb59f-twtdp   <span class="m">1</span>/1     Running   <span class="m">0</span>          4m11s   <span class="m">10</span>.244.4.97   ydzs-node4   &lt;none&gt;           &lt;none&gt;
+
+$ kubectl delete hpa hpa-demo
+horizontalpodautoscaler.autoscaling <span class="s2">&quot;hpa-demo&quot;</span> deleted
+
+$ kubectl autoscale deployment hpa-demo --cpu-percent<span class="o">=</span><span class="m">10</span> --min<span class="o">=</span><span class="m">1</span> --max<span class="o">=</span><span class="m">10</span>
+horizontalpodautoscaler.autoscaling/hpa-demo autoscaled
+
+$ kubectl describe hpa hpa-demo
+Name:                                                  hpa-demo
+Namespace:                                             default
+Labels:                                                &lt;none&gt;
+Annotations:                                           &lt;none&gt;
+CreationTimestamp:                                     Tue, <span class="m">19</span> Nov <span class="m">2019</span> <span class="m">17</span>:23:49 +0800
+Reference:                                             Deployment/hpa-demo
+Metrics:                                               <span class="o">(</span> current / target <span class="o">)</span>
+  resource cpu on pods  <span class="o">(</span>as a percentage of request<span class="o">)</span>:  <span class="m">0</span>% <span class="o">(</span><span class="m">0</span><span class="o">)</span> / <span class="m">10</span>%
+Min replicas:                                          <span class="m">1</span>
+Max replicas:                                          <span class="m">10</span>
+Deployment pods:                                       <span class="m">1</span> current / <span class="m">1</span> desired
+Conditions:
+  Type            Status  Reason               Message
+  ----            ------  ------               -------
+  AbleToScale     True    ScaleDownStabilized  recent recommendations were higher than current one, applying the highest recent recommendation
+  ScalingActive   True    ValidMetricFound     the HPA was able to successfully calculate a replica count from cpu resource utilization <span class="o">(</span>percentage of request<span class="o">)</span>
+  ScalingLimited  False   DesiredWithinRange   the desired count is within the acceptable range
+Events:           &lt;none&gt;
+
+$ kubectl get hpa
+NAME       REFERENCE             TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+hpa-demo   Deployment/hpa-demo   <span class="m">0</span>%/10%    <span class="m">1</span>         <span class="m">10</span>        <span class="m">1</span>          52s
+</pre></div>
+</div>
+<p>现在可以看到 HPA
+资源对象已经正常了，现在我们来增大负载进行测试，我们来创建一个 busybox
+的 Pod，并且循环访问上面创建的 Pod：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl run -it --image busybox test-hpa --restart=Never --rm /bin/sh
+If you don&#39;t see a command prompt, try pressing enter.
+/ # while true; do wget -q -O- http://10.244.4.97; done
+</pre></div>
+</div>
+<p>下图可以看到，HPA 已经开始工作：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$  kubectl get hpa
+NAME       REFERENCE             TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+hpa-demo   Deployment/hpa-demo   <span class="m">338</span>%/10%   <span class="m">1</span>         <span class="m">10</span>        <span class="m">1</span>          5m15s
+
+$ kubectl get pods -l <span class="nv">app</span><span class="o">=</span>nginx --watch
+NAME                        READY   STATUS              RESTARTS   AGE
+hpa-demo-69968bb59f-8hjnn   <span class="m">1</span>/1     Running             <span class="m">0</span>          22s
+hpa-demo-69968bb59f-9ss9f   <span class="m">1</span>/1     Running             <span class="m">0</span>          22s
+hpa-demo-69968bb59f-bllsd   <span class="m">1</span>/1     Running             <span class="m">0</span>          22s
+hpa-demo-69968bb59f-lnh8k   <span class="m">1</span>/1     Running             <span class="m">0</span>          37s
+hpa-demo-69968bb59f-r8zfh   <span class="m">1</span>/1     Running             <span class="m">0</span>          22s
+hpa-demo-69968bb59f-twtdp   <span class="m">1</span>/1     Running             <span class="m">0</span>          6m43s
+hpa-demo-69968bb59f-w792g   <span class="m">1</span>/1     Running             <span class="m">0</span>          37s
+hpa-demo-69968bb59f-zlxkp   <span class="m">1</span>/1     Running             <span class="m">0</span>          37s
+hpa-demo-69968bb59f-znp6q   <span class="m">0</span>/1     ContainerCreating   <span class="m">0</span>          6s
+hpa-demo-69968bb59f-ztnvx   <span class="m">1</span>/1     Running             <span class="m">0</span>          6s
+</pre></div>
+</div>
+<p>我们可以看到已经自动拉起了很多新的 Pod，最后定格在了我们上面设置的 10 个
+Pod，同时查看资源 hpa-demo 的副本数量，副本数量已经从原来的1变成了10个：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment hpa-demo
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+hpa-demo   <span class="m">10</span>/10   <span class="m">10</span>           <span class="m">10</span>          17m
+</pre></div>
+</div>
+<p>查看 HPA 资源的对象了解工作过程：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl describe hpa hpa-demo
+Name:                                                  hpa-demo
+Namespace:                                             default
+Labels:                                                &lt;none&gt;
+Annotations:                                           &lt;none&gt;
+CreationTimestamp:                                     Tue, <span class="m">19</span> Nov <span class="m">2019</span> <span class="m">17</span>:23:49 +0800
+Reference:                                             Deployment/hpa-demo
+Metrics:                                               <span class="o">(</span> current / target <span class="o">)</span>
+  resource cpu on pods  <span class="o">(</span>as a percentage of request<span class="o">)</span>:  <span class="m">0</span>% <span class="o">(</span><span class="m">0</span><span class="o">)</span> / <span class="m">10</span>%
+Min replicas:                                          <span class="m">1</span>
+Max replicas:                                          <span class="m">10</span>
+Deployment pods:                                       <span class="m">10</span> current / <span class="m">10</span> desired
+Conditions:
+  Type            Status  Reason               Message
+  ----            ------  ------               -------
+  AbleToScale     True    ScaleDownStabilized  recent recommendations were higher than current one, applying the highest recent recommendation
+  ScalingActive   True    ValidMetricFound     the HPA was able to successfully calculate a replica count from cpu resource utilization <span class="o">(</span>percentage of request<span class="o">)</span>
+  ScalingLimited  True    TooManyReplicas      the desired replica count is more than the maximum replica count
+Events:
+  Type    Reason             Age    From                       Message
+  ----    ------             ----   ----                       -------
+  Normal  SuccessfulRescale  5m45s  horizontal-pod-autoscaler  New size: <span class="m">4</span><span class="p">;</span> reason: cpu resource utilization <span class="o">(</span>percentage of request<span class="o">)</span> above target
+  Normal  SuccessfulRescale  5m30s  horizontal-pod-autoscaler  New size: <span class="m">8</span><span class="p">;</span> reason: cpu resource utilization <span class="o">(</span>percentage of request<span class="o">)</span> above target
+  Normal  SuccessfulRescale  5m14s  horizontal-pod-autoscaler  New size: <span class="m">10</span><span class="p">;</span> reason: cpu resource utilization <span class="o">(</span>percentage of request<span class="o">)</span> above target
+</pre></div>
+</div>
+<p>同样的这个时候我们来关掉 busybox 来减少负载，然后等待一段时间观察下 HPA
+和 Deployment 对象：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get hpa
+NAME       REFERENCE             TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+hpa-demo   Deployment/hpa-demo   <span class="m">0</span>%/10%    <span class="m">1</span>         <span class="m">10</span>        <span class="m">1</span>          14m
+
+$ kubectl get deployment hpa-demo
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+hpa-demo   <span class="m">1</span>/1     <span class="m">1</span>            <span class="m">1</span>           24m
+</pre></div>
+</div>
+<blockquote>
+<div><p><strong>缩放间隙</strong></p>
+<p>从 Kubernetes <code class="docutils literal notranslate"><span class="pre">v1.12</span></code> 版本开始我们可以通过设置
+<code class="docutils literal notranslate"><span class="pre">kube-controller-manager</span></code>
+组件的<code class="docutils literal notranslate"><span class="pre">--horizontal-pod-autoscaler-downscale-stabilization</span></code>
+参数来设置一个持续时间，用于指定在当前操作完成后，<code class="docutils literal notranslate"><span class="pre">HPA</span></code>
+必须等待多长时间才能执行另一次缩放操作。默认为5分钟，也就是默认需要等待5分钟后才会开始自动缩放。</p>
+</div></blockquote>
+<p>可以看到副本数量已经由 10 变为 1，当前我们只是演示了 CPU
+使用率这一个指标，在后面的课程中我们还会学习到根据自定义的监控指标来自动对
+Pod 进行扩缩容。</p>
+</section>
+<section id="demo">
+<h2><a class="toc-backref" href="#id8">5.demo示例</a><a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
+<p>例如，首先创建一个名为myapp的Deployment控制器，而后通过一个同名的HPA控制器自动管控其Pod副本规模：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl run myapp --image<span class="o">=</span>ikubernetes/myapp:v1 --replicas<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
+    --requests<span class="o">=</span><span class="s1">&#39;cpu=50m,memory=256Mi&#39;</span> --limits<span class="o">=</span><span class="s1">&#39;cpu=50m,memory=256Mi&#39;</span> <span class="se">\</span>
+    --labels<span class="o">=</span><span class="s1">&#39;app=myapp&#39;</span> --expose --port<span class="o">=</span><span class="m">80</span>
+
+$ kubectl autoscale deploy myapp --min<span class="o">=</span><span class="m">2</span> --max<span class="o">=</span><span class="m">5</span> --cpu-percent<span class="o">=</span><span class="m">60</span>
+</pre></div>
+</div>
+<p>下面的命令用于显示HPA控制器的当前状态：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get hpa myapp -o yaml
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="4.StatefulSet%E6%8E%A7%E5%88%B6%E5%99%A8.html" class="btn btn-neutral float-left" title="StatefulSet控制器" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="6.%E5%85%B6%E4%BB%96%E6%8E%A7%E5%88%B6%E5%99%A8.html" class="btn btn-neutral float-right" title="其他控制器" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

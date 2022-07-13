@@ -11,4 +11,5 @@
     2.DaemonSet控制器
     3.Job与CronJob控制器
     4.StatefulSet控制器
-    5.其他控制器
+    5.HPA
+    6.其他控制器
