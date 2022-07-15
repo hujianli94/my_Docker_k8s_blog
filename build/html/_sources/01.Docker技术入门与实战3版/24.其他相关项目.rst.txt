@@ -636,3 +636,153 @@ Run admin/management tasks as one-off processes.
 将管理（迁移数据库、查看状态等）作为一次性的系统服务来使用。
 
 管理代码跟业务代码要放在一起进行代码管理。
+
+8.其他项目
+----------
+
+8.1 CoreOS
+~~~~~~~~~~
+
+CoreOS项目基于Python语言，遵循Apache
+2.0许可，由CoreOS团队在2013年7月发起，目前已经正式发布首个稳定版本。项目官方网址为https://coreos.com/，代码在https://github.com/coreos维护。
+
+CoreOS项目目标是提供一个基于Rocket容器的轻量级容器化Linux发行版，通过轻量的系统架构和灵活的应用部署能力来简化数据中心的维护成本和复杂度。
+
+CoreOS基于一套精简的Linux环境，不使用包管理工具，而将所有应用都进行容器化，彼此隔离，从而提高了系统的安全性。此外，运行期间，系统分区是只读状态，利用主从分区支持更稳定的无缝升级。
+
+配合Etcd（分布式高可用的键值数据库）、Fleet（分布式init任务管理）、Flannel（Overlay网络管理）等工具，CoreOS也将适用于大规模集群环境。
+
+该项目目前得到了KPCB等多家基金的投资。
+
+8.2 OpenStack支持
+~~~~~~~~~~~~~~~~~
+
+OpenStack是近些年Linux基金会发起的，最受欢迎的云开源项目。项目的官方网站在http://www.openstack.org。
+
+项目遵循Apache许可，受到包括IBM、Cisco、AT&T、HP、Rackspace等众多企业的大力支持。
+
+项目的目标是搭建一套开源的架构即服务（Infrastructure as a
+Service，IaaS）实现方案，主要基于Python语言实现。
+
+该项目孵化出来的众多子项目已经在业界产生了诸多影响。
+
+OpenStack目前除了可以管理众多虚机外，其计算服务（Nova）已经支持了对Docker的驱动，此外，还支持通过Stack管理引擎Heat子项目来使用模板，从而管理Docker容器。
+
+8.3 dockerize
+~~~~~~~~~~~~~
+
+一般来说，要将一个应用放到容器里，需要考虑两方面的因素，一是应用依赖的配置信息；二是应用运行时候的输出日志信息。
+
+dockerize是一个Go程序，试图简化这两方面的管理成本，目前代码在https://github.com/jwilder/dockerize维护。
+
+dockerize主要可以提供两个功能，一是对于依赖于配置文件的应用，能自动提取环境变量并生成配置文件；二是将应用输出的日志信息重定向到STDOUT和STDERR。
+
+下面给出一个简单的例子，比如要创建一个Nginx镜像，标准的Dockerfile内容为：
+
+.. code:: dockerfile
+
+   FROM ubuntu:16.04
+   # Install Nginx.
+   RUN echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu trusty main" > /etc/apt/sources.list.d/nginx-stable-trusty.list
+
+   RUN echo "deb-src http://ppa.launchpad.net/nginx/stable/ubuntu trusty main" >> /etc/apt/sources.list.d/nginx-stable-trusty.list
+
+   RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
+
+   RUN apt-get update
+
+   RUN apt-get install -y nginx
+
+   RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+
+   EXPOSE 80
+   CMD nginx
+
+到标准输出。
+
+首先，创建配置模板文件为default.tmpl，内容是：
+
+::
+
+   server {
+       listen 80 default_server;
+       listen [::]:80 default_server ipv6only=on;
+       root /usr/share/nginx/html;
+       index index.html index.htm;
+       # Make site accessible from http://localhost/
+       server_name localhost;
+       location / {
+           access_log off;
+           proxy_pass {{ .Env.PROXY_URL }};
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header Host $host;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       }
+   }
+
+该模板将接收来自环境变量PROXY_URL的值。
+
+编辑新的Dockerfile内容为：
+
+.. code:: dockerfile
+
+   FROM ubuntu:16.04
+   # Install Nginx.
+   RUN echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu trusty main" > /etc/apt/sources.list.d/nginx-stable-trusty.list
+
+   RUN echo "deb-src http://ppa.launchpad.net/nginx/stable/ubuntu trusty main" >> /etc/apt/sources.list.d/nginx-stable-trusty.list
+
+   RUN apt-get install -y wget nginx
+
+   RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+
+   RUN wget https://github.com/jwilder/dockerize/releases/download/v0.0.1/dockerize-linux-amd64-v0.0.1.tar.gz
+
+   RUN tar -C /usr/local/bin -xvzf dockerize-linux-amd64-v0.0.1.tar.gz
+
+   ADD default.tmpl /etc/nginx/sites-available/default.tmpl
+
+   EXPOSE 80
+   CMD dockerize -template /etc/nginx/sites-available/default.tmpl:/etc/nginx/sites-available/default -stdout /var/log/nginx/access.log -stderr /var/log/nginx/error.log nginx
+
+最后的CMD命令中利用-template参数指定了配置模板位置，以及生成的配置文件的位置。
+
+创建镜像后，通过如下的方式启动一个容器，整个过程无须手动添加Nginx的配置文件，并且日志重定向到了标准输出：
+
+.. code:: shell
+
+   $ docker run -p 80:80 -e PROXY_URL="http://jasonwilder.com" --name nginx -d nginx
+
+8.4 Unikernel
+~~~~~~~~~~~~~
+
+Unikernel是轻量级的精简内核技术，项目地址为http://www.unikernel.org。
+
+不同于传统的支持多用户多应用的操作系统内核，Unikernel技术的目的是为运行的应用编译链接进入所需要的操作系统函数，形成一个单独的编译映像，内核只提供单一地址空间。
+
+无须其他无关的软件，这个映像就可以运行在虚拟机中。
+
+应用实际上仍然运行在各自的超轻量级虚拟机中。比较流行的Unikernel系统包括：
+
+-  ClickOS：NEC提出的专门为网络应用优化的系统，支持C、C++和Python；
+-  Clive：面向云环境的精简操作系统，基于Golang实现；
+-  HaLVM：早期Unikernels系统之一，基于Haskell语言实现；
+-  LING：早期Unikernels系统之一，基于Erlang语言实现；
+-  MirageOS：早期Unikernels系统之一，基于Ocaml语言实现；
+-  OSv：基于Java，支持绝大多数jar文件部署和运行。
+-  Rumprun：基于NetBSD项目，专注于符合POSIX标准的、不需要Fork的应用程序，方便将现有Linux程序移植到Unikernel上；
+-  runtime.js：基于JavaScript v8引擎的操作系统，支持JavaScript应用。
+
+目前，专注于Unikernel技术的Unikernel
+Systems公司已被Docker公司收购，作为对容器技术未来方向的探索和补充。
+
+8.5 容器化的虚拟机
+~~~~~~~~~~~~~~~~~~
+
+不少企业应用仍运行在传统的虚拟机中，这些应用希望吸收容器高性能、便捷的优势，也不想放弃虚拟机的安全性特点。
+
+因此，出现了一些开源项目试图让虚拟机的hypervisor来支持容器格式，代表性的有Hyper项目。Hyper项目的官方网址为https://www.hyper.sh/。
+
+Hyper项目试图让容器用户仍然像使用容器一样来操作Hyper容器。
+
+只不过Hyper容器不同于传统的容器，它带有精简的操作系统内核。因此，从核心上说它是一个轻量级的虚拟机镜像，可以直接跑在hypervisor上，但是借鉴了来自容器的优秀设计，提供十分快速的体验。

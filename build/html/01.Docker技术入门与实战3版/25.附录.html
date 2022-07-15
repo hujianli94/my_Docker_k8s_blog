@@ -68,11 +68,14 @@
 <li class="toctree-l2"><a class="reference internal" href="23.Kubernetes-%E7%94%9F%E4%BA%A7%E7%BA%A7%E5%AE%B9%E5%99%A8%E9%9B%86%E7%BE%A4%E5%B9%B3%E5%8F%B0.html">Kubernetes-生产级容器集群平台</a></li>
 <li class="toctree-l2"><a class="reference internal" href="24.%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E9%A1%B9%E7%9B%AE.html">其他相关项目</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">附录</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a">附录A　常见问题总结</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a">1.附录A 常见问题总结</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id2">1.镜像相关</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id13">2.容器相关</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">2.容器相关</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id19">3.配置相关</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id22">4. 其他</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#id24">2. 参考资源链接</a></li>
 </ul>
 </li>
 </ul>
@@ -111,104 +114,98 @@
   <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#id1" id="id18">附录</a></p>
+<li><p><a class="reference internal" href="#id1" id="id25">附录</a></p>
 <ul>
-<li><p><a class="reference internal" href="#a" id="id19">附录A　常见问题总结</a></p>
+<li><p><a class="reference internal" href="#a" id="id26">1.附录A 常见问题总结</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id2" id="id20">1.镜像相关</a></p></li>
-<li><p><a class="reference internal" href="#id13" id="id21">2.容器相关</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id27">1.镜像相关</a></p></li>
+<li><p><a class="reference internal" href="#id12" id="id28">2.容器相关</a></p></li>
+<li><p><a class="reference internal" href="#id19" id="id29">3.配置相关</a></p></li>
+<li><p><a class="reference internal" href="#id22" id="id30">4. 其他</a></p></li>
 </ul>
 </li>
+<li><p><a class="reference internal" href="#id24" id="id31">2. 参考资源链接</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
 <section id="id1">
-<h1><a class="toc-backref" href="#id18">附录</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id25">附录</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <section id="a">
-<h2><a class="toc-backref" href="#id19">附录A　常见问题总结</a><a class="headerlink" href="#a" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id26">1.附录A 常见问题总结</a><a class="headerlink" href="#a" title="Permalink to this headline">¶</a></h2>
 <section id="id2">
-<h3><a class="toc-backref" href="#id20">1.镜像相关</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">1.镜像相关</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <section id="id3">
 <h4>1.1 如何备份系统中的所有镜像<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">backup_image.sh</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#!/usr/bin/env bash
-#usage:xxx
-#scripts_name:${NAME}.sh
-# author：xiaojian
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#usage:xxx</span>
+<span class="c1">#scripts_name:${NAME}.sh</span>
+<span class="c1"># author：xiaojian</span>
 
-# 备份镜像列表
-docker images |awk &#39;NR&gt;1{print $1&quot;:&quot;$2}&#39;|sort &gt; images.list
+<span class="c1"># 备份镜像列表</span>
+docker images <span class="p">|</span>awk <span class="s1">&#39;NR&gt;1{print $1&quot;:&quot;$2}&#39;</span><span class="p">|</span>sort &gt; images.list
 
-# 导出所有镜像为当前目录下文件
-while read img; do
-    echo $img
-    file=&quot;${img//\//-}&quot;
-    sudo docker save $img &gt; $file.tar
-done &lt; images.list
+<span class="c1"># 导出所有镜像为当前目录下文件</span>
+<span class="k">while</span> <span class="nb">read</span> img<span class="p">;</span> <span class="k">do</span>
+    <span class="nb">echo</span> <span class="nv">$img</span>
+    <span class="nv">file</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">img</span><span class="p">//</span><span class="se">\/</span><span class="p">/-</span><span class="si">}</span><span class="s2">&quot;</span>
+    sudo docker save <span class="nv">$img</span> &gt; <span class="nv">$file</span>.tar
+<span class="k">done</span> &lt; images.list
 </pre></div>
 </div>
 <p>将本地镜像导入为docker镜像</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#!/usr/bin/env bash
-#usage:xxx
-#scripts_name:${NAME}.sh
-# author：xiaojian
-while read img; do
-    echo $img
-    file=&quot;${img//\//-}&quot;
-    sudo docker load &lt; $file.tar
-done &lt; images.list
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#usage:xxx</span>
+<span class="c1">#scripts_name:${NAME}.sh</span>
+<span class="c1"># author：xiaojian</span>
+<span class="k">while</span> <span class="nb">read</span> img<span class="p">;</span> <span class="k">do</span>
+    <span class="nb">echo</span> <span class="nv">$img</span>
+    <span class="nv">file</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">img</span><span class="p">//</span><span class="se">\/</span><span class="p">/-</span><span class="si">}</span><span class="s2">&quot;</span>
+    sudo docker load &lt; <span class="nv">$file</span>.tar
+<span class="k">done</span> &lt; images.list
 </pre></div>
 </div>
 </section>
 <section id="id4">
 <h4>1.2 如何批量清理临时镜像文件？<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>使用如下命令</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker rmi $(docker images -q -f dangling=true)
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker rmi <span class="k">$(</span>docker images -q -f <span class="nv">dangling</span><span class="o">=</span><span class="nb">true</span><span class="k">)</span>
 
-
-# 查看状态是关闭的镜像
-docker ps -a --filter status=exited
+<span class="c1"># 查看状态是关闭的镜像</span>
+docker ps -a --filter <span class="nv">status</span><span class="o">=</span>exited
 </pre></div>
 </div>
 </section>
 <section id="id5">
 <h4>1.3 如何删除所有本地的镜像？<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
-<p>使用如下命令</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>dokcer rmi -f $(docker images -q)
-</pre></div>
-</div>
-<p>删除所有未运行 Docker 容器</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker rm $(docker ps -a -q)
+<p>使用如下命令,删除所有未运行 Docker 容器</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker rm <span class="k">$(</span>docker ps -a -q<span class="k">)</span>
 
-# 删除none的镜像，要先删除镜像中的容器。要删除镜像中的容器，必须先停止容器
-docker stop $(docker ps -a | grep &quot;Exited&quot; | awk &#39;{print $1 }&#39;)         //停止容器
-docker rm $(docker ps -a | grep &quot;Exited&quot; | awk &#39;{print $1 }&#39;)           //删除容器
-docker rmi $(docker images | grep &quot;none&quot; | awk &#39;{print $3}&#39;)            //删除镜像
+<span class="c1"># 删除none的镜像，要先删除镜像中的容器。要删除镜像中的容器，必须先停止容器</span>
+docker stop <span class="k">$(</span>docker ps -a <span class="p">|</span> grep <span class="s2">&quot;Exited&quot;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1 }&#39;</span><span class="k">)</span>         //停止容器
+docker rm <span class="k">$(</span>docker ps -a <span class="p">|</span> grep <span class="s2">&quot;Exited&quot;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1 }&#39;</span><span class="k">)</span>           //删除容器
+docker rmi <span class="k">$(</span>docker images <span class="p">|</span> grep <span class="s2">&quot;none&quot;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $3}&#39;</span><span class="k">)</span>            //删除镜像
 
 
+<span class="c1"># docker 删除所有none的镜像</span>
+docker images<span class="p">|</span>grep none<span class="p">|</span>awk <span class="s1">&#39;{print $3}&#39;</span><span class="p">|</span>xargs docker rmi
 
+<span class="c1"># ~/.bash_aliases</span>
 
-# docker 删除所有none的镜像
-docker images|grep none|awk &#39;{print $3}&#39;|xargs docker rmi
+<span class="c1"># 杀死所有正在运行的容器.</span>
+<span class="nb">alias</span> <span class="nv">dockerkill</span><span class="o">=</span><span class="s1">&#39;docker kill $(docker ps -a -q)&#39;</span>
 
-# ~/.bash_aliases
+<span class="c1"># 删除所有已经停止的容器.</span>
+<span class="nb">alias</span> <span class="nv">dockercleanc</span><span class="o">=</span><span class="s1">&#39;docker rm $(docker ps -a -q)&#39;</span>
 
-# 杀死所有正在运行的容器.
-alias dockerkill=&#39;docker kill $(docker ps -a -q)&#39;
+<span class="c1"># 删除所有未打标签的镜像.</span>
+<span class="nb">alias</span> <span class="nv">dockercleani</span><span class="o">=</span><span class="k">$(</span>docker rmi <span class="k">$(</span>docker images -q -f <span class="nv">dangling</span><span class="o">=</span><span class="nb">true</span><span class="k">))</span>
+<span class="c1"># 删除所有未打 tag 的镜像</span>
+docker rmi <span class="k">$(</span>docker images -q <span class="p">|</span> awk <span class="s1">&#39;/^&lt;none&gt;/ { print $3 }&#39;</span><span class="k">)</span>
 
-# 删除所有已经停止的容器.
-alias dockercleanc=&#39;docker rm $(docker ps -a -q)&#39;
-
-# 删除所有未打标签的镜像.
-alias dockercleani=&#39;docker rmi $(docker images -q -f dangling=true)&#39;
-
-# 删除所有已经停止的容器和未打标签的镜像.
-alias dockerclean=&#39;dockercleanc || true &amp;&amp; dockercleani&#39;
-</pre></div>
-</div>
-<p>删除所有未打 tag 的镜像</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker rmi $(docker images -q | awk &#39;/^&lt;none&gt;/ { print $3 }&#39;)
+<span class="c1"># 删除所有已经停止的容器和未打标签的镜像.</span>
+<span class="nb">alias</span> <span class="nv">dockerclean</span><span class="o">=</span><span class="s1">&#39;dockercleanc || true &amp;&amp; dockercleani&#39;</span>
 </pre></div>
 </div>
 </section>
@@ -229,21 +226,28 @@ alias dockerclean=&#39;dockercleanc || true &amp;&amp; dockercleani&#39;
 <section id="id7">
 <h4>1.6 本地的镜像文件都存放在哪里？<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
 <p>与Docker相关的本地资源（包括镜像、容器）默认存放在/var/lib/docker/
-目录下。
-以aufs文件系统为例，其中container目录存放容器信息，graph目录存放镜像信息，aufs目录下存放具体的镜像层文件。</p>
+目录下。 以aufs文件系统为例，</p>
+<ul class="simple">
+<li><p>container目录存放容器信息</p></li>
+<li><p>graph目录存放镜像信息</p></li>
+<li><p>aufs目录下存放具体的镜像层文件。</p></li>
+</ul>
+<p><strong>Docker存储位置修改</strong></p>
+<p><a class="reference external" href="https://blog.youqiqi.cn/archives/docker-cun-chu-wei-zhi-xiu-gai">https://blog.youqiqi.cn/archives/docker-cun-chu-wei-zhi-xiu-gai</a></p>
 </section>
 <section id="id8">
 <h4>1.7 构建Docker镜像应该遵循哪些原则？<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
-<p>整体原则上,尽量保持镜像功能的明确和内容的精简,避免添加额外文件和操作步骤,要点包括：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>囗 尽量选取满足需求但较小的基础系统镜像，例如大部分时候可以选择debian:wheezy 或debian:jessie 镜像，仅有不足百兆大小
-囗 清理编译生成文件、安装包的缓存等临时文件；
-囗 安装各个软件时候要指定准确的版本号,并避免引人不需要的依赖；
-囗 从安全角度考虑,应用要尽量使用系统的库和依赖；
-囗 如果安装应用时候需要配置一些特殊的环境变量,在安装后要还原不需要保持的变量值；
-囗 使用Dockerfile创建镜像时候要添加.dockerignore 文件或使用干净的工作目录；
-囗 区分编译环境容器和运行时环境容器,使用多阶段镜像创建。
-</pre></div>
-</div>
+<p>整体原则上,尽量保持镜像功能的明确和内容的精简,避免添加额外文件和操作步骤,要点包括：
+-
+尽量选取满足需求但较小的基础系统镜像，例如大部分时候可以选择debian:wheezy
+或debian:jessie 镜像，仅有不足百兆大小 -
+清理编译生成文件、安装包的缓存等临时文件； -
+安装各个软件时候要指定准确的版本号,并避免引人不需要的依赖； -
+从安全角度考虑,应用要尽量使用系统的库和依赖； -
+如果安装应用时候需要配置一些特殊的环境变量,在安装后要还原不需要保持的变量值；
+- 使用Dockerfile创建镜像时候要添加.dockerignore
+文件或使用干净的工作目录； -
+区分编译环境容器和运行时环境容器,使用多阶段镜像创建。</p>
 </section>
 <section id="pull-http-proxy">
 <h4>1.8 碰到网络问题，无法pull镜像，命令行指定http_proxy无效，如何处理？<a class="headerlink" href="#pull-http-proxy" title="Permalink to this headline">¶</a></h4>
@@ -254,80 +258,80 @@ alias dockerclean=&#39;dockercleanc || true &amp;&amp; dockercleani&#39;
 <section id="kubernetes">
 <h4>1.9 批量将本地所有kubernetes镜像上传到阿里云<a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">pull_all.sh</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@k8s-master push_images_k8s]# cat pull_all.sh
-#!/usr/bin/env bash
-#usage:xxx
-#scripts_name:${NAME}.sh
-# author：xiaojian
-PWD=$(pwd)
-for image in `docker images|grep -v &quot;REPOSITORY&quot;|grep -v &quot;&lt;none&gt;&quot;|awk &#39;{print $1&quot;:&quot;$2}&#39;` ; do
-    img=${image##*/}
-    bash ${PWD}/push_image.sh $image
-    #echo  &quot;${PWD}/push_image.sh $image&quot;
-done
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>root@k8s-master push_images_k8s<span class="o">]</span><span class="c1"># cat pull_all.sh</span>
+<span class="c1">#!/usr/bin/env bash</span>
+<span class="c1">#usage:xxx</span>
+<span class="c1">#scripts_name:${NAME}.sh</span>
+<span class="c1"># author：xiaojian</span>
+<span class="nv">PWD</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>
+<span class="k">for</span> image <span class="k">in</span> <span class="sb">`</span>docker images<span class="p">|</span>grep -v <span class="s2">&quot;REPOSITORY&quot;</span><span class="p">|</span>grep -v <span class="s2">&quot;&lt;none&gt;&quot;</span><span class="p">|</span>awk <span class="s1">&#39;{print $1&quot;:&quot;$2}&#39;</span><span class="sb">`</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="nv">img</span><span class="o">=</span><span class="si">${</span><span class="nv">image</span><span class="p">##*/</span><span class="si">}</span>
+    bash <span class="si">${</span><span class="nv">PWD</span><span class="si">}</span>/push_image.sh <span class="nv">$image</span>
+    <span class="c1">#echo  &quot;${PWD}/push_image.sh $image&quot;</span>
+<span class="k">done</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">push_image.sh</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@k8s-master push_images_k8s]# cat push_image.sh
-#!/usr/bin/env bash
-#usage:xxx
-#scripts_name:${NAME}.sh
-# author：xiaojian
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>root@k8s-master push_images_k8s<span class="o">]</span><span class="c1"># cat push_image.sh</span>
+<span class="c1">#!/usr/bin/env bash</span>
+<span class="c1">#usage:xxx</span>
+<span class="c1">#scripts_name:${NAME}.sh</span>
+<span class="c1"># author：xiaojian</span>
 
-#This script is used to upload many images to local or private repositories
+<span class="c1">#This script is used to upload many images to local or private repositories</span>
 
-# Usage: push_images image1 [image2...]
+<span class="c1"># Usage: push_images image1 [image2...]</span>
 
-# 这里是阿里云镜像仓库地址
-registry=registry.cn-hangzhou.aliyuncs.com/hu_k8s
+<span class="c1"># 这里是阿里云镜像仓库地址</span>
+<span class="nv">registry</span><span class="o">=</span>registry.cn-hangzhou.aliyuncs.com/hu_k8s
 
-echo_r() {
-    [ $# -ne 1 ] &amp;&amp; return 0
-    echo -e &quot;\033[31m$1\033[0m&quot;
-}
+echo_r<span class="o">()</span> <span class="o">{</span>
+    <span class="o">[</span> <span class="nv">$#</span> -ne <span class="m">1</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="k">return</span> <span class="m">0</span>
+    <span class="nb">echo</span> -e <span class="s2">&quot;\033[31m</span><span class="nv">$1</span><span class="s2">\033[0m&quot;</span>
+<span class="o">}</span>
 
-echo_g() {
-    [ $# -ne 1 ] &amp;&amp; return 0
-    echo -e &quot;\033[32m$1\033[0m&quot;
-}
+echo_g<span class="o">()</span> <span class="o">{</span>
+    <span class="o">[</span> <span class="nv">$#</span> -ne <span class="m">1</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="k">return</span> <span class="m">0</span>
+    <span class="nb">echo</span> -e <span class="s2">&quot;\033[32m</span><span class="nv">$1</span><span class="s2">\033[0m&quot;</span>
+<span class="o">}</span>
 
-echo_y() {
-    [ $# -ne 1 ] &amp;&amp; return 0
-    echo -e &quot;\033[33m$1\033[0m&quot;
-}
-echo_b() {
-    [ $# -ne 1 ] &amp;&amp; return 0
-    echo -e &quot;\033[34m$1\033[0m&quot;
-}
+echo_y<span class="o">()</span> <span class="o">{</span>
+    <span class="o">[</span> <span class="nv">$#</span> -ne <span class="m">1</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="k">return</span> <span class="m">0</span>
+    <span class="nb">echo</span> -e <span class="s2">&quot;\033[33m</span><span class="nv">$1</span><span class="s2">\033[0m&quot;</span>
+<span class="o">}</span>
+echo_b<span class="o">()</span> <span class="o">{</span>
+    <span class="o">[</span> <span class="nv">$#</span> -ne <span class="m">1</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="k">return</span> <span class="m">0</span>
+    <span class="nb">echo</span> -e <span class="s2">&quot;\033[34m</span><span class="nv">$1</span><span class="s2">\033[0m&quot;</span>
+<span class="o">}</span>
 
-usage() {
+usage<span class="o">()</span> <span class="o">{</span>
     docker images
-    echo &quot;Usage: $0 registry:tag1 [registry2:tag2...]&quot;
-}
+    <span class="nb">echo</span> <span class="s2">&quot;Usage: </span><span class="nv">$0</span><span class="s2"> registry:tag1 [registry2:tag2...]&quot;</span>
+<span class="o">}</span>
 
-[ $# -lt 1 ] &amp;&amp; usage &amp;&amp; exit
-echo_b &quot;The registry server is $registry&quot;
+<span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">1</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> usage <span class="o">&amp;&amp;</span> <span class="nb">exit</span>
+echo_b <span class="s2">&quot;The registry server is </span><span class="nv">$registry</span><span class="s2">&quot;</span>
 
-for image in &quot;$@&quot; ; do
-    img=${image##*/}
-    echo_b &quot;Uploading $img&quot;
-    docker tag $image $registry/$img
-    docker push $registry/$img
-    docker rmi $registry/$img
-    sleep 1
-    echo_g &quot;Done&quot;
-done
+<span class="k">for</span> image <span class="k">in</span> <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="nv">img</span><span class="o">=</span><span class="si">${</span><span class="nv">image</span><span class="p">##*/</span><span class="si">}</span>
+    echo_b <span class="s2">&quot;Uploading </span><span class="nv">$img</span><span class="s2">&quot;</span>
+    docker tag <span class="nv">$image</span> <span class="nv">$registry</span>/<span class="nv">$img</span>
+    docker push <span class="nv">$registry</span>/<span class="nv">$img</span>
+    docker rmi <span class="nv">$registry</span>/<span class="nv">$img</span>
+    sleep <span class="m">1</span>
+    echo_g <span class="s2">&quot;Done&quot;</span>
+<span class="k">done</span>
 </pre></div>
 </div>
 </section>
 <section id="id9">
 <h4>1.10 批量导入导出Docker镜像<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 <p>docker导出</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">save</span> <span class="o">-</span><span class="n">o</span> <span class="n">centos</span><span class="o">-</span><span class="n">binary</span><span class="o">-</span><span class="n">neutron</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="mf">2.0</span><span class="o">.</span><span class="mf">0.5</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>  <span class="n">kollaglue</span><span class="o">/</span><span class="n">centos</span><span class="o">-</span><span class="n">binary</span><span class="o">-</span><span class="n">neutron</span><span class="o">-</span><span class="n">server</span><span class="p">:</span><span class="mf">2.0</span><span class="o">.</span><span class="mf">0.5</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker save -o centos-binary-neutron-server-2.0.0.5.tar.gz  kollaglue/centos-binary-neutron-server:2.0.0.5
 </pre></div>
 </div>
 <p>docker导入</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">load</span> <span class="o">&lt;</span> <span class="n">centos</span><span class="o">-</span><span class="n">binary</span><span class="o">-</span><span class="n">neutron</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="mf">2.0</span><span class="o">.</span><span class="mf">0.5</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker load &lt; centos-binary-neutron-server-2.0.0.5.tar.gz
 </pre></div>
 </div>
 <p>docker导出镜像</p>
@@ -385,11 +389,7 @@ done
 </div>
 </section>
 <section id="id10">
-<h4>1.12 Docker存储位置修改<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://blog.youqiqi.cn/archives/docker-cun-chu-wei-zhi-xiu-gai">https://blog.youqiqi.cn/archives/docker-cun-chu-wei-zhi-xiu-gai</a></p>
-</section>
-<section id="id11">
-<h4>1.13 Docker清理数据卷<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<h4>1.12 Docker清理数据卷<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
 <p><strong>Docker 查看数据卷及磁盘使用情况</strong></p>
 <p>Docker
 在长时间使用的情况下，经常需要删除旧的容器并创建新的容器，长此以往，Docker
@@ -445,8 +445,8 @@ Docker 无法清理一些无用目录，不过重启 Docker 可以解决这个�
 <p><a class="reference external" href="https://www.cnblogs.com/zhuminghui/p/14566178.html">https://www.cnblogs.com/zhuminghui/p/14566178.html</a></p>
 <p><a class="reference external" href="https://blog.csdn.net/truelove12358/article/details/102949386">https://blog.csdn.net/truelove12358/article/details/102949386</a></p>
 </section>
-<section id="id12">
-<h4>1.14 Docker垃圾处理<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<section id="id11">
+<h4>1.13 Docker垃圾处理<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1  查找docker文件夹
 find / -name docker
 
@@ -496,8 +496,8 @@ docker rmi $(docker images -q)
 </div>
 </section>
 </section>
-<section id="id13">
-<h3><a class="toc-backref" href="#id21">2.容器相关</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<section id="id12">
+<h3><a class="toc-backref" href="#id28">2.容器相关</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <section id="docker-ps">
 <h4>2.1 容器退出后，通过docker ps 命令查看不到，数据会丢失么？<a class="headerlink" href="#docker-ps" title="Permalink to this headline">¶</a></h4>
 <p>容器退出后会处于终止(exited)状态，此时可以通过docker ps
@@ -505,14 +505,14 @@ docker rmi $(docker images -q)
 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">[container]</span> <span class="pre">start</span></code>命令来启动它。</p>
 <p>只有删除掉容器才会清除所有数据。</p>
 </section>
-<section id="id14">
-<h4>2.2 如何停止所有正在运行的容器<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<section id="id13">
+<h4>2.2 如何停止所有正在运行的容器<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>可以使用 docker [container] stop $(docker ps -q) 命令
 </pre></div>
 </div>
 </section>
-<section id="id15">
-<h4>2.3 如何批量清理所有的容器，包括处于运行状态和停止状态的<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<section id="id14">
+<h4>2.3 如何批量清理所有的容器，包括处于运行状态和停止状态的<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>可以使用 docker [container] rm -f $(docker ps -qa) 命令
 </pre></div>
 </div>
@@ -529,17 +529,15 @@ docker rmi $(docker images -q)
 </pre></div>
 </div>
 </section>
-<section id="id16">
-<h4>2.6 如何清理 Docker 占用的磁盘空间<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
+<section id="id15">
+<h4>2.6 如何清理 Docker 占用的磁盘空间<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
 <p><a class="reference external" href="https://zhuanlan.zhihu.com/p/100793598">https://zhuanlan.zhihu.com/p/100793598</a></p>
-<blockquote>
-<div><p>迁移/var/lib/docker目录</p>
-</div></blockquote>
+<p>迁移/var/lib/docker目录</p>
 <p><a class="reference external" href="https://blog.csdn.net/weixin_32820767/article/details/81196250">https://blog.csdn.net/weixin_32820767/article/details/81196250</a></p>
 <p><a class="reference external" href="https://www.lemonlzy.cn/2020/05/24/Docker%E6%96%87%E4%BB%B6%E6%B8%85%E7%90%86/">https://www.lemonlzy.cn/2020/05/24/Docker%E6%96%87%E4%BB%B6%E6%B8%85%E7%90%86/</a></p>
 </section>
-<section id="id17">
-<h4>2.7 给运行中的docker容器添加端口映射<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
+<section id="id16">
+<h4>2.7 给运行中的docker容器添加端口映射<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
 <p>1.获取容器IP</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker inspect &lt;container_id&gt; <span class="p">|</span> grep IPAddress
 </pre></div>
@@ -553,7 +551,84 @@ docker rmi $(docker images -q)
 </pre></div>
 </div>
 </section>
+<section id="id17">
+<h4>2.8 如何临时退出一个正在交互的容器的终端，而不终止它？<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
+<p>按Ctrl-p
+Ctrl-q。如果按Ctrl-c往往会让容器内应用进程终止，进而会终止容器。</p>
 </section>
+<section id="id18">
+<h4>2.9 可以在一个容器中同时运行多个应用进程么？<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h4>
+<p>一般并不推荐在同一个容器内运行多个应用进程。如果有类似需求，可以通过一些额外的进程管理机制，比如supervisord，来管理所运行的进程。可以参考https://docs.docker.com/articles/using_supervisord/。</p>
+</section>
+<section id="cpu">
+<h4>2.10 如何控制容器占用系统资源（CPU、内存）的份额？<a class="headerlink" href="#cpu" title="Permalink to this headline">¶</a></h4>
+<p>在使用docker[container]create命令创建容器或使用docker[con-tainer]run创建并启动容器的时候，</p>
+<p>可以使用-c|-cpu-shares[=0]参数来调整容器使用CPU的权重；</p>
+<p>使用-m|-memory[=MEMORY]参数来调整容器使用内存的大小。</p>
+</section>
+</section>
+<section id="id19">
+<h3><a class="toc-backref" href="#id29">3.配置相关</a><a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<section id="id20">
+<h4>3.1 Docker的配置文件放在哪里，如何修改配置？<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h4>
+<p>使用upstart的系统（如Ubuntu 16.04）的配置文件在/etc/default/docker，</p>
+<p>使用systemd的系统（如Ubuntu
+16.04、Centos等）的配置文件在/etc/systemd/system/docker.service.d/docker.conf。</p>
+</section>
+<section id="id21">
+<h4>3.2 如何更改Docker的默认存储位置？<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h4>
+<p>Docker的默认存储位置是/var/lib/docker，如果希望将Docker的本地文件存储到其他分区，可以使用Linux软连接的方式来完成，或者在启动daemon时通过-g参数指定。</p>
+<p>例如，如下操作将默认存储位置迁移到/storage/docker：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>root@s26 ~<span class="o">]</span><span class="c1"># df -h</span>
+Filesystem                    Size  Used Avail Use% Mounted on
+/dev/mapper/VolGroup-lv_root   50G  <span class="m">5</span>.3G   42G  <span class="m">12</span>% /
+tmpfs                          48G  228K   48G   <span class="m">1</span>% /dev/shm
+/dev/mapper/VolGroup-lv_home  222G  188M  210G   <span class="m">1</span>% /home
+/dev/sdb2                     <span class="m">2</span>.7T  323G  <span class="m">2</span>.3T  <span class="m">13</span>% /storage
+
+<span class="o">[</span>root@s26 ~<span class="o">]</span><span class="c1"># service docker stop</span>
+<span class="o">[</span>root@s26 ~<span class="o">]</span><span class="c1"># cd /var/lib/</span>
+
+<span class="o">[</span>root@s26 lib<span class="o">]</span><span class="c1"># mv docker /storage/</span>
+<span class="o">[</span>root@s26 lib<span class="o">]</span><span class="c1"># ln -s /storage/docker/ docker</span>
+
+<span class="o">[</span>root@s26 lib<span class="o">]</span><span class="c1"># ls -la docker</span>
+lrwxrwxrwx. <span class="m">1</span> root root <span class="m">15</span> 11月 <span class="m">17</span> <span class="m">13</span>:43 docker -&gt; /storage/docker
+
+<span class="o">[</span>root@s26 lib<span class="o">]</span><span class="c1"># service docker start</span>
+</pre></div>
+</div>
+</section>
+<section id="dockervagrant">
+<h4>3.3 开发环境中Docker和Vagrant该如何选择？<a class="headerlink" href="#dockervagrant" title="Permalink to this headline">¶</a></h4>
+<p>Docker不是虚拟机，而是进程隔离，对于资源的消耗很少。Vagrant是虚拟机上做的封装，虚拟机本身会消耗更多资源。如果本地使用的Linux环境或macOS，推荐都使用Docker；</p>
+<p>如果本地使用的是Windows环境，可以考虑用虚拟机获取一致的体验。</p>
+</section>
+</section>
+<section id="id22">
+<h3><a class="toc-backref" href="#id30">4. 其他</a><a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<section id="id23">
+<h4>4.1 如何将一台宿主主机的Docker环境迁移到另外一台宿主主机？<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h4>
+<p>停止Docker服务。将整个Docker存储文件夹（如默认的/var/lib/docker）复制到另外一台宿主主机，然后调整另外一台宿主主机的配置即可。</p>
+</section>
+</section>
+</section>
+<section id="id24">
+<h2><a class="toc-backref" href="#id31">2. 参考资源链接</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h2>
+<p>官方网站</p>
+<p>Docker官方主页：<a class="reference external" href="https://www.docker.com">https://www.docker.com</a></p>
+<p>Docker官方博客：<a class="reference external" href="https://blog.docker.com/">https://blog.docker.com/</a></p>
+<p>Docker官方文档：<a class="reference external" href="https://docs.docker.com/">https://docs.docker.com/</a></p>
+<p>Docker Hub：<a class="reference external" href="https://hub.docker.com">https://hub.docker.com</a></p>
+<p>Docker公司的开源代码仓库：<a class="reference external" href="https://github.com/docker">https://github.com/docker</a></p>
+<p>Docker的开源项目Moby仓库：<a class="reference external" href="https://github.com/moby/moby">https://github.com/moby/moby</a></p>
+<p>Docker发布版本历史：<a class="reference external" href="https://docs.docker.com/release-notes/">https://docs.docker.com/release-notes/</a></p>
+<p>Docker常见问题：<a class="reference external" href="https://docs.docker.com/engine/faq/">https://docs.docker.com/engine/faq/</a></p>
+<p>Docker SDK和API：<a class="reference external" href="https://docs.docker.com/develop/sdk/">https://docs.docker.com/develop/sdk/</a></p>
+<p>开发容器组织OCI：<a class="reference external" href="https://www.opencontainers.org/">https://www.opencontainers.org/</a></p>
+<p>实践参考</p>
+<p>Dockerfile参考：<a class="reference external" href="https://docs.docker.com/engine/reference/builder/">https://docs.docker.com/engine/reference/builder/</a></p>
+<p>Dockerfile最佳实践：<a class="reference external" href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/">https://docs.docker.com/develop/develop-images/dockerfile_best-practices/</a></p>
 </section>
 </section>
 
