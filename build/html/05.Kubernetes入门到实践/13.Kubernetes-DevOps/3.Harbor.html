@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Harbor &mdash; 运维开发修炼之路</title>
@@ -71,6 +71,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="4.Tekton.html">Tekton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="5.k9s%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html">k9s集群管理工具</a></li>
 </ul>
 </li>
 </ul>
@@ -158,7 +159,7 @@ token，请求验证成功，返回状态码就是200了</p></li>
 Login Succeeded 的信息
 至此，整个登录过程完成，整个过程可以用下面的流程图来说明：</p></li>
 </ol>
-<img alt="../../_images/20200512145015.png" src="../../_images/20200512145015.png" />
+<p><img alt="image0" src="../../_images/20200512145015.png" /></p>
 <p>要完成上面的登录认证过程有两个关键点需要注意：怎样让 registry
 服务知道服务认证地址？我们自己提供的认证服务生成的 token 为什么 registry
 就能够识别？</p>
@@ -376,7 +377,7 @@ myharbor-ingress-notary   &lt;none&gt;   notary.runjs.cn                       <
 </pre></div>
 </div>
 <p>用户名使用默认的 admin，密码则是上面配置的默认 Harbor12345：</p>
-<img alt="../../_images/image-20220525183212958.png" src="../../_images/image-20220525183212958.png" />
+<p><img alt="image1" src="../../_images/image-20220525183212958.png" /></p>
 <p>我们可以看到有很多功能，默认情况下会有一个名叫 <code class="docutils literal notranslate"><span class="pre">library</span></code>
 的项目，该项目默认是公开访问权限的，进入项目可以看到里面还有
 <code class="docutils literal notranslate"><span class="pre">Helm</span> <span class="pre">Chart</span></code>
@@ -493,7 +494,7 @@ latest: digest: sha256:62ffc2ed7554e4c6d360bce40bbcf196573dd27c4ce080641a2c59867
 </pre></div>
 </div>
 <p>推送完成后，我们同样可以在 Portal 页面上看到这个镜像的信息：</p>
-<img alt="../../_images/image-20220525184248913.png" src="../../_images/image-20220525184248913.png" />
+<p><img alt="image2" src="../../_images/image-20220525184248913.png" /></p>
 <p>镜像 push 成功，同样可以测试下 pull：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker rmi -f harbor-dashboard.runjs.cn/base/busybox:latest
 Untagged: harbor-dashboard.runjs.cn/base/busybox:latest
@@ -522,7 +523,7 @@ Harbor 和官方自带的 registry 仓库的差别。</p>
 等只需要增加其相应的副本数量即可；在存储数据层面，需要提供高可用的
 Postgresql、Redis 集群，另外针对镜像和 chart
 服务也需要提供可持久的存储。</p>
-<img alt="../../_images/image-20220525184453987.png" src="../../_images/image-20220525184453987.png" />
+<p><img alt="image3" src="../../_images/image-20220525184453987.png" /></p>
 <p>要做高可用的
 Harbor，我们需要将数据库通过外置方式进行提供，当然也需要保证数据库是高可用的。然后存储需要允许跨节点数据共享，也就是要支持
 ReadWriteMany 模式，我们这里使用 Ceph 的话就需要使用

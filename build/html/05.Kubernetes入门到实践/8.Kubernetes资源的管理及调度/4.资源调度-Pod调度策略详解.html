@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>资源调度-Pod调度策略详解 &mdash; 运维开发修炼之路</title>
@@ -155,7 +155,7 @@ Server的Watch接口监听新建Pod，搜索所有满足Pod需求的Node列表�
 <p>（2）优选——在选择出符合要求的候选节点后，用一组规则对这些节点的优先级打分。比如，优先把一个Deployment控制器Pod分配到不同的主机上，优先使用负载最低的主机等。</p>
 <p>（3）绑定——选择打分最高的节点执行绑定操作。如果最高得分中有好几个节点，则会从中随机选择一个节点。</p>
 <p>调度过程</p>
-<img alt="../../_images/image-20220419155639011.png" src="../../_images/image-20220419155639011.png" />
+<p><img alt="image0" src="../../_images/image-20220419155639011.png" /></p>
 <section id="id2">
 <h3><a class="toc-backref" href="#id16">1. 预选阶段</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>预选阶段的默认调度策略如下，主要分为3类。</p>
@@ -449,7 +449,7 @@ examplefornodeselector   <span class="m">1</span>/1     Running   <span class="m
 <p>应用该模板后，其调度过程将如图所示。k8snode1 的标签由于不符合required
 DuringScheduling条件，在预选阶段就会被筛除。然后对k8snode2和k8snode3进行优先级选择，根据preferredDuringScheduling的设置，k8snode3满足这个条件，因此将获得最高优先级，Pod调度到k8snode3上的概率更大。</p>
 <p>调度过程</p>
-<img alt="../../_images/image-20220419180503523.png" src="../../_images/image-20220419180503523.png" />
+<p><img alt="image1" src="../../_images/image-20220419180503523.png" /></p>
 </section>
 </section>
 <section id="id8">
@@ -473,7 +473,7 @@ InterPodAffinityPriority优选策略）。这种方式属于软亲和性调度�
 表示它是一个收集系统日志的应用，appType:
 SystemClean表示它是一个定期清理系统垃圾的应用。</p>
 <p>各个机器上的Pod标签</p>
-<img alt="../../_images/image-20220420100144485.png" src="../../_images/image-20220420100144485.png" />
+<p><img alt="image2" src="../../_images/image-20220420100144485.png" /></p>
 <p>现在我们需要创建一个Pod，如果它会和系统交互并产生影响，就必须和能收集系统日志的Pod部署到一起。因为读Pod也会生成一定数量的系统垃圾，所以需要优先和能定期清理垃圾的Pod部署在一起。</p>
 <p>为了创建具有Pod亲和性条件的Pod，创建以下模板。</p>
 <p><code class="docutils literal notranslate"><span class="pre">exampleforpodaffinity.yml</span></code></p>
@@ -523,7 +523,7 @@ disktype一致的节点上，但这些节点也可能有多个。</p>
 DuringScheduling条件，因此在预选阶段就会被筛除。</p>
 <p>然后对k8snode1和k8snode2进行优先级选择，根据preferredDuringScheduling的设置，k8snode2满足这个条件，因此将获得最高优先级，Pod调度到k8snode2上的概率更大。</p>
 <p>调度过程</p>
-<img alt="../../_images/image-20220420101531071.png" src="../../_images/image-20220420101531071.png" />
+<p><img alt="image3" src="../../_images/image-20220420101531071.png" /></p>
 </section>
 <section id="id10">
 <h3><a class="toc-backref" href="#id24">4.2 Pod反亲和性调度</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
@@ -535,7 +535,7 @@ DuringScheduling条件，因此在预选阶段就会被筛除。</p>
 BigdataCaculate表示它是大数据计
 算应用，可能会随时消耗全部的CPU或内存资源。</p>
 <p>各个机器上的Pod标签</p>
-<img alt="../../_images/image-20220420101741633.png" src="../../_images/image-20220420101741633.png" />
+<p><img alt="image4" src="../../_images/image-20220420101741633.png" /></p>
 <p>现在我们需要创建一个Pod。假设由于公司政策，其他任何Pod都不允许和安全等级高于3的应用部署到一起。</p>
 <p>而因为大数据应用太消耗节点的CPU或内存资源，所以不推荐与它们部署在一起。</p>
 <p>为了创建具有Pod反亲和性条件的Pod，创建以下模板。</p>
@@ -572,7 +572,7 @@ BigdataCaculate表示它是大数据计
 DuringScheduling的反亲和条件，所以在预选阶段就会被筛除。</p>
 <p>然后对k8snode1和k8snode3进行优先级选择，根据preferredDuringScheduling的设置，k8snode3不满足反亲和条件，因此它将获得最高优先级，Pod调度到k8snode3上的概率更大。</p>
 <p>调度过程</p>
-<img alt="../../_images/image-20220420102727547.png" src="../../_images/image-20220420102727547.png" />
+<p><img alt="image5" src="../../_images/image-20220420102727547.png" /></p>
 <p><strong>注意：在Pod亲和性与反亲和性调度过程中会涉及大量调度运算，这会显著减慢在大型集群中的调度。不建议在大于几百个节点的集群中使用它们。</strong></p>
 </section>
 </section>
@@ -635,41 +635,12 @@ Taints:             <span class="nv">restart</span><span class="o">=</span>hourl
 <p>其中，k8snode2有每小时重启的不稳定状况，所以不将Pod调度到该机器上；</p>
 <p>k8snode3处于开机维护状态，也不将Pod调度到该机器上；</p>
 <p>k8snode4的硬盘非常差，不推荐将Pod调度到该机器上。</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 7%" />
-<col style="width: 27%" />
-<col style="width: 27%" />
-<col style="width: 39%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>k8
-sno
-de1</p></th>
-<th class="head"><p>k8snode2</p></th>
-<th class="head"><p>k8snode3</p></th>
-<th class="head"><p>k8snode4</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>无
-污
-点</p></td>
-<td><p>restart=h
-ourly:NoSchedule</p></td>
-<td><p>isMaintai
-n=true:NoExecute</p></td>
-<td><p>diskSpeed=v
-erySlow:PreferNoSchedule</p></td>
-</tr>
-</tbody>
-</table>
 <p>如果此时定义一个任意的Pod，其调度过程将如下图所示。</p>
 <p>k8snode2和k8snode3因为存在污点，所以在预选阶段就会被筛除。</p>
 <p><strong>然后对k8snode1和k8snode4进行优先级选择，由于k8snode4存在不推荐的污点，因此k8snode1将获得最高优先级，</strong>
 <strong>Pod调度到k8snode1上的概率更大。</strong></p>
 <p>调度过程</p>
-<img alt="../../_images/image-20220420105332814.png" src="../../_images/image-20220420105332814.png" />
+<p><img alt="image6" src="../../_images/image-20220420105332814.png" /></p>
 </section>
 <section id="id13">
 <h3><a class="toc-backref" href="#id27">5.2 容忍</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
@@ -704,7 +675,7 @@ erySlow:PreferNoSchedule</p></td>
 <p>应用该模板创建Pod后，其调度过程如下图所示。因为已容忍k8snode2和k8snode3上的污点，所以在预选阶段Pod不会被筛除。</p>
 <p>由于k8snode1不存在污点，因此k8snode1将获得最高优先级，Pod调度到k8snode1上的概率更大。</p>
 <p>调度过程</p>
-<img alt="../../_images/image-20220420105748771.png" src="../../_images/image-20220420105748771.png" />
+<p><img alt="image7" src="../../_images/image-20220420105748771.png" /></p>
 <p><strong>容忍度设置一般用于DaemonSet控制器，因为DaemonSet控制器下的应用通常是为节点本身提供服务的。</strong></p>
 <p><strong>另外，在创建DaemonSet控制器时，还会自动为DeamonSet控制器的Pod添加以下容忍度，以防止DaemonSet控制器被破坏。</strong></p>
 <ul class="simple">

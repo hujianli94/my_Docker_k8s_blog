@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kubernetest数据管理 &mdash; 运维开发修炼之路</title>
@@ -346,7 +346,7 @@ grub  nss  useradd  yyy
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="n">nfs</span><span class="o">-</span><span class="n">utils</span> <span class="o">-</span><span class="n">y</span>
 <span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">exports</span>
 <span class="c1"># 添加目录给相应网段访问并添加读写权限</span>
-<span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span><span class="o">/</span><span class="n">nginx</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">(</span><span class="n">insecure</span><span class="p">,</span><span class="n">rw</span><span class="p">,</span><span class="k">async</span><span class="p">,</span><span class="n">no_root_squash</span><span class="p">)</span>
+<span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span><span class="o">/</span><span class="n">nginx</span> <span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">(</span><span class="n">insecure</span><span class="p">,</span><span class="n">rw</span><span class="p">,</span><span class="k">async</span><span class="p">,</span><span class="n">no_root_squash</span><span class="p">)</span>
 <span class="c1"># 创建共享目录，添加权限</span>
 <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span><span class="o">/</span><span class="n">nginx</span>
 <span class="n">chmod</span> <span class="mi">777</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span><span class="o">/</span><span class="n">nginx</span>
@@ -507,7 +507,7 @@ hujianli1.txt  hujianli2.txt  hujianli3.txt  index.html
 </pre></div>
 </div>
 <p>访问网站，显示如下：</p>
-<img alt="../_images/k8s-nfs001.png" src="../_images/k8s-nfs001.png" />
+<p><img alt="image0" src="../_images/k8s-nfs001.png" /></p>
 <p><strong>kubernetes NFS官方的例子如下：</strong></p>
 <p><a class="reference external" href="https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs">https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs</a></p>
 </section>
@@ -711,8 +711,8 @@ Server。定义NFS类型的Volume的示例如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">查看内网pod的ip地址</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">PersistenVolume</span><span class="o">-</span><span class="n">demo</span><span class="p">]</span><span class="c1"># kubectl get pod -o wide</span>
 <span class="n">NAME</span>                                <span class="n">READY</span>   <span class="n">STATUS</span>    <span class="n">RESTARTS</span>   <span class="n">AGE</span>    <span class="n">IP</span>               <span class="n">NODE</span>     <span class="n">NOMINATED</span> <span class="n">NODE</span>   <span class="n">READINESS</span> <span class="n">GATES</span>
-<span class="n">nginx</span><span class="o">-</span><span class="n">pvc</span><span class="o">-</span><span class="n">deploy</span><span class="o">-</span><span class="mi">5694</span><span class="n">fb96f9</span><span class="o">-</span><span class="n">m7m9d</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">8</span><span class="n">m7s</span>   <span class="mf">10.244</span><span class="o">.</span><span class="mf">228.120</span>   <span class="n">k8s</span><span class="o">-</span><span class="n">w1</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">nginx</span><span class="o">-</span><span class="n">pvc</span><span class="o">-</span><span class="n">deploy</span><span class="o">-</span><span class="mi">5694</span><span class="n">fb96f9</span><span class="o">-</span><span class="n">wfdt7</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">8</span><span class="n">m7s</span>   <span class="mf">10.244</span><span class="o">.</span><span class="mf">23.112</span>    <span class="n">k8s</span><span class="o">-</span><span class="n">w4</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">nginx</span><span class="o">-</span><span class="n">pvc</span><span class="o">-</span><span class="n">deploy</span><span class="o">-</span><span class="mi">5694</span><span class="n">fb96f9</span><span class="o">-</span><span class="n">m7m9d</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">8</span><span class="n">m7s</span>   <span class="mf">10.244.228.120</span>   <span class="n">k8s</span><span class="o">-</span><span class="n">w1</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">nginx</span><span class="o">-</span><span class="n">pvc</span><span class="o">-</span><span class="n">deploy</span><span class="o">-</span><span class="mi">5694</span><span class="n">fb96f9</span><span class="o">-</span><span class="n">wfdt7</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">8</span><span class="n">m7s</span>   <span class="mf">10.244.23.112</span>    <span class="n">k8s</span><span class="o">-</span><span class="n">w4</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
 
 <span class="o">//</span> <span class="n">在内网机器上访问</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">w2</span> <span class="o">~</span><span class="p">]</span><span class="c1"># curl 10.244.228.120</span>
@@ -743,7 +743,7 @@ Server。定义NFS类型的Volume的示例如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="o">-</span><span class="n">y</span> <span class="n">install</span> <span class="n">nfs</span><span class="o">-</span><span class="n">utils</span> <span class="n">rpcbind</span>
 
 <span class="p">[</span><span class="n">root</span><span class="nd">@Gitee</span><span class="o">-</span><span class="n">Go</span> <span class="n">app</span><span class="p">]</span><span class="c1"># cat /etc/exports</span>
-<span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">(</span><span class="n">rw</span><span class="p">,</span><span class="n">sync</span><span class="p">,</span><span class="n">insecure</span><span class="p">,</span><span class="n">no_subtree_check</span><span class="p">,</span><span class="n">no_root_squash</span><span class="p">)</span>
+<span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span> <span class="mf">192.168.1.0</span><span class="o">/</span><span class="mi">24</span><span class="p">(</span><span class="n">rw</span><span class="p">,</span><span class="n">sync</span><span class="p">,</span><span class="n">insecure</span><span class="p">,</span><span class="n">no_subtree_check</span><span class="p">,</span><span class="n">no_root_squash</span><span class="p">)</span>
 
 <span class="n">service</span> <span class="n">rpcbind</span> <span class="n">restart</span>
 <span class="n">service</span> <span class="n">nfs</span> <span class="n">restart</span>
@@ -757,7 +757,7 @@ Server。定义NFS类型的Volume的示例如下：</p>
 <span class="n">systemctl</span> <span class="n">restart</span> <span class="n">nfs</span>
 
 <span class="c1"># 测试到NFS服务器的连接</span>
-<span class="n">showmount</span> <span class="o">-</span><span class="n">e</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.46</span>
+<span class="n">showmount</span> <span class="o">-</span><span class="n">e</span> <span class="mf">192.168.1.46</span>
 </pre></div>
 </div>
 </section>
@@ -803,13 +803,13 @@ Server。定义NFS类型的Volume的示例如下：</p>
             <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">PROVISIONER_NAME</span>
               <span class="n">value</span><span class="p">:</span> <span class="n">managed</span><span class="o">-</span><span class="n">nfs</span><span class="o">-</span><span class="n">storage</span>
             <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">NFS_SERVER</span>
-              <span class="n">value</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.46</span>
+              <span class="n">value</span><span class="p">:</span> <span class="mf">192.168.1.46</span>
             <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">NFS_PATH</span>
               <span class="n">value</span><span class="p">:</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span>
       <span class="n">volumes</span><span class="p">:</span>
         <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nfs</span><span class="o">-</span><span class="n">client</span><span class="o">-</span><span class="n">root</span>
           <span class="n">nfs</span><span class="p">:</span>
-            <span class="n">server</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.46</span>
+            <span class="n">server</span><span class="p">:</span> <span class="mf">192.168.1.46</span>
             <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span>
 </pre></div>
 </div>

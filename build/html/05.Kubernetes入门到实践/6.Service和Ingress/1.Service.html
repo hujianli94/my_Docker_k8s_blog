@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Service &mdash; 运维开发修炼之路</title>
@@ -141,7 +141,7 @@
 <p>在Kubernetes中，Service是充当基础内部负载均衡器的一种组件。</p>
 <p>Service会将相同功能的Pod在逻辑上组合到一起，一般会采用标签选择器进行组合，让它们表现得如同单个实体。</p>
 <p>Service与Pod</p>
-<img alt="../../_images/image-20220413095554569.png" src="../../_images/image-20220413095554569.png" />
+<p><img alt="image0" src="../../_images/image-20220413095554569.png" /></p>
 <p>Service可以发布服务，可以跟踪并路由到所有指定类型的后端容器。</p>
 <p>内部使用者只需要知道Service提供的稳定端点即可进行访问。另外，Service抽象可以根据需要来伸缩或替换后端的工作单位，无论
 Service具体路由到哪个Pod，其IP地址都保持稳定。通过Service，我们可以轻松获得服务发现的能力。</p>
@@ -152,7 +152,7 @@ Service具体路由到哪个Pod，其IP地址都保持稳定。通过Service，�
 <p>如果要想让外部机器能访问，对于Pod，可通过之前讲过的将Pod映射到<strong>HostPort上的方法来实现</strong>；</p>
 <p>而对于Service，通常的办法是<strong>配置NodePort或LoadBalancer的Service</strong>，或者给Service配置ExternalIP，以便将Service映射到Master或Node上，供外部机器访问。</p>
 <p>Kubernetes网络</p>
-<img alt="../../_images/image-20220413102102239.png" src="../../_images/image-20220413102102239.png" />
+<p><img alt="image1" src="../../_images/image-20220413102102239.png" /></p>
 <p>Service的模板如下。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
@@ -330,7 +330,7 @@ Events:            &lt;none&gt;
 <section id="id3">
 <h4>Service访问及负载均衡原理<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p>为什么在给这3个Pod设置了Service以后，就可以实现负载均衡了呢？在每个节点中都有一个叫作kube-proxy的组件，这个组件识别Service和Pod的动态变化，并将变化的地址信息写入本地的IPTables中。而IPTables使用NAT等技术将virtualIP的流量转至Endpoint。默认情况下，Kubernetes使用的是IPTables模式</p>
-<img alt="../../_images/image-20220413114947962.png" src="../../_images/image-20220413114947962.png" />
+<p><img alt="image2" src="../../_images/image-20220413114947962.png" /></p>
 <p>我们可以进入任意一台Kubernetes机器（Master或者Node），运行以下命令查看IPTables的配置</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo iptables -L -v -n -t nat
 </pre></div>
@@ -385,7 +385,7 @@ examplenodeportservice   NodePort    <span class="m">10</span>.111.156.147   &lt
 </div>
 <p>由于NodePort方式会基于ClusterIP方式，因此在集群内部还是可以通过ClusterIP进行端口访问的。</p>
 <p>集群外部直接通过NodeIP:30001访问，现在已经可以通过集群外部的机器使用“NodeIP:端口”方式访问Service了</p>
-<img alt="../../_images/image-20220413152445119.png" src="../../_images/image-20220413152445119.png" />
+<p><img alt="image3" src="../../_images/image-20220413152445119.png" /></p>
 </section>
 <section id="loadbalancer">
 <h3><a class="toc-backref" href="#id16">1.3 通过LoadBalancer发布</a><a class="headerlink" href="#loadbalancer" title="Permalink to this headline">¶</a></h3>
@@ -406,13 +406,13 @@ examplenodeportservice   NodePort    <span class="m">10</span>.111.156.147   &lt
       <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
       <span class="n">targetPort</span><span class="p">:</span> <span class="mi">9376</span>
       <span class="n">nodePort</span><span class="p">:</span> <span class="mi">30061</span>
-  <span class="n">clusterIP</span><span class="p">:</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">171.12</span>
-  <span class="n">loadBalancerIP</span><span class="p">:</span> <span class="mf">78.11</span><span class="o">.</span><span class="mf">42.19</span>
+  <span class="n">clusterIP</span><span class="p">:</span> <span class="mf">10.0.171.12</span>
+  <span class="n">loadBalancerIP</span><span class="p">:</span> <span class="mf">78.11.42.19</span>
   <span class="nb">type</span><span class="p">:</span> <span class="n">loadBalancer</span>
 <span class="n">status</span><span class="p">:</span>
   <span class="n">loadBalancer</span><span class="p">:</span>
     <span class="n">ingress</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">ip</span><span class="p">:</span> <span class="mf">146.147</span><span class="o">.</span><span class="mf">12.155</span> <span class="c1">#这个是云服务商提供的负载IP</span>
+    <span class="o">-</span> <span class="n">ip</span><span class="p">:</span> <span class="mf">146.147.12.155</span> <span class="c1">#这个是云服务商提供的负载IP</span>
 </pre></div>
 </div>
 <p>然而，Kubernetes没有为私有集群提供网络负载均衡器（类型为LoadBalancer的Service）的实现。</p>
@@ -436,7 +436,7 @@ Service在运行，并且没有可申请的负载均衡器 之后，就会完成
 <li><p>地址广播：根据不同配置，MetalLB会以二层（ARP/NDP）或者BGP方式进行地址广播</p></li>
 </ul>
 <p>MetalLB的原理</p>
-<img alt="../../_images/image-20220413153604568.png" src="../../_images/image-20220413153604568.png" />
+<p><img alt="image4" src="../../_images/image-20220413153604568.png" /></p>
 <p>首先，为了安装MetalLB，直接执行以下命令即可。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
 $ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
@@ -525,12 +525,12 @@ kubernetes                   ClusterIP      <span class="m">10</span>.96.0.1    
 </pre></div>
 </div>
 <p>通过NodePort方式访问的结果如图</p>
-<img alt="../../_images/image-20220413164505526.png" src="../../_images/image-20220413164505526.png" />
+<p><img alt="image5" src="../../_images/image-20220413164505526.png" /></p>
 <p>除此之外，Service还有一个EXTERNAL-IP地址，这个IP地址就是LoadBalancer对外的IP地址，可以由外部机器访问。</p>
 <p>因为在Service创建时spec.ports.port属性为8080，所以LoadBalancer的端口为8080。</p>
 <p>在本例中，因为LoadBalancer的对外IP为192.168.1.251，端口为8080，所以外部机器也可以通过LoadBalancer地址进行访问。打开
 浏览器访问192.168.1.251:8080</p>
-<img alt="../../_images/image-20220413165244896.png" src="../../_images/image-20220413165244896.png" />
+<p><img alt="image6" src="../../_images/image-20220413165244896.png" /></p>
 <p>参考文献</p>
 <blockquote>
 <div><p>MetalLB 负载均衡器使用介绍</p>
@@ -996,7 +996,7 @@ Endpoints:         <span class="m">10</span>.0.36.190:80
 <p>可以看到这里多了EXTERNAL-IP属性，它正是我们设置的地址。</p>
 <p>在集群之外的机器上，通过<code class="docutils literal notranslate"><span class="pre">“外部IP地址:端口”</span></code>，就可以访问Pod中的服务。</p>
 <p>从外部机器访问的结果</p>
-<img alt="../../_images/image-20220416145901303.png" src="../../_images/image-20220416145901303.png" />
+<p><img alt="image7" src="../../_images/image-20220416145901303.png" /></p>
 </section>
 </section>
 <section id="kubernets-pod">

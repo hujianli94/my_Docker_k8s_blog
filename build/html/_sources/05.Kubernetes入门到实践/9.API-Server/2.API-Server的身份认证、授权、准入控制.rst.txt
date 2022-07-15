@@ -21,7 +21,7 @@ Server需要经过身份认证、授权及准入控制这三大关卡，如下�
 
 访问API Server的三大关卡
 
-.. image:: ../../_static/image-20220420145604803.png
+|image0|
 
 身份认证主要用于确定用户能不能访问，授权则决定用户能够访问哪些资源，而准入控制决定用户访问这些资源时需要基于什么规范
 或准则。
@@ -229,9 +229,9 @@ API Server的访问。调用sleep 3600命令让该容器长期处于运行状态
 
 可以发现Pod中引用了一个Secret类型的存储卷，这个存储卷我们并没有在模板中定义，而是由Kubernetes自动附加的
 
-.. image:: ../../../../my_Go_Py_blog/source/_static/image-20220420214329999.png
+|image1|
 
-.. image:: ../../../../my_Go_Py_blog/source/_static/image-20220420214438456.png
+|image2|
 
 Kubernetes在这个命名空间下以默认形式自动创建了一个ServiceAccount，而在default-token-znfnr里面存放了ServiceAccount的认证信息。
 
@@ -257,9 +257,9 @@ Kubernetes在这个命名空间下以默认形式自动创建了一个ServiceAcc
 
 可以发现它主要存放了3个信息——ca.crt（证书）、namespace、token。
 
-.. image:: ../../../../my_Go_Py_blog/source/_static/image-20220420215311073.png
+|image3|
 
-.. image:: ../../../../my_Go_Py_blog/source/_static/image-20220420215601123.png
+|image4|
 
 由于该Secret是以存储卷形式\ **挂载到Pod容器当中的**\ ，因此可以使用映射路径获得证书和令牌，并用它们来访问API
 Server，例如，可 以使用以下路径。
@@ -286,7 +286,7 @@ Server，例如，可 以使用以下路径。
 token输出了存放在映射路径下的令牌。命令执行后，结果如下图
 所示，Kubernetes已经通过认证，识别到名为default的ServiceAccount正在进行访问，由于还未授权，因此访问会失败。
 
-.. image:: ../../../../my_Go_Py_blog/source/_static/image-20220420221321670.png
+|image5|
 
 自定义ServiceAccount
 ^^^^^^^^^^^^^^^^^^^^
@@ -376,7 +376,7 @@ Pod创建后再执行\ ``$ kubectl get pod examplepodforserviceaccount -o yaml``
 
 可以发现Pod中使用了自定义ServiceAccount的Secret，并将其配置为存储卷。
 
-.. image:: ../../../../my_Go_Py_blog/source/_static/image-20220421092530850.png
+|image6|
 
 可以看到cm配置文件已经挂载到容器中了。
 
@@ -415,7 +415,7 @@ RBAC授权主要分为两个步骤。
 
 RBAC授权的原理如图
 
-.. image:: ../../../../my_Go_Py_blog/source/_static/image-20220421093626151.png
+|image7|
 
 角色定义和角色绑定分为两种。
 
@@ -489,7 +489,7 @@ RBAC授权的原理如图
 
 可以执行命令\ ``$ curl http://localhost:8080/api/v1``\ ，然后在返回结果中找到与Pod相关的信息。
 
-.. image:: ../../../../my_Go_Py_blog/source/_static/image-20220421094957631.png
+|image8|
 
 如果要查看Daemonsets控制器中resources属性的类别以及支持的verbs属性，
 
@@ -499,7 +499,7 @@ RBAC授权的原理如图
 
 与Daemonsets控制器相关的resources及verbs属性
 
-.. image:: ../../../../my_Go_Py_blog/source/_static/image-20220421095116198.png
+|image9|
 
 普通角色绑定
 ^^^^^^^^^^^^
@@ -780,3 +780,14 @@ RoleBinding关联以达到限定效果。可以修改模板来实现该功能，
 
 两个示例的关键字分别为ClusterRole和RoleBinding。ClusterRole没有指定命名空间，但RoleBinding指定命名空间为
 default（如果没有指定命名空间，默认也为default）。因为已经通过RoleBinding指定了命名空间，所以无须再给ServiceAccount指明命名空间。应用模板后，使用常规用户的exampleuser以及ServiceAccount的exampleserviceaccount只能访问default命名空间下的Pod资源。
+
+.. |image0| image:: ../../_static/image-20220420145604803.png
+.. |image1| image:: ../../../../my_Go_Py_blog/source/_static/image-20220420214329999.png
+.. |image2| image:: ../../../../my_Go_Py_blog/source/_static/image-20220420214438456.png
+.. |image3| image:: ../../../../my_Go_Py_blog/source/_static/image-20220420215311073.png
+.. |image4| image:: ../../../../my_Go_Py_blog/source/_static/image-20220420215601123.png
+.. |image5| image:: ../../../../my_Go_Py_blog/source/_static/image-20220420221321670.png
+.. |image6| image:: ../../../../my_Go_Py_blog/source/_static/image-20220421092530850.png
+.. |image7| image:: ../../../../my_Go_Py_blog/source/_static/image-20220421093626151.png
+.. |image8| image:: ../../../../my_Go_Py_blog/source/_static/image-20220421094957631.png
+.. |image9| image:: ../../../../my_Go_Py_blog/source/_static/image-20220421095116198.png

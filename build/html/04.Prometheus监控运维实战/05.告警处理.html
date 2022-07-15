@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>告警处理 &mdash; 运维开发修炼之路</title>
@@ -132,7 +132,7 @@ server端定义的，告警规则被触发后，才会将信息发送给独立�
 <p>我们使用Prometheus
 server采集各类监控指标，然后基于PromQL对这些指标定义阈值告警规则（Rules）。Prometheus
 server对告警规则周期性地进行计算，如果满足告警触发条件，便生成一条告警信息，并将其推送到Alertmanager组件。收到告警信息后，Alertmanager会处理告警，进行分组（grouping）并将它们路由（routing）到正确的接收器（receiver），如Email、PagerDuty和HipChat等，最终把异常事件的通知发送给接收者。</p>
-<img alt="../_images/prometheus_gaojing01.png" src="../_images/prometheus_gaojing01.png" />
+<p><img alt="image0" src="../_images/prometheus_gaojing01.png" /></p>
 <section id="id2">
 <h3><a class="toc-backref" href="#id9">1.1 1.告警分组</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>分组机制（Grouping）是指，AlertManager将同类型的告警进行分组，合并多条告警到一个通知中。在实际环境中，特别是云计算环境中的业务线之间密集耦合时，若出现多台设备宕机，可能会导致成百上千个告警被触发。在这种情况下使用分组机制，可以将这些被触发的告警合并为一个告警进行通知，从而避免瞬间突发性地接收大量的告警通知，使得管理员无法对问题进行快速定位。例如，在一个Kubernetes集群中，运行着重量级规模数量的实例，即便是集群中持续一小段时间的网络延时或间歇式断开，也会引起大量应用程序无法连接数据库的故障。如果我们在Prometheus告警规则中配置为每一个服务实例都发送告警，那么最后的结果就是大量的告警被发送到Alertmanager中心。其实，作为集群管理员，可能希望在一个通知中就能快速查看是哪些服务实例被本次故障影响了。此时，对服务所在集群或者告警名称进行分组打包配置，将这些告警紧凑在一起成为一个“大”的通知时，管理员就不会受到告警的频繁“轰炸”。告警分组、告警时间和告警接收器均是通过Alertmanager的配置文件来完成配置的。</p>
@@ -153,7 +153,7 @@ server对告警规则周期性地进行计算，如果满足告警触发条件�
 GitHub下载页面https://github.com/prometheus/alertmanager/releases中选择个人要使用的指定版本对应的平台的二进制文件。</p>
 <p>1）官网下载Alertmanager完成后，获取软件包的哈希值</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">app</span><span class="p">]</span><span class="c1"># sha256sum alertmanager-0.16.2.linux-amd64.tar.gz</span>
-<span class="mi">73708254747162731737</span><span class="n">c4ac367ba52e68117a0d7e4580fbbd4bb5ca919909e7</span>  <span class="n">alertmanager</span><span class="o">-</span><span class="mf">0.16</span><span class="o">.</span><span class="mf">2.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<span class="mi">73708254747162731737</span><span class="n">c4ac367ba52e68117a0d7e4580fbbd4bb5ca919909e7</span>  <span class="n">alertmanager</span><span class="o">-</span><span class="mf">0.16.2</span><span class="o">.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
 </pre></div>
 </div>
 <p>2）解压缩软件包到指定的安装目录。</p>
@@ -203,7 +203,7 @@ alertmanager-0.16.2.linux-amd64/NOTI
 </pre></div>
 </div>
 <p>现在可以通过浏览器访问示例地址http://192.168.1.37:9093/#/status，会看到Alertmanager运行时的状态或集群状态、版本信息和默认的配置文件信息</p>
-<img alt="../_images/alertmanager001.png" src="../_images/alertmanager001.png" />
+<p><img alt="image1" src="../_images/alertmanager001.png" /></p>
 </section>
 <section id="docker">
 <h3><a class="toc-backref" href="#id13">1.1.5 使用Docker安装</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h3>
@@ -224,7 +224,7 @@ github中提供的简单示例文件，或者使用二进制安装包中的默�
 <p>到此，我们完成了使用Docker安装AlertManager，查看alertmanager已经正常运行：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">alertmanager</span><span class="p">]</span><span class="c1"># docker ps</span>
 <span class="n">CONTAINER</span> <span class="n">ID</span>   <span class="n">IMAGE</span>                       <span class="n">COMMAND</span>                  <span class="n">CREATED</span>          <span class="n">STATUS</span>          <span class="n">PORTS</span>                                                                           <span class="n">NAMES</span>
-<span class="n">eb6ab18b9851</span>   <span class="n">prom</span><span class="o">/</span><span class="n">alertmanager</span>           <span class="s2">&quot;/bin/alertmanager -…&quot;</span>   <span class="mi">29</span> <span class="n">seconds</span> <span class="n">ago</span>   <span class="n">Up</span> <span class="mi">28</span> <span class="n">seconds</span>   <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">9093</span><span class="o">-&gt;</span><span class="mi">9093</span><span class="o">/</span><span class="n">tcp</span>
+<span class="n">eb6ab18b9851</span>   <span class="n">prom</span><span class="o">/</span><span class="n">alertmanager</span>           <span class="s2">&quot;/bin/alertmanager -…&quot;</span>   <span class="mi">29</span> <span class="n">seconds</span> <span class="n">ago</span>   <span class="n">Up</span> <span class="mi">28</span> <span class="n">seconds</span>   <span class="mf">0.0.0.0</span><span class="p">:</span><span class="mi">9093</span><span class="o">-&gt;</span><span class="mi">9093</span><span class="o">/</span><span class="n">tcp</span>
 </pre></div>
 </div>
 </section>

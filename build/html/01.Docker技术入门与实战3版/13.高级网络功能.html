@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>高级网络功能 &mdash; 运维开发修炼之路</title>
@@ -51,6 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="06.Docker%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Docker数据管理</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html">Docker使用网络</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html#id7">指令        说明</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
 <li class="toctree-l2"><a class="reference internal" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html">Docker核心实现技术</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11.%E9%85%8D%E7%BD%AE%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">配置私有仓库</a></li>
@@ -140,7 +141,7 @@
 <p>当创建一个Docker容器的时候，同时会创建了一对veth
 pair互联接口。当向任一个接口发送包时，另外一个接口自动收到相同的包。互联接口的一端位于容器内，即eth0；另一端在本地并被挂载到docker0网桥，名称以veth开头（例如vethAQI2QT）。通过这种方式，主机可以与容器通信，容器之间也可以相互通信。如此一来，Docker就创建了在主机和所有容器之间一个虚拟共享网络，如图20-1所示</p>
 <p>Docker网络连接原理示意图</p>
-<img alt="../_images/docker_gaoji00001.png" src="../_images/docker_gaoji00001.png" />
+<p><img alt="image0" src="../_images/docker_gaoji00001.png" /></p>
 <p>2.网络相关参数</p>
 <p>下面是与Docker网络相关的命令参数。其中部分命令选项只有在Docker服务启动的时候才能配置，修改后重启生效，包括：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·-b BRIDGE or--bridge=BRIDGE：指定容器挂载的网桥；
@@ -211,9 +212,9 @@ search my-docker-cloud.com
 </div>
 <p>/etc/hosts文件中默认只记录了容器自身的地址和名称：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mi">75</span><span class="n">dbd6685305</span><span class="p">:</span><span class="o">/</span><span class="c1"># cat /etc/hosts</span>
-<span class="mf">172.17</span><span class="o">.</span><span class="mf">0.2</span>  <span class="mi">75</span><span class="n">dbd6685305</span>
+<span class="mf">172.17.0.2</span>  <span class="mi">75</span><span class="n">dbd6685305</span>
 <span class="p">::</span><span class="mi">1</span> <span class="n">localhost</span> <span class="n">ip6</span><span class="o">-</span><span class="n">localhost</span> <span class="n">ip6</span><span class="o">-</span><span class="n">loopback</span>
-<span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>   <span class="n">localhost</span>
+<span class="mf">127.0.0.1</span>   <span class="n">localhost</span>
 </pre></div>
 </div>
 <p>/etc/hostname文件则记录了容器的主机名：</p>
@@ -508,7 +509,7 @@ root@298bbb17c244:/#
 <p>此时在容器内查看网络信息，只能看到一个本地网卡lo：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mi">298</span><span class="n">bbb17c244</span><span class="p">:</span><span class="o">/</span><span class="c1"># ifconfig</span>
 <span class="n">lo</span>        <span class="n">Link</span> <span class="n">encap</span><span class="p">:</span><span class="n">Local</span> <span class="n">Loopback</span>
-          <span class="n">inet</span> <span class="n">addr</span><span class="p">:</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>  <span class="n">Mask</span><span class="p">:</span><span class="mf">255.0</span><span class="o">.</span><span class="mf">0.0</span>
+          <span class="n">inet</span> <span class="n">addr</span><span class="p">:</span><span class="mf">127.0.0.1</span>  <span class="n">Mask</span><span class="p">:</span><span class="mf">255.0.0.0</span>
           <span class="n">inet6</span> <span class="n">addr</span><span class="p">:</span> <span class="p">::</span><span class="mi">1</span><span class="o">/</span><span class="mi">128</span> <span class="n">Scope</span><span class="p">:</span><span class="n">Host</span>
           <span class="n">UP</span> <span class="n">LOOPBACK</span> <span class="n">RUNNING</span>  <span class="n">MTU</span><span class="p">:</span><span class="mi">65536</span>  <span class="n">Metric</span><span class="p">:</span><span class="mi">1</span>
           <span class="n">RX</span> <span class="n">packets</span><span class="p">:</span><span class="mi">0</span> <span class="n">errors</span><span class="p">:</span><span class="mi">0</span> <span class="n">dropped</span><span class="p">:</span><span class="mi">0</span> <span class="n">overruns</span><span class="p">:</span><span class="mi">0</span> <span class="n">frame</span><span class="p">:</span><span class="mi">0</span>
@@ -530,7 +531,7 @@ $ sudo chmod a+x ovs-docker
 <p>添加成功后，在容器内查看网络信息，多了一个新添加的网卡eth0，以及对应添加的IP地址：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mi">298</span><span class="n">bbb17c244</span><span class="p">:</span><span class="o">/</span><span class="c1"># ifconfig</span>
 <span class="n">eth0</span>      <span class="n">Link</span> <span class="n">encap</span><span class="p">:</span><span class="n">Ethernet</span>  <span class="n">HWaddr</span> <span class="n">ae</span><span class="p">:</span><span class="mi">3</span><span class="n">d</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span><span class="mi">2</span><span class="n">c</span><span class="p">:</span><span class="mi">18</span><span class="p">:</span><span class="n">ba</span>
-          <span class="n">inet</span> <span class="n">addr</span><span class="p">:</span><span class="mf">172.17</span><span class="o">.</span><span class="mf">0.2</span>  <span class="n">Bcast</span><span class="p">:</span><span class="mf">172.17</span><span class="o">.</span><span class="mf">255.255</span>  <span class="n">Mask</span><span class="p">:</span><span class="mf">255.255</span><span class="o">.</span><span class="mf">0.0</span>
+          <span class="n">inet</span> <span class="n">addr</span><span class="p">:</span><span class="mf">172.17.0.2</span>  <span class="n">Bcast</span><span class="p">:</span><span class="mf">172.17.255.255</span>  <span class="n">Mask</span><span class="p">:</span><span class="mf">255.255.0.0</span>
           <span class="n">inet6</span> <span class="n">addr</span><span class="p">:</span> <span class="n">fe80</span><span class="p">::</span><span class="n">ac3d</span><span class="p">:</span><span class="mi">75</span><span class="n">ff</span><span class="p">:</span><span class="n">fe2c</span><span class="p">:</span><span class="mi">18</span><span class="n">ba</span><span class="o">/</span><span class="mi">64</span> <span class="n">Scope</span><span class="p">:</span><span class="n">Link</span>
           <span class="n">UP</span> <span class="n">BROADCAST</span> <span class="n">RUNNING</span> <span class="n">MULTICAST</span>  <span class="n">MTU</span><span class="p">:</span><span class="mi">1500</span>  <span class="n">Metric</span><span class="p">:</span><span class="mi">1</span>
           <span class="n">RX</span> <span class="n">packets</span><span class="p">:</span><span class="mi">187</span> <span class="n">errors</span><span class="p">:</span><span class="mi">0</span> <span class="n">dropped</span><span class="p">:</span><span class="mi">2</span> <span class="n">overruns</span><span class="p">:</span><span class="mi">0</span> <span class="n">frame</span><span class="p">:</span><span class="mi">0</span>
@@ -538,7 +539,7 @@ $ sudo chmod a+x ovs-docker
           <span class="n">collisions</span><span class="p">:</span><span class="mi">0</span> <span class="n">txqueuelen</span><span class="p">:</span><span class="mi">1000</span>
           <span class="n">RX</span> <span class="nb">bytes</span><span class="p">:</span><span class="mi">33840</span> <span class="p">(</span><span class="mf">33.8</span> <span class="n">KB</span><span class="p">)</span>  <span class="n">TX</span> <span class="nb">bytes</span><span class="p">:</span><span class="mi">1170</span> <span class="p">(</span><span class="mf">1.1</span> <span class="n">KB</span><span class="p">)</span>
 <span class="n">lo</span>        <span class="n">Link</span> <span class="n">encap</span><span class="p">:</span><span class="n">Local</span> <span class="n">Loopback</span>
-          <span class="n">inet</span> <span class="n">addr</span><span class="p">:</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>  <span class="n">Mask</span><span class="p">:</span><span class="mf">255.0</span><span class="o">.</span><span class="mf">0.0</span>
+          <span class="n">inet</span> <span class="n">addr</span><span class="p">:</span><span class="mf">127.0.0.1</span>  <span class="n">Mask</span><span class="p">:</span><span class="mf">255.0.0.0</span>
           <span class="n">inet6</span> <span class="n">addr</span><span class="p">:</span> <span class="p">::</span><span class="mi">1</span><span class="o">/</span><span class="mi">128</span> <span class="n">Scope</span><span class="p">:</span><span class="n">Host</span>
           <span class="n">UP</span> <span class="n">LOOPBACK</span> <span class="n">RUNNING</span>  <span class="n">MTU</span><span class="p">:</span><span class="mi">65536</span>  <span class="n">Metric</span><span class="p">:</span><span class="mi">1</span>
           <span class="n">RX</span> <span class="n">packets</span><span class="p">:</span><span class="mi">0</span> <span class="n">errors</span><span class="p">:</span><span class="mi">0</span> <span class="n">dropped</span><span class="p">:</span><span class="mi">0</span> <span class="n">overruns</span><span class="p">:</span><span class="mi">0</span> <span class="n">frame</span><span class="p">:</span><span class="mi">0</span>
@@ -558,11 +559,11 @@ $ sudo chmod a+x ovs-docker
 </div>
 <p>此时，在容器内就可以测试是否连通到网桥br0上了：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mi">298</span><span class="n">bbb17c244</span><span class="p">:</span><span class="o">/</span><span class="c1"># ping 172.17.0.1</span>
-<span class="n">PING</span> <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.1</span> <span class="p">(</span><span class="mf">172.17</span><span class="o">.</span><span class="mf">0.1</span><span class="p">)</span> <span class="mi">56</span><span class="p">(</span><span class="mi">84</span><span class="p">)</span> <span class="nb">bytes</span> <span class="n">of</span> <span class="n">data</span><span class="o">.</span>
-<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">1</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.874</span> <span class="n">ms</span>
-<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">2</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.079</span> <span class="n">ms</span>
+<span class="n">PING</span> <span class="mf">172.17.0.1</span> <span class="p">(</span><span class="mf">172.17.0.1</span><span class="p">)</span> <span class="mi">56</span><span class="p">(</span><span class="mi">84</span><span class="p">)</span> <span class="nb">bytes</span> <span class="n">of</span> <span class="n">data</span><span class="o">.</span>
+<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">172.17.0.1</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">1</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.874</span> <span class="n">ms</span>
+<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">172.17.0.1</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">2</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.079</span> <span class="n">ms</span>
 <span class="o">^</span><span class="n">C</span>
-<span class="o">---</span> <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.1</span> <span class="n">ping</span> <span class="n">statistics</span> <span class="o">---</span>
+<span class="o">---</span> <span class="mf">172.17.0.1</span> <span class="n">ping</span> <span class="n">statistics</span> <span class="o">---</span>
 <span class="mi">2</span> <span class="n">packets</span> <span class="n">transmitted</span><span class="p">,</span> <span class="mi">2</span> <span class="n">received</span><span class="p">,</span> <span class="mi">0</span><span class="o">%</span> <span class="n">packet</span> <span class="n">loss</span><span class="p">,</span> <span class="n">time</span> <span class="mi">1001</span><span class="n">ms</span>
 <span class="n">rtt</span> <span class="nb">min</span><span class="o">/</span><span class="n">avg</span><span class="o">/</span><span class="nb">max</span><span class="o">/</span><span class="n">mdev</span> <span class="o">=</span> <span class="mf">0.079</span><span class="o">/</span><span class="mf">0.476</span><span class="o">/</span><span class="mf">0.874</span><span class="o">/</span><span class="mf">0.398</span> <span class="n">ms</span>
 </pre></div>

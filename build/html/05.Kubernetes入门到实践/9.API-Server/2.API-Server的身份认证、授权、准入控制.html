@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>API Server的身份认证、授权、准入控制 &mdash; 运维开发修炼之路</title>
@@ -133,7 +133,7 @@ Server是访问和管理资源对象的唯
 <p>访问API
 Server需要经过身份认证、授权及准入控制这三大关卡，如下图所示。只有这三大关卡都能通过，才可以访问Kubernetes集群中的资源。</p>
 <p>访问API Server的三大关卡</p>
-<img alt="../../_images/image-20220420145604803.png" src="../../_images/image-20220420145604803.png" />
+<p><img alt="image0" src="../../_images/image-20220420145604803.png" /></p>
 <p>身份认证主要用于确定用户能不能访问，授权则决定用户能够访问哪些资源，而准入控制决定用户访问这些资源时需要基于什么规范
 或准则。</p>
 <section id="id1">
@@ -301,8 +301,8 @@ API Server的访问。调用sleep 3600命令让该容器长期处于运行状态
 <p>此时执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pod</span> <span class="pre">examplepodforheadlessservice</span> <span class="pre">-o</span> <span class="pre">yaml</span></code>命令查看Pod定义的
 详情（或使用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pod</span> <span class="pre">examplepodforheadlessservice</span></code>命令查看Pod详情），</p>
 <p>可以发现Pod中引用了一个Secret类型的存储卷，这个存储卷我们并没有在模板中定义，而是由Kubernetes自动附加的</p>
-<img alt="../../_images/image-20220420214329999.png" src="../../_images/image-20220420214329999.png" />
-<img alt="../../_images/image-20220420214438456.png" src="../../_images/image-20220420214438456.png" />
+<p><img alt="image1" src="../../_images/image-20220420214329999.png" /></p>
+<p><img alt="image2" src="../../_images/image-20220420214438456.png" /></p>
 <p>Kubernetes在这个命名空间下以默认形式自动创建了一个ServiceAccount，而在default-token-znfnr里面存放了ServiceAccount的认证信息。</p>
 <p>使用这些认证信息，就可以访问APIServer。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl describe pod examplepodforheadlessservice
@@ -321,8 +321,8 @@ Annotations:  &lt;none&gt;
 <p>执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">secret</span> <span class="pre">default-token-znfnr</span> <span class="pre">-o</span> <span class="pre">yaml</span></code>命令</p>
 <p>（或<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">secret</span> <span class="pre">default-token-znfnr</span></code>命令），查看Secret定义的详情，</p>
 <p>可以发现它主要存放了3个信息——ca.crt（证书）、namespace、token。</p>
-<img alt="../../_images/image-20220420215311073.png" src="../../_images/image-20220420215311073.png" />
-<img alt="../../_images/image-20220420215601123.png" src="../../_images/image-20220420215601123.png" />
+<p><img alt="image3" src="../../_images/image-20220420215311073.png" /></p>
+<p><img alt="image4" src="../../_images/image-20220420215601123.png" /></p>
 <p>由于该Secret是以存储卷形式<strong>挂载到Pod容器当中的</strong>，因此可以使用映射路径获得证书和令牌，并用它们来访问API
 Server，例如，可 以使用以下路径。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">secrets</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">serviceaccount</span><span class="o">/</span><span class="n">ca</span><span class="o">.</span><span class="n">crt</span>
@@ -341,7 +341,7 @@ Server，例如，可 以使用以下路径。</p>
 <p>在本例中，我们通过<code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">/var/run/secrets/Kubernetes.io/serviceaccount/</span></code>
 token输出了存放在映射路径下的令牌。命令执行后，结果如下图
 所示，Kubernetes已经通过认证，识别到名为default的ServiceAccount正在进行访问，由于还未授权，因此访问会失败。</p>
-<img alt="../../_images/image-20220420221321670.png" src="../../_images/image-20220420221321670.png" />
+<p><img alt="image5" src="../../_images/image-20220420221321670.png" /></p>
 </section>
 <section id="id4">
 <h4>自定义ServiceAccount<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
@@ -407,7 +407,7 @@ Events:              &lt;none&gt;
 <p>Pod创建后再执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pod</span> <span class="pre">examplepodforserviceaccount</span> <span class="pre">-o</span> <span class="pre">yaml</span></code></p>
 <p>命令查看Pod定义的详情（或用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pod</span> <span class="pre">examplepodforserviceaccount</span></code>命令查看Pod详情），</p>
 <p>可以发现Pod中使用了自定义ServiceAccount的Secret，并将其配置为存储卷。</p>
-<img alt="../../_images/image-20220421092530850.png" src="../../_images/image-20220421092530850.png" />
+<p><img alt="image6" src="../../_images/image-20220421092530850.png" /></p>
 <p>可以看到cm配置文件已经挂载到容器中了。</p>
 <figure class="align-default" id="id9">
 <img alt="image-20220421092718760" src="../../_images/image-20220421092718760.png" />
@@ -436,7 +436,7 @@ AccessControl，ABAC）、</p>
 <p>（1）角色定义：指定角色名称，定义允许访问哪些资源及允许的访问方式。</p>
 <p>（2）角色绑定：将角色与用户（常规用户或ServiceAccount）进行绑定，这样用户就拥有与角色对应的权限。</p>
 <p>RBAC授权的原理如图</p>
-<img alt="../../_images/image-20220421093626151.png" src="../../_images/image-20220421093626151.png" />
+<p><img alt="image7" src="../../_images/image-20220421093626151.png" /></p>
 <p>角色定义和角色绑定分为两种。</p>
 <ul class="simple">
 <li><p>只拥有单一指定命名空间访问权限的角色：角色定义关键字为Role，角色绑定关键字为RoleBinding。</p></li>
@@ -498,12 +498,12 @@ PolicyRule:
 </div></blockquote>
 <p>例如，要查看Pod中有resources属性的类别以及支持的verbs属性，</p>
 <p>可以执行命令<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">curl</span> <span class="pre">http://localhost:8080/api/v1</span></code>，然后在返回结果中找到与Pod相关的信息。</p>
-<img alt="../../_images/image-20220421094957631.png" src="../../_images/image-20220421094957631.png" />
+<p><img alt="image8" src="../../_images/image-20220421094957631.png" /></p>
 <p>如果要查看Daemonsets控制器中resources属性的类别以及支持的verbs属性，</p>
 <p>可以执行命令<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">curl</span> <span class="pre">http://localhost:8080/apis/apps/v1</span></code>，</p>
 <p>然后在返回结果中找到与Daemonsets控制器相关的信息。</p>
 <p>与Daemonsets控制器相关的resources及verbs属性</p>
-<img alt="../../_images/image-20220421095116198.png" src="../../_images/image-20220421095116198.png" />
+<p><img alt="image9" src="../../_images/image-20220421095116198.png" /></p>
 </section>
 <section id="id7">
 <h4>普通角色绑定<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deployment控制器 &mdash; 运维开发修炼之路</title>
@@ -62,7 +62,8 @@
 <li class="toctree-l3"><a class="reference internal" href="2.DaemonSet%E6%8E%A7%E5%88%B6%E5%99%A8.html">DaemonSet控制器</a></li>
 <li class="toctree-l3"><a class="reference internal" href="3.Job%E4%B8%8ECronJob%E6%8E%A7%E5%88%B6%E5%99%A8.html">Job与CronJob控制器</a></li>
 <li class="toctree-l3"><a class="reference internal" href="4.StatefulSet%E6%8E%A7%E5%88%B6%E5%99%A8.html">StatefulSet控制器</a></li>
-<li class="toctree-l3"><a class="reference internal" href="5.%E5%85%B6%E4%BB%96%E6%8E%A7%E5%88%B6%E5%99%A8.html">其他控制器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="5.HPA.html">HPA 控制器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6.%E5%85%B6%E4%BB%96%E6%8E%A7%E5%88%B6%E5%99%A8.html">其他控制器</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
@@ -141,7 +142,7 @@
 <p>Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增加了更灵活的生命周期管理功能，</p>
 <p>例如，滚动更新和回滚</p>
 <p>Deployment控制器与ReplicaSet控制器</p>
-<img alt="../../_images/image-20220411174133773.png" src="../../_images/image-20220411174133773.png" />
+<p><img alt="image0" src="../../_images/image-20220411174133773.png" /></p>
 <p>Deployment控制器旨在简化Pod的生命周期管理。只需要简单更改Deployment控制器的配置文件，Kubernetes就会自动调节ReplicaSet控制器，管理应用程序不同版本之间的切换，还可以实现自动维护事件历史记录及自动回滚等功能。</p>
 <blockquote>
 <div><p><strong>ReplicaSet控制器基本上已不会直接使用，目前常规的Pod管理则直接使用更高一层的Deployment控制器。</strong></p>
@@ -562,7 +563,7 @@ exampledeployment-656c6d8f4c   <span class="m">0</span>         <span class="m">
 <p>可以看到这种更新方式相当直接，会直接删除当前Deployment制器下所有的Pod，即删除旧的ReplicaSet控制器下的所有Pod，只保
 留旧的ReplicaSet控制器的定义，但不再投入使用，之后新建更新后的ReplicaSet控制器及Pod。</p>
 <p>Recreate更新方式</p>
-<img alt="../../_images/image-20220411185130534.png" src="../../_images/image-20220411185130534.png" />
+<p><img alt="image1" src="../../_images/image-20220411185130534.png" /></p>
 <p>但在实际使用过程中，一般我们会用这些Pod来提供长期稳定且不
 间断的服务，<strong>很少有终止所有Pod再等候全部重新创建来提供服务的情况</strong>。</p>
 <p><strong>如果要让Pod能提供不间断的服务，平滑升级，则需要使用RollingUpdate更新方式。</strong></p>
@@ -614,14 +615,14 @@ exampledeployment-656c6d8f4c   <span class="m">0</span>         <span class="m">
 </div>
 <p>在不同时间点执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">deployments</span></code>命令，会得到不同的结果</p>
 <p>在不同时间点执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pods</span> <span class="pre">-o</span> <span class="pre">wide</span></code>命令，会得到不同的结果</p>
-<img alt="../../_images/image-20220411185706602.png" src="../../_images/image-20220411185706602.png" />
+<p><img alt="image2" src="../../_images/image-20220411185706602.png" /></p>
 <p>可以看到，在执行滚动更新时，因为设置了maxUnavailable=1，表示最多只允许1个Pod不可用，所以会先终止1个Pod，使另外两个Pod处于运行状态。</p>
 <p>AVAILABLE为2，表示有两个Pod可用（其中有1个是新Pod）；</p>
 <p>UP-TO-DATE为2，表示有两个更新的Pod。</p>
 <p>由于设置了maxSurge=0，表示最多创建0个额外的Pod副本，更新过程中有1个正在创建的Pod以及两个正在运行的Pod（正好为3个），因此符合3个副本与0个额外副本的设置。此时READY为2/3，AVAILABLE为2，表示有两个旧Pod可用；UP-TO-DATE为1，表示有1个更新的Pod。</p>
 <p>最后，全部新Pod创建成功，代替旧Pod提供服务。整个升级过程如图所示，它保持平滑过渡，逐步替代，持续让Pod提供稳定服务。</p>
 <p>RollingUpdate方式</p>
-<img alt="../../_images/image-20220411185941806.png" src="../../_images/image-20220411185941806.png" />
+<p><img alt="image3" src="../../_images/image-20220411185941806.png" /></p>
 <p>最后升级后的deployment内容如下：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get deployment -o wide
 NAME                READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES        SELECTOR
@@ -699,7 +700,7 @@ REVISION  CHANGE-CAUSE
 <p>保存历史记录的本质是保留每次修改所创建的ReplicaSet控制器，而<strong>回滚的本质其实是切换到对应版本的ReplicaSet控制器</strong>。
 <em>Deployment控制器是通过ReplicaSet控制器来管理Pod的</em>。</p>
 <p>保存历史记录的本质</p>
-<img alt="../../_images/image-20220412092818385.png" src="../../_images/image-20220412092818385.png" />
+<p><img alt="image4" src="../../_images/image-20220412092818385.png" /></p>
 <p>可以通过以下命令查看这个Deployment控制器下所有的ReplicaSet控制器。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get rs -o wide
 NAME                           DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES        SELECTOR

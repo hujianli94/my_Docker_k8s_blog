@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Docker使用网络 &mdash; 运维开发修炼之路</title>
@@ -75,6 +75,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html#id7">指令        说明</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
 <li class="toctree-l2"><a class="reference internal" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html">Docker核心实现技术</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11.%E9%85%8D%E7%BD%AE%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">配置私有仓库</a></li>
@@ -177,7 +178,7 @@ run创建docker容器时，可以用–net选项指定容器的网络模式。Do
 <p>在容器中执行ifconfig命令查看网络环境时，显示的都是宿主机的信息。</p>
 <p>Host模式下的网络空间与宿主机相同，文件系统、进程列表等和宿主机隔离。</p>
 <p><code class="docutils literal notranslate"><span class="pre">host模式</span></code></p>
-<img alt="../_images/docker-host0001.png" src="../_images/docker-host0001.png" />
+<p><img alt="image0" src="../_images/docker-host0001.png" /></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># docker run -tid --net=host --name dockerhost1 ubantu</span>
 
 <span class="c1"># docker run -tid --net=host --name dockerhost2 ubantu</span>
@@ -193,19 +194,19 @@ run创建docker容器时，可以用–net选项指定容器的网络模式。Do
 <p>Container模式是一种特殊的网络模式，该模式下的容器使用其他容器的网络命名空间，隔离性处于bridge模式与Host模式之间。</p>
 <p>Container模式的容器可以通过localhost来与同一网络命名空间下的其他容器通信，传输效率高，可以节约一定数量的网络资源，但没有改变容器与外界的通信方式。</p>
 <p>Kubernetes下的Pod中的容器与其他容器都以Container模式共享这个基础设施容器的网络命名空间，互相以localhost访问，构成一个统一的整体。</p>
-<img alt="../_images/docker-contain0001.png" src="../_images/docker-contain0001.png" />
+<p><img alt="image1" src="../_images/docker-contain0001.png" /></p>
 </section>
 <section id="none">
 <h3><a class="toc-backref" href="#id16">1.3 None模式</a><a class="headerlink" href="#none" title="Permalink to this headline">¶</a></h3>
 <p>None模式docker容器拥有自己的Network
 Namespace空间，但并不为Docker容器进行网络配置，也就是说Docker容器没有网卡、IP、路由等信息，需要用户为Docker容器添加网卡、配置IP。</p>
-<img alt="../_images/docker-none0001.png" src="../_images/docker-none0001.png" />
+<p><img alt="image2" src="../_images/docker-none0001.png" /></p>
 </section>
 <section id="bridge">
 <h3><a class="toc-backref" href="#id17">1.4 Bridge模式</a><a class="headerlink" href="#bridge" title="Permalink to this headline">¶</a></h3>
 <p>Bridge模式是Docker默认的网络模式，也是开发常使用的网络模式，这种模式下，docker为容器创建独立的网络栈，保证容器内的进程使用独立的网络环境，实现容器之间、容器与宿主机之间的网络栈隔离。</p>
 <p>通过宿主机的Docker0网桥，容器可以与宿主机乃至外界进行网络通信。</p>
-<img alt="../_images/docker-bridge0001.png" src="../_images/docker-bridge0001.png" />
+<p><img alt="image3" src="../_images/docker-bridge0001.png" /></p>
 <p>常见的就是使用NAT，将宿主机的端口流量转发到容器端口上，这样外界就可以与容器中的进程进行通信了。</p>
 </section>
 </section>

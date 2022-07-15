@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>服务发现 &mdash; 运维开发修炼之路</title>
@@ -198,8 +198,8 @@ Web UI提供的页面内容。</p>
 <p>代码示例如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">node_targets</span><span class="p">]</span><span class="c1"># cat node.yml</span>
 <span class="o">-</span> <span class="n">targets</span><span class="p">:</span>
-  <span class="o">-</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.35</span><span class="p">:</span><span class="mi">9100</span>
-  <span class="o">-</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.25</span><span class="p">:</span><span class="mi">9100</span>
+  <span class="o">-</span> <span class="mf">192.168.1.35</span><span class="p">:</span><span class="mi">9100</span>
+  <span class="o">-</span> <span class="mf">192.168.1.25</span><span class="p">:</span><span class="mi">9100</span>
 </pre></div>
 </div>
 <p>2）修改prometheus.yml配置文件。</p>
@@ -245,10 +245,10 @@ Web UI提供的页面内容。</p>
 <p>在被监控主机上进行Consul安装操作：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">consul</span>
 <span class="o">//</span> <span class="n">处理压缩包</span>
-<span class="n">cat</span> <span class="n">consul_1</span><span class="o">.</span><span class="mf">4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span><span class="o">.</span><span class="n">zip</span><span class="o">.</span><span class="mi">00</span><span class="o">*</span> <span class="o">&gt;</span><span class="n">consul_1</span><span class="o">.</span><span class="mf">4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span><span class="o">.</span><span class="n">zip</span>
-<span class="n">unzip</span> <span class="n">consul_1</span><span class="o">.</span><span class="mf">4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span><span class="o">.</span><span class="n">zip</span>
-<span class="n">mv</span> <span class="n">consul_1</span><span class="o">.</span><span class="mf">4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span><span class="o">.</span><span class="mi">1</span> <span class="n">consul_1</span><span class="o">.</span><span class="mf">4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span>
-<span class="n">unzip</span> <span class="n">consul_1</span><span class="o">.</span><span class="mf">4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span> <span class="o">-</span><span class="n">d</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">consul</span><span class="o">/</span>
+<span class="n">cat</span> <span class="n">consul_1</span><span class="mf">.4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span><span class="o">.</span><span class="n">zip</span><span class="mf">.00</span><span class="o">*</span> <span class="o">&gt;</span><span class="n">consul_1</span><span class="mf">.4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span><span class="o">.</span><span class="n">zip</span>
+<span class="n">unzip</span> <span class="n">consul_1</span><span class="mf">.4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span><span class="o">.</span><span class="n">zip</span>
+<span class="n">mv</span> <span class="n">consul_1</span><span class="mf">.4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span><span class="mf">.1</span> <span class="n">consul_1</span><span class="mf">.4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span>
+<span class="n">unzip</span> <span class="n">consul_1</span><span class="mf">.4.0</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span> <span class="o">-</span><span class="n">d</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">consul</span><span class="o">/</span>
 
 <span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">consul</span><span class="p">]</span><span class="c1"># ./consul --help</span>
 </pre></div>
@@ -299,19 +299,19 @@ bootstrap = true: do not enable unless necessary
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">查看集群成员</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="o">~</span><span class="p">]</span><span class="c1"># consul members</span>
 <span class="n">Node</span>    <span class="n">Address</span>            <span class="n">Status</span>  <span class="n">Type</span>    <span class="n">Build</span>  <span class="n">Protocol</span>  <span class="n">DC</span>   <span class="n">Segment</span>
-<span class="n">test</span>    <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.35</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.4</span><span class="o">.</span><span class="mi">0</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
+<span class="n">test</span>    <span class="mf">192.168.1.35</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.4.0</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p><strong>client模式加入集群</strong></p>
 <p>工作节点1</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">d</span> <span class="o">--</span><span class="n">name</span><span class="o">=</span><span class="n">consul</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8301</span><span class="p">:</span><span class="mi">8301</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8301</span><span class="p">:</span><span class="mi">8301</span><span class="o">/</span><span class="n">udp</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8500</span><span class="p">:</span><span class="mi">8500</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8600</span><span class="p">:</span><span class="mi">8600</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8600</span><span class="p">:</span><span class="mi">8600</span><span class="o">/</span><span class="n">udp</span> <span class="o">--</span><span class="n">restart</span><span class="o">=</span><span class="n">always</span> <span class="n">progrium</span><span class="o">/</span><span class="n">consul</span> <span class="o">-</span><span class="n">join</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.35</span> <span class="o">-</span><span class="n">advertise</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.25</span> <span class="o">-</span><span class="n">client</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span> <span class="o">-</span><span class="n">node</span><span class="o">=</span><span class="n">node01</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">d</span> <span class="o">--</span><span class="n">name</span><span class="o">=</span><span class="n">consul</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8301</span><span class="p">:</span><span class="mi">8301</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8301</span><span class="p">:</span><span class="mi">8301</span><span class="o">/</span><span class="n">udp</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8500</span><span class="p">:</span><span class="mi">8500</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8600</span><span class="p">:</span><span class="mi">8600</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8600</span><span class="p">:</span><span class="mi">8600</span><span class="o">/</span><span class="n">udp</span> <span class="o">--</span><span class="n">restart</span><span class="o">=</span><span class="n">always</span> <span class="n">progrium</span><span class="o">/</span><span class="n">consul</span> <span class="o">-</span><span class="n">join</span> <span class="mf">192.168.1.35</span> <span class="o">-</span><span class="n">advertise</span> <span class="mf">192.168.1.25</span> <span class="o">-</span><span class="n">client</span> <span class="mf">0.0.0.0</span> <span class="o">-</span><span class="n">node</span><span class="o">=</span><span class="n">node01</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">查看集群成员</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="o">~</span><span class="p">]</span><span class="c1"># consul members</span>
 <span class="n">Node</span>      <span class="n">Address</span>            <span class="n">Status</span>  <span class="n">Type</span>    <span class="n">Build</span>  <span class="n">Protocol</span>  <span class="n">DC</span>   <span class="n">Segment</span>
-<span class="n">server</span><span class="o">-</span><span class="mi">1</span>  <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.35</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.4</span><span class="o">.</span><span class="mi">0</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
-<span class="n">node01</span>    <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.25</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">client</span>  <span class="mf">0.5</span><span class="o">.</span><span class="mi">2</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="n">default</span><span class="o">&gt;</span>
+<span class="n">server</span><span class="o">-</span><span class="mi">1</span>  <span class="mf">192.168.1.35</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.4.0</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
+<span class="n">node01</span>    <span class="mf">192.168.1.25</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">client</span>  <span class="mf">0.5.2</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="n">default</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>参考文献：</p>
@@ -320,7 +320,7 @@ bootstrap = true: do not enable unless necessary
 <section id="dockerconsul">
 <h5>2.1.1.2 Docker搭建consul集群<a class="headerlink" href="#dockerconsul" title="Permalink to this headline">¶</a></h5>
 <p>1.启动第一个consul服务：consul1</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">--</span><span class="n">name</span> <span class="n">consul1</span> <span class="o">-</span><span class="n">d</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8500</span><span class="p">:</span><span class="mi">8500</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8300</span><span class="p">:</span><span class="mi">8300</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8301</span><span class="p">:</span><span class="mi">8301</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8302</span><span class="p">:</span><span class="mi">8302</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8600</span><span class="p">:</span><span class="mi">8600</span> <span class="n">consul</span><span class="p">:</span><span class="mf">1.2</span><span class="o">.</span><span class="mi">2</span> <span class="n">agent</span> <span class="o">-</span><span class="n">server</span> <span class="o">-</span><span class="n">bootstrap</span><span class="o">-</span><span class="n">expect</span> <span class="mi">2</span> <span class="o">-</span><span class="n">ui</span> <span class="o">-</span><span class="n">bind</span><span class="o">=</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span> <span class="o">-</span><span class="n">client</span><span class="o">=</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">--</span><span class="n">name</span> <span class="n">consul1</span> <span class="o">-</span><span class="n">d</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8500</span><span class="p">:</span><span class="mi">8500</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8300</span><span class="p">:</span><span class="mi">8300</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8301</span><span class="p">:</span><span class="mi">8301</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8302</span><span class="p">:</span><span class="mi">8302</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8600</span><span class="p">:</span><span class="mi">8600</span> <span class="n">consul</span><span class="p">:</span><span class="mf">1.2.2</span> <span class="n">agent</span> <span class="o">-</span><span class="n">server</span> <span class="o">-</span><span class="n">bootstrap</span><span class="o">-</span><span class="n">expect</span> <span class="mi">2</span> <span class="o">-</span><span class="n">ui</span> <span class="o">-</span><span class="n">bind</span><span class="o">=</span><span class="mf">0.0.0.0</span> <span class="o">-</span><span class="n">client</span><span class="o">=</span><span class="mf">0.0.0.0</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>8500 http 端口，用于 http 接口和 web ui
@@ -336,15 +336,15 @@ bootstrap = true: do not enable unless necessary
 </div>
 <p><strong>获取 consul server1 的 ip 地址</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">consul</span><span class="p">]</span><span class="c1"># docker inspect --format &#39;{{ .NetworkSettings.IPAddress }}&#39; consul1</span>
-<span class="mf">172.17</span><span class="o">.</span><span class="mf">0.2</span>
+<span class="mf">172.17.0.2</span>
 </pre></div>
 </div>
 <p>2.启动第二个consul服务：consul2， 并加入consul1（使用join命令）</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">--</span><span class="n">name</span> <span class="n">consul2</span> <span class="o">-</span><span class="n">d</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8501</span><span class="p">:</span><span class="mi">8500</span> <span class="n">consul</span> <span class="n">agent</span> <span class="o">-</span><span class="n">server</span> <span class="o">-</span><span class="n">ui</span> <span class="o">-</span><span class="n">bind</span><span class="o">=</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span> <span class="o">-</span><span class="n">client</span><span class="o">=</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span> <span class="o">-</span><span class="n">join</span> <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.2</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">--</span><span class="n">name</span> <span class="n">consul2</span> <span class="o">-</span><span class="n">d</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8501</span><span class="p">:</span><span class="mi">8500</span> <span class="n">consul</span> <span class="n">agent</span> <span class="o">-</span><span class="n">server</span> <span class="o">-</span><span class="n">ui</span> <span class="o">-</span><span class="n">bind</span><span class="o">=</span><span class="mf">0.0.0.0</span> <span class="o">-</span><span class="n">client</span><span class="o">=</span><span class="mf">0.0.0.0</span> <span class="o">-</span><span class="n">join</span> <span class="mf">172.17.0.2</span>
 </pre></div>
 </div>
 <p>3.启动第三个consul服务：consul3，并加入consul1</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">--</span><span class="n">name</span> <span class="n">consul3</span> <span class="o">-</span><span class="n">d</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8502</span><span class="p">:</span><span class="mi">8500</span> <span class="n">consul</span> <span class="n">agent</span> <span class="o">-</span><span class="n">server</span> <span class="o">-</span><span class="n">ui</span> <span class="o">-</span><span class="n">bind</span><span class="o">=</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span> <span class="o">-</span><span class="n">client</span><span class="o">=</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span> <span class="o">-</span><span class="n">join</span> <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.2</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">--</span><span class="n">name</span> <span class="n">consul3</span> <span class="o">-</span><span class="n">d</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8502</span><span class="p">:</span><span class="mi">8500</span> <span class="n">consul</span> <span class="n">agent</span> <span class="o">-</span><span class="n">server</span> <span class="o">-</span><span class="n">ui</span> <span class="o">-</span><span class="n">bind</span><span class="o">=</span><span class="mf">0.0.0.0</span> <span class="o">-</span><span class="n">client</span><span class="o">=</span><span class="mf">0.0.0.0</span> <span class="o">-</span><span class="n">join</span> <span class="mf">172.17.0.2</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
@@ -352,9 +352,9 @@ bootstrap = true: do not enable unless necessary
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="n">consul</span><span class="p">]</span><span class="c1"># docker exec -it consul1 consul members</span>
 <span class="n">Node</span>          <span class="n">Address</span>          <span class="n">Status</span>  <span class="n">Type</span>    <span class="n">Build</span>  <span class="n">Protocol</span>  <span class="n">DC</span>   <span class="n">Segment</span>
-<span class="mi">229</span><span class="n">dd9e105a4</span>  <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.2</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.2</span><span class="o">.</span><span class="mi">2</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
-<span class="mi">6</span><span class="n">f62c9f56b1a</span>  <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.4</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.9</span><span class="o">.</span><span class="mi">1</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
-<span class="n">a7ecac245c66</span>  <span class="mf">172.17</span><span class="o">.</span><span class="mf">0.3</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.9</span><span class="o">.</span><span class="mi">1</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
+<span class="mi">229</span><span class="n">dd9e105a4</span>  <span class="mf">172.17.0.2</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.2.2</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
+<span class="mi">6</span><span class="n">f62c9f56b1a</span>  <span class="mf">172.17.0.4</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.9.1</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
+<span class="n">a7ecac245c66</span>  <span class="mf">172.17.0.3</span><span class="p">:</span><span class="mi">8301</span>  <span class="n">alive</span>   <span class="n">server</span>  <span class="mf">1.9.1</span>  <span class="mi">2</span>         <span class="n">dc1</span>  <span class="o">&lt;</span><span class="nb">all</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p><strong>docker-compose部署consul集群</strong></p>
@@ -446,7 +446,7 @@ consul-node2    <span class="m">172</span>.20.0.6:8301  alive   client  <span cl
 <p>访问测试</p>
 <p>注意服务器端口开放情况与防火墙拦截</p>
 <p><a class="reference external" href="http://192.168.1.133:8500/ui">http://192.168.1.133:8500/ui</a></p>
-<img alt="../_images/image-20220511144155346.png" src="../_images/image-20220511144155346.png" />
+<p><img alt="image0" src="../_images/image-20220511144155346.png" /></p>
 </section>
 </section>
 <section id="id6">
@@ -478,7 +478,7 @@ API服务注册方法，即在启动后由服务自身通过调用API进行自�
 </div>
 <p>提一下，如果要注销掉某个服务，可以通过如下 API
 命令操作，例如注销上边添加的 <code class="docutils literal notranslate"><span class="pre">node-exporter</span></code> 服务</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">PUT</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.133</span><span class="p">:</span><span class="mi">8500</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">agent</span><span class="o">/</span><span class="n">service</span><span class="o">/</span><span class="n">deregister</span><span class="o">/</span><span class="n">vm</span><span class="o">-</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.133</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">PUT</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.1.133</span><span class="p">:</span><span class="mi">8500</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">agent</span><span class="o">/</span><span class="n">service</span><span class="o">/</span><span class="n">deregister</span><span class="o">/</span><span class="n">vm</span><span class="o">-</span><span class="mf">192.168.1.133</span>
 </pre></div>
 </div>
 </section>
@@ -502,11 +502,11 @@ API服务注册方法，即在启动后由服务自身通过调用API进行自�
 </pre></div>
 </div>
 <p>配置完后，热加载prometheus的配置文件</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
 </pre></div>
 </div>
 <p>查看http://192.168.1.37:9090/targets界面信息</p>
-<img alt="../_images/consul_001.png" src="../_images/consul_001.png" />
+<p><img alt="image1" src="../_images/consul_001.png" /></p>
 <p>进行服务注册</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">PUT</span> <span class="o">-</span><span class="n">d</span> <span class="s1">&#39;{</span>
   <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;node-exporter&quot;</span><span class="p">,</span>
@@ -525,8 +525,8 @@ API服务注册方法，即在启动后由服务自身通过调用API进行自�
 <span class="p">}</span><span class="s1">&#39;  http://192.168.1.35:8500/v1/agent/service/register</span>
 </pre></div>
 </div>
-<img alt="../_images/consul_002.png" src="../_images/consul_002.png" />
-<img alt="../_images/consul_003.png" src="../_images/consul_003.png" />
+<p><img alt="image2" src="../_images/consul_002.png" /></p>
+<p><img alt="image3" src="../_images/consul_003.png" /></p>
 <p><strong>Prometheus配置consul服务发现</strong></p>
 <p>consul 可以使用的元标签：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>__meta_consul_address：目标的地址
@@ -581,7 +581,7 @@ resolver从DNS服务器查询到一个地址列表，根据优先级和权重，
 
 <span class="c1">#域名与IP映射</span>
 <span class="c1"># 添加test0解析</span>
-<span class="n">address</span><span class="o">=/</span><span class="n">test0</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.46</span>
+<span class="n">address</span><span class="o">=/</span><span class="n">test0</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="mf">192.168.1.46</span>
 
 <span class="c1"># 添加 mini SRV 记录</span>
 <span class="n">srv</span><span class="o">-</span><span class="n">host</span> <span class="o">=</span><span class="n">_prometheus</span><span class="o">.</span><span class="n">_tcp</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="p">,</span><span class="n">test0</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="p">,</span><span class="mi">9100</span>
@@ -606,7 +606,7 @@ resolver从DNS服务器查询到一个地址列表，根据优先级和权重，
 <p>发现配置，首先你内网需要有一个DNS服务器，或者直接自行配置解析记录即可，我这里使用的dnsmasq服务在内网测试</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#域名与IP映射</span>
 <span class="c1"># 添加test0解析</span>
-<span class="n">address</span><span class="o">=/</span><span class="n">test0</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.46</span>
+<span class="n">address</span><span class="o">=/</span><span class="n">test0</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="mf">192.168.1.46</span>
 </pre></div>
 </div>
 <p>Prometheus配置</p>
@@ -619,7 +619,7 @@ resolver从DNS服务器查询到一个地址列表，根据优先级和权重，
 </pre></div>
 </div>
 <p>重启Prometheus 在targets中可以看到dns-a记录和SRV 记录</p>
-<img alt="../_images/prometheus_dns01.png" src="../_images/prometheus_dns01.png" />
+<p><img alt="image4" src="../_images/prometheus_dns01.png" /></p>
 <p>参考文献：</p>
 <p><a class="reference external" href="https://www.jianshu.com/p/82547be86ed0">https://www.jianshu.com/p/82547be86ed0</a></p>
 </section>

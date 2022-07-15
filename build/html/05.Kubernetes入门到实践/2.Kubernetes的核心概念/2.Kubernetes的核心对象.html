@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kubernetes的核心对象 &mdash; 运维开发修炼之路</title>
@@ -129,14 +129,14 @@
 <section id="kubernetes">
 <h1><a class="toc-backref" href="#id7">Kubernetes的核心对象</a><a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h1>
 <p>Kubernetes的基本对象模型</p>
-<img alt="../../_images/image-20220403155842930.png" src="../../_images/image-20220403155842930.png" />
+<p><img alt="image0" src="../../_images/image-20220403155842930.png" /></p>
 <section id="pod">
 <h2><a class="toc-backref" href="#id8">1.Pod</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h2>
 <p>Pod是Kubernetes处理的最基本单元。容器本身并不会直接分配到主机上，而是会封装到名为Pod的对象中。</p>
 <p>Pod通常表示单个应用程序，由一个或多个关系紧密的容器构成，如图所示。这些容器拥有同样的生命周期，作为一个整体一起编排到Node上。</p>
 <p>这些容器共享环境、存储卷和IP空间。尽管Pod基于一个或多个容器，但应将Pod视作单一的整体、单独的应用程序。Kubernetes以Pod为最小单位进行调度、伸缩并共享资源、管理生命周期。</p>
 <p>Pod容器的构成</p>
-<img alt="../../_images/image-20220403160028910.png" src="../../_images/image-20220403160028910.png" />
+<p><img alt="image1" src="../../_images/image-20220403160028910.png" /></p>
 <p>一般来说，用户不应自行管理Pod，因为Pod并没有提供应用程序通常会用到的一些特性，如复杂的生命周期管理及动态伸缩。</p>
 <p>建议用户使用将Pod或Pod模板作为基本组件的更高级别对象，这些对象会拥有更多的特性。</p>
 <section id="id1">
@@ -171,7 +171,7 @@ Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增
 <p>只要简单更改Deployment控制器的配置文件，Kubernetes就会自动调节ReplicaSet控制器，管理应用程序不同版本之间的切换，还可
 以实现自动维护事件历史记录及自动撤销功能，如图2-7所示。正是由于这些强大的功能，Deployment控制器可能是使用频率最高的对象。</p>
 <p>Deployment控制器</p>
-<img alt="../../_images/image-20220403174443747.png" src="../../_images/image-20220403174443747.png" />
+<p><img alt="image2" src="../../_images/image-20220403174443747.png" /></p>
 </section>
 <section id="statefulset">
 <h4>3.StatefulSet控制器<a class="headerlink" href="#statefulset" title="Permalink to this headline">¶</a></h4>
@@ -207,11 +207,11 @@ Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增
 <p>内部使用者只需要知道Service组件提供的稳定端点即可进行访问。另外，Service组件抽象可以根据需要来伸缩或替换后端的
 工作单元，无论Service组件具体路由到哪个Pod，其IP地址都保持稳定。通过Service组件，可以轻松获得服务发现的能力。</p>
 <p>通过Service组件访问Pod</p>
-<img alt="../../_images/image-20220403180459469.png" src="../../_images/image-20220403180459469.png" />
+<p><img alt="image3" src="../../_images/image-20220403180459469.png" /></p>
 <p>还可以通过Ingress来整合Service组件。Ingress并不是某种服务类型，可以充当多个Service组件的统一入口。</p>
 <p>Ingress支持将路由规则合并到单个资源中，可以通过同一域名或IP地址下不同的路径来访问不同的Service组件。</p>
 <p>通过Ingress整合Service组件</p>
-<img alt="../../_images/image-20220403180729188.png" src="../../_images/image-20220403180729188.png" />
+<p><img alt="image4" src="../../_images/image-20220403180729188.png" /></p>
 </section>
 </section>
 <section id="id3">
@@ -220,7 +220,7 @@ Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增
 抽象，允许Pod中的所有容器共享数据，并在Pod终止之前一直保持可用，如图2-10所示。</p>
 <p>这意味着紧密耦合的Pod可以轻松共享文件而不需要复杂的外部机制，Pod中的容器故障不会影响对共享文件的访问。
 Pod终止后，共享的存储卷会被销毁，因此对于真正需要持久化的数据来说，这并非一个好的解决方案</p>
-<img alt="../../_images/image-20220403180841162.png" src="../../_images/image-20220403180841162.png" />
+<p><img alt="image5" src="../../_images/image-20220403180841162.png" /></p>
 <p>持久存储卷（persistent
 volume）是一种更健壮的抽象机制，不依赖于Pod的生命周期。持久存储卷允许管理员为集群配置存储资源，
 用户可以为正在运行的Pod请求和声明存储资源。</p>
@@ -234,7 +234,7 @@ volume）是一种更健壮的抽象机制，不依赖于Pod的生命周期。�
 <p>命名空间（namespace）的主要作用是对Kubernetes集群资源进行划分。</p>
 <p>这种划分并非物理划分而是逻辑划分，用于实现多租户的资源隔离.</p>
 <p>使用命名空间隔离资源</p>
-<img alt="../../_images/image-20220403181143488.png" src="../../_images/image-20220403181143488.png" />
+<p><img alt="image6" src="../../_images/image-20220403181143488.png" /></p>
 </section>
 <section id="id6">
 <h3><a class="toc-backref" href="#id15">4.2 标签和注解</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>

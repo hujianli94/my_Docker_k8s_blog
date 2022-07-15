@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Job与CronJob控制器 &mdash; 运维开发修炼之路</title>
@@ -61,7 +61,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="4.StatefulSet%E6%8E%A7%E5%88%B6%E5%99%A8.html">StatefulSet控制器</a></li>
-<li class="toctree-l3"><a class="reference internal" href="5.%E5%85%B6%E4%BB%96%E6%8E%A7%E5%88%B6%E5%99%A8.html">其他控制器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="5.HPA.html">HPA 控制器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6.%E5%85%B6%E4%BB%96%E6%8E%A7%E5%88%B6%E5%99%A8.html">其他控制器</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
@@ -290,7 +291,7 @@ Job也会越多，人工删除会略显麻烦。有没有自动删除的办法�
 <span class="n">containers</span><span class="p">:</span>
 <span class="o">-</span> <span class="n">command</span><span class="p">:</span>
 <span class="o">-</span> <span class="n">kube</span><span class="o">-</span><span class="n">scheduler</span>
-<span class="o">-</span> <span class="o">--</span><span class="n">address</span><span class="o">=</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>
+<span class="o">-</span> <span class="o">--</span><span class="n">address</span><span class="o">=</span><span class="mf">127.0.0.1</span>
 <span class="o">-</span> <span class="o">--</span><span class="n">kubeconfig</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">Kubernetes</span><span class="o">/</span><span class="n">scheduler</span><span class="o">.</span><span class="n">conf</span>
 <span class="o">-</span> <span class="o">--</span><span class="n">leader</span><span class="o">-</span><span class="n">elect</span><span class="o">=</span><span class="n">true</span>
 <span class="o">-</span> <span class="o">--</span><span class="n">feature</span><span class="o">-</span><span class="n">gates</span><span class="o">=</span><span class="n">TTLAfterFinished</span><span class="o">=</span><span class="n">true</span>
@@ -344,11 +345,11 @@ examplejobv2   <span class="m">3</span>/5           2m9s       3m5s
 <p>这里也可以看出，Job的执行是不会区分机器的。与Deployment控制器一样，Job会根据调度规则动态分配到各个Node上并执行.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">get</span> <span class="n">pod</span> <span class="o">-</span><span class="n">o</span> <span class="n">wide</span>
 <span class="n">NAME</span>                 <span class="n">READY</span>   <span class="n">STATUS</span>      <span class="n">RESTARTS</span>   <span class="n">AGE</span>     <span class="n">IP</span>           <span class="n">NODE</span>            <span class="n">NOMINATED</span> <span class="n">NODE</span>   <span class="n">READINESS</span> <span class="n">GATES</span>
-<span class="n">examplejobv2</span><span class="o">-</span><span class="mi">6</span><span class="n">mbqr</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">3</span><span class="n">m17s</span>   <span class="mf">10.0</span><span class="o">.</span><span class="mf">6.186</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">examplejobv2</span><span class="o">-</span><span class="n">h4vzz</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">m11s</span>   <span class="mf">10.0</span><span class="o">.</span><span class="mf">6.103</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">examplejobv2</span><span class="o">-</span><span class="n">l9xwx</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">99</span><span class="n">s</span>     <span class="mf">10.0</span><span class="o">.</span><span class="mf">6.228</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">examplejobv2</span><span class="o">-</span><span class="n">ltchr</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">m43s</span>   <span class="mf">10.0</span><span class="o">.</span><span class="mf">6.170</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">examplejobv2</span><span class="o">-</span><span class="n">vwbzd</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">66</span><span class="n">s</span>     <span class="mf">10.0</span><span class="o">.</span><span class="mf">6.66</span>    <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">examplejobv2</span><span class="o">-</span><span class="mi">6</span><span class="n">mbqr</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">3</span><span class="n">m17s</span>   <span class="mf">10.0.6.186</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">examplejobv2</span><span class="o">-</span><span class="n">h4vzz</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">m11s</span>   <span class="mf">10.0.6.103</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">examplejobv2</span><span class="o">-</span><span class="n">l9xwx</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">99</span><span class="n">s</span>     <span class="mf">10.0.6.228</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">examplejobv2</span><span class="o">-</span><span class="n">ltchr</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">m43s</span>   <span class="mf">10.0.6.170</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">examplejobv2</span><span class="o">-</span><span class="n">vwbzd</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">66</span><span class="n">s</span>     <span class="mf">10.0.6.66</span>    <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">job</span><span class="o">-</span><span class="n">cronjob</span><span class="p">]</span><span class="c1"># kubectl get jobs</span>
 <span class="n">NAME</span>           <span class="n">COMPLETIONS</span>   <span class="n">DURATION</span>   <span class="n">AGE</span>
 <span class="n">examplejobv2</span>   <span class="mi">5</span><span class="o">/</span><span class="mi">5</span>           <span class="mi">2</span><span class="n">m43s</span>      <span class="mi">3</span><span class="n">m19s</span>
@@ -386,7 +387,7 @@ spec.completions属性来指定总任务的执行次数。</p>
 </div>
 <p>一开始会创建4个Pod并同时运行，然后待某一Pod运行结束后，继续创建后续的Pod，保持4个Pod同时处于Running（或
 ContainerCreating）状态，直到达到设置的执行总数（11个）。</p>
-<img alt="../../_images/image-20220412105720335.png" src="../../_images/image-20220412105720335.png" />
+<p><img alt="image0" src="../../_images/image-20220412105720335.png" /></p>
 </section>
 </section>
 <section id="id4">
@@ -426,7 +427,7 @@ BackOff），然后不断重启，RESTARTS的值不断累加</p>
 <p>之前已经提到过Pod失败时的<strong>递增延迟重启策略</strong>，它将会以递增延迟方式尝试重新启动（10s，20s，40s，…），上限时间为6min。当延迟增加到了6min后，就相当于要再等6min才会重启。</p>
 <p>Job模板中的属性spec.backoffLimit表示重试次数的上限，默认为6次。如果6次以内没有出现失败，则会重置计数。但如果达到
 重试次数的上限，则这个Job对应的容器将会被终止并删除。</p>
-<img alt="../../_images/image-20220412182246885.png" src="../../_images/image-20220412182246885.png" />
+<p><img alt="image1" src="../../_images/image-20220412182246885.png" /></p>
 </section>
 <section id="never">
 <h3><a class="toc-backref" href="#id14">2.2 Never</a><a class="headerlink" href="#never" title="Permalink to this headline">¶</a></h3>
@@ -455,7 +456,7 @@ BackOff），然后不断重启，RESTARTS的值不断累加</p>
 </div>
 <p>可以看到，因为Pod不会重新启动（restartPolicy字段设置为Never），且Job的任务并没有成功执行，所以J<em>ob会不停地创建新</em>
 <em>Pod，直到Pod成功执行。</em></p>
-<img alt="../../_images/image-20220412182351834.png" src="../../_images/image-20220412182351834.png" />
+<p><img alt="image2" src="../../_images/image-20220412182351834.png" /></p>
 <p>相对于OnFailure，推荐使用Never，因为OnFailure在重试一定次数后会删除Pod，导致日志或Pod中记录的其他信息丢失，不利于排查
 问题。而Never会保留每次Pod启动后的现场，使排查问题更加容易。</p>
 <p>除了上述明显的异常处理（如执行失败、执行中断等）之外，Job的执行过程中还有一类很难以察觉的异常。比如，任务中出现死循环，表现为一直卡在那里一动不动，看起来一直处于Running状态，但怎么执行都不会有结果。</p>
@@ -489,7 +490,7 @@ BackOff），然后不断重启，RESTARTS的值不断累加</p>
 </div>
 <p>可以看到，因为有运行时间限制，所以在最开始的10s内，Pod处于运行状态，10s后Pod就被终止，直到最后被删除（不管
 restartPolicy字段设置为Never还是OnFailure）</p>
-<img alt="../../_images/image-20220412182825666.png" src="../../_images/image-20220412182825666.png" />
+<p><img alt="image3" src="../../_images/image-20220412182825666.png" /></p>
 </section>
 </section>
 <section id="cronjob">

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jenkins &mdash; 运维开发修炼之路</title>
@@ -71,6 +71,7 @@
 <li class="toctree-l3"><a class="reference internal" href="2.Gitlab.html">Gitlab</a></li>
 <li class="toctree-l3"><a class="reference internal" href="3.Harbor.html">Harbor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="4.Tekton.html">Tekton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="5.k9s%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html">k9s集群管理工具</a></li>
 </ul>
 </li>
 </ul>
@@ -412,16 +413,16 @@ Jenkins 应用以前启动起来了。</p>
 <p>然后我们可以通过 IngressRoute 中定义的域名
 <code class="docutils literal notranslate"><span class="pre">jenkins.k8s.local</span></code>(需要做 DNS 解析或者在本地 <code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code>
 中添加映射)来访问 jenkins 服务：</p>
-<img alt="../../_images/image-20220526094058494.png" src="../../_images/image-20220526094058494.png" />
+<p><img alt="image0" src="../../_images/image-20220526094058494.png" /></p>
 <p>然后可以执行下面的命令获取解锁的管理员密码：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl <span class="nb">exec</span> -it jenkins-5b957d4b8f-t22gp -c jenkins -n kube-ops -- cat /var/jenkins_home/secrets/initialAdminPassword
 35b083de1d25409eaef57255e0da481a   <span class="c1"># jenkins启动日志里面也有</span>
 </pre></div>
 </div>
 <p>然后选择安装推荐的插件即可，由于我们已经做了插件的反向代理了，所以理论上安装速度会比较快</p>
-<img alt="../../_images/image-20220526094129373.png" src="../../_images/image-20220526094129373.png" />
+<p><img alt="image1" src="../../_images/image-20220526094129373.png" /></p>
 <p>安装完成后添加管理员帐号即可进入到 jenkins 主界面：</p>
-<img alt="../../_images/image-20220526094150742.png" src="../../_images/image-20220526094150742.png" />
+<p><img alt="image2" src="../../_images/image-20220526094150742.png" /></p>
 </section>
 <section id="id2">
 <h2><a class="toc-backref" href="#id9">2.架构</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
@@ -443,7 +444,7 @@ Jenkins 集群来搭建符合需求的 CI/CD 流程，然而传统的 Jenkins Sl
 流程，而 Docker 虚拟化容器技术能很好的解决这个痛点，又特别是在
 Kubernetes 集群环境下面能够更好来解决上面的问题，下图是基于 Kubernetes
 搭建 Jenkins 集群的简单示意图：</p>
-<img alt="../../_images/image-20220526094345086.png" src="../../_images/image-20220526094345086.png" />
+<p><img alt="image3" src="../../_images/image-20220526094345086.png" /></p>
 <p>从图上可以看到 <code class="docutils literal notranslate"><span class="pre">Jenkins</span> <span class="pre">Master</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Jenkins</span> <span class="pre">Slave</span></code> 以 Pod 形式运行在
 Kubernetes 集群的 Node 上，Master
 运行在其中一个节点，并且将其配置数据存储到一个 Volume 上去，Slave
@@ -473,15 +474,15 @@ Kubernetes 会根据每个资源的使用情况，动态分配 Slave
 <p>第1步. 我们需要安装 <a class="reference external" href="https://github.com/jenkinsci/kubernetes-plugin">kubernetes
 插件</a>， 点击 Manage
 Jenkins -&gt; Manage Plugins -&gt; Available -&gt; Kubernetes 勾选安装即可。</p>
-<img alt="../../_images/image-20220526094643977.png" src="../../_images/image-20220526094643977.png" />
+<p><img alt="image4" src="../../_images/image-20220526094643977.png" /></p>
 <p>第2步. 安装完毕后，点击 Manage Jenkins —&gt; Configure System —&gt;
 (拖到最下方)，如果有 <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">cloud</span></code> —&gt; 选择 Kubernetes，然后填写
 Kubernetes 和 Jenkins 配置信息即可，但是最新版本的 Kubernetes
 插件将配置单独放置到了一个页面中：</p>
-<img alt="../../_images/image-20220526094711782.png" src="../../_images/image-20220526094711782.png" />
+<p><img alt="image5" src="../../_images/image-20220526094711782.png" /></p>
 <p>这个时候需要点击 <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">separate</span> <span class="pre">configuration</span> <span class="pre">page</span></code> 这个链接，跳转到
 <code class="docutils literal notranslate"><span class="pre">Configure</span> <span class="pre">Cloud</span></code> 页面：</p>
-<img alt="../../_images/image-20220526094735008.png" src="../../_images/image-20220526094735008.png" />
+<p><img alt="image6" src="../../_images/image-20220526094735008.png" /></p>
 <p>在该页面我们可以点击 <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">cloud</span></code> -&gt; 选择 Kubernetes，然后填写
 Kubernetes 和 Jenkins 配置信息：</p>
 <figure class="align-default" id="id6">
@@ -501,7 +502,7 @@ jenkins 的服务名填写。</p>
 Job 的时候需要用到该值，然后我们这里使用的是 <code class="docutils literal notranslate"><span class="pre">cnych/jenkins:jnlp6</span></code>
 这个镜像，这个镜像是在官方的 jnlp 镜像基础上定制的，加入了
 docker、kubectl 等一些实用的工具。</p>
-<img alt="../../_images/image-20220526100539223.png" src="../../_images/image-20220526100539223.png" />
+<p><img alt="image7" src="../../_images/image-20220526100539223.png" /></p>
 <p>:warning:<strong>注意</strong>：</p>
 <p>容器的名称必须是 jnlp，这是默认拉起的容器，另外需要将 <code class="docutils literal notranslate"><span class="pre">Command</span> <span class="pre">to</span> <span class="pre">run</span></code>
 和 <code class="docutils literal notranslate"><span class="pre">Arguments</span> <span class="pre">to</span> <span class="pre">pass</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">command</span></code> 的值都删除掉，否则会失败。</p>
@@ -513,11 +514,11 @@ Docker，这就是大家说的 <code class="docutils literal notranslate"><span 
 目录下面这是为了让我们能够在 Pod 的容器中能够使用 <code class="docutils literal notranslate"><span class="pre">kubectl</span></code>
 工具来访问我们的 Kubernetes 集群，方便我们后面在 <code class="docutils literal notranslate"><span class="pre">Slave</span> <span class="pre">Pod</span></code> 部署
 Kubernetes 应用。</p>
-<img alt="../../_images/image-20220526103027808.png" src="../../_images/image-20220526103027808.png" />
+<p><img alt="image8" src="../../_images/image-20220526103027808.png" /></p>
 <p>另外如果在配置了后运行 Slave Pod 的时候出现了权限问题，这是因为 Jenkins
 Slave Pod 中没有配置权限，所以需要配置上 ServiceAccount，在 Slave Pod
 配置的地方点击下面的高级，添加上对应的 ServiceAccount 即可：</p>
-<img alt="../../_images/image-20220526103054666.png" src="../../_images/image-20220526103054666.png" />
+<p><img alt="image9" src="../../_images/image-20220526103054666.png" /></p>
 <p>到这里我们的 Kubernetes 插件就算配置完成了。</p>
 </section>
 <section id="id4">
@@ -529,9 +530,9 @@ Slave Pod 中没有配置权限，所以需要配置上 ServiceAccount，在 Sla
 <code class="docutils literal notranslate"><span class="pre">Freestyle</span> <span class="pre">project</span></code> 类型的任务，注意在下面的 <code class="docutils literal notranslate"><span class="pre">Label</span> <span class="pre">Expression</span></code>
 这里要填入 <code class="docutils literal notranslate"><span class="pre">ydzs-jnlp</span></code>，就是前面我们配置的 Slave Pod 中的
 Label，这两个地方必须保持一致：</p>
-<img alt="../../_images/image-20220526103302267.png" src="../../_images/image-20220526103302267.png" />
+<p><img alt="image10" src="../../_images/image-20220526103302267.png" /></p>
 <p>然后往下拉，在 Build 区域选择<code class="docutils literal notranslate"><span class="pre">Execute</span> <span class="pre">shell</span></code></p>
-<img alt="../../_images/image-20220526103326369.png" src="../../_images/image-20220526103326369.png" />
+<p><img alt="image11" src="../../_images/image-20220526103326369.png" /></p>
 <p>然后输入我们测试命令</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;测试 Kubernetes 动态生成 jenkins slave&quot;</span>
 <span class="nb">echo</span> <span class="s2">&quot;==============docker in docker===========&quot;</span>
@@ -542,7 +543,7 @@ kubectl get pods
 </pre></div>
 </div>
 <p>最后点击保存</p>
-<img alt="../../_images/image-20220526103909603.png" src="../../_images/image-20220526103909603.png" />
+<p><img alt="image12" src="../../_images/image-20220526103909603.png" /></p>
 <p>现在我们直接在页面点击左侧的 <code class="docutils literal notranslate"><span class="pre">Build</span> <span class="pre">now</span></code> 触发构建即可，然后观察
 Kubernetes 集群中 Pod 的变化：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods -n kube-ops
@@ -555,7 +556,7 @@ jnlp-1g893                                     <span class="m">0</span>/1     Co
 被创建了，这就是我们的 Jenkins
 Slave。任务执行完成后我们可以看到任务信息，比如我们这里是 花费了 21s
 时间在 jnlp-1g893 这个 Slave上面</p>
-<img alt="../../_images/image-20220526103936149.png" src="../../_images/image-20220526103936149.png" />
+<p><img alt="image13" src="../../_images/image-20220526103936149.png" /></p>
 <p>到这里证明我们的任务已经构建完成，然后这个时候我们再去集群查看我们的 Pod
 列表，发现 kube-ops 这个 namespace 下面已经没有之前的 Slave 这个 Pod
 了。</p>

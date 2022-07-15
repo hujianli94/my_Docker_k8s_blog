@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prometheus技术基础 &mdash; 运维开发修炼之路</title>
@@ -205,63 +205,19 @@ GitHub官网https://github.com/prometheus上获取对应的Exporter最新版本�
 <p>我们将以下演示环境中用到的应用信息进行汇总，方便大家后续操作中查看</p>
 <section id="id4">
 <h3><a class="toc-backref" href="#id15">2.2.1 测试主机列表及其软件</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 29%" />
-<col style="width: 19%" />
-<col style="width: 44%" />
-<col style="width: 8%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>名称</p></th>
-<th class="head"><p>IP地址</p></th>
-<th class="head"><p>软件信息</p></th>
-<th class="head"><p>端口</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>prometheus</p></td>
-<td><p>192.168.1.x</p></td>
-<td><p>prometheus-2.4.0.linux…</p></td>
-<td><p>9090</p></td>
-</tr>
-<tr class="row-odd"><td><p>Grafana</p></td>
-<td><p>192.168.1.x</p></td>
-<td><p>grafana-5.2.4-1.x86_64.zip</p></td>
-<td><p>3000</p></td>
-</tr>
-<tr class="row-even"><td><p>Linux主机</p></td>
-<td><p>192.168.1.x</p></td>
-<td><p>node_exporter-0.16.0.linux…</p></td>
-<td><p>9100</p></td>
-</tr>
-<tr class="row-odd"><td><p>Windows主机</p></td>
-<td><p>192.168.1.x</p></td>
-<td><p>wmi_exporter-0.5.0-amd64.msi</p></td>
-<td><p>9182</p></td>
-</tr>
-<tr class="row-even"><td><p>MySQL主机</p></td>
-<td><p>192.168.1.x</p></td>
-<td><p>mysqld_exporter-0.11.0.linux…</p></td>
-<td><p>9104</p></td>
-</tr>
-<tr class="row-odd"><td><p>Redis主机</p></td>
-<td><p>192.168.1.xx</p></td>
-<td><p>redis-exporter-v0.23.0.linux…</p></td>
-<td><p>9121</p></td>
-</tr>
-<tr class="row-even"><td><p>Nginx主机</p></td>
-<td><p>192.168.1.xxx</p></td>
-<td><p>nginx-vts-exporter-0.10.3.linux…</p></td>
-<td><p>9913</p></td>
-</tr>
-<tr class="row-odd"><td><p>Blackbox Exporter主机</p></td>
-<td><p>192.168.1.xx</p></td>
-<td><p>blackbox_exporter-0.14.0.linux…</p></td>
-<td><p>9115</p></td>
-</tr>
-</tbody>
-</table>
+<p>名称                  IP地址        软件信息                         端口
+===================== ============= ================================
+====
+prometheus            192.168.1.x   prometheus-2.4.0.linux…          9090
+Grafana               192.168.1.x   grafana-5.2.4-1.x86_64.zip       3000
+Linux主机             192.168.1.x   node_exporter-0.16.0.linux…      9100
+Windows主机           192.168.1.x   wmi_exporter-0.5.0-amd64.msi     9182
+MySQL主机             192.168.1.x   mysqld_exporter-0.11.0.linux…    9104
+Redis主机             192.168.1.xx  redis-exporter-v0.23.0.linux…    9121
+Nginx主机             192.168.1.xxx nginx-vts-exporter-0.10.3.linux… 9913
+Blackbox Exporter主机 192.168.1.xx  blackbox_exporter-0.14.0.linux…  9115
+===================== ============= ================================
+====</p>
 </section>
 <section id="id5">
 <h3><a class="toc-backref" href="#id16">2.2.2 软件下载清单</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
@@ -348,7 +304,7 @@ root     <span class="m">25878</span>  <span class="m">0</span>.0  <span class="
 <p>注意，这里的YAML语法空格缩进；prometheus.yml配置文件中的prometheus和node_exporter均部署不同的主机上。</p>
 <p>进入Targets页面后，可以在列表中看到刚才配置好的node_exporter的状态为“UP”，说明Prometheus最后一次从Node
 exporter中采集数据是成功的，此刻，被监控的服务器主机工作运行状态是正常的。</p>
-<img alt="../_images/prometheus-004.png" src="../_images/prometheus-004.png" />
+<p><img alt="image0" src="../_images/prometheus-004.png" /></p>
 <p>当然，我们也可以使用浏览器访问Prometheus web
 UI提供的graph页面地址http://192.168.1.37:9090/graph，在搜索框中输入“up”进行搜索，或者直接在“Execute”按钮后的选项框中，点击下拉按钮选择最末尾的“up”，再点击“Execute”进行搜索.</p>
 <p><strong>3.metrics查看</strong></p>
@@ -475,7 +431,7 @@ CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设
 <span class="n">user</span><span class="o">=</span><span class="n">xxxx</span>
 <span class="n">password</span><span class="o">=</span><span class="n">xxxx</span>
 <span class="n">port</span><span class="o">=</span><span class="mi">3306</span>
-<span class="n">host</span><span class="o">=</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>
+<span class="n">host</span><span class="o">=</span><span class="mf">127.0.0.1</span>
 </pre></div>
 </div>
 <p>我们选择使用第二种方法，在与“mysqld_exports”文件同目录下创建“.mysqld_exporter.cnf”文件，并添加如下内容</p>
@@ -484,7 +440,7 @@ CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设
 <span class="n">user</span><span class="o">=</span><span class="n">mysqld_exporter</span>
 <span class="n">password</span><span class="o">=</span><span class="n">OSChina</span><span class="o">@</span><span class="mi">2021</span>
 <span class="n">port</span><span class="o">=</span><span class="mi">3306</span>
-<span class="n">host</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.61</span>
+<span class="n">host</span><span class="o">=</span><span class="mf">192.168.1.61</span>
 </pre></div>
 </div>
 <p>查看目录结构</p>
@@ -783,7 +739,7 @@ UI提供的内容，可以看到在Targets页面列表中已经新增了redis_ex
 <p>redis_exporter 在 Grafana 上为我们提供好了 Dashboard
 模板：<a class="reference external" href="http://www.eryajf.net/go?url=https://grafana.com/dashboards/763">https://grafana.com/dashboards/763</a></p>
 <p>下载后在 Grafana 中导入 json 模板就可以看到官方这样的示例截图啦：</p>
-<img alt="../_images/prometheus_redis202101.png" src="../_images/prometheus_redis202101.png" />
+<p><img alt="image1" src="../_images/prometheus_redis202101.png" /></p>
 <p>参考文献：</p>
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12101496.html">https://www.cnblogs.com/xiao987334176/p/12101496.html</a></p>
 </section>
@@ -826,7 +782,7 @@ git://github.com/vozlt/nginx-module-vts.git。若没有加载nginx-module-vts模
 </pre></div>
 </div>
 <p>正确添加后，重新加载Nginx配置文件使配置生效，通过浏览器访问/status，可以看到Nginx模块nginx-module-vts已经开始正常运行。</p>
-<img alt="../_images/prometheus_vts-nginx01.png" src="../_images/prometheus_vts-nginx01.png" />
+<p><img alt="image2" src="../_images/prometheus_vts-nginx01.png" /></p>
 <p><strong>1.软件下载与部署</strong></p>
 <p>1）下载nginx-vts-exporter。</p>
 <p>下载页面地址为https://github.com/hnlq715/nginx-vts-exporter/releases。选择当时最新版本nginx-vts-exporter-0.10.3.linux-amd64.tar.gz，支持nginx-1.4..x版本和nginx-1.6.x以上版本。</p>
@@ -866,7 +822,7 @@ git://github.com/vozlt/nginx-module-vts.git。若没有加载nginx-module-vts模
 <p>配置完成后，仍然需要我们重新启动Prometheus或动态热加载配置文件。现在，可以在浏览器中输入Prometheus示例页面地址http://192.168.24.17:9090，访问Prometheus
 Web
 UI提供的页面内容，在Targets页面列表中已经新增了nginx-vts-exporter显示项，且nginx-vts-exporter状态为“UP”。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
 </pre></div>
 </div>
 <p>参考文献：</p>
@@ -885,10 +841,10 @@ GitHub下载页面https://github.com/prometheus/blackbox_exporter/releases中下
 <p><strong>2.软件安装与部署</strong></p>
 <p>1）官网下载blackbox_exporter</p>
 <p>2）解压缩软件包到指定的安装目录。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="n">blackbox_exporter</span><span class="o">-</span><span class="mf">0.14</span><span class="o">.</span><span class="mf">0.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>  <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="n">blackbox_exporter</span><span class="o">-</span><span class="mf">0.14.0</span><span class="o">.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>  <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span>
 
 <span class="n">cd</span> <span class="o">/</span><span class="n">data</span>
-<span class="n">ln</span> <span class="o">-</span><span class="n">sv</span> <span class="n">blackbox_exporter</span><span class="o">-</span><span class="mf">0.14</span><span class="o">.</span><span class="mf">0.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span> <span class="n">blackbox_exporter</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">sv</span> <span class="n">blackbox_exporter</span><span class="o">-</span><span class="mf">0.14.0</span><span class="o">.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span> <span class="n">blackbox_exporter</span>
 </pre></div>
 </div>
 <p>3）添加blackbox_exporter为系统服务开机启动。同样，为了维护方便，将blackbox_exporter添加为系统服务且开机自启动。开始创建系统服务启动配置文件blackbox_exporter.service：</p>
@@ -923,7 +879,7 @@ root      1670  0.0  0.0 112808   972 pts/1    S+   01:19   0:00 grep --color=au
 </pre></div>
 </div>
 <p>其中配置文件直接使用了默认的blackbox.yml文件，blackbox_exporter正常启动后，可以查看到服务状态为Active：active（running），并且开启默认端口9115进行监听。现在使用浏览器访问示例地址http://192.168.1.37:9115/，</p>
-<img alt="../_images/prometheus_black_exporter001.png" src="../_images/prometheus_black_exporter001.png" />
+<p><img alt="image3" src="../_images/prometheus_black_exporter001.png" /></p>
 <p>Blackbox
 Exporter控制台包括允许监控自身的指标，可以点击“Metics”链接，如图中示例，访问地址http://192.168.1.37:9115/metrics可进行查看。控制台还包含最近执行的探测列表，它们的状态以及显示发生的事件的调试日志，这些对于调试探测很有用。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># HELP blackbox_exporter_build_info A metric with a constant &#39;1&#39; value labeled by version, revision, branch, and goversion from which blackbox_exporter was built.</span>
@@ -1030,7 +986,7 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
 </pre></div>
 </div>
 <p>配置完成后通过重启BlackboxExporter服务或热加载方式：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
 </pre></div>
 </div>
 <p>使得配置文件生效。</p>
@@ -1042,7 +998,7 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
     <span class="n">module</span><span class="p">:</span> <span class="p">[</span><span class="n">http_2xx</span><span class="p">]</span>
   <span class="n">static_configs</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">targets</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">www</span><span class="o">.</span><span class="mf">12306.</span><span class="n">cn</span>
+      <span class="o">-</span> <span class="n">www</span><span class="mf">.12306</span><span class="o">.</span><span class="n">cn</span>
       <span class="o">-</span> <span class="n">www</span><span class="o">.</span><span class="n">baidu</span><span class="o">.</span><span class="n">com</span>
   <span class="n">relabel_configs</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="n">__address__</span><span class="p">]</span>
@@ -1050,7 +1006,7 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
     <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="n">__param_target</span><span class="p">]</span>
       <span class="n">target_label</span><span class="p">:</span> <span class="n">instance</span>
     <span class="o">-</span> <span class="n">target_label</span><span class="p">:</span> <span class="n">__address__</span>
-      <span class="n">replacement</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9115</span>
+      <span class="n">replacement</span><span class="p">:</span> <span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9115</span>
 </pre></div>
 </div>
 <p>通过命令curl模拟http请求，可以看到输出的Metrics信息</p>
@@ -1079,7 +1035,7 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
 </div>
 <p>URL地址中使用的探针是通过其中的module参数来指定的，而target参数用来指定探测目标，探针所探测的结果通过Metrics的形式返回。从返回的样本中，用户可以获取站点的DNS解析耗时、响应时间、响应状态码、probe_http_ssl指示最终重定向是否使用SSL和指标probe_success为1的成功状态等相关监控指标。</p>
 <p>我们可以使用浏览器访问示例地址http://192.168.1.37:9090/targets</p>
-<img alt="../_images/prometheus-block-exporter002.png" src="../_images/prometheus-block-exporter002.png" />
+<p><img alt="image4" src="../_images/prometheus-block-exporter002.png" /></p>
 <p>如监控目标过多，prometheus.yml文件配置中的targets指定被探测目标地址时，就会使得配置文件过于“臃肿”。现在我们使用“file_sd_configs”重新对prometheus.yml进行配置，操作如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">PromStack</span><span class="o">/</span><span class="n">prometheus</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">probes</span> <span class="o">-</span><span class="n">p</span>
 <span class="n">vim</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">PromStack</span><span class="o">/</span><span class="n">prometheus</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">probes</span><span class="o">/</span><span class="n">http_probes</span><span class="o">.</span><span class="n">json</span>
@@ -1111,22 +1067,22 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
     <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="n">__param_target</span><span class="p">]</span>
       <span class="n">target_label</span><span class="p">:</span> <span class="n">instance</span>
     <span class="o">-</span> <span class="n">target_label</span><span class="p">:</span> <span class="n">__address__</span>
-      <span class="n">replacement</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9115</span>
+      <span class="n">replacement</span><span class="p">:</span> <span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9115</span>
 </pre></div>
 </div>
 <p>热加载使配置文件生效</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
 </pre></div>
 </div>
 <p>同样，使用浏览器访问http://192.168.1.37:9090/targets，可以查看被探测的目标的target实例</p>
-<img alt="../_images/prometheus-black_exporter003.png" src="../_images/prometheus-black_exporter003.png" />
+<p><img alt="image5" src="../_images/prometheus-black_exporter003.png" /></p>
 <p>在blackbox.yml配置文件中，http_2xx监测模块对http探测类型进行定义，除以上定义内容外，还可以使用headers定义相关的请求头信息，使用body定义请求内容，针对HTTPS类型的服务可以对证书进行自定义设置，有兴趣的读者可以访问官方提供的配置参考，自己进行相关配置，参考地址https://github.com/prometheus/blackbox_exporter/blob/master/example.yml。</p>
 <p>对于Blackbox
 Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监控的操作过程都与HTTP探测流程一样，我们这里不一一进行演示，实际环境中有需要的读者可以访问https://www.robustperception.io/tag/blackbox_exporter，选择对应的模块内容，再结合官网提供的配置参考进行实际操作。</p>
 <p><strong>3. grafana中加入blackbox_exporter监控数据</strong></p>
 <p>此模板为9965号模板，数据源选择Prometheus 模板下载地址
 <a class="reference external" href="https://grafana.com/grafana/dashboards/9965">https://grafana.com/grafana/dashboards/9965</a></p>
-<img alt="../_images/prometheus-block-exporter004.png" src="../_images/prometheus-block-exporter004.png" />
+<p><img alt="image6" src="../_images/prometheus-block-exporter004.png" /></p>
 <p>参考文献：</p>
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12022482.html">https://www.cnblogs.com/xiao987334176/p/12022482.html</a></p>
 </section>
@@ -1166,7 +1122,7 @@ Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监
 </pre></div>
 </div>
 <p>热加载使配置文件生效</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
 </pre></div>
 </div>
 <p><a class="reference external" href="http://192.168.1.37:9090/targets">http://192.168.1.37:9090/targets</a> 可以看到监控指标说明获取数据成功</p>
@@ -1175,7 +1131,7 @@ Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监
 </pre></div>
 </div>
 <p>使用193模板即可</p>
-<img alt="../_images/prometheus_docker_monitor01.png" src="../_images/prometheus_docker_monitor01.png" />
+<p><img alt="image7" src="../_images/prometheus_docker_monitor01.png" /></p>
 <p>但是这个模板，无法选择根据主机选择。推荐另外一个模板，它是可以选择主机的。</p>
 <p><a class="reference external" href="https://grafana.com/grafana/dashboards/10566">https://grafana.com/grafana/dashboards/10566</a></p>
 </section>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Docker三剑客之Docker-Compose &mdash; 运维开发修炼之路</title>
@@ -51,6 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="06.Docker%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Docker数据管理</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html">Docker使用网络</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html#id7">指令        说明</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
 <li class="toctree-l2"><a class="reference internal" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html">Docker核心实现技术</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11.%E9%85%8D%E7%BD%AE%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">配置私有仓库</a></li>
@@ -188,7 +189,7 @@
 <h1><a class="toc-backref" href="#id11">Docker三剑客之Docker-Compose</a><a class="headerlink" href="#dockerdocker-compose" title="Permalink to this headline">¶</a></h1>
 <p>Compose项目是Docker官方的开源项目，负责实现对基于Docker容器的多应用服务的快速编排。从功能上看，跟OpenStack中的Heat十分类似。其代码目前在<a class="reference external" href="https://github.com/docker/compose">https://github.com/docker/compose</a>
 上开源。</p>
-<img alt="../_images/docker_compose00001.png" src="../_images/docker_compose00001.png" />
+<p><img alt="image0" src="../_images/docker_compose00001.png" /></p>
 <section id="id1">
 <h2><a class="toc-backref" href="#id12">简介</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Compose定位是“定义和运行多个Docker容器的应用”，其前身是开源项目Fig，目前仍然兼容Fig格式的模板文件。</p>
@@ -428,8 +429,8 @@ cli 的子命令，称为 Compose V2。</p>
 <p>如果使用build指令，在Dockerfile中设置的选项（例如：CMD、EXPOSE、VOLUME、ENV等）将会自动被获取，无须在docker-compose.yml中再次设置。</p>
 <p>命令列表参见表24-1。</p>
 <p>表24-1　Compose模板文件主要命令</p>
-<img alt="../_images/docker_compose_cmd00001.png" src="../_images/docker_compose_cmd00001.png" />
-<img alt="../_images/docker_compose_cmd_00002.png" src="../_images/docker_compose_cmd_00002.png" />
+<p><img alt="image1" src="../_images/docker_compose_cmd00001.png" /></p>
+<p><img alt="image2" src="../_images/docker_compose_cmd_00002.png" /></p>
 <p>Dockerfile中配置时区</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">docker</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">centos</span>
 <span class="n">MAINTAINER</span> <span class="n">DAVID</span>
@@ -544,10 +545,10 @@ Swarm模式下，可以通过configs来管理和访问非敏感的配置信息�
 </div>
 <p>9.dns</p>
 <p>自定义DNS服务器。可以是一个值，也可以是一个列表。例如：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dns</span><span class="p">:</span> <span class="mf">8.8</span><span class="o">.</span><span class="mf">8.8</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dns</span><span class="p">:</span> <span class="mf">8.8.8.8</span>
 <span class="n">dns</span><span class="p">:</span>
-    <span class="o">-</span> <span class="mf">8.8</span><span class="o">.</span><span class="mf">8.8</span>
-    <span class="o">-</span> <span class="mf">9.9</span><span class="o">.</span><span class="mf">9.9</span>
+    <span class="o">-</span> <span class="mf">8.8.8.8</span>
+    <span class="o">-</span> <span class="mf">9.9.9.9</span>
 </pre></div>
 </div>
 <p>10.dns_search</p>
@@ -702,9 +703,9 @@ FILE方式来指定Compose模板文件，则env_file中变量的路径会基于�
 </pre></div>
 </div>
 <p>使用的别名将会自动在服务容器中的/etc/hosts里创建。例如：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">172.17</span><span class="o">.</span><span class="mf">2.186</span>  <span class="n">db</span>
-<span class="mf">172.17</span><span class="o">.</span><span class="mf">2.186</span>  <span class="n">database</span>
-<span class="mf">172.17</span><span class="o">.</span><span class="mf">2.187</span>  <span class="n">redis</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">172.17.2.186</span>  <span class="n">db</span>
+<span class="mf">172.17.2.186</span>  <span class="n">database</span>
+<span class="mf">172.17.2.187</span>  <span class="n">redis</span>
 </pre></div>
 </div>
 <p>被链接容器中相应的环境变量也将被创建。</p>
@@ -1066,7 +1067,7 @@ help[COMMAND]可以查看具体某个命令的使用格式。</p>
 </div>
 <p>命令列表见表24-2。</p>
 <p>表24-2　Compose命令</p>
-<img alt="../_images/docker_compose_cmd00004.png" src="../_images/docker_compose_cmd00004.png" />
+<p><img alt="image3" src="../_images/docker_compose_cmd00004.png" /></p>
 <section id="id7">
 <h3><a class="toc-backref" href="#id22">Compose命令使用说明如下</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <section id="build">
@@ -1341,7 +1342,7 @@ up将会尝试停止容器，然后重新创建（保持使用volumes-from挂载
 <h2><a class="toc-backref" href="#id24">Compose环境变量</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <p>环境变量可以用来配置Compose的行为，参见表24-3。</p>
 <p>表24-3　Compose环境变量</p>
-<img alt="../_images/docker_compose_env00001.png" src="../_images/docker_compose_env00001.png" />
+<p><img alt="image4" src="../_images/docker_compose_env00001.png" /></p>
 </section>
 <section id="compose-web">
 <h2><a class="toc-backref" href="#id25">Compose应用案例一：Web负载均衡</a><a class="headerlink" href="#compose-web" title="Permalink to this headline">¶</a></h2>
@@ -1526,11 +1527,11 @@ Attaching to composehaproxyweb_webb_1, composehaproxyweb_webc_1, composeha-proxy
 </pre></div>
 </div>
 <p>此时通过浏览器访问本地的80端口，会获取到页面信息，如图所示。</p>
-<img alt="../_images/docker_haproxy00001.png" src="../_images/docker_haproxy00001.png" />
+<p><img alt="image5" src="../_images/docker_haproxy00001.png" /></p>
 <p>图24-1　访问本地80端口</p>
 <p>经过haproxy自动转发到后端的某个Web容器上，刷新页面，可以观察到访问的容器地址的变化。</p>
 <p>访问本地70端口，可以查看到haproxy的统计信息，如图所示。</p>
-<img alt="../_images/docker_haproxy00002.png" src="../_images/docker_haproxy00002.png" />
+<p><img alt="image6" src="../_images/docker_haproxy00002.png" /></p>
 <p>查看本地的镜像，会发现Compose自动创建的haproxyweb_weba、haproxyweb_webb、haproxyweb_webc镜像：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker images
 REPOSITORY         TAG         IMAGE ID         CREATED            VIRTUAL SIZE
@@ -1674,7 +1675,7 @@ GB多），推荐先下载镜像到本地：</p>
       <span class="n">WORDPRESS_DB_PASSWORD</span><span class="p">:</span> <span class="n">wordpress</span>
 </pre></div>
 </div>
-<img alt="../_images/docker-compose-wordPress0001.png" src="../_images/docker-compose-wordPress0001.png" />
+<p><img alt="image7" src="../_images/docker-compose-wordPress0001.png" /></p>
 <p>打开浏览器，输入http://localhost:8000，你可以看到WordPress的安装界面了。上面配置文件中定义了两个服务，一个是db，另一个是wordpress，两个服务基于现成的镜像（数据库使用mysql:5.7
 , wordpress在Docker
 Hub有官方镜像），因此没有构建过程，所以启动速度很快。</p>
@@ -1716,7 +1717,7 @@ Hub的WordPress页面：<code class="docutils literal notranslate"><span class="
 
   <span class="n">app</span><span class="p">:</span>
     <span class="n">build</span><span class="p">:</span> <span class="o">.</span>
-    <span class="n">command</span><span class="p">:</span> <span class="n">python3</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">runserver</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8100</span>
+    <span class="n">command</span><span class="p">:</span> <span class="n">python3</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">runserver</span> <span class="mf">0.0.0.0</span><span class="p">:</span><span class="mi">8100</span>
     <span class="n">volumes</span><span class="p">:</span>
       <span class="o">-</span> <span class="o">.</span><span class="p">:</span><span class="o">/</span><span class="n">code</span>
     <span class="n">ports</span><span class="p">:</span>

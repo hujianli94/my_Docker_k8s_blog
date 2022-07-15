@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ingress &mdash; 运维开发修炼之路</title>
@@ -149,7 +149,7 @@
 <p>Ingress可以避免这个问题，除了Ingress自身的服务需要向外发布之外，其他服务不必使用节点端口形式向外发布。</p>
 <p>由Ingress接收外部请求，然后按照域名配置转发给各个后端服务</p>
 <p>通过Ingress访问Service提供的服务</p>
-<img alt="../../_images/image-20220416165238675.png" src="../../_images/image-20220416165238675.png" />
+<p><img alt="image0" src="../../_images/image-20220416165238675.png" /></p>
 <p>在使用Ingress时一般会涉及3个组件：</p>
 <ul class="simple">
 <li><p>反向代理负载均衡器：其实它类似于Nginx、Apache的应用。在集群中可以使用Deployment、DaemonSet等控制器自由部署反向代理负载均衡器。</p></li>
@@ -162,7 +162,7 @@ Server进行交互，实时地感知后端Service、Pod等的变化情况，比�
 而实现整体的服务发现和负载均衡。</p></li>
 </ul>
 <p>在使用Ingress时各个组件的关系</p>
-<img alt="../../_images/image-20220416170546781.png" src="../../_images/image-20220416170546781.png" />
+<p><img alt="image1" src="../../_images/image-20220416170546781.png" /></p>
 <p>Ingress控制器不会随着Kubernetes一起安装。如果要让Ingress资源正常运作，需要安装Ingress控制器。可以选择的Ingress控制器
 种类很多，可根据情况自行选择。</p>
 <p>不管是哪类Ingress控制器，因为在基本使用层面几乎没有差别（在性能、安全或复杂使用上可能略有区别），所以后面介绍Ingress
@@ -260,20 +260,20 @@ giteego-k8s-n3   Ready    ingress                170d   v1.21.3   192.168.1.59  
 <h3><a class="toc-backref" href="#id14">1.2 helm部署nginx-ingress</a><a class="headerlink" href="#helmnginx-ingress" title="Permalink to this headline">¶</a></h3>
 <p><strong>pull helm chart ingress-nginx-4.0.19.tgz</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">pull</span> <span class="o">--</span><span class="n">repo</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span>
-<span class="n">tar</span> <span class="o">-</span><span class="n">zxf</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="mf">4.0</span><span class="o">.</span><span class="mf">19.</span><span class="n">tgz</span>
+<span class="n">tar</span> <span class="o">-</span><span class="n">zxf</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="mf">4.0.19</span><span class="o">.</span><span class="n">tgz</span>
 </pre></div>
 </div>
 <p><strong>pull &amp; push images</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.3</span>
-<span class="n">docker</span> <span class="n">pull</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="mf">.1.3</span>
+<span class="n">docker</span> <span class="n">pull</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="mf">.1.1</span>
 <span class="n">docker</span> <span class="n">pull</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">defaultbackend</span><span class="o">-</span><span class="n">amd64</span><span class="p">:</span><span class="mf">1.5</span>
 
-<span class="n">docker</span> <span class="n">tag</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.3</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.3</span>
-<span class="n">docker</span> <span class="n">tag</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span>
+<span class="n">docker</span> <span class="n">tag</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="mf">.1.3</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="mf">.1.3</span>
+<span class="n">docker</span> <span class="n">tag</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="mf">.1.1</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="mf">.1.1</span>
 <span class="n">docker</span> <span class="n">tag</span> <span class="n">k8s</span><span class="o">.</span><span class="n">gcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">defaultbackend</span><span class="o">-</span><span class="n">amd64</span><span class="p">:</span><span class="mf">1.5</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">defaultbackend</span><span class="o">-</span><span class="n">amd64</span><span class="p">:</span><span class="mf">1.5</span>
 
-<span class="n">docker</span> <span class="n">push</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.3</span>
-<span class="n">docker</span> <span class="n">push</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span>
+<span class="n">docker</span> <span class="n">push</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">controller</span><span class="p">:</span><span class="n">v1</span><span class="mf">.1.3</span>
+<span class="n">docker</span> <span class="n">push</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span><span class="p">:</span><span class="n">v1</span><span class="mf">.1.1</span>
 <span class="n">docker</span> <span class="n">push</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">defaultbackend</span><span class="o">-</span><span class="n">amd64</span><span class="p">:</span><span class="mf">1.5</span>
 </pre></div>
 </div>
@@ -313,7 +313,7 @@ giteego-k8s-n3   Ready    ingress                170d   v1.21.3   192.168.1.59  
       <span class="n">image</span><span class="p">:</span>
         <span class="n">registry</span><span class="p">:</span> <span class="n">hub</span><span class="o">.</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span>
         <span class="n">image</span><span class="p">:</span> <span class="n">ingress</span><span class="o">-</span><span class="n">nginx</span><span class="o">/</span><span class="n">kube</span><span class="o">-</span><span class="n">webhook</span><span class="o">-</span><span class="n">certgen</span>
-        <span class="n">tag</span><span class="p">:</span> <span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="n">v1</span><span class="mf">.1.1</span>
         <span class="n">digest</span><span class="p">:</span> <span class="n">sha256</span><span class="p">:</span><span class="mi">78351</span><span class="n">fc9d9b5f835e0809921c029208faeb7fbb6dc2d3b0d1db0a6584195cfed</span>
       <span class="n">nodeSelector</span><span class="p">:</span>
         <span class="n">node_role</span><span class="p">:</span> <span class="n">sys</span><span class="o">-</span><span class="n">node</span>
@@ -812,7 +812,7 @@ $ curl <span class="m">192</span>.168.1.64
 <p>如图6-50所示，首先，通过虚拟网址</p>
 <p><code class="docutils literal notranslate"><span class="pre">web.testk8s.com/httpdservice</span></code>和<code class="docutils literal notranslate"><span class="pre">web.testk8s.com/nginxservice</span></code>访问不同的服务。</p>
 <p>同一个域名下配置两个子路径</p>
-<img alt="../../_images/image-20220416200209622.png" src="../../_images/image-20220416200209622.png" />
+<p><img alt="image2" src="../../_images/image-20220416200209622.png" /></p>
 <p>创建<code class="docutils literal notranslate"><span class="pre">examplefanoutingress.yml</span></code>模板文件</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
 <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ingress</span>
@@ -882,14 +882,14 @@ Events:            &lt;none&gt;
 <p>可以看到这个Ingress除了Host为web.testk8s.com之外，还对应了两个path（即访问的子路径），各个子路径对应的Service后面的小括号中也标明了Service对应的Pod。</p>
 <p>在集群外的机器访问这些服务之前，需要给这些集群外的机器配置HOST，以便能通过虚拟主机名称解析出对应的IP地址。</p>
 <p>现在编辑HOST文件（对于Linux系统，其路径为/etc/hosts；</p>
-<p>对于Windows系统，其路径为C:），需要在HOST文件中添加如下内容。</p>
+<p>对于Windows系统，其路径为C:drivers`:raw-latex:<cite>etc</cite>），需要在HOST文件中添加如下内容。</p>
 <p>若在浏览器上访问虚拟网址http://web.testk8s.com/httpdservice，就会定位到exampleservicehttpd提供的服务</p>
 <p>若在浏览器上访问虚拟网址http://web.testk8s.com/nginxservice，就会定位到exampleservicenginx提供的服务</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.58</span>    <span class="n">web</span><span class="o">.</span><span class="n">testk8s</span><span class="o">.</span><span class="n">com</span>
-<span class="mf">192.168</span><span class="o">.</span><span class="mf">1.64</span>    <span class="n">web</span><span class="o">.</span><span class="n">testk8s</span><span class="o">.</span><span class="n">com</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168.1.58</span>    <span class="n">web</span><span class="o">.</span><span class="n">testk8s</span><span class="o">.</span><span class="n">com</span>
+<span class="mf">192.168.1.64</span>    <span class="n">web</span><span class="o">.</span><span class="n">testk8s</span><span class="o">.</span><span class="n">com</span>
 </pre></div>
 </div>
-<img alt="../../_images/image-20220416203139629.png" src="../../_images/image-20220416203139629.png" />
+<p><img alt="image3" src="../../_images/image-20220416203139629.png" /></p>
 </section>
 <section id="id7">
 <h3><a class="toc-backref" href="#id21">2.4 基于多个虚拟主机名称</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
@@ -962,16 +962,16 @@ Events:                 &lt;none&gt;
 <p>可以看到这个Ingress拥有两个Host，分别对应的不同的Service。</p>
 <p>在集群外的机器访问这些服务之前，需要给这些集群外的机器配置HOST，以便能通过虚拟主机名称解析出对应的IP地址。</p>
 <p>为了编辑HOST文件（对于Linux系统，其路径为/etc/hosts；</p>
-<p>对于Windows系统，其路径为C:），需要在HOST文件中添加如下关于虚拟网址的内容。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.58</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8shttpd</span><span class="o">.</span><span class="n">com</span>
-<span class="mf">192.168</span><span class="o">.</span><span class="mf">1.58</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8snginx</span><span class="o">.</span><span class="n">com</span>
-<span class="mf">192.168</span><span class="o">.</span><span class="mf">1.64</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8shttpd</span><span class="o">.</span><span class="n">com</span>
-<span class="mf">192.168</span><span class="o">.</span><span class="mf">1.64</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8snginx</span><span class="o">.</span><span class="n">com</span>
+<p>对于Windows系统，其路径为C:drivers`:raw-latex:<cite>etc</cite>），需要在HOST文件中添加如下关于虚拟网址的内容。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168.1.58</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8shttpd</span><span class="o">.</span><span class="n">com</span>
+<span class="mf">192.168.1.58</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8snginx</span><span class="o">.</span><span class="n">com</span>
+<span class="mf">192.168.1.64</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8shttpd</span><span class="o">.</span><span class="n">com</span>
+<span class="mf">192.168.1.64</span> <span class="n">web</span><span class="o">.</span><span class="n">testk8snginx</span><span class="o">.</span><span class="n">com</span>
 </pre></div>
 </div>
 <p>若在浏览器上访问虚拟网址http://web.testk8shttpd.com，就会定位到exampleservicehttpd提供的服务</p>
 <p>若在浏览器上访问虚拟网址http://web.testk8snginx.com，就会定位到exampleservicenginx提供的服务</p>
-<img alt="../../_images/image-20220416204925382.png" src="../../_images/image-20220416204925382.png" />
+<p><img alt="image4" src="../../_images/image-20220416204925382.png" /></p>
 <p>关于更复杂的场景（如配置多个虚拟主机、每个主机配置多个子路径等方式），读者可以自行尝试，这里不再详述。</p>
 </section>
 </section>

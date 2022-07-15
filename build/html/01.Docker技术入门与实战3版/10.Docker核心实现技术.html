@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Docker核心实现技术 &mdash; 运维开发修炼之路</title>
@@ -51,6 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="06.Docker%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Docker数据管理</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html">Docker使用网络</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html">使用Dockerfile创建镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html#id7">指令        说明</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Docker核心实现技术</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">1.基本架构</a><ul>
@@ -189,7 +190,7 @@ group）、联合文件系统（union file system）和网络虚拟化支持等�
 <p>Docker目前采用了标准的C/S架构，包括客户端、服务端两大核心组件，同时通过镜像仓库来存储镜像。客户端和服务端既可以运行在一个机器上，也可通过socket或者RESTful
 API来进行通信。如图:</p>
 <p>Docker基本架构</p>
-<img alt="../_images/docker_basejiagou001.png" src="../_images/docker_basejiagou001.png" />
+<p><img alt="image0" src="../_images/docker_basejiagou001.png" /></p>
 <section id="id2">
 <h3><a class="toc-backref" href="#id21">1.服务端</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Docker服务端一般在宿主主机后台运行，dockerd作为服务端接受来自客户的请求，并通过containerd具体处理与容器相关的请求，包括创建、运行、删除容器等。服务端主要包括四个组件：</p>
@@ -292,7 +293,7 @@ dockerd -H fd:// -H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock
 </div>
 <p>一般情况下，启动多个容器时，宿主机与容器内进程空间的关系如图17-2所示。</p>
 <p>宿主机与容器内进程空间的关系</p>
-<img alt="../_images/docker_shuzhu00001.png" src="../_images/docker_shuzhu00001.png" />
+<p><img alt="image1" src="../_images/docker_shuzhu00001.png" /></p>
 <p>图17-2　宿主机与容器内进程空间的关系</p>
 </section>
 <section id="ipc">
@@ -307,7 +308,7 @@ Communication，IPC），包括信号量、消息队列和共享内存等方式�
 <p>Docker采用虚拟网络设备（Virtual Network
 Device，VND）的方式，将不同命名空间的网络设备连接到一起。默认情况下，Docker在宿主机上创建多个虚机网桥（如默认的网桥docker0），容器中的虚拟网卡通过网桥进行连接，如图17-3所示。</p>
 <p>Docker将不同命名空间的网络设备连接起来</p>
-<img alt="../_images/docker_network00001.png" src="../_images/docker_network00001.png" />
+<p><img alt="image2" src="../_images/docker_network00001.png" /></p>
 <p>使用docker network ls命令可以查看到当前系统中的网桥：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker network ls
 NETWORK ID NAME DRIVER SCOPE
@@ -517,7 +518,7 @@ pair）。熟悉这两部分的基本概念有助于理解Docker网络的实现�
 <p>Docker容器网络就很好地利用了Linux虚拟网络技术，它在本地主机和容器内分别创建一个虚拟接口veth，并连通（这样的一对虚拟接口叫做veth
 pair），如图17-4所示。</p>
 <p>容器网络的基本原理</p>
-<img alt="../_images/docker_veth00001.png" src="../_images/docker_veth00001.png" />
+<p><img alt="image3" src="../_images/docker_veth00001.png" /></p>
 </section>
 <section id="id16">
 <h3><a class="toc-backref" href="#id38">2.网络创建过程</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>

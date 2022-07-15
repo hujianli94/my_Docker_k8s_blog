@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>资源管理-命名空间 &mdash; 运维开发修炼之路</title>
@@ -132,7 +132,7 @@
 <p>但如果使用Kubernetes的团队或用户众多，各种资源管理起来就会比较麻烦。这时就应考虑使用命名空间来进行划分，这样集群内部
 的各种资源对象就可以在不同的命名空间下进行管理。</p>
 <p>使用命名空间划分资源</p>
-<img alt="../../_images/image-20220419135141847.png" src="../../_images/image-20220419135141847.png" />
+<p><img alt="image0" src="../../_images/image-20220419135141847.png" /></p>
 <section id="id2">
 <h2><a class="toc-backref" href="#id9">1.命名空间的基本操作</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>为了创建一个名为examplenamespace的命名空间</p>
@@ -202,12 +202,12 @@ examplepodforns   <span class="m">1</span>/1     Running   <span class="m">0</sp
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl api-resources --namespaced<span class="o">=</span><span class="nb">true</span>
 </pre></div>
 </div>
-<img alt="../../_images/image-20220419140153021.png" src="../../_images/image-20220419140153021.png" />
+<p><img alt="image1" src="../../_images/image-20220419140153021.png" /></p>
 <p>通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">api-resources</span> <span class="pre">--namespaced=false</span></code>命令，可以查看不在命名空间下的资源</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl api-resources --namespaced<span class="o">=</span><span class="nb">false</span>
 </pre></div>
 </div>
-<img alt="../../_images/image-20220419140301998.png" src="../../_images/image-20220419140301998.png" />
+<p><img alt="image2" src="../../_images/image-20220419140301998.png" /></p>
 </section>
 <section id="id3">
 <h2><a class="toc-backref" href="#id10">2.命名空间中的服务发现</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
@@ -370,7 +370,7 @@ $ kubectl describe deploy -n examplenamespace exampledeploymentforns
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get deploy exampledeploymentforns -n examplenamespace -o yaml
 </pre></div>
 </div>
-<img alt="../../_images/image-20220419141942743.png" src="../../_images/image-20220419141942743.png" />
+<p><img alt="image3" src="../../_images/image-20220419141942743.png" /></p>
 <p>此时如果将Deployment控制器的副本数量设置为1，或者删除旧的Pod，或者更改配额设置为更大的数值，则另一个Pod才会成功创建。</p>
 <blockquote>
 <div><p>注意：如果在ResourceQuota中设置了任何一种计算机资源配额（cpu、limits.cpu、requests.cpu、memory、limits.memory和
@@ -378,7 +378,7 @@ requests.memory属性），那么在创建Pod或控制器时，在Pod模板中�
 describe
 resourcequota命令查询时，计算机资源配额的Used属性其实并非CPU或内存的实时使用值之和，而是在Pod模板中填写的指定值之和。</p>
 </div></blockquote>
-<img alt="../../_images/image-20220419142214363.png" src="../../_images/image-20220419142214363.png" />
+<p><img alt="image4" src="../../_images/image-20220419142214363.png" /></p>
 </section>
 <section id="id5">
 <h2><a class="toc-backref" href="#id12">4.命名空间中单个资源的限额范围</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
@@ -433,7 +433,7 @@ limitrangeforcontainer   <span class="m">2022</span>-04-19T06:52:29Z
 </div>
 <p>也可以通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">limitrange</span> <span class="pre">limitrangeforcontainer</span> <span class="pre">-n</span> <span class="pre">examplenamespace</span></code>命令查看限额范围的详情，</p>
 <p>可以看到LimitRange创建后关于容器的计算资源限额范围的详情。</p>
-<img alt="../../_images/image-20220419145530035.png" src="../../_images/image-20220419145530035.png" />
+<p><img alt="image5" src="../../_images/image-20220419145530035.png" /></p>
 <p>从图中可以看到容器CPU及内存的Min和Max属性，这表示最小资源限制与最大资源限制。LimitRange生效之后，当创建Pod模板或填写控制器的Pod模板时，各个容器的resources.limits和resources.requests属性必须要满足指定Min/Max条件的资源限制，否则无法成功创建。本例中必须满足的条件如下所示。</p>
 <ul class="simple">
 <li><p>100m≤容器的resources.requests.cpu≤容器的resources.limits.cpu≤200m</p></li>

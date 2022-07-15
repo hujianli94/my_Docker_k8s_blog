@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>部署Docker-Harbor仓库 &mdash; 运维开发修炼之路</title>
@@ -223,7 +223,7 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 <p>安装docker-ce</p>
 <p>目前最新版本是19.03.1</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">docker</span><span class="o">-</span><span class="n">ce</span><span class="o">=</span><span class="mi">5</span><span class="p">:</span><span class="mf">19.03</span><span class="o">.</span><span class="mi">1</span><span class="o">~</span><span class="mi">3</span><span class="o">-</span><span class="mi">0</span><span class="o">~</span><span class="n">ubuntu</span><span class="o">-</span><span class="n">xenial</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">docker</span><span class="o">-</span><span class="n">ce</span><span class="o">=</span><span class="mi">5</span><span class="p">:</span><span class="mf">19.03.1</span><span class="o">~</span><span class="mi">3</span><span class="o">-</span><span class="mi">0</span><span class="o">~</span><span class="n">ubuntu</span><span class="o">-</span><span class="n">xenial</span>
 </pre></div>
 </div>
 </section>
@@ -240,8 +240,8 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 </div>
 <p>由于ubuntu 16.04，默认已经有了python3，openssl也已经安装好了。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="nd">@ubuntu</span><span class="p">:</span><span class="o">~</span><span class="c1"># dpkg -l |grep openssl</span>
-<span class="n">ii</span>  <span class="n">libgnutls</span><span class="o">-</span><span class="n">openssl27</span><span class="p">:</span><span class="n">amd64</span>           <span class="mf">3.4</span><span class="o">.</span><span class="mi">10</span><span class="o">-</span><span class="mi">4</span><span class="n">ubuntu1</span><span class="o">.</span><span class="mi">4</span>                          <span class="n">amd64</span>        <span class="n">GNU</span> <span class="n">TLS</span> <span class="n">library</span> <span class="o">-</span> <span class="n">OpenSSL</span> <span class="n">wrapper</span>
-<span class="n">ii</span>  <span class="n">openssl</span>                             <span class="mf">1.0</span><span class="o">.</span><span class="mi">2</span><span class="n">g</span><span class="o">-</span><span class="mi">1</span><span class="n">ubuntu4</span><span class="o">.</span><span class="mi">10</span>                         <span class="n">amd64</span>        <span class="n">Secure</span> <span class="n">Sockets</span> <span class="n">Layer</span> <span class="n">too</span>
+<span class="n">ii</span>  <span class="n">libgnutls</span><span class="o">-</span><span class="n">openssl27</span><span class="p">:</span><span class="n">amd64</span>           <span class="mf">3.4.10</span><span class="o">-</span><span class="mi">4</span><span class="n">ubuntu1</span><span class="mf">.4</span>                          <span class="n">amd64</span>        <span class="n">GNU</span> <span class="n">TLS</span> <span class="n">library</span> <span class="o">-</span> <span class="n">OpenSSL</span> <span class="n">wrapper</span>
+<span class="n">ii</span>  <span class="n">openssl</span>                             <span class="mf">1.0.2</span><span class="n">g</span><span class="o">-</span><span class="mi">1</span><span class="n">ubuntu4</span><span class="mf">.10</span>                         <span class="n">amd64</span>        <span class="n">Secure</span> <span class="n">Sockets</span> <span class="n">Layer</span> <span class="n">too</span>
 </pre></div>
 </div>
 </section>
@@ -250,7 +250,7 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 <p><a class="reference external" href="https://github.com/vmware/harbor/releases">https://github.com/vmware/harbor/releases</a> 安装有两种方式，一种是off-line
 ，一种是on-line，即离线和在线安装，离线安装需要下载的安装包较大，在线安装下载的安装包很小，课题根据自己的情况选择，我选择的是1.8.1版本</p>
 <p>下载在线安装包</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">storage</span><span class="o">.</span><span class="n">googleapis</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">harbor</span><span class="o">-</span><span class="n">releases</span><span class="o">/</span><span class="n">release</span><span class="o">-</span><span class="mf">1.8</span><span class="o">.</span><span class="mi">0</span><span class="o">/</span><span class="n">harbor</span><span class="o">-</span><span class="n">online</span><span class="o">-</span><span class="n">installer</span><span class="o">-</span><span class="n">v1</span><span class="o">.</span><span class="mf">8.1</span><span class="o">.</span><span class="n">tgz</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">storage</span><span class="o">.</span><span class="n">googleapis</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">harbor</span><span class="o">-</span><span class="n">releases</span><span class="o">/</span><span class="n">release</span><span class="o">-</span><span class="mf">1.8.0</span><span class="o">/</span><span class="n">harbor</span><span class="o">-</span><span class="n">online</span><span class="o">-</span><span class="n">installer</span><span class="o">-</span><span class="n">v1</span><span class="mf">.8.1</span><span class="o">.</span><span class="n">tgz</span>
 </pre></div>
 </div>
 <p>如果无法访问google，我已经上传到百度网盘了，可自行下载</p>
@@ -260,7 +260,7 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 <section id="id6">
 <h3><a class="toc-backref" href="#id23">安装Harbor</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>解压安装包</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="n">zxvf</span> <span class="n">harbor</span><span class="o">-</span><span class="n">online</span><span class="o">-</span><span class="n">installer</span><span class="o">-</span><span class="n">v1</span><span class="o">.</span><span class="mf">8.1</span><span class="o">.</span><span class="n">tgz</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="n">zxvf</span> <span class="n">harbor</span><span class="o">-</span><span class="n">online</span><span class="o">-</span><span class="n">installer</span><span class="o">-</span><span class="n">v1</span><span class="mf">.8.1</span><span class="o">.</span><span class="n">tgz</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span>
 <span class="n">cd</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">harbor</span>
 </pre></div>
 </div>
@@ -269,12 +269,12 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 </pre></div>
 </div>
 <p>修改hostname为本机ip地址</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hostname</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">10.122</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hostname</span><span class="p">:</span> <span class="mf">192.168.10.122</span>
 </pre></div>
 </div>
 <p>其它参数，可以根据实际情况修改，去除多余的注释和空行，配置文件如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="nd">@ubuntu</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">harbor</span><span class="c1"># cat harbor.yml |grep -v &quot;^#&quot;|grep -v &quot;  #&quot;|grep -v &quot;^$&quot;</span>
-<span class="n">hostname</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">10.122</span>
+<span class="n">hostname</span><span class="p">:</span> <span class="mf">192.168.10.122</span>
 <span class="n">http</span><span class="p">:</span>
   <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
 <span class="n">harbor_admin_password</span><span class="p">:</span> <span class="n">Harbor12345</span>
@@ -285,7 +285,7 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
   <span class="n">updaters_interval</span><span class="p">:</span> <span class="mi">12</span>
   <span class="n">http_proxy</span><span class="p">:</span>
   <span class="n">https_proxy</span><span class="p">:</span>
-  <span class="n">no_proxy</span><span class="p">:</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">,</span><span class="n">localhost</span><span class="p">,</span><span class="n">core</span><span class="p">,</span><span class="n">registry</span>
+  <span class="n">no_proxy</span><span class="p">:</span> <span class="mf">127.0.0.1</span><span class="p">,</span><span class="n">localhost</span><span class="p">,</span><span class="n">core</span><span class="p">,</span><span class="n">registry</span>
 <span class="n">jobservice</span><span class="p">:</span>
   <span class="n">max_job_workers</span><span class="p">:</span> <span class="mi">10</span>
 <span class="n">chart</span><span class="p">:</span>
@@ -295,7 +295,7 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
   <span class="n">rotate_count</span><span class="p">:</span> <span class="mi">50</span>
   <span class="n">rotate_size</span><span class="p">:</span> <span class="mi">200</span><span class="n">M</span>
   <span class="n">location</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">harbor</span>
-<span class="n">_version</span><span class="p">:</span> <span class="mf">1.8</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">_version</span><span class="p">:</span> <span class="mf">1.8.0</span>
 </pre></div>
 </div>
 <p>之后直接执行</p>
@@ -313,7 +313,7 @@ For more details, please visit https://github.com/goharbor/harbor .
 </section>
 <section id="id7">
 <h3><a class="toc-backref" href="#id24">访问页面</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">10.122</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.10.122</span>
 </pre></div>
 </div>
 <p>使用默认的账号:admin,密码:Harbor12345登录验证</p>
@@ -355,12 +355,12 @@ Login Succeeded
 </pre></div>
 </div>
 <p>给镜像打tag</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">tag</span> <span class="n">alpine</span><span class="p">:</span><span class="n">latest</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">10.122</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">alpine</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">tag</span> <span class="n">alpine</span><span class="p">:</span><span class="n">latest</span> <span class="mf">192.168.10.122</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">alpine</span>
 </pre></div>
 </div>
 <p>推送镜像</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">node1</span><span class="p">:</span><span class="o">~</span><span class="c1"># docker push 192.168.10.122/library/alpine</span>
-<span class="n">The</span> <span class="n">push</span> <span class="n">refers</span> <span class="n">to</span> <span class="n">repository</span> <span class="p">[</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">10.122</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">alpine</span><span class="p">]</span>
+<span class="n">The</span> <span class="n">push</span> <span class="n">refers</span> <span class="n">to</span> <span class="n">repository</span> <span class="p">[</span><span class="mf">192.168.10.122</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">alpine</span><span class="p">]</span>
 <span class="mi">1</span><span class="n">bfeebd65323</span><span class="p">:</span> <span class="n">Pushed</span>
 <span class="n">latest</span><span class="p">:</span> <span class="n">digest</span><span class="p">:</span> <span class="n">sha256</span><span class="p">:</span><span class="mi">57334</span><span class="n">c50959f26ce1ee025d08f136c2292c128f84e7b229d1b0da5dac89e9866</span> <span class="n">size</span><span class="p">:</span> <span class="mi">528</span>
 </pre></div>

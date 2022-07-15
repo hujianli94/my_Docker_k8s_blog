@@ -311,7 +311,7 @@ spec.completions属性来指定总任务的执行次数。
 一开始会创建4个Pod并同时运行，然后待某一Pod运行结束后，继续创建后续的Pod，保持4个Pod同时处于Running（或
 ContainerCreating）状态，直到达到设置的执行总数（11个）。
 
-.. image:: ../../_static/image-20220412105720335.png
+|image0|
 
 2. Job的异常处理
 ----------------
@@ -362,7 +362,7 @@ BackOff），然后不断重启，RESTARTS的值不断累加
 Job模板中的属性spec.backoffLimit表示重试次数的上限，默认为6次。如果6次以内没有出现失败，则会重置计数。但如果达到
 重试次数的上限，则这个Job对应的容器将会被终止并删除。
 
-.. image:: ../../_static/image-20220412182246885.png
+|image1|
 
 2.2 Never
 ~~~~~~~~~
@@ -398,7 +398,7 @@ Job模板中的属性spec.backoffLimit表示重试次数的上限，默认为6�
 可以看到，因为Pod不会重新启动（restartPolicy字段设置为Never），且Job的任务并没有成功执行，所以J\ *ob会不停地创建新*
 *Pod，直到Pod成功执行。*
 
-.. image:: ../../_static/image-20220412182351834.png
+|image2|
 
 相对于OnFailure，推荐使用Never，因为OnFailure在重试一定次数后会删除Pod，导致日志或Pod中记录的其他信息丢失，不利于排查
 问题。而Never会保留每次Pod启动后的现场，使排查问题更加容易。
@@ -443,7 +443,7 @@ Job模板中的属性spec.backoffLimit表示重试次数的上限，默认为6�
 可以看到，因为有运行时间限制，所以在最开始的10s内，Pod处于运行状态，10s后Pod就被终止，直到最后被删除（不管
 restartPolicy字段设置为Never还是OnFailure）
 
-.. image:: ../../_static/image-20220412182825666.png
+|image3|
 
 3.CronJob控制器的基本操作
 -------------------------
@@ -605,3 +605,8 @@ CronJob控制器的schedule设置为"/1
 .. code:: bash
 
    $ kubectl delete cronjob examplecronjob
+
+.. |image0| image:: ../../_static/image-20220412105720335.png
+.. |image1| image:: ../../_static/image-20220412182246885.png
+.. |image2| image:: ../../_static/image-20220412182351834.png
+.. |image3| image:: ../../_static/image-20220412182825666.png

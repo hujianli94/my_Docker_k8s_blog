@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>使用EFKLK搭建Kubernetes日志收集工具栈 &mdash; 运维开发修炼之路</title>
@@ -233,61 +233,14 @@ Fluentd，以便它在每个 Kubernetes 工作节点上都可以运行一个 Pod
 </tbody>
 </table>
 <p>这里我们要安装的 ES 集群环境信息如下所示：</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>集群名称</p></th>
-<th class="head"><p>节点类型</p></th>
-<th class="head"><p>副本数目</p></th>
-<th class="head"><p>存储大小</p></th>
-<th class="head"><p>网络模式</p></th>
-<th class="head"><p>描述</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>elast
-icsearch</p></td>
-<td><p>master</p></td>
-<td><p>3</p></td>
-<td><p>5G</p></td>
-<td><p>C
-lusterIP</p></td>
-<td><p>主节点
-，用于控
-制ES集群</p></td>
-</tr>
-<tr class="row-odd"><td><p>elast
-icsearch</p></td>
-<td><p>Data</p></td>
-<td><p>3</p></td>
-<td><p>50G</p></td>
-<td><p>C
-lusterIP</p></td>
-<td><p>数据节点
-，用于存
-储ES数据</p></td>
-</tr>
-<tr class="row-even"><td><p>elast
-icsearch</p></td>
-<td><p>Client</p></td>
-<td><p>2</p></td>
-<td><p>无</p></td>
-<td><p>NodePort</p></td>
-<td><p>负责处理
-用户请求
-，实现请
-求转发，
-负载均衡</p></td>
-</tr>
-</tbody>
-</table>
+<p>集群名称      节点类型 副本数目 存储大小 网络模式  描述
+============= ======== ======== ======== =========
+========================================
+elasticsearch master   3        5G       ClusterIP 主节点，用于控制ES集群
+elasticsearch Data     3        50G      ClusterIP 数据节点，用于存储ES数据
+elasticsearch Client   2        无       NodePort  负责处理用户请求，实现请求转发，负载均衡
+============= ======== ======== ======== =========
+========================================</p>
 <p>这里我们使用一个 NFS 类型的 StorageClass
 来做持久化存储，当然如果你是线上环境建议使用 Local PV 或者 Ceph RBD
 之类的存储来持久化 Elasticsearch 的数据。</p>
@@ -302,7 +255,7 @@ icsearch</p></td>
 <span class="n">kubectl</span> <span class="n">create</span> <span class="n">ns</span> <span class="n">nfs</span>
 
 <span class="n">helm</span> <span class="n">install</span> <span class="n">efk</span><span class="o">-</span><span class="n">nfs</span><span class="o">-</span><span class="n">storage</span> <span class="o">-</span><span class="n">n</span> <span class="n">nfs</span> \
-<span class="o">--</span><span class="nb">set</span> <span class="n">nfs</span><span class="o">.</span><span class="n">server</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.46</span> \
+<span class="o">--</span><span class="nb">set</span> <span class="n">nfs</span><span class="o">.</span><span class="n">server</span><span class="o">=</span><span class="mf">192.168.1.46</span> \
 <span class="o">--</span><span class="nb">set</span> <span class="n">nfs</span><span class="o">.</span><span class="n">path</span><span class="o">=/</span><span class="n">efk</span>  \
 <span class="o">--</span><span class="nb">set</span> <span class="n">storageClass</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="n">efk</span><span class="o">-</span><span class="n">nfs</span><span class="p">,</span><span class="n">storageClass</span><span class="o">.</span><span class="n">reclaimPolicy</span><span class="o">=</span><span class="n">Retain</span> \
 <span class="o">--</span><span class="nb">set</span> <span class="n">storageClass</span><span class="o">.</span><span class="n">defaultClass</span><span class="o">=</span><span class="n">true</span> \
@@ -351,7 +304,7 @@ $ kubectl create secret -n logging generic elastic-auth --from-literal=username=
 <li><p>Client 节点负责代理 ElasticSearch Cluster 集群，负载均衡。</p></li>
 </ul>
 <p>首先使用 <code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">pull</span></code> 拉取 Chart 并解压：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">pull</span> <span class="n">elastic</span><span class="o">/</span><span class="n">elasticsearch</span> <span class="o">--</span><span class="n">untar</span> <span class="o">--</span><span class="n">version</span> <span class="mf">7.12</span><span class="o">.</span><span class="mi">0</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">pull</span> <span class="n">elastic</span><span class="o">/</span><span class="n">elasticsearch</span> <span class="o">--</span><span class="n">untar</span> <span class="o">--</span><span class="n">version</span> <span class="mf">7.12.0</span>
 <span class="n">cd</span> <span class="n">elasticsearch</span>
 </pre></div>
 </div>
@@ -622,7 +575,7 @@ $ kubectl create secret -n logging generic elastic-auth --from-literal=username=
 <h2><a class="toc-backref" href="#id13">2. 安装Kibana</a><a class="headerlink" href="#kibana" title="Permalink to this headline">¶</a></h2>
 <p>Elasticsearch 集群安装完成后接下来配置安装 Kibana</p>
 <p>使用 <code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">pull</span></code> 命令拉取 Kibana Chart 包并解压：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">pull</span> <span class="n">elastic</span><span class="o">/</span><span class="n">kibana</span> <span class="o">--</span><span class="n">untar</span> <span class="o">--</span><span class="n">version</span> <span class="mf">7.12</span><span class="o">.</span><span class="mi">0</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">pull</span> <span class="n">elastic</span><span class="o">/</span><span class="n">kibana</span> <span class="o">--</span><span class="n">untar</span> <span class="o">--</span><span class="n">version</span> <span class="mf">7.12.0</span>
 <span class="n">cd</span> <span class="n">kibana</span>
 </pre></div>
 </div>
@@ -687,23 +640,23 @@ $ kubectl create secret -n logging generic elastic-auth --from-literal=username=
 
 <span class="c1"># kubectl get svc -n logging</span>
 <span class="n">NAME</span>                            <span class="n">TYPE</span>        <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>      <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>                         <span class="n">AGE</span>
-<span class="n">elasticsearch</span><span class="o">-</span><span class="n">client</span>            <span class="n">NodePort</span>    <span class="mf">10.102</span><span class="o">.</span><span class="mf">19.132</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">9200</span><span class="p">:</span><span class="mi">30200</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">9300</span><span class="p">:</span><span class="mi">30415</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">45</span><span class="n">m</span>
+<span class="n">elasticsearch</span><span class="o">-</span><span class="n">client</span>            <span class="n">NodePort</span>    <span class="mf">10.102.19.132</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">9200</span><span class="p">:</span><span class="mi">30200</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">9300</span><span class="p">:</span><span class="mi">30415</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">45</span><span class="n">m</span>
 <span class="n">elasticsearch</span><span class="o">-</span><span class="n">client</span><span class="o">-</span><span class="n">headless</span>   <span class="n">ClusterIP</span>   <span class="kc">None</span>            <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">9200</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">9300</span><span class="o">/</span><span class="n">TCP</span>               <span class="mi">45</span><span class="n">m</span>
-<span class="n">elasticsearch</span><span class="o">-</span><span class="n">data</span>              <span class="n">ClusterIP</span>   <span class="mf">10.98</span><span class="o">.</span><span class="mf">192.155</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">9200</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">9300</span><span class="o">/</span><span class="n">TCP</span>               <span class="mi">46</span><span class="n">m</span>
+<span class="n">elasticsearch</span><span class="o">-</span><span class="n">data</span>              <span class="n">ClusterIP</span>   <span class="mf">10.98.192.155</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">9200</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">9300</span><span class="o">/</span><span class="n">TCP</span>               <span class="mi">46</span><span class="n">m</span>
 <span class="n">elasticsearch</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">headless</span>     <span class="n">ClusterIP</span>   <span class="kc">None</span>            <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">9200</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">9300</span><span class="o">/</span><span class="n">TCP</span>               <span class="mi">46</span><span class="n">m</span>
-<span class="n">elasticsearch</span><span class="o">-</span><span class="n">master</span>            <span class="n">ClusterIP</span>   <span class="mf">10.102</span><span class="o">.</span><span class="mf">195.24</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">9200</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">9300</span><span class="o">/</span><span class="n">TCP</span>               <span class="mi">39</span><span class="n">m</span>
+<span class="n">elasticsearch</span><span class="o">-</span><span class="n">master</span>            <span class="n">ClusterIP</span>   <span class="mf">10.102.195.24</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">9200</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">9300</span><span class="o">/</span><span class="n">TCP</span>               <span class="mi">39</span><span class="n">m</span>
 <span class="n">elasticsearch</span><span class="o">-</span><span class="n">master</span><span class="o">-</span><span class="n">headless</span>   <span class="n">ClusterIP</span>   <span class="kc">None</span>            <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">9200</span><span class="o">/</span><span class="n">TCP</span><span class="p">,</span><span class="mi">9300</span><span class="o">/</span><span class="n">TCP</span>               <span class="mi">39</span><span class="n">m</span>
-<span class="n">kibana</span><span class="o">-</span><span class="n">kibana</span>                   <span class="n">NodePort</span>    <span class="mf">10.108</span><span class="o">.</span><span class="mf">125.5</span>    <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">5601</span><span class="p">:</span><span class="mi">30601</span><span class="o">/</span><span class="n">TCP</span>                  <span class="mi">10</span><span class="n">m</span>
+<span class="n">kibana</span><span class="o">-</span><span class="n">kibana</span>                   <span class="n">NodePort</span>    <span class="mf">10.108.125.5</span>    <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">5601</span><span class="p">:</span><span class="mi">30601</span><span class="o">/</span><span class="n">TCP</span>                  <span class="mi">10</span><span class="n">m</span>
 </pre></div>
 </div>
 <p>上面我们安装 Kibana 的时候指定了 30601 的 NodePort
 端口，所以我们可以从任意节点 <code class="docutils literal notranslate"><span class="pre">http://IP:30601</span></code> 来访问 Kibana。</p>
-<img alt="../_images/image-20220329105330039.png" src="../_images/image-20220329105330039.png" />
+<p><img alt="image0" src="../_images/image-20220329105330039.png" /></p>
 <p>我们可以看到会跳转到登录页面，让我们输出用户名、密码，这里我们输入上面配置的用户名
 elastic、密码 oschina进行登录。</p>
 <p>登录成功后点击自己浏览，进入如下所示的 Kibana 主页：</p>
-<img alt="../_images/image-20220415145800939.png" src="../_images/image-20220415145800939.png" />
-<img alt="../_images/image-20220329110220805.png" src="../_images/image-20220329110220805.png" />
+<p><img alt="image1" src="../_images/image-20220415145800939.png" /></p>
+<p><img alt="image2" src="../_images/image-20220329110220805.png" /></p>
 </section>
 <section id="fluentd">
 <h2><a class="toc-backref" href="#id14">3. 部署Fluentd</a><a class="headerlink" href="#fluentd" title="Permalink to this headline">¶</a></h2>
@@ -725,7 +678,7 @@ Elasticsearch、对象存储等等。Fluentd 支持超过 300
 <li><p>然后根据匹配的标签将数据发送到多个目标服务去</p></li>
 </ul>
 <p>fluentd 架构</p>
-<img alt="../_images/image-20220329111052727.png" src="../_images/image-20220329111052727.png" />
+<p><img alt="image3" src="../_images/image-20220329111052727.png" /></p>
 </section>
 <section id="id3">
 <h3><a class="toc-backref" href="#id16">3.2 配置</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
@@ -1054,7 +1007,7 @@ data:
       <span class="n">serviceAccountName</span><span class="p">:</span> <span class="n">fluentd</span><span class="o">-</span><span class="n">es</span>
       <span class="n">containers</span><span class="p">:</span>
         <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">fluentd</span>
-          <span class="n">image</span><span class="p">:</span> <span class="n">quay</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">fluentd_elasticsearch</span><span class="o">/</span><span class="n">fluentd</span><span class="p">:</span><span class="n">v3</span><span class="o">.</span><span class="mf">2.0</span>
+          <span class="n">image</span><span class="p">:</span> <span class="n">quay</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">fluentd_elasticsearch</span><span class="o">/</span><span class="n">fluentd</span><span class="p">:</span><span class="n">v3</span><span class="mf">.2.0</span>
           <span class="n">volumeMounts</span><span class="p">:</span>
             <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">fluentconfig</span>
               <span class="n">mountPath</span><span class="p">:</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">fluent</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">d</span>
@@ -1171,16 +1124,16 @@ counter                                   1/1     Running   0          29s
 <code class="docutils literal notranslate"><span class="pre">Management</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Stack</span> <span class="pre">Management</span></code>，进入管理页面，点击左侧
 <code class="docutils literal notranslate"><span class="pre">Kibana</span></code> 下面的 <code class="docutils literal notranslate"><span class="pre">索引模式</span></code>，点击 <code class="docutils literal notranslate"><span class="pre">创建索引模式</span></code>
 开始导入索引数据：</p>
-<img alt="../_images/image-20220329114730133.png" src="../_images/image-20220329114730133.png" />
+<p><img alt="image4" src="../_images/image-20220329114730133.png" /></p>
 <p>在这里可以配置我们需要的 Elasticsearch 索引，前面 Fluentd
 配置文件中我们采集的日志使用的是 logstash 格式，定义了一个 <code class="docutils literal notranslate"><span class="pre">k8s</span></code>
 的前缀，所以这里只需要在文本框中输入 <code class="docutils literal notranslate"><span class="pre">k8s-*</span></code> 即可匹配到 Elasticsearch
 集群中采集的 Kubernetes 集群日志数据，然后点击下一步，进入以下页面</p>
-<img alt="../_images/image-20220329133742477.png" src="../_images/image-20220329133742477.png" />
+<p><img alt="image5" src="../_images/image-20220329133742477.png" /></p>
 <p>在该页面中配置使用哪个字段按时间过滤日志数据，在下拉列表中，选择<code class="docutils literal notranslate"><span class="pre">&#64;timestamp</span></code>字段，然后点击
 <code class="docutils literal notranslate"><span class="pre">创建索引模式</span></code>，创建完成后，点击左侧导航菜单中的
 <code class="docutils literal notranslate"><span class="pre">Discover</span></code>，然后就可以看到一些直方图和最近采集到的日志数据了：</p>
-<img alt="../_images/image-20220329134634317.png" src="../_images/image-20220329134634317.png" />
+<p><img alt="image6" src="../_images/image-20220329134634317.png" /></p>
 <p>我们也可以通过其他元数据来过滤日志数据，比如您可以单击任何日志条目以查看其他元数据，如容器名称，Kubernetes
 节点，命名空间等。</p>
 </section>
@@ -1305,9 +1258,9 @@ Fluentd 配置中的 <code class="docutils literal notranslate"><span class="pre
 插件，所以需要我们自定义下 Docker 镜像，最简单的做法就是在上面 Fluentd
 镜像的基础上新增 kafka 插件即可，Dockerfile 文件如下所示：</p>
 <p><code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">quay</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">fluentd_elasticsearch</span><span class="o">/</span><span class="n">fluentd</span><span class="p">:</span><span class="n">v3</span><span class="o">.</span><span class="mf">2.0</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">quay</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">fluentd_elasticsearch</span><span class="o">/</span><span class="n">fluentd</span><span class="p">:</span><span class="n">v3</span><span class="mf">.2.0</span>
 <span class="n">RUN</span> <span class="n">echo</span> <span class="s2">&quot;source &#39;https://mirrors.tuna.tsinghua.edu.cn/rubygems/&#39;&quot;</span> <span class="o">&gt;</span> <span class="n">Gemfile</span> <span class="o">&amp;&amp;</span> <span class="n">gem</span> <span class="n">install</span> <span class="n">bundler</span>
-<span class="n">RUN</span> <span class="n">gem</span> <span class="n">install</span> <span class="n">fluent</span><span class="o">-</span><span class="n">plugin</span><span class="o">-</span><span class="n">kafka</span> <span class="o">-</span><span class="n">v</span> <span class="mf">0.16</span><span class="o">.</span><span class="mi">1</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">document</span>
+<span class="n">RUN</span> <span class="n">gem</span> <span class="n">install</span> <span class="n">fluent</span><span class="o">-</span><span class="n">plugin</span><span class="o">-</span><span class="n">kafka</span> <span class="o">-</span><span class="n">v</span> <span class="mf">0.16.1</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">document</span>
 </pre></div>
 </div>
 <p>使用上面的 <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> 文件构建一个 Docker
@@ -1382,7 +1335,7 @@ settings为memory的方式</p>
 </div>
 <p>然后替换运行的 Fluentd 镜像：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># fluentd-daemonset.yaml</span>
-<span class="n">image</span><span class="p">:</span> <span class="n">registry</span><span class="o">.</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">hu_k8s</span><span class="o">/</span><span class="n">fluent</span><span class="o">-</span><span class="n">plugin</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="mf">0.16</span><span class="o">.</span><span class="mi">1</span>
+<span class="n">image</span><span class="p">:</span> <span class="n">registry</span><span class="o">.</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">hu_k8s</span><span class="o">/</span><span class="n">fluent</span><span class="o">-</span><span class="n">plugin</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="mf">0.16.1</span>
 </pre></div>
 </div>
 <p>直接更新 Fluentd 的 Configmap 与 DaemonSet 资源对象即可：</p>

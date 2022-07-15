@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pod的基本操作 &mdash; 运维开发修炼之路</title>
@@ -562,7 +562,7 @@ Node:         gitee-k8s-w28/192.168.1.81
 <p>执行结果如上，可以看到Pod被部署在<code class="docutils literal notranslate"><span class="pre">&quot;Node：gitee-k8s-w28/192.168.1.81&quot;</span></code>上。</p>
 <p>通过浏览器访问刚才查到的IP地址，加上之前设置的映射到宿主机的端口号（在本例中为http://192.168.1.81:8081）</p>
 <p>则可以访问Nginx的欢迎页面</p>
-<img alt="../../_images/image-20220408163358776.png" src="../../_images/image-20220408163358776.png" />
+<p><img alt="image0" src="../../_images/image-20220408163358776.png" /></p>
 <p>注意：以上案例仅为了说明Kubernetes是如何创建容器的，这种类似于Docker直接映射到主机端口的方式，在Kubernetes中强烈不推荐。</p>
 <p>Pod只是一个运行服务的实例，随时可能在一个Node上停止，而在另一个Node上以新的IP地址启动新的Pod，因此它不能以稳定的IP地址
 和端口号提供服务。若要稳定地提供服务，则需要服务发现和负载均衡能力。Kubernetes提供了Service抽象机制。</p>
@@ -629,7 +629,7 @@ good morning! good night!
 <p>每个Pod都分配了唯一的IP地址。Pod中的每个容器都共享网络命名空间，包括IP地址和网络端口。</p>
 <p>Pod内部的容器可以使用localhost互相通信。当Pod中的容器与Pod外部进行通信时，还必须共享网络资源（如使用端口映射）。</p>
 <p>Docker和Kubernetes在网络空间上的差异。</p>
-<img alt="../../_images/image-20220408171306313.png" src="../../_images/image-20220408171306313.png" />
+<p><img alt="image1" src="../../_images/image-20220408171306313.png" /></p>
 <p>要查看Pod的IP，可以使用以下命令。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod examplepodforenv --template<span class="o">={{</span>.status.podIP<span class="o">}}</span>
 或者
@@ -645,7 +645,7 @@ $ kubectl get pod examplepodforenv -o wide
 <p>每一个Pod都有一个全局IP地址，同一个Node内不同Pod之间可以直接采用对方Pod的IP地址通信，而且不需要使用其他发现机制。</p>
 <p>因为它们都是通过veth连接在同一个docker0网桥上的，其IP地址都是从docker0网桥上动态获取的，并关联在同一个docker0网桥上，地址段也相同，所以它们之间能直接通信。</p>
 <p>同一个Node上Pod之间的通信</p>
-<img alt="../../_images/image-20220408171859171.png" src="../../_images/image-20220408171859171.png" />
+<p><img alt="image2" src="../../_images/image-20220408171859171.png" /></p>
 </section>
 <section id="id11">
 <h5>2.跨Node的Pod之间的通信<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h5>
@@ -661,7 +661,7 @@ $ kubectl get pod examplepodforenv -o wide
 这既保证了容器的IP地址的全局唯一性，又让不同机器上的容器能通过内网IP地址互相通信。</p>
 <p>当然，容器的IP地址并不是固定的，IP地址的分配还由Docker来负责，Flannel只分配子网段。</p>
 <p>跨Node的Pod之间的通信</p>
-<img alt="../../_images/image-20220408172334170.png" src="../../_images/image-20220408172334170.png" />
+<p><img alt="image3" src="../../_images/image-20220408172334170.png" /></p>
 <p>因为Pod的IP地址本身是虚拟IP，所以只有Kubernetes集群内部的机器（Master和Node）及其他Pod可以直接访问这个IP地址，集群之外的机器无法直接访问Pod的IP地址。</p>
 <p>创建一个Nginx模板</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
@@ -738,7 +738,7 @@ $ curl <span class="m">10</span>.0.23.170
 </pre></div>
 </div>
 <p>Pod相位的变更</p>
-<img alt="../../_images/image-20220408173156247.png" src="../../_images/image-20220408173156247.png" />
+<p><img alt="image4" src="../../_images/image-20220408173156247.png" /></p>
 <p>如果进入了Failed状态，通常有以下3种原因。</p>
 <ul class="simple">
 <li><p>Pod启动时，只要有一个容器运行失败，Pod将会从Pending状态进入Failed状态。</p></li>
@@ -785,7 +785,7 @@ Never：记录失败事件，Pod相位变为Failed。</p>
 <section id="id15">
 <h3><a class="toc-backref" href="#id36">7.3 Pod的创建与销毁过程</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <p><strong>Pod的终止流程</strong></p>
-<img alt="../../_images/image-20220408173716691.png" src="../../_images/image-20220408173716691.png" />
+<p><img alt="image5" src="../../_images/image-20220408173716691.png" /></p>
 <p>删除操作的宽限时间默认为30s。kubectl
 delete命令支持<code class="docutils literal notranslate"><span class="pre">--grace-period={秒}</span></code>选项，用户可以自定义宽限时间。</p>
 <p>如果这个值设置为0，则表示强制删除Pod，但是在使用<code class="docutils literal notranslate"><span class="pre">--grace-period=0</span></code>时需要同时添加选项<code class="docutils literal notranslate"><span class="pre">--force</span></code>才能执行强制删除。</p>
@@ -794,7 +794,7 @@ delete命令支持<code class="docutils literal notranslate"><span class="pre">-
 <h3><a class="toc-backref" href="#id37">7.4 Pod的生命周期事件</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <p>在Pod的整个生命周期里，会经历两个大的阶段。第一个阶段是初始化容器运行阶段，第二个阶段是正式容器运行阶段。</p>
 <p>每个大的阶段中都会有不同的生命周期事件。</p>
-<img alt="../../_images/image-20220408174011774.png" src="../../_images/image-20220408174011774.png" />
+<p><img alt="image6" src="../../_images/image-20220408174011774.png" /></p>
 <section id="id17">
 <h4>1.初始化容器运行阶段<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
 <p>Pod中可以包含一个或多个初始化容器，它们是在应用程序容器正式运行之前而运行的专用容器（其中可以包含一些设定脚本或基础工具，它们主要负责初始化工作）。</p>
@@ -856,7 +856,7 @@ examplepodforinitcontainer   <span class="m">0</span>/1     Init:0/2   <span cla
 </pre></div>
 </div>
 <p>按照之前设定的顺序，先执行initdbcheck，再执行initscript，初始化容器执行完之后，才运行maincontainer。</p>
-<img alt="../../_images/image-20220408181905423.png" src="../../_images/image-20220408181905423.png" />
+<p><img alt="image7" src="../../_images/image-20220408181905423.png" /></p>
 <p>下面的资源清单仅是一个初始化容器的使用示例，读者可自行创建并观察初始化容器的相关状态：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
 <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
@@ -1071,7 +1071,7 @@ examplepodforpoststartandprestop   <span class="m">0</span>/1     ContainerCreat
 </pre></div>
 </div>
 <p>查看最下面的运行结果可以发现，容器成功创建后执行了postStart回调，因为我们给出的网址是错误的，发出请求后无法顺利获取响应，所以回调执行失败，失败后容器被终止。</p>
-<img alt="../../_images/image-20220408183032998.png" src="../../_images/image-20220408183032998.png" />
+<p><img alt="image8" src="../../_images/image-20220408183032998.png" /></p>
 <p>删除刚才创建的Pod</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 默认宽限时间默认为30s</span>
 $ kubectl delete pod examplepodforpoststartandprestop
@@ -1213,7 +1213,7 @@ examplepodforliveness   <span class="m">1</span>/1     Running   <span class="m"
 </pre></div>
 </div>
 <p>由于设置了就绪探针，因此当Nginx服务不可用时，无法通过HttpGet访问“容器IP:80”，若就绪探针返回Failure，将会重启Pod。</p>
-<img alt="../../_images/image-20220408185138592.png" src="../../_images/image-20220408185138592.png" />
+<p><img alt="image9" src="../../_images/image-20220408185138592.png" /></p>
 <p>通过<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pods</span></code>命令，查看Pod的运行情况，可以看到Pod已经重启过一次</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod
 NAME                     READY   STATUS    RESTARTS   AGE

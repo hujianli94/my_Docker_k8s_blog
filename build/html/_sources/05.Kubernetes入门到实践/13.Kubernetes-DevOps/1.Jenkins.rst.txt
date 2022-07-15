@@ -312,7 +312,7 @@ Jenkins 应用以前启动起来了。
 ``jenkins.k8s.local``\ (需要做 DNS 解析或者在本地 ``/etc/hosts``
 中添加映射)来访问 jenkins 服务：
 
-.. image:: ../../_static/image-20220526094058494.png
+|image0|
 
 然后可以执行下面的命令获取解锁的管理员密码：
 
@@ -323,11 +323,11 @@ Jenkins 应用以前启动起来了。
 
 然后选择安装推荐的插件即可，由于我们已经做了插件的反向代理了，所以理论上安装速度会比较快
 
-.. image:: ../../_static/image-20220526094129373.png
+|image1|
 
 安装完成后添加管理员帐号即可进入到 jenkins 主界面：
 
-.. image:: ../../_static/image-20220526094150742.png
+|image2|
 
 2.架构
 ------
@@ -352,7 +352,7 @@ Jenkins 集群来搭建符合需求的 CI/CD 流程，然而传统的 Jenkins Sl
 Kubernetes 集群环境下面能够更好来解决上面的问题，下图是基于 Kubernetes
 搭建 Jenkins 集群的简单示意图：
 
-.. image:: ../../_static/image-20220526094345086.png
+|image3|
 
 从图上可以看到 ``Jenkins Master`` 和 ``Jenkins Slave`` 以 Pod 形式运行在
 Kubernetes 集群的 Node 上，Master
@@ -387,19 +387,19 @@ Kubernetes 集群的 Node 上，Master
 插件 <https://github.com/jenkinsci/kubernetes-plugin>`__\ ， 点击 Manage
 Jenkins -> Manage Plugins -> Available -> Kubernetes 勾选安装即可。
 
-.. image:: ../../_static/image-20220526094643977.png
+|image4|
 
 第2步. 安装完毕后，点击 Manage Jenkins —> Configure System —>
 (拖到最下方)，如果有 ``Add a new cloud`` —> 选择 Kubernetes，然后填写
 Kubernetes 和 Jenkins 配置信息即可，但是最新版本的 Kubernetes
 插件将配置单独放置到了一个页面中：
 
-.. image:: ../../_static/image-20220526094711782.png
+|image5|
 
 这个时候需要点击 ``a separate configuration page`` 这个链接，跳转到
 ``Configure Cloud`` 页面：
 
-.. image:: ../../_static/image-20220526094735008.png
+|image6|
 
 在该页面我们可以点击 ``Add a new cloud`` -> 选择 Kubernetes，然后填写
 Kubernetes 和 Jenkins 配置信息：
@@ -422,7 +422,7 @@ Job 的时候需要用到该值，然后我们这里使用的是 ``cnych/jenkins
 这个镜像，这个镜像是在官方的 jnlp 镜像基础上定制的，加入了
 docker、kubectl 等一些实用的工具。
 
-.. image:: ../../_static/image-20220526100539223.png
+|image7|
 
 :warning:**注意**\ ：
 
@@ -438,13 +438,13 @@ Docker，这就是大家说的 ``docker in docker`` 的方式，Docker
 工具来访问我们的 Kubernetes 集群，方便我们后面在 ``Slave Pod`` 部署
 Kubernetes 应用。
 
-.. image:: ../../_static/image-20220526103027808.png
+|image8|
 
 另外如果在配置了后运行 Slave Pod 的时候出现了权限问题，这是因为 Jenkins
 Slave Pod 中没有配置权限，所以需要配置上 ServiceAccount，在 Slave Pod
 配置的地方点击下面的高级，添加上对应的 ServiceAccount 即可：
 
-.. image:: ../../_static/image-20220526103054666.png
+|image9|
 
 到这里我们的 Kubernetes 插件就算配置完成了。
 
@@ -460,11 +460,11 @@ Kubernetes 插件的配置工作完成了，接下来我们就来添加一个 Jo
 这里要填入 ``ydzs-jnlp``\ ，就是前面我们配置的 Slave Pod 中的
 Label，这两个地方必须保持一致：
 
-.. image:: ../../_static/image-20220526103302267.png
+|image10|
 
 然后往下拉，在 Build 区域选择\ ``Execute shell``
 
-.. image:: ../../_static/image-20220526103326369.png
+|image11|
 
 然后输入我们测试命令
 
@@ -479,7 +479,7 @@ Label，这两个地方必须保持一致：
 
 最后点击保存
 
-.. image:: ../../_static/image-20220526103909603.png
+|image12|
 
 现在我们直接在页面点击左侧的 ``Build now`` 触发构建即可，然后观察
 Kubernetes 集群中 Pod 的变化：
@@ -496,7 +496,7 @@ Kubernetes 集群中 Pod 的变化：
 Slave。任务执行完成后我们可以看到任务信息，比如我们这里是 花费了 21s
 时间在 jnlp-1g893 这个 Slave上面
 
-.. image:: ../../_static/image-20220526103936149.png
+|image13|
 
 到这里证明我们的任务已经构建完成，然后这个时候我们再去集群查看我们的 Pod
 列表，发现 kube-ops 这个 namespace 下面已经没有之前的 Slave 这个 Pod
@@ -514,3 +514,18 @@ Slave。任务执行完成后我们可以看到任务信息，比如我们这里
 ----------
 
 https://www.qikqiak.com/k8strain/devops/jenkins/
+
+.. |image0| image:: ../../_static/image-20220526094058494.png
+.. |image1| image:: ../../_static/image-20220526094129373.png
+.. |image2| image:: ../../_static/image-20220526094150742.png
+.. |image3| image:: ../../_static/image-20220526094345086.png
+.. |image4| image:: ../../_static/image-20220526094643977.png
+.. |image5| image:: ../../_static/image-20220526094711782.png
+.. |image6| image:: ../../_static/image-20220526094735008.png
+.. |image7| image:: ../../_static/image-20220526100539223.png
+.. |image8| image:: ../../_static/image-20220526103027808.png
+.. |image9| image:: ../../_static/image-20220526103054666.png
+.. |image10| image:: ../../_static/image-20220526103302267.png
+.. |image11| image:: ../../_static/image-20220526103326369.png
+.. |image12| image:: ../../_static/image-20220526103909603.png
+.. |image13| image:: ../../_static/image-20220526103936149.png
