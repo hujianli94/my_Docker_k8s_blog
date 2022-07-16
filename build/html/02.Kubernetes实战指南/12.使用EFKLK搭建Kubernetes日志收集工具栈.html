@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -138,7 +139,7 @@
 </ul>
 </div>
 <section id="efklkkubernetes">
-<h1><a class="toc-backref" href="#id9">使用EFKLK搭建Kubernetes日志收集工具栈</a><a class="headerlink" href="#efklkkubernetes" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id9">使用EFKLK搭建Kubernetes日志收集工具栈</a><a class="headerlink" href="#efklkkubernetes" title="Permalink to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">Elasticsearch</span></code>
 是一个实时的、分布式的可扩展的搜索引擎，允许进行全文、结构化搜索，它通常用于索引和搜索大量日志数据，也可用于搜索许多不同类型的文档。</p>
 <p>Elasticsearch 通常与 <code class="docutils literal notranslate"><span class="pre">Kibana</span></code> 一起部署，Kibana 是 Elasticsearch
@@ -157,14 +158,14 @@ Fluentd，以便它在每个 Kubernetes 工作节点上都可以运行一个 Pod
 <p>地址：<a class="reference external" href="https://github.com/kubernetes/kubernetes/blob/master/cluster/addons/fluentd-elasticsearch/">https://github.com/kubernetes/kubernetes/blob/master/cluster/addons/fluentd-elasticsearch/</a>，直接安装即可。</p>
 </div></blockquote>
 <section id="elasticsearch">
-<h2><a class="toc-backref" href="#id10">1. 安装 Elasticsearch 集群</a><a class="headerlink" href="#elasticsearch" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">1. 安装 Elasticsearch 集群</a><a class="headerlink" href="#elasticsearch" title="Permalink to this heading">¶</a></h2>
 <p>在创建 Elasticsearch
 集群之前，我们先创建一个命名空间，我们将在其中安装所有日志相关的资源对象。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">create</span> <span class="n">ns</span> <span class="n">logging</span>
 </pre></div>
 </div>
 <section id="id1">
-<h3><a class="toc-backref" href="#id11">1.1 环境准备</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">1.1 环境准备</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
 <p>ElasticSearch 安装有最低安装要求，如果安装后 Pod
 无法正常启动，请检查是否符合最低要求的配置，要求如下：</p>
 <table class="docutils align-default">
@@ -233,14 +234,48 @@ Fluentd，以便它在每个 Kubernetes 工作节点上都可以运行一个 Pod
 </tbody>
 </table>
 <p>这里我们要安装的 ES 集群环境信息如下所示：</p>
-<p>集群名称      节点类型 副本数目 存储大小 网络模式  描述
-============= ======== ======== ======== =========
-========================================
-elasticsearch master   3        5G       ClusterIP 主节点，用于控制ES集群
-elasticsearch Data     3        50G      ClusterIP 数据节点，用于存储ES数据
-elasticsearch Client   2        无       NodePort  负责处理用户请求，实现请求转发，负载均衡
-============= ======== ======== ======== =========
-========================================</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 14%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>集群名称</p></th>
+<th class="head"><p>节点类型</p></th>
+<th class="head"><p>副本数目</p></th>
+<th class="head"><p>存储大小</p></th>
+<th class="head"><p>网络模式</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>elasticsearch</p></td>
+<td><p>Master</p></td>
+<td><p>3</p></td>
+<td><p>5Gi</p></td>
+<td><p>ClusterIP</p></td>
+<td><p>主节点</p></td>
+</tr>
+<tr class="row-odd"><td><p>elasticsearch</p></td>
+<td><p>Data</p></td>
+<td><p>3</p></td>
+<td><p>50Gi</p></td>
+<td><p>ClusterIP</p></td>
+<td><p>数据节点</p></td>
+</tr>
+<tr class="row-even"><td><p>elasticsearch</p></td>
+<td><p>Client</p></td>
+<td><p>2</p></td>
+<td><p>无</p></td>
+<td><p>NodePort</p></td>
+<td><p>处理用户请求、转发</p></td>
+</tr>
+</tbody>
+</table>
 <p>这里我们使用一个 NFS 类型的 StorageClass
 来做持久化存储，当然如果你是线上环境建议使用 Local PV 或者 Ceph RBD
 之类的存储来持久化 Elasticsearch 的数据。</p>
@@ -291,7 +326,7 @@ $ kubectl create secret -n logging generic elastic-auth --from-literal=username=
 </div>
 </section>
 <section id="es">
-<h3><a class="toc-backref" href="#id12">1.2 安装ES集群</a><a class="headerlink" href="#es" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">1.2 安装ES集群</a><a class="headerlink" href="#es" title="Permalink to this heading">¶</a></h3>
 <p>首先添加 ELastic 的 Helm 仓库：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">repo</span> <span class="n">add</span> <span class="n">elastic</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">helm</span><span class="o">.</span><span class="n">elastic</span><span class="o">.</span><span class="n">co</span>
 <span class="n">helm</span> <span class="n">repo</span> <span class="n">update</span>
@@ -572,7 +607,7 @@ $ kubectl create secret -n logging generic elastic-auth --from-literal=username=
 </section>
 </section>
 <section id="kibana">
-<h2><a class="toc-backref" href="#id13">2. 安装Kibana</a><a class="headerlink" href="#kibana" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">2. 安装Kibana</a><a class="headerlink" href="#kibana" title="Permalink to this heading">¶</a></h2>
 <p>Elasticsearch 集群安装完成后接下来配置安装 Kibana</p>
 <p>使用 <code class="docutils literal notranslate"><span class="pre">helm</span> <span class="pre">pull</span></code> 命令拉取 Kibana Chart 包并解压：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">pull</span> <span class="n">elastic</span><span class="o">/</span><span class="n">kibana</span> <span class="o">--</span><span class="n">untar</span> <span class="o">--</span><span class="n">version</span> <span class="mf">7.12.0</span>
@@ -659,7 +694,7 @@ elastic、密码 oschina进行登录。</p>
 <p><img alt="image2" src="../_images/image-20220329110220805.png" /></p>
 </section>
 <section id="fluentd">
-<h2><a class="toc-backref" href="#id14">3. 部署Fluentd</a><a class="headerlink" href="#fluentd" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">3. 部署Fluentd</a><a class="headerlink" href="#fluentd" title="Permalink to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Fluentd</span></code> 是一个高效的日志聚合器，是用 Ruby
 编写的，并且可以很好地扩展。对于大部分企业来说，Fluentd
 足够高效并且消耗的资源相对较少，另外一个工具<code class="docutils literal notranslate"><span class="pre">Fluent-bit</span></code>更轻量级，占用资源更少，但是插件相对
@@ -667,7 +702,7 @@ Fluentd 来说不够丰富，所以整体来说，Fluentd
 更加成熟，使用更加广泛，所以我们这里也同样使用 Fluentd
 来作为日志收集工具。</p>
 <section id="id2">
-<h3><a class="toc-backref" href="#id15">3.1 工作原理</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">3.1 工作原理</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
 <p>Fluentd
 通过一组给定的数据源抓取日志数据，处理后（转换成结构化的数据格式）将它们转发给其他服务，比如
 Elasticsearch、对象存储等等。Fluentd 支持超过 300
@@ -681,11 +716,11 @@ Elasticsearch、对象存储等等。Fluentd 支持超过 300
 <p><img alt="image3" src="../_images/image-20220329111052727.png" /></p>
 </section>
 <section id="id3">
-<h3><a class="toc-backref" href="#id16">3.2 配置</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">3.2 配置</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
 <p>一般来说我们是通过一个配置文件来告诉 Fluentd
 如何采集、处理数据的，下面简单和大家介绍下 Fluentd 的配置方法。</p>
 <section id="id4">
-<h4>日志源配置<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<h4>日志源配置<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h4>
 <p>比如我们这里为了收集 Kubernetes
 节点上的所有容器日志，就需要做如下的日志源配置：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;source&gt;
@@ -726,7 +761,7 @@ Elasticsearch、对象存储等等。Fluentd 支持超过 300
 </ul>
 </section>
 <section id="id5">
-<h4>路由配置<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<h4>路由配置<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h4>
 <p>上面是日志源的配置，接下来看看如何将日志数据发送到 Elasticsearch：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">match</span> <span class="o">**&gt;</span>
   <span class="nd">@id</span> <span class="n">elasticsearch</span>
@@ -774,7 +809,7 @@ logstash_format 设置为 <code class="docutils literal notranslate"><span class
 </ul>
 </section>
 <section id="id6">
-<h4>过滤<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<h4>过滤<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h4>
 <p>由于 Kubernetes
 集群中应用太多，也还有很多历史数据，所以我们可以只将某些应用的日志进行收集，比如我们只采集具有
 <code class="docutils literal notranslate"><span class="pre">logging=true</span></code> 这个 Label 标签的 Pod 日志，这个时候就需要使用
@@ -798,7 +833,7 @@ filter，如下所示：</p>
 </section>
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id17">3.3 安装</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">3.3 安装</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
 <p>要收集 Kubernetes 集群的日志，直接用 DasemonSet 控制器来部署 Fluentd
 应用，这样，它就可以从 Kubernetes
 节点上采集日志，确保在集群中的每个节点上始终运行一个 Fluentd
@@ -1139,7 +1174,7 @@ counter                                   1/1     Running   0          29s
 </section>
 </section>
 <section id="kafka">
-<h2><a class="toc-backref" href="#id18">4. 安装 Kafka</a><a class="headerlink" href="#kafka" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">4. 安装 Kafka</a><a class="headerlink" href="#kafka" title="Permalink to this heading">¶</a></h2>
 <p>对于大规模集群来说，日志数据量是非常巨大的，如果直接通过 Fluentd
 将日志打入 Elasticsearch，对 ES
 来说压力是非常巨大的，我们可以在中间加一层消息中间件来缓解 ES
@@ -1159,27 +1194,27 @@ $ <span class="nb">cd</span> kafka
 </div>
 <p>这里面我们指定使用一个 <code class="docutils literal notranslate"><span class="pre">StorageClass</span></code> 来提供持久化存储，在 Chart
 目录下面创建用于安装的 values 文件：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># values-prod.yaml</span>
-<span class="c1">## Persistence parameters</span>
-<span class="c1">##</span>
-<span class="nt">persistence</span><span class="p">:</span>
-  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">storageClass</span><span class="p">:</span> <span class="s">&quot;efk-nfs&quot;</span>
-  <span class="nt">accessModes</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
-  <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5Gi</span>
-  <span class="c1">## Mount point for persistence</span>
-  <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/bitnami/kafka</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># values-prod.yaml</span><span class="w"></span>
+<span class="c1">## Persistence parameters</span><span class="w"></span>
+<span class="c1">##</span><span class="w"></span>
+<span class="nt">persistence</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">storageClass</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;efk-nfs&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span><span class="w"></span>
+<span class="w">  </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5Gi</span><span class="w"></span>
+<span class="w">  </span><span class="c1">## Mount point for persistence</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/bitnami/kafka</span><span class="w"></span>
 
-<span class="c1"># 配置zk volumes</span>
-<span class="nt">zookeeper</span><span class="p">:</span>
-  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">persistence</span><span class="p">:</span>
-    <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">storageClass</span><span class="p">:</span> <span class="s">&quot;efk-nfs&quot;</span>
-    <span class="nt">accessModes</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
-    <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8Gi</span>
+<span class="c1"># 配置zk volumes</span><span class="w"></span>
+<span class="nt">zookeeper</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">persistence</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">storageClass</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;efk-nfs&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">accessModes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span><span class="w"></span>
+<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8Gi</span><span class="w"></span>
 </pre></div>
 </div>
 <p>直接使用上面的 values 文件安装 kafka：</p>
@@ -1251,7 +1286,7 @@ hello kafka on k8s
 <p>如果在消费端看到了生产的消息数据证明我们的 Kafka 已经运行成功了。</p>
 </section>
 <section id="fluentd-kafka">
-<h2><a class="toc-backref" href="#id19">5. Fluentd 配置 Kafka</a><a class="headerlink" href="#fluentd-kafka" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">5. Fluentd 配置 Kafka</a><a class="headerlink" href="#fluentd-kafka" title="Permalink to this heading">¶</a></h2>
 <p>现在有了 Kafka，我们就可以将 Fluentd 的日志数据输出到 Kafka 了，只需要将
 Fluentd 配置中的 <code class="docutils literal notranslate"><span class="pre">&lt;match&gt;</span></code> 更改为使用 Kafka 插件即可，但是在 Fluentd
 中输出到 Kafka，需要使用到 <code class="docutils literal notranslate"><span class="pre">fluent-plugin-kafka</span></code>
@@ -1267,39 +1302,39 @@ Fluentd 配置中的 <code class="docutils literal notranslate"><span class="pre
 镜像即可，我这里构建过后的镜像名为
 <code class="docutils literal notranslate"><span class="pre">registry.cn-hangzhou.aliyuncs.com/hu_k8s/fluent-plugin-kafka-0.16.1</span></code>。接下来替换
 Fluentd 的 Configmap 对象中的 <code class="docutils literal notranslate"><span class="pre">&lt;match&gt;</span></code> 部分，如下所示：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># fluentd-configmap.yaml</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
-<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-conf</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
-<span class="nt">data</span><span class="p">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">.....</span>
-  <span class="l l-Scalar l-Scalar-Plain">output.conf</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">|-</span>
-    <span class="no">&lt;match **&gt;</span>
-      <span class="no">@id kafka</span>
-      <span class="no">@type kafka2</span>
-      <span class="no">@log_level info</span>
-      <span class="no"># list of seed brokers</span>
-      <span class="no">brokers kafka-0.kafka-headless.logging.svc.cluster.local:9092</span>
-      <span class="no">use_event_time true</span>
-      <span class="no"># topic settings</span>
-      <span class="no">topic_key k8slog</span>
-      <span class="no">default_topic messages  # 注意，kafka中消费使用的是这个topic</span>
-      <span class="no"># buffer settings</span>
-      <span class="no">&lt;buffer k8slog&gt;</span>
-        <span class="no">@type file</span>
-        <span class="no">path /var/log/td-agent/buffer/td</span>
-        <span class="no">flush_interval 3s</span>
-      <span class="no">&lt;/buffer&gt;</span>
-      <span class="no"># data type settings</span>
-      <span class="no">&lt;format&gt;</span>
-        <span class="no">@type json</span>
-      <span class="no">&lt;/format&gt;</span>
-      <span class="no"># producer settings</span>
-      <span class="no">required_acks -1</span>
-      <span class="no">compression_codec gzip</span>
-    <span class="no">&lt;/match&gt;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># fluentd-configmap.yaml</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span><span class="w"></span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fluentd-conf</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logging</span><span class="w"></span>
+<span class="nt">data</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">.....</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">output.conf</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">|-</span><span class="w"></span>
+<span class="w">    </span><span class="no">&lt;match **&gt;</span><span class="w"></span>
+<span class="w">      </span><span class="no">@id kafka</span><span class="w"></span>
+<span class="w">      </span><span class="no">@type kafka2</span><span class="w"></span>
+<span class="w">      </span><span class="no">@log_level info</span><span class="w"></span>
+<span class="w">      </span><span class="no"># list of seed brokers</span><span class="w"></span>
+<span class="w">      </span><span class="no">brokers kafka-0.kafka-headless.logging.svc.cluster.local:9092</span><span class="w"></span>
+<span class="w">      </span><span class="no">use_event_time true</span><span class="w"></span>
+<span class="w">      </span><span class="no"># topic settings</span><span class="w"></span>
+<span class="w">      </span><span class="no">topic_key k8slog</span><span class="w"></span>
+<span class="w">      </span><span class="no">default_topic messages  # 注意，kafka中消费使用的是这个topic</span><span class="w"></span>
+<span class="w">      </span><span class="no"># buffer settings</span><span class="w"></span>
+<span class="w">      </span><span class="no">&lt;buffer k8slog&gt;</span><span class="w"></span>
+<span class="w">        </span><span class="no">@type file</span><span class="w"></span>
+<span class="w">        </span><span class="no">path /var/log/td-agent/buffer/td</span><span class="w"></span>
+<span class="w">        </span><span class="no">flush_interval 3s</span><span class="w"></span>
+<span class="w">      </span><span class="no">&lt;/buffer&gt;</span><span class="w"></span>
+<span class="w">      </span><span class="no"># data type settings</span><span class="w"></span>
+<span class="w">      </span><span class="no">&lt;format&gt;</span><span class="w"></span>
+<span class="w">        </span><span class="no">@type json</span><span class="w"></span>
+<span class="w">      </span><span class="no">&lt;/format&gt;</span><span class="w"></span>
+<span class="w">      </span><span class="no"># producer settings</span><span class="w"></span>
+<span class="w">      </span><span class="no">required_acks -1</span><span class="w"></span>
+<span class="w">      </span><span class="no">compression_codec gzip</span><span class="w"></span>
+<span class="w">    </span><span class="no">&lt;/match&gt;</span><span class="w"></span>
 </pre></div>
 </div>
 <blockquote>
@@ -1352,7 +1387,7 @@ I have no name!@kafka-client:/$ kafka-console-consumer.sh --bootstrap-server kaf
 </div>
 </section>
 <section id="logstash">
-<h2><a class="toc-backref" href="#id20">6. 安装 Logstash</a><a class="headerlink" href="#logstash" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id20">6. 安装 Logstash</a><a class="headerlink" href="#logstash" title="Permalink to this heading">¶</a></h2>
 <p>虽然数据从 Kafka 到 Elasticsearch
 的方式多种多样，我们这里还是采用更加流行的 Logstash
 方案，上面我们已经将日志从 Fluentd 采集输出到 Kafka
@@ -1365,34 +1400,34 @@ $ <span class="nb">cd</span> logstash
 </div>
 <p>同样在 Chart 根目录下面创建用于安装的 Values 文件，如下所示：</p>
 <p><code class="docutils literal notranslate"><span class="pre">values-prod.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># values-prod.yaml</span>
-<span class="nt">fullnameOverride</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logstash</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># values-prod.yaml</span><span class="w"></span>
+<span class="nt">fullnameOverride</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logstash</span><span class="w"></span>
 
-<span class="nt">persistence</span><span class="p">:</span>
-  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">persistence</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-<span class="nt">logstashConfig</span><span class="p">:</span>
-  <span class="nt">logstash.yml</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-    <span class="no">http.host: 0.0.0.0</span>
-    <span class="no"># 如果启用了xpack，需要做如下配置</span>
-    <span class="no">xpack.monitoring.enabled: true</span>
-    <span class="no">xpack.monitoring.elasticsearch.hosts: [&quot;http://elasticsearch-client:9200&quot;]</span>
-    <span class="no">xpack.monitoring.elasticsearch.username: &quot;elastic&quot;</span>
-    <span class="no">xpack.monitoring.elasticsearch.password: &quot;oschina&quot;</span>
+<span class="nt">logstashConfig</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">logstash.yml</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">    </span><span class="no">http.host: 0.0.0.0</span><span class="w"></span>
+<span class="w">    </span><span class="no"># 如果启用了xpack，需要做如下配置</span><span class="w"></span>
+<span class="w">    </span><span class="no">xpack.monitoring.enabled: true</span><span class="w"></span>
+<span class="w">    </span><span class="no">xpack.monitoring.elasticsearch.hosts: [&quot;http://elasticsearch-client:9200&quot;]</span><span class="w"></span>
+<span class="w">    </span><span class="no">xpack.monitoring.elasticsearch.username: &quot;elastic&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="no">xpack.monitoring.elasticsearch.password: &quot;oschina&quot;</span><span class="w"></span>
 
-<span class="c1"># 要注意下格式</span>
-<span class="nt">logstashPipeline</span><span class="p">:</span>
-  <span class="nt">logstash.conf</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-    <span class="no">input { kafka { bootstrap_servers =&gt; &quot;kafka-0.kafka-headless.logging.svc.cluster.local:9092&quot; codec =&gt; json consumer_threads =&gt; 3 topics =&gt; [&quot;messages&quot;] } }</span>
-    <span class="no">filter {}  # 过滤配置（比如可以删除key、添加geoip等等）</span>
-    <span class="no">output { elasticsearch { hosts =&gt; [ &quot;elasticsearch-client:9200&quot; ] user =&gt; &quot;elastic&quot; password =&gt; &quot;oschina&quot; index =&gt; &quot;logstash-k8s-%{+YYYY.MM.dd}&quot; } stdout { codec =&gt; rubydebug } }</span>
+<span class="c1"># 要注意下格式</span><span class="w"></span>
+<span class="nt">logstashPipeline</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">logstash.conf</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">    </span><span class="no">input { kafka { bootstrap_servers =&gt; &quot;kafka-0.kafka-headless.logging.svc.cluster.local:9092&quot; codec =&gt; json consumer_threads =&gt; 3 topics =&gt; [&quot;messages&quot;] } }</span><span class="w"></span>
+<span class="w">    </span><span class="no">filter {}  # 过滤配置（比如可以删除key、添加geoip等等）</span><span class="w"></span>
+<span class="w">    </span><span class="no">output { elasticsearch { hosts =&gt; [ &quot;elasticsearch-client:9200&quot; ] user =&gt; &quot;elastic&quot; password =&gt; &quot;oschina&quot; index =&gt; &quot;logstash-k8s-%{+YYYY.MM.dd}&quot; } stdout { codec =&gt; rubydebug } }</span><span class="w"></span>
 
-<span class="nt">volumeClaimTemplate</span><span class="p">:</span>
-  <span class="nt">accessModes</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;ReadWriteOnce&quot;</span><span class="p p-Indicator">]</span>
-  <span class="nt">storageClassName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">efk-nfs</span>
-  <span class="nt">resources</span><span class="p">:</span>
-    <span class="nt">requests</span><span class="p">:</span>
-      <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10Gi</span>
+<span class="nt">volumeClaimTemplate</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;ReadWriteOnce&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">efk-nfs</span><span class="w"></span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10Gi</span><span class="w"></span>
 </pre></div>
 </div>
 <p>其中最重要的就是通过 <code class="docutils literal notranslate"><span class="pre">logstashPipeline</span></code> 配置 logstash
@@ -1444,7 +1479,7 @@ $ kubectl logs -f logstash-0 -n logging
 <p>然后同样创建索引模式，匹配上面的索引即可。</p>
 </section>
 <section id="id8">
-<h2><a class="toc-backref" href="#id21">参考文献</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id21">参考文献</a><a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://mp.weixin.qq.com/s/lPeYavvFJ6GdivkT0iwTGw">https://mp.weixin.qq.com/s/lPeYavvFJ6GdivkT0iwTGw</a></p>
 </section>
 </section>

@@ -96,7 +96,7 @@ copyright = u'2019, huxiaojian'
 version = '1.0'
 # The full version, including alpha/beta/rc tags.
 release = '1.0.0'
-language = None
+language = 'en'
 
 exclude_patterns = []
 

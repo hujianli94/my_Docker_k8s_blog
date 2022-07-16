@@ -14,6 +14,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -140,9 +141,9 @@
 </ul>
 </div>
 <section id="helm">
-<h1><a class="toc-backref" href="#id10">Helm的高级功能</a><a class="headerlink" href="#helm" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id10">Helm的高级功能</a><a class="headerlink" href="#helm" title="Permalink to this heading">¶</a></h1>
 <section id="id1">
-<h2><a class="toc-backref" href="#id11">1. 模板和试运行</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">1. 模板和试运行</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <p>当Helm安装一个发行版时，程序会经历几个阶段。它加载chart，解析传递给程序的值，读取chart元数据，等等。大约在这个过程的中间，Helm编译chart中的所有模板（一次完成），然后通过传递值来呈现它们（就像我们在上一章中看到的那样）。</p>
 <p>在这个中间部分，它执行所有的模板指令。一旦模板被呈现到YAML中，Helm通过将其解析为Kubernetes对象来验证YAML的结构。最后，Helm序列化这些对象并将它们发送到kubernetes
 API服务器。</p>
@@ -155,7 +156,7 @@ API服务器。</p>
 <li><p>将它发送给Kubernetes。</p></li>
 </ol>
 <section id="dry-run">
-<h3><a class="toc-backref" href="#id12">1.1 –dry-run标志</a><a class="headerlink" href="#dry-run" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">1.1 –dry-run标志</a><a class="headerlink" href="#dry-run" title="Permalink to this heading">¶</a></h3>
 <p>helm install和helm
 upgrade等命令提供了一个名为–dry-run的标志。当在命令行中添加此标志时，将导致Helm逐步完成前四个阶段（加载chart、确定值、渲染模板、格式化为YAML）。</p>
 <p>但是当第四阶段结束时，Helm会将大量信息转储到标准输出，包括所有渲染的模板。然后它将退出，而不将对象发送给Kubernetes，也不创建任何发布记录。</p>
@@ -189,7 +190,7 @@ upgrade等命令提供了一个名为–dry-run的标志。当在命令行中添
 </div>
 </section>
 <section id="helm-template">
-<h3><a class="toc-backref" href="#id13">1.2 helm template命令</a><a class="headerlink" href="#helm-template" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">1.2 helm template命令</a><a class="headerlink" href="#helm-template" title="Permalink to this heading">¶</a></h3>
 <p>虽然–dry-run是为调试而设计的，但helm
 template是为了将Helm的模板渲染过程与安装或升级逻辑隔离开来。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm template mysite bitnami/drupal --values values.yaml --set <span class="nv">drupalEmail</span><span class="o">=</span><span class="s2">&quot;hujinali@oschin.cn&quot;</span>
@@ -211,16 +212,16 @@ chart渲染到YAML中的工具，–dry-run标志是一个用于调试安装和�
 </section>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id14">2. 了解发布版本信息</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">2. 了解发布版本信息</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
 <section id="id3">
-<h3><a class="toc-backref" href="#id15">2.1 发布记录</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">2.1 发布记录</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
 <p>每次升级mysite安装时，都会创建一个新的Secret来跟踪每个版本。换句话说，发布记录跟踪安装的每个修订版：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl get secret
 </pre></div>
 </div>
 </section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id16">2.2 列出发布版本</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">2.2 列出发布版本</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ helm ls
 NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
 mysite  default         2               2022-05-07 02:23:59.050699352 -0400 EDT deployed        drupal-12.0.1   9.3.12
@@ -229,13 +230,13 @@ mysite  default         2               2022-05-07 02:23:59.050699352 -0400 EDT 
 <p>REVISION的值为2。</p>
 </section>
 <section id="helm-get">
-<h3><a class="toc-backref" href="#id17">2.3 使用helm get查找发布的详细信息</a><a class="headerlink" href="#helm-get" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">2.3 使用helm get查找发布的详细信息</a><a class="headerlink" href="#helm-get" title="Permalink to this heading">¶</a></h3>
 <p>虽然helm list提供了安装的摘要视图，但helm
 get命令集提供了有关特定发布版本的更深入的信息。</p>
 <p>helm
 get有5个子命令（hooks、manifests、notes、values和all）。每个子命令都会检索某个版本的Helm跟踪信息的某些部分。</p>
 <section id="helm-get-notes">
-<h4>1.使用helm get notes<a class="headerlink" href="#helm-get-notes" title="Permalink to this headline">¶</a></h4>
+<h4>1.使用helm get notes<a class="headerlink" href="#helm-get-notes" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm get notes mysite
 NOTES:
 CHART NAME: drupal
@@ -258,7 +259,7 @@ APP VERSION: <span class="m">9</span>.3.12** Please be patient <span class="k">w
 </div>
 </section>
 <section id="helm-get-values">
-<h4>2.使用helm get values<a class="headerlink" href="#helm-get-values" title="Permalink to this headline">¶</a></h4>
+<h4>2.使用helm get values<a class="headerlink" href="#helm-get-values" title="Permalink to this heading">¶</a></h4>
 <p><strong>查看使用的values配置</strong></p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm get values mysite
 USER-SUPPLIED VALUES:
@@ -313,7 +314,7 @@ allowEmptyPasswo
 </div>
 </section>
 <section id="helm-get-manifest">
-<h4>3.使用helm get manifest<a class="headerlink" href="#helm-get-manifest" title="Permalink to this headline">¶</a></h4>
+<h4>3.使用helm get manifest<a class="headerlink" href="#helm-get-manifest" title="Permalink to this heading">¶</a></h4>
 <p>此子命令获取Helm使用Chart模板生成的确切YAML清单：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm get manifest mysite
 ---
@@ -363,7 +364,7 @@ metadata:
 </section>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id18">3. 历史记录和回滚</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">3. 历史记录和回滚</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm list
 NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
 mysite  default         <span class="m">2</span>               <span class="m">2022</span>-05-07 <span class="m">02</span>:23:59.050699352 -0400 EDT deployed        drupal-12.0.1   <span class="m">9</span>.3.12
@@ -413,7 +414,7 @@ REVISION        UPDATED                         STATUS          CHART           
 <p>从本质上讲，回滚将在资源的当前状态、失败的Helm版本和回滚到的Helm版本之间产生一个三向差异。在某些情况下，生成的差异可能导致回滚手工编辑的内容，而在其他情况下，这些差异将被合并。在最坏的情况下，某些手工编辑的内容可能会被覆盖，而其他相关的编辑内容则会被合并，从而导致配置不一致。这是Helm核心维护人员建议不要手工编辑资源的众多原因之一。</p>
 <p>如果所有的编辑都是通过Helm进行的，那么你就可以有效地使用Helm工具，而无须猜测。</p>
 <section id="id6">
-<h3><a class="toc-backref" href="#id19">3.1 保留历史和回滚</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">3.1 保留历史和回滚</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
 <p>在上一章中，我们看到helm
 uninstall命令有一个名为–keep-history的标志。通常，删除事件将销毁与该安装相关联的所有发布记录。但是当指定–keep-history时，即使删除了安装，你也可以看到它的历史记录：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm uninstall mysite --keep-history
@@ -446,13 +447,13 @@ REVISION        UPDATED                         STATUS          CHART           
 </section>
 </section>
 <section id="id7">
-<h2><a class="toc-backref" href="#id20">4.深入了解安装和升级</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id20">4.深入了解安装和升级</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h2>
 <section id="generate-namename-template">
-<h3><a class="toc-backref" href="#id21">4.1 –generate-name和–name-template标志</a><a class="headerlink" href="#generate-namename-template" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">4.1 –generate-name和–name-template标志</a><a class="headerlink" href="#generate-namename-template" title="Permalink to this heading">¶</a></h3>
 <p>Kubernetes的工作方式有一个与命名有关的微妙危险。Kubernetes假设名称将具有某些唯一性属性。例如，Deployment对象的命名空间中必须具有唯一的名称。也就是说，在命名空间mynamespace中不能有两个名为myapp的Deployment。但可以有一个Deployment和一个Pod，它们都叫myapp。</p>
 <p>这使得某些任务变得更加复杂。例如，自动部署内容的CI系统必须确保这些内容的名称在命名空间中是唯一的。处理这个问题的一种方法是Helm提供一个工具来生成唯一的名称。</p>
 <section id="id8">
-<h4>1.使用默认名称+随机数<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<h4>1.使用默认名称+随机数<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h4>
 <p>Helm为helm install提供–generate name标志：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ helm install bitnami/drupal --values values.yaml --generate-name
 NAME: drupal-1651906366
@@ -470,7 +471,7 @@ CHART NAME: drupal
 install的第一个参数。Helm根据chart名称和时间戳的组合生成名称。在前面的输出中，我们可以看到生成的名称：drupal-1651906366。</p>
 </section>
 <section id="id9">
-<h4>2. 使用自定义名称<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<h4>2. 使用自定义名称<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h4>
 <p>还有一个额外的标志允许你指定命名模板。–name-template标志允许你执行以下操作：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm install bitnami/drupal --values values.yaml --generate-name --name-template <span class="s2">&quot;mysite-{{ randAlpha 9 | lower  }}&quot;</span>
 NAME: mysite-lbrmruxpa
@@ -484,7 +485,7 @@ REVISION: <span class="m">1</span>
 </section>
 </section>
 <section id="create-namespace">
-<h3><a class="toc-backref" href="#id22">4.2 –create-namespace标志</a><a class="headerlink" href="#create-namespace" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">4.2 –create-namespace标志</a><a class="headerlink" href="#create-namespace" title="Permalink to this heading">¶</a></h3>
 <p>Helm确实允许你通过显式地声明要创建命名空间来覆盖此考虑：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ helm install mysite bitnami/drupal --values values.yaml -n first-test --create-namespace
 NAME: mysite
@@ -511,7 +512,7 @@ $ kubectl delete ns first-test
 </div>
 </section>
 <section id="helm-upgradeinstall">
-<h3><a class="toc-backref" href="#id23">4.3 使用helm upgrade–install</a><a class="headerlink" href="#helm-upgradeinstall" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">4.3 使用helm upgrade–install</a><a class="headerlink" href="#helm-upgradeinstall" title="Permalink to this heading">¶</a></h3>
 <p>这样的系统通常在无状态平台上运行基本脚本，而无状态平台没有查询Kubernetes的方法。</p>
 <p>这类系统的用户要求Helm提供一个特性，<strong>允许在一个命令中支持“安装或升级”</strong>。</p>
 <p>为了方便这种行为，Helm维护人员在helm upgrade命令中添加了–install标志。</p>
@@ -536,7 +537,7 @@ CHART VERSION: <span class="m">12</span>.0.1
 upgrade–install的安装名称是属于你要升级的发布版本，还是恰好与你要安装的名称相同。不小心使用此命令可能会导致用另一个安装覆盖某个安装。这就是它不是Helm的默认行为的原因。</p>
 </section>
 <section id="waitatomic">
-<h3><a class="toc-backref" href="#id24">4.4 –wait和–atomic标志</a><a class="headerlink" href="#waitatomic" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">4.4 –wait和–atomic标志</a><a class="headerlink" href="#waitatomic" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 通过设置–wait参数，将等待所有Pod、PVC和Service以及Deployment、StatefulSet和ReplicaSet的最小Pod数都处于就绪状态后，然后才将Release标记为deployed状态，然后install命令行返回成功。等待–timeout时间，–timeout缺省为5m0s。</span>
 $ helm install myweb bitnami/tomcat <span class="se">\</span>
   --wait <span class="se">\</span>
@@ -557,7 +558,7 @@ $ helm install myweb bitnami/tomcat <span class="se">\</span>
 </div>
 </section>
 <section id="forcecleanup-on-fail">
-<h3><a class="toc-backref" href="#id25">4.5 使用–force和–cleanup-on-fail升级</a><a class="headerlink" href="#forcecleanup-on-fail" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">4.5 使用–force和–cleanup-on-fail升级</a><a class="headerlink" href="#forcecleanup-on-fail" title="Permalink to this heading">¶</a></h3>
 <p>我们下面看到的最后两个标志修改了Helm处理升级的细微差别的方式。</p>
 <p>–force标志在升级用于管理pod（如Pod、Deployment和StatefulSet）的资源时修改Helm的行为。</p>
 <p>通常，当Kubernetes收到修改此类对象的请求时，它会确定是否需要重新启动此资源管理的pod。</p>

@@ -14,6 +14,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -134,7 +135,7 @@
 </ul>
 </div>
 <section id="id1">
-<h1><a class="toc-backref" href="#id18">配置存储卷</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id18">配置存储卷</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h1>
 <p>Kubernetes还拥有一些存储卷，但它们并不是用来进行容器间交互或Pod间数据共享的，而是用于向各个Pod的容器中注入配置信息
 的。它们的使用方式大同小异，Pod可以通过环境变量或者存储卷访问这些配置信息。</p>
 <p>目前这类存储卷主要分为3种。</p>
@@ -144,7 +145,7 @@
 <li><p>DownwardAPI：可传递Pod和容器自身的运行信息。</p></li>
 </ul>
 <section id="configmap">
-<h2><a class="toc-backref" href="#id19">1. ConfigMap</a><a class="headerlink" href="#configmap" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">1. ConfigMap</a><a class="headerlink" href="#configmap" title="Permalink to this heading">¶</a></h2>
 <p>在企业运营中，一般都会有多个部署环境，如开发环境、测试环境、预发布环境、生产环境等，这几种环境的配置也各有不同。如果
 在Pod模板中直接配置，会发现管理非常困难，每个环境都要准备不同的模板。</p>
 <p>利用 ConfigMap
@@ -153,9 +154,9 @@
 <p>利用ConfigMap解耦部署与配置间的关系 如图所示</p>
 <p><img alt="image0" src="../../_images/image-20220419095433455.png" /></p>
 <section id="id2">
-<h3><a class="toc-backref" href="#id20">1.1 ConfigMap创建</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">1.1 ConfigMap创建</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
 <section id="key-value">
-<h4>1. 从key-value字符串创建<a class="headerlink" href="#key-value" title="Permalink to this headline">¶</a></h4>
+<h4>1. 从key-value字符串创建<a class="headerlink" href="#key-value" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create configmap special-config --from-literal<span class="o">=</span>special.how<span class="o">=</span>very
 configmap <span class="s2">&quot;special-config&quot;</span> created
 
@@ -165,7 +166,7 @@ map<span class="o">[</span>special.how:very<span class="o">]</span>
 </div>
 </section>
 <section id="env">
-<h4>2. 从env文件创建<a class="headerlink" href="#env" title="Permalink to this headline">¶</a></h4>
+<h4>2. 从env文件创建<a class="headerlink" href="#env" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">echo</span> -e <span class="s2">&quot;a=b\nc=d&quot;</span> <span class="p">|</span> tee config.env
 <span class="nv">a</span><span class="o">=</span>b
 <span class="nv">c</span><span class="o">=</span>d
@@ -179,7 +180,7 @@ map<span class="o">[</span>a:b c:d<span class="o">]</span>
 </div>
 </section>
 <section id="id3">
-<h4>3. 从目录创建<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<h4>3. 从目录创建<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mkdir config
 $ <span class="nb">echo</span> a&gt;config/a
 $ <span class="nb">echo</span> b&gt;config/b
@@ -206,15 +207,15 @@ map<span class="o">[</span>a:a
 </div>
 </section>
 <section id="yaml-json">
-<h4>4. 从文件Yaml/Json 文件创建<a class="headerlink" href="#yaml-json" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">special-config</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
-<span class="nt">data</span><span class="p">:</span>
-  <span class="nt">special.how</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">very</span>
-  <span class="nt">special.type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">charm</span>
+<h4>4. 从文件Yaml/Json 文件创建<a class="headerlink" href="#yaml-json" title="Permalink to this heading">¶</a></h4>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">special-config</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
+<span class="nt">data</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">special.how</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">very</span><span class="w"></span>
+<span class="w">  </span><span class="nt">special.type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">charm</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create  -f  config.yaml
@@ -224,13 +225,13 @@ configmap <span class="s2">&quot;special-config&quot;</span> created
 <p>ConfigMap主要是以键值对的方式来存储配置信息的。首先，创建一个ConfigMap。和之前一样，通过以下命令创建模板
 文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">exampleconfigmap.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
-<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span>
-<span class="nt">data</span><span class="p">:</span>
-  <span class="nt">exampleHostName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">www.testk8s.com</span>
-  <span class="nt">exampleBusinessMode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleMode</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span><span class="w"></span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span><span class="w"></span>
+<span class="nt">data</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">exampleHostName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">www.testk8s.com</span><span class="w"></span>
+<span class="w">  </span><span class="nt">exampleBusinessMode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleMode</span><span class="w"></span>
 </pre></div>
 </div>
 <p>运行以下命令，通过模板创建ConfigMap。</p>
@@ -265,32 +266,32 @@ Events:  &lt;none&gt;
 </section>
 </section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id21">1.2 ConfigMap使用</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">1.2 ConfigMap使用</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
 <section id="id5">
-<h4>1. 环境变量引用方式<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<h4>1. 环境变量引用方式<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforenvconfig.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforenvconfig</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforenv</span>
-      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-      <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-      <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-      <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;EnvParaHostName:</span><span class="nv"> </span><span class="s">${EnvParaHostName}</span><span class="nv"> </span><span class="s">EnvParaBusinessMode:</span><span class="nv"> </span><span class="s">${EnvParaBusinessMode}&quot;;</span><span class="nv"> </span><span class="s">printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">EnvPara;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
-      <span class="nt">env</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaHostName</span>
-          <span class="nt">valueFrom</span><span class="p">:</span>
-            <span class="nt">configMapKeyRef</span><span class="p">:</span>
-              <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span>
-              <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleHostName</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaBusinessMode</span>
-          <span class="nt">valueFrom</span><span class="p">:</span>
-            <span class="nt">configMapKeyRef</span><span class="p">:</span>
-              <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span>
-              <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleBusinessMode</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforenvconfig</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">containerforenv</span><span class="w"></span>
+<span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">      </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;EnvParaHostName:</span><span class="nv"> </span><span class="s">${EnvParaHostName}</span><span class="nv"> </span><span class="s">EnvParaBusinessMode:</span><span class="nv"> </span><span class="s">${EnvParaBusinessMode}&quot;;</span><span class="nv"> </span><span class="s">printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">EnvPara;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">env</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EnvParaHostName</span><span class="w"></span>
+<span class="w">          </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">configMapKeyRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span><span class="w"></span>
+<span class="w">              </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleHostName</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EnvParaBusinessMode</span><span class="w"></span>
+<span class="w">          </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">configMapKeyRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span><span class="w"></span>
+<span class="w">              </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleBusinessMode</span><span class="w"></span>
 </pre></div>
 </div>
 <p>通过valueFrom、configMapKeyRef、name、key等属性，我们可以指定具体要引用哪些环境变量。</p>
@@ -318,20 +319,20 @@ EnvParaHostName: www.testk8s.com EnvParaBusinessMode: exampleMode
 <p>有些时候，ConfigMap中设置的键值对可能会非常多，一个个配置到Pod模板中会相当麻烦。</p>
 <p>Kubernetes还提供了一种简易的方式，即将ConfigMap中的所有键值对直接配置到Pod中。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforenvconfigv2.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforenvconfigv2</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforenv</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">example;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">envFrom</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">configMapRef</span><span class="p">:</span>
-        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforenvconfigv2</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">containerforenv</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">example;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">envFrom</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">configMapRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span><span class="w"></span>
 </pre></div>
 </div>
 <p>本例中直接使用envFrom属性，表示整个环境变量都是从外部文件引用的；引用方式为configMapRef，表示从ConfigMap中引用；
@@ -352,29 +353,29 @@ example输出Pod中包含“example”字符串的环境变量（因为其他环
 </div>
 </section>
 <section id="id6">
-<h4>2. 存储卷引用方式<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<h4>2. 存储卷引用方式<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h4>
 <p>因为ConfigMap本身是一种特殊的存储卷，所以也可以通过存储卷方式配置到Pod中。不同于环境变量的引用方式，这种引用方式会将每
 个键值对都转换成对应的实体文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforvolumeconfig.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforvolumeconfig</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforvolume</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;files:&quot;;</span><span class="nv"> </span><span class="s">ls</span><span class="nv"> </span><span class="s">/config/allvalues;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">volumeMounts</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumeconfig</span>
-      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/config/allvalues</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforvolumeconfig</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">containerforvolume</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;files:&quot;;</span><span class="nv"> </span><span class="s">ls</span><span class="nv"> </span><span class="s">/config/allvalues;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volumeconfig</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/config/allvalues</span><span class="w"></span>
 
-  <span class="nt">volumes</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumeconfig</span>
-    <span class="nt">configMap</span><span class="p">:</span>
-      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span>
+<span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volumeconfig</span><span class="w"></span>
+<span class="w">    </span><span class="nt">configMap</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleconfigmap</span><span class="w"></span>
 </pre></div>
 </div>
 <p>本例中创建的存储卷名称为volumeconfig，这个名称会被容器设置中的数据卷引用。存储卷的类型是configMap，其name属性为
@@ -408,7 +409,7 @@ www.testk8s.com/ <span class="c1">#</span>
 </section>
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id22">1.3 参考文献</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">1.3 参考文献</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
 <blockquote>
 <div><p>Kubernetes资源管理ConfigMap</p>
 <p><a class="reference external" href="https://www.cnblogs.com/infodriven/p/16261141.html">https://www.cnblogs.com/infodriven/p/16261141.html</a></p>
@@ -416,7 +417,7 @@ www.testk8s.com/ <span class="c1">#</span>
 </section>
 </section>
 <section id="secret">
-<h2><a class="toc-backref" href="#id23">2. Secret</a><a class="headerlink" href="#secret" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">2. Secret</a><a class="headerlink" href="#secret" title="Permalink to this heading">¶</a></h2>
 <p>如果说 ConfigMap 用于传递普通的配置信息，那么 Secret
 则用于传递敏感的、加密的配置信息，例如，用户名和密码等敏感信息。</p>
 <p>话虽如此，实际上Secret的安全性并不高，因为它本质上通过base64格式对信息进行编码，连加密都算不上，这些编码后的信息只
@@ -433,7 +434,7 @@ serviceaccount目录下，后续章节会详述这种Secret。</p></li>
 </ul>
 <p>接下来将主要介绍OpaqueSecret和ImagePullSecret的基本使用方式。</p>
 <section id="opaquesecret">
-<h3><a class="toc-backref" href="#id24">2.1 OpaqueSecret</a><a class="headerlink" href="#opaquesecret" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">2.1 OpaqueSecret</a><a class="headerlink" href="#opaquesecret" title="Permalink to this heading">¶</a></h3>
 <p>OpaqueSecret完全就是ConfigMap的翻版，它们的定义方式和使用方式类似，都是使用键值对形式，但区别在于，OpaqueSecret中各个键对应的值必须通过base64进行编码才能配置。</p>
 <p>现在创建一个OpaqueSecret。假设我们要用OpaqueSecret来存储自定义的用户名和密码，在本例中用户名为superuser，密码为
 abc12345。首先，需要对用户名和密码进行base64编码。</p>
@@ -502,30 +503,30 @@ superuser
 </div>
 <p>Secret创建完成后就可以在Pod中引用了。Secret和ConfigMap的引用方式大同小异。接下来分别介绍Secret的两种引用方式。</p>
 <section id="id8">
-<span id="id9"></span><h4>1.环境变量引用方式<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<span id="id9"></span><h4>1.环境变量引用方式<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforenvsecret.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforenvsecret</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforenv</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;EnvParaUserName:</span><span class="nv"> </span><span class="s">${EnvParaUserName}</span><span class="nv"> </span><span class="s">EnvParaPassword:</span><span class="nv"> </span><span class="s">${EnvParaPassword}&quot;;</span><span class="nv"> </span><span class="s">printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">EnvPara;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">env</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaUserName</span>
-        <span class="nt">valueFrom</span><span class="p">:</span>
-          <span class="nt">secretKeyRef</span><span class="p">:</span>
-            <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplesecret</span>
-            <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleusername</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaPassword</span>
-        <span class="nt">valueFrom</span><span class="p">:</span>
-          <span class="nt">secretKeyRef</span><span class="p">:</span>
-            <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplesecret</span>
-            <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepassword</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforenvsecret</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">containerforenv</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;EnvParaUserName:</span><span class="nv"> </span><span class="s">${EnvParaUserName}</span><span class="nv"> </span><span class="s">EnvParaPassword:</span><span class="nv"> </span><span class="s">${EnvParaPassword}&quot;;</span><span class="nv"> </span><span class="s">printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">EnvPara;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">env</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EnvParaUserName</span><span class="w"></span>
+<span class="w">        </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">secretKeyRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplesecret</span><span class="w"></span>
+<span class="w">            </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleusername</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EnvParaPassword</span><span class="w"></span>
+<span class="w">        </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">secretKeyRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplesecret</span><span class="w"></span>
+<span class="w">            </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepassword</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f  examplepodforenvsecret.yml
@@ -542,20 +543,20 @@ EnvParaUserName: superuser EnvParaPassword: abc12345
 <p>Kubernetes提供了一种简易方式，用于将Secret中的所有键值对直接配置到Pod中。</p>
 <p>为了使用示例来介绍直接引用Secret整个文件的方法，首先，定义模板文件，创建一个名为<code class="docutils literal notranslate"><span class="pre">examplepodforenvsecretv2.yml</span></code>的模板文
 件。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforenvsecretv2</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforenv</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">example;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">envFrom</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">secretRef</span><span class="p">:</span>
-          <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplesecret</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforenvsecretv2</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">containerforenv</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">example;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">envFrom</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secretRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplesecret</span><span class="w"></span>
 </pre></div>
 </div>
 <p>本例中直接使用envFrom属性，表示整个环境变量都是从外部文件引用的；引用方式为secretRef，表示从Secret中引用；</p>
@@ -574,29 +575,29 @@ grep example输出Pod中包含“example”字符串的环境变量。</p>
 </div>
 </section>
 <section id="id10">
-<span id="id11"></span><h4>2.存储卷引用方式<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<span id="id11"></span><h4>2.存储卷引用方式<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h4>
 <p>因为Secret本身是一种特殊的存储卷，所以也可以通过存储卷方式配置到Pod中。</p>
 <p>不同于环境变量的引用方式，这种引用方式会将每个键值对都转换成对应的实体文件。</p>
 <p>为了通过存储卷方式引用
 Secret，首先，定义模板文件，创建一个名为<code class="docutils literal notranslate"><span class="pre">examplepodforvolumesecret.yml</span></code>的模板文件。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforvolumesecret</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforvolume</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;files:&quot;;</span><span class="nv"> </span><span class="s">ls</span><span class="nv"> </span><span class="s">/secret/allvalues;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">volumeMounts</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumesecret</span>
-      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/secret/allvalues</span>
-  <span class="nt">volumes</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumesecret</span>
-    <span class="nt">secret</span><span class="p">:</span>
-      <span class="nt">secretName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplesecret</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforvolumesecret</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">containerforvolume</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;files:&quot;;</span><span class="nv"> </span><span class="s">ls</span><span class="nv"> </span><span class="s">/secret/allvalues;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volumesecret</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/secret/allvalues</span><span class="w"></span>
+<span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volumesecret</span><span class="w"></span>
+<span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplesecret</span><span class="w"></span>
 </pre></div>
 </div>
 <p>本例中创建的存储卷名称为volumesecret，这个名称会被容器设置中的数据卷引用。存储卷的类型是Secret，其name属性为
@@ -619,7 +620,7 @@ abc12345/ <span class="c1">#</span>
 </section>
 </section>
 <section id="imagepullsecret">
-<h3><a class="toc-backref" href="#id25">2.2 ImagePullSecret</a><a class="headerlink" href="#imagepullsecret" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">2.2 ImagePullSecret</a><a class="headerlink" href="#imagepullsecret" title="Permalink to this heading">¶</a></h3>
 <p>ImagePullSecret主要用来存储私有Docker
 Registry的认证信息。在设置Pod模板时，如果需要从私有仓库中拉取镜像，可以设置imagePullSecrets属性为此类型的Secret，以作为仓库的登录密钥。</p>
 <p>可以直接使用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">create</span> <span class="pre">secret</span></code>命令来创建ImagePullSecret。具体命令如下所示。</p>
@@ -634,17 +635,17 @@ Registry的认证信息。在设置Pod模板时，如果需要从私有仓库中
 <p>Secret创建后，可以通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">secretmyregistrykey</span></code>命令查询具体信息。</p>
 <p>可以看到Secret中有一个名为.dockerconfigjson的键值对。</p>
 <p>执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">secret</span> <span class="pre">myregistrykey</span> <span class="pre">-o</span> <span class="pre">yaml</span></code>命令，将会以yaml格式输出这个Secret的具体信息。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">$ kubectl get secret registry-pull-secret -n ci-gitee-10523 -o yaml</span>
-<span class="l l-Scalar l-Scalar-Plain">apiVersion</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">data</span><span class="p">:</span>
-  <span class="nt">.dockerconfigjson</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eyJhdXRocyI6IHsiaHViLmdpdGVlLmNjIjogeyJhdXRoIjogIloybDBaV1U2VDNOamFHbHVZVEV5TXc9PSJ9fX0=</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Secret</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">labels</span><span class="p">:</span>
-    <span class="nt">app.kubernetes.io/managed-by</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Helm</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">registry-pull-secret</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ci-gitee-10523</span>
-<span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes.io/dockerconfigjson</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">$ kubectl get secret registry-pull-secret -n ci-gitee-10523 -o yaml</span><span class="w"></span>
+<span class="l l-Scalar l-Scalar-Plain">apiVersion</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">data</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">.dockerconfigjson</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eyJhdXRocyI6IHsiaHViLmdpdGVlLmNjIjogeyJhdXRoIjogIloybDBaV1U2VDNOamFHbHVZVEV5TXc9PSJ9fX0=</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">app.kubernetes.io/managed-by</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Helm</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">registry-pull-secret</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ci-gitee-10523</span><span class="w"></span>
+<span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes.io/dockerconfigjson</span><span class="w"></span>
 </pre></div>
 </div>
 <p>在输出的信息中已显示出配置的键值对。</p>
@@ -655,21 +656,21 @@ Registry的认证信息。在设置Pod模板时，如果需要从私有仓库中
 </div>
 <p>解码结果如上所示，.dockerconfigjson中的内容已经以明文形式展示出来。本示例再一次证明了Secret实际上并不怎么名副其实。</p>
 <p>Secret创建完成后就可以在Pod中引用了，将Secret名称配置到<strong>spec.imagePullSecrets</strong>属性中即可。具体代码如下所示。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleSecret</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleContainer</span>
-      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mydocker/myapp:v1</span>
-  <span class="nt">imagePullSecrets</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myregistrykey</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleSecret</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleContainer</span><span class="w"></span>
+<span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mydocker/myapp:v1</span><span class="w"></span>
+<span class="w">  </span><span class="nt">imagePullSecrets</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myregistrykey</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 <section id="id12">
-<span id="id13"></span><h3><a class="toc-backref" href="#id26">2.3 参考文献</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<span id="id13"></span><h3><a class="toc-backref" href="#id26">2.3 参考文献</a><a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h3>
 <blockquote>
 <div><p>Kubernetes资源管理Secret</p>
 <p><a class="reference external" href="https://www.cnblogs.com/infodriven/p/16261067.html">https://www.cnblogs.com/infodriven/p/16261067.html</a></p>
@@ -677,11 +678,11 @@ Registry的认证信息。在设置Pod模板时，如果需要从私有仓库中
 </section>
 </section>
 <section id="k8s-configmap-secret">
-<h2><a class="toc-backref" href="#id27">3.深入探究 K8S ConfigMap 和 Secret</a><a class="headerlink" href="#k8s-configmap-secret" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id27">3.深入探究 K8S ConfigMap 和 Secret</a><a class="headerlink" href="#k8s-configmap-secret" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.cnblogs.com/sanduzxcvbnm/p/16173126.html">https://www.cnblogs.com/sanduzxcvbnm/p/16173126.html</a></p>
 </section>
 <section id="downward-api">
-<h2><a class="toc-backref" href="#id28">4. Downward API</a><a class="headerlink" href="#downward-api" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id28">4. Downward API</a><a class="headerlink" href="#downward-api" title="Permalink to this heading">¶</a></h2>
 <p>有时候，容器可能需要获得有关自身的信息，但不能与Kubernetes过于耦合。这时Downward
 API就派上用场了，它的主要作
 用是向Pod中运行的容器暴露Pod自身的信息，Downward
@@ -725,34 +726,34 @@ annotation-value”，每行一个注解。</p></li>
 <li><p>status.hostIP：节点的IP。</p></li>
 </ul>
 <section id="id14">
-<span id="id15"></span><h3><a class="toc-backref" href="#id29">4.1 环境变量引用方式</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<span id="id15"></span><h3><a class="toc-backref" href="#id29">4.1 环境变量引用方式</a><a class="headerlink" href="#id14" title="Permalink to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodfordownward.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodfordownward</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforenv</span>
-      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-      <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-      <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-      <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;EnvParaPodName:</span><span class="nv"> </span><span class="s">${EnvParaPodName}</span><span class="nv"> </span><span class="s">EnvParaPodIP:</span><span class="nv"> </span><span class="s">${EnvParaPodIP}</span><span class="nv"> </span><span class="s">EnvParaNodeName:</span><span class="nv"> </span><span class="s">${EnvParaNodeName}&quot;;</span><span class="nv"> </span><span class="s">printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">EnvPara;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
-      <span class="nt">env</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaPodName</span>
-        <span class="nt">valueFrom</span><span class="p">:</span>
-          <span class="nt">fieldRef</span><span class="p">:</span>
-            <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.name</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodfordownward</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">containerforenv</span><span class="w"></span>
+<span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">      </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;EnvParaPodName:</span><span class="nv"> </span><span class="s">${EnvParaPodName}</span><span class="nv"> </span><span class="s">EnvParaPodIP:</span><span class="nv"> </span><span class="s">${EnvParaPodIP}</span><span class="nv"> </span><span class="s">EnvParaNodeName:</span><span class="nv"> </span><span class="s">${EnvParaNodeName}&quot;;</span><span class="nv"> </span><span class="s">printenv</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">grep</span><span class="nv"> </span><span class="s">EnvPara;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">env</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EnvParaPodName</span><span class="w"></span>
+<span class="w">        </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metadata.name</span><span class="w"></span>
 
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaPodIP</span>
-          <span class="nt">valueFrom</span><span class="p">:</span>
-            <span class="nt">fieldRef</span><span class="p">:</span>
-              <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">status.podIP</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EnvParaPodIP</span><span class="w"></span>
+<span class="w">          </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">              </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">status.podIP</span><span class="w"></span>
 
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EnvParaNodeName</span>
-          <span class="nt">valueFrom</span><span class="p">:</span>
-            <span class="nt">fieldRef</span><span class="p">:</span>
-              <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">spec.nodeName</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EnvParaNodeName</span><span class="w"></span>
+<span class="w">          </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">              </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spec.nodeName</span><span class="w"></span>
 </pre></div>
 </div>
 <p>通过valueFrom、fieldRef、fieldPath等属性，我们可以指定具体要引用哪些环境变量。</p>
@@ -779,38 +780,38 @@ EnvParaPodName: examplepodfordownward EnvParaPodIP: <span class="m">10</span>.0.
 </div>
 </section>
 <section id="id16">
-<span id="id17"></span><h3><a class="toc-backref" href="#id30">4.2 存储卷引用方式</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<span id="id17"></span><h3><a class="toc-backref" href="#id30">4.2 存储卷引用方式</a><a class="headerlink" href="#id16" title="Permalink to this heading">¶</a></h3>
 <p>因为Downward
 API本身是一种特殊的存储卷，所以也可以通过存储卷方式配置到Pod中。这种引用方式会将每个键值对都转换成对应的
 实体文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforvolumedownward.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforvolumedownward</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerforvolume</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;files:&quot;;</span><span class="nv"> </span><span class="s">ls</span><span class="nv"> </span><span class="s">/config/alldownward;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">volumeMounts</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumedownward</span>
-        <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/config/alldownward</span>
-  <span class="nt">volumes</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumedownward</span>
-    <span class="nt">downwardAPI</span><span class="p">:</span>
-      <span class="nt">items</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="s">&quot;PodName&quot;</span>
-        <span class="nt">fieldRef</span><span class="p">:</span>
-          <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.name</span>
-      <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="s">&quot;PodUID&quot;</span>
-        <span class="nt">fieldRef</span><span class="p">:</span>
-          <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.uid</span>
-      <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="s">&quot;PodNameSpace&quot;</span>
-        <span class="nt">fieldRef</span><span class="p">:</span>
-          <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.namespace</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforvolumedownward</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">containerforvolume</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;files:&quot;;</span><span class="nv"> </span><span class="s">ls</span><span class="nv"> </span><span class="s">/config/alldownward;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volumedownward</span><span class="w"></span>
+<span class="w">        </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/config/alldownward</span><span class="w"></span>
+<span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volumedownward</span><span class="w"></span>
+<span class="w">    </span><span class="nt">downwardAPI</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">items</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;PodName&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metadata.name</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;PodUID&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metadata.uid</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;PodNameSpace&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metadata.namespace</span><span class="w"></span>
 </pre></div>
 </div>
 <p>本例中创建的存储卷名称为volumedownward，这个名称会被容器设置中的数据卷引用。</p>

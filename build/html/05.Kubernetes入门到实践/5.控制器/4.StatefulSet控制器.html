@@ -14,6 +14,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -129,7 +130,7 @@
 </ul>
 </div>
 <section id="statefulset">
-<h1><a class="toc-backref" href="#id5">StatefulSet控制器</a><a class="headerlink" href="#statefulset" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id5">StatefulSet控制器</a><a class="headerlink" href="#statefulset" title="Permalink to this heading">¶</a></h1>
 <p>StatefulSet控制器是一种提供排序和唯一性保证的特殊Pod控制器。当有与部署顺序、持久数据或固定网络等相关的特殊需求时，可
 以使用StatefulSet控制器来进行更细粒度的控制。</p>
 <p>StatefulSet控制器通常与面向数据的应用程序（如数据库）关联，它即使被重新分配到一个新的节点上，还是需要访问同一个存储卷的。</p>
@@ -146,107 +147,107 @@ IP的Service）来实现。</p></li>
 service暴露服务
 StatefulSet相较于Deployment，多了volumeClaimTemplates字段，即pvc存储的配置信息</p>
 <p>yaml模板</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>      <span class="c1">#必填，版本号</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">StatefulSet</span>     <span class="c1">#必填，资源类型</span>
-<span class="nt">metadata</span><span class="p">:</span>       <span class="c1">#必填，元数据</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;-sts</span>     <span class="c1">#必填，资源名称</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;namespace&gt;</span>    <span class="c1">#Pod所属的命名空间</span>
-<span class="nt">spec</span><span class="p">:</span>         <span class="c1">#必填，部署的详细定义</span>
-  <span class="nt">selector</span><span class="p">:</span> <span class="c1">#必填，标签选择</span>
-    <span class="nt">matchLabels</span><span class="p">:</span> <span class="c1">#必填，标签匹配</span>
-      <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span> <span class="c1">#必填，通过此标签匹配对应pod&lt;key: value&gt;</span>
-  <span class="nt">serviceName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span> <span class="c1"># Headless Service资源名称</span>
-  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1"># 副本数量</span>
-  <span class="nt">template</span><span class="p">:</span> <span class="c1">#必填，应用容器模版定义</span>
-    <span class="nt">metadata</span><span class="p">:</span> <span class="c1">#必填，元数据</span>
-      <span class="nt">labels</span><span class="p">:</span>  <span class="c1"># 标签</span>
-        <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span> <span class="c1">#必填，与上面matchLabels的标签相同</span>
-    <span class="nt">spec</span><span class="p">:</span>
-      <span class="nt">containers</span><span class="p">:</span> <span class="c1">#此处参考pod的containers</span>
-  <span class="nt">volumeClaimTemplates</span><span class="p">:</span> <span class="c1">#必填，+pvc模板</span>
-    <span class="p p-Indicator">-</span> <span class="nt">metadata</span><span class="p">:</span>       <span class="c1">#必填，元数据</span>
-        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;-depolyment</span>     <span class="c1">#必填，资源名称</span>
-      <span class="nt">spec</span><span class="p">:</span>
-        <span class="nt">accessModes</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="s">&quot;ReadWriteOnce</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">ReadOnlyMany</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">ReadWriteMany&quot;</span> <span class="p p-Indicator">]</span> <span class="c1">#必填，访问模式</span>
-        <span class="nt">storageClassName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">strint</span>  <span class="c1">#存储类名，改为集群中已存在的</span>
-        <span class="nt">resources</span><span class="p">:</span> <span class="c1"># 存储卷需要占用的资源量最小值</span>
-          <span class="nt">requests</span><span class="p">:</span> <span class="c1"># 请求空间大小</span>
-            <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1Gi</span> <span class="c1"># 空间大小值</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w">      </span><span class="c1">#必填，版本号</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StatefulSet</span><span class="w">     </span><span class="c1">#必填，资源类型</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w">       </span><span class="c1">#必填，元数据</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;-sts</span><span class="w">     </span><span class="c1">#必填，资源名称</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;namespace&gt;</span><span class="w">    </span><span class="c1">#Pod所属的命名空间</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w">         </span><span class="c1">#必填，部署的详细定义</span><span class="w"></span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="c1">#必填，标签选择</span><span class="w"></span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"> </span><span class="c1">#必填，标签匹配</span><span class="w"></span>
+<span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span><span class="w"> </span><span class="c1">#必填，通过此标签匹配对应pod&lt;key: value&gt;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"> </span><span class="c1"># Headless Service资源名称</span><span class="w"></span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"> </span><span class="c1"># 副本数量</span><span class="w"></span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"> </span><span class="c1">#必填，应用容器模版定义</span><span class="w"></span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="c1">#必填，元数据</span><span class="w"></span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">  </span><span class="c1"># 标签</span><span class="w"></span>
+<span class="w">        </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span><span class="w"> </span><span class="c1">#必填，与上面matchLabels的标签相同</span><span class="w"></span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"> </span><span class="c1">#此处参考pod的containers</span><span class="w"></span>
+<span class="w">  </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w"> </span><span class="c1">#必填，+pvc模板</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">metadata</span><span class="p">:</span><span class="w">       </span><span class="c1">#必填，元数据</span><span class="w"></span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;-depolyment</span><span class="w">     </span><span class="c1">#必填，资源名称</span><span class="w"></span>
+<span class="w">      </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">accessModes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;ReadWriteOnce</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">ReadOnlyMany</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">ReadWriteMany&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1">#必填，访问模式</span><span class="w"></span>
+<span class="w">        </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">strint</span><span class="w">  </span><span class="c1">#存储类名，改为集群中已存在的</span><span class="w"></span>
+<span class="w">        </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="c1"># 存储卷需要占用的资源量最小值</span><span class="w"></span>
+<span class="w">          </span><span class="nt">requests</span><span class="p">:</span><span class="w"> </span><span class="c1"># 请求空间大小</span><span class="w"></span>
+<span class="w">            </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1Gi</span><span class="w"> </span><span class="c1"># 空间大小值</span><span class="w"></span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p>yaml示例：以nginx服务使用nfs共享存储为例</p></li>
 </ul>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#先定义了一个名为myapp-svc的Headless Service资源，用于为关联到的每个Pod资源创建DNS资源记录。</span>
-<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myapp-svc</span>
-  <span class="nt">labels</span><span class="p">:</span>
-    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myapp-svc</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">ports</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
-    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web</span>
-  <span class="nt">clusterIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">None</span>
-  <span class="nt">selector</span><span class="p">:</span>
-    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myapp-pod</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#先定义了一个名为myapp-svc的Headless Service资源，用于为关联到的每个Pod资源创建DNS资源记录。</span><span class="w"></span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-svc</span><span class="w"></span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-svc</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web</span><span class="w"></span>
+<span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"></span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-pod</span><span class="w"></span>
 
-<span class="nn">---</span>
-<span class="c1"># 定义多个使用NFS存储后端的PV，空间大小为2GB，仅支持单路的读写操作。</span>
-<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">PersistentVolume</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-pv</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">capacity</span><span class="p">:</span>
-    <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2Gi</span>
-  <span class="nt">accessModes</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
-  <span class="nt">persistentVolumeReclaimPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Recycle</span>
-  <span class="nt">storageClassName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs</span>
-  <span class="nt">nfs</span><span class="p">:</span>
-    <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/nfs/data1</span>
-    <span class="nt">server</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">172.17.0.2</span>
-<span class="nn">---</span>
-<span class="c1"># 定义了一个名为myapp的StatefulSet资源，它通过Pod模板创建了两个Pod资源副本，并基于volumeClaimTemplates（存储卷申请模板）向nfs存储类请求动态供给PV，从而为每个Pod资源提供大小为1GB的专用存储卷。</span>
-<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">StatefulSet</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myapp-sts</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">selector</span><span class="p">:</span>
-    <span class="nt">matchLabels</span><span class="p">:</span>
-      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myapp-pod</span>
-  <span class="nt">serviceName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myapp-svc</span>
-  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-  <span class="nt">template</span><span class="p">:</span>
-    <span class="nt">metadata</span><span class="p">:</span>
-      <span class="nt">labels</span><span class="p">:</span>
-        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myapp-pod</span>
-    <span class="nt">spec</span><span class="p">:</span>
-      <span class="nt">containers</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">k8s.gcr.io/nginx-slim:0.8</span>
-        <span class="nt">ports</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
-          <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web</span>
-        <span class="nt">volumeMounts</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myapp-data</span>
-          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/usr/share/nginx/html</span>
-  <span class="nt">volumeClaimTemplates</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">metadata</span><span class="p">:</span>
-      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myapp-data</span>
-    <span class="nt">spec</span><span class="p">:</span>
-      <span class="nt">accessModes</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="s">&quot;ReadWriteOnce&quot;</span> <span class="p p-Indicator">]</span>
-      <span class="nt">storageClassName</span><span class="p">:</span> <span class="s">&quot;nfs&quot;</span>
-      <span class="nt">resources</span><span class="p">:</span>
-        <span class="nt">requests</span><span class="p">:</span>
-          <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1Gi</span>
+<span class="nn">---</span><span class="w"></span>
+<span class="c1"># 定义多个使用NFS存储后端的PV，空间大小为2GB，仅支持单路的读写操作。</span><span class="w"></span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PersistentVolume</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-pv</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">capacity</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2Gi</span><span class="w"></span>
+<span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span><span class="w"></span>
+<span class="w">  </span><span class="nt">persistentVolumeReclaimPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Recycle</span><span class="w"></span>
+<span class="w">  </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs</span><span class="w"></span>
+<span class="w">  </span><span class="nt">nfs</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/nfs/data1</span><span class="w"></span>
+<span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.17.0.2</span><span class="w"></span>
+<span class="nn">---</span><span class="w"></span>
+<span class="c1"># 定义了一个名为myapp的StatefulSet资源，它通过Pod模板创建了两个Pod资源副本，并基于volumeClaimTemplates（存储卷申请模板）向nfs存储类请求动态供给PV，从而为每个Pod资源提供大小为1GB的专用存储卷。</span><span class="w"></span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StatefulSet</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-sts</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-pod</span><span class="w"></span>
+<span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-svc</span><span class="w"></span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-pod</span><span class="w"></span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">k8s.gcr.io/nginx-slim:0.8</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web</span><span class="w"></span>
+<span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-data</span><span class="w"></span>
+<span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/usr/share/nginx/html</span><span class="w"></span>
+<span class="w">  </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-data</span><span class="w"></span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">accessModes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;ReadWriteOnce&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;nfs&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1Gi</span><span class="w"></span>
 </pre></div>
 </div>
 <section id="id1">
-<h2><a class="toc-backref" href="#id6">1.statefulset的组成</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">1.statefulset的组成</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <p>StatefulSet控制器由3个部分组成</p>
 <ul class="simple">
 <li><p>无头Service：用于为Pod资源标识符生成可解析的DNS记录。</p></li>
@@ -257,7 +258,7 @@ StatefulSet相较于Deployment，多了volumeClaimTemplates字段，即pvc存储
 <p><img alt="image0" src="../../_images/image-20220412190044314.png" /></p>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id7">2.为什么要用StatefulSet控制器？</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">2.为什么要用StatefulSet控制器？</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
 <p>Deployment控制器下的每一个Pod都毫无区别地提供服务。</p>
 <p>但StatefulSet控制器下的Pod则不同，虽然各个Pod的定义是一样的，但因为数据不同，所提供的服务是有差异的。</p>
 <p>分布式存储系统就适合使用StatefulSet控制器，由Pod
@@ -277,62 +278,62 @@ Pod生成不同的PVC且各自绑定PV，从而使各个Pod拥有各自专用的
 <p>当然，也可以通过手动创建各个预设的PV，只是这个过程会相当麻烦。</p>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id8">3.StatefulSet控制器的基本操作</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">3.StatefulSet控制器的基本操作</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
 <p>定义模板文件，创建一个名为<code class="docutils literal notranslate"><span class="pre">examplestatefulset.yml</span></code>的模板文件</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
-<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplestatefulservice</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">selector</span><span class="p">:</span>
-    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforstateful</span>
-  <span class="c1"># headless service</span>
-  <span class="nt">clusterIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">None</span>
-  <span class="nt">ports</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
-      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
-      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
-  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplestatefulservice</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforstateful</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># headless service</span><span class="w"></span>
+<span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterIP</span><span class="w"></span>
 
-<span class="nn">---</span>
-<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">StatefulSet</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplestatefulset</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
-  <span class="nt">serviceName</span><span class="p">:</span> <span class="s">&quot;examplestatefulservice&quot;</span>
-  <span class="nt">selector</span><span class="p">:</span>
-    <span class="nt">matchLabels</span><span class="p">:</span>
-      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforstateful</span>
-  <span class="nt">template</span><span class="p">:</span>
-    <span class="nt">metadata</span><span class="p">:</span>
-      <span class="nt">labels</span><span class="p">:</span>
-        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforstateful</span>
-    <span class="nt">spec</span><span class="p">:</span>
-      <span class="nt">containers</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pythonserviceforstateful</span>
-        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python:3.7</span>
-        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&quot;</span><span class="nv"> </span><span class="s">&gt;&gt;</span><span class="nv"> </span><span class="s">/dir/data;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;&lt;p&gt;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&lt;/p&gt;&quot;</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">index.html;</span><span class="nv"> </span><span class="s">python</span><span class="nv"> </span><span class="s">-m</span><span class="nv"> </span><span class="s">http.server</span><span class="nv"> </span><span class="s">80&#39;</span><span class="p p-Indicator">]</span>
+<span class="nn">---</span><span class="w"></span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StatefulSet</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplestatefulset</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
+<span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;examplestatefulservice&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforstateful</span><span class="w"></span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforstateful</span><span class="w"></span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pythonserviceforstateful</span><span class="w"></span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python:3.7</span><span class="w"></span>
+<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&quot;</span><span class="nv"> </span><span class="s">&gt;&gt;</span><span class="nv"> </span><span class="s">/dir/data;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;&lt;p&gt;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&lt;/p&gt;&quot;</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">index.html;</span><span class="nv"> </span><span class="s">python</span><span class="nv"> </span><span class="s">-m</span><span class="nv"> </span><span class="s">http.server</span><span class="nv"> </span><span class="s">80&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
 
-        <span class="nt">volumeMounts</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">statefuldata</span>
-          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/dir</span>
-        <span class="nt">ports</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http</span>
-          <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">statefuldata</span><span class="w"></span>
+<span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dir</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
+<span class="w">          </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
 
-  <span class="nt">volumeClaimTemplates</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">metadata</span><span class="p">:</span>
-        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">statefuldata</span>
-      <span class="nt">spec</span><span class="p">:</span>
-        <span class="nt">accessModes</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="s">&quot;ReadWriteOnce&quot;</span> <span class="p p-Indicator">]</span>
-        <span class="nt">storageClassName</span><span class="p">:</span> <span class="s">&quot;managed-nfs-storage&quot;</span>
-        <span class="nt">resources</span><span class="p">:</span>
-          <span class="nt">requests</span><span class="p">:</span>
-            <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200Mi</span>
+<span class="w">  </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">statefuldata</span><span class="w"></span>
+<span class="w">      </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">accessModes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;ReadWriteOnce&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">        </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;managed-nfs-storage&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200Mi</span><span class="w"></span>
 </pre></div>
 </div>
 <p>这个模板主要分为3个部分。首先，创建了一个无头Service，其名称为examplestatefulservice。它会通过标签选择器关联到各个标签为
@@ -412,7 +413,7 @@ Events:
 </div>
 </section>
 <section id="pvcpv">
-<h2><a class="toc-backref" href="#id9">4.PVC及PV的使用</a><a class="headerlink" href="#pvcpv" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">4.PVC及PV的使用</a><a class="headerlink" href="#pvcpv" title="Permalink to this heading">¶</a></h2>
 <p>我们先检查存储卷的使用情况。此时如果通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">getpvc</span></code>以及<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pv</span></code>命令进行查询，可以看到StatefulSet
 控制器为每个Pod都创建了各自专用的PVC及PV。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pv<span class="p">|</span>grep default/statefuldata-examplestatefulset
@@ -485,7 +486,7 @@ The host is examplestatefulset-1
 <p>结果：每个Pod都往各自的存储卷中写入了数据。</p>
 </section>
 <section id="service">
-<h2><a class="toc-backref" href="#id10">5.无头Service的访问</a><a class="headerlink" href="#service" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">5.无头Service的访问</a><a class="headerlink" href="#service" title="Permalink to this heading">¶</a></h2>
 <p>我们检查Service的发布情况。使用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">svc</span></code>命令可以看到已经创建了一个无头Service。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get svc
 NAME                     TYPE        CLUSTER-IP   EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>    AGE
@@ -500,17 +501,17 @@ kubernetes               ClusterIP   <span class="m">10</span>.96.0.1    &lt;non
 <p><strong>前面两个字段则是根据Service定义决定的，在这个例子中ServiceName为examplestatefulservice，而Namespace我们没有在yml文件中指定，默认值为Default。</strong></p>
 <p>在访问这个地址之前，我们先创建一个测试用的Pod，用它来尝试访问Service。命令如下。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforheadlessservice.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforheadlessservice</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testcontainer</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.io/appropriate/curl</span>
-    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;test</span><span class="nv"> </span><span class="s">pod</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">headless</span><span class="nv"> </span><span class="s">service!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforheadlessservice</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testcontainer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker.io/appropriate/curl</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;test</span><span class="nv"> </span><span class="s">pod</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">headless</span><span class="nv"> </span><span class="s">service!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 <p>这个Pod并没有什么特别之处，其镜像为appropriate/curl。该镜像是一种工具箱，里面存放了一些测试网络和DNS使用的工具（例
@@ -583,7 +584,7 @@ Address 3: 10.0.36.231 examplestatefulset-0.examplestatefulservice.default.svc.c
 <p>可以看到每个域名都可以成功返回各自的结果。</p>
 </section>
 <section id="pod">
-<h2><a class="toc-backref" href="#id11">6.Pod的重建</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">6.Pod的重建</a><a class="headerlink" href="#pod" title="Permalink to this heading">¶</a></h2>
 <p>可以模拟Pod发生故障时的场景。假设现在examplestatefulset-1发生故障（例如，人为删除），请执行以下命令。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl delete pod/examplestatefulset-1
 </pre></div>
@@ -604,7 +605,7 @@ The host is examplestatefulset-1
 <p>查询该文件会看到两条文本，一条是之前由被删除的Pod在启动时写的，一条是重建时写的</p>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id12">7.StatefulSet控制器的伸缩与更新</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">7.StatefulSet控制器的伸缩与更新</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
 <p>和Deployment控制器一样，StatefulSet控制器也可以实现动态伸缩，只需要修改配置模板中的replicas属性然后执行应用即可。</p>
 <p>但与Deployment控制器不同的地方在于，Pod是有序伸缩的，就像创建StatefulSet控制器时依次创建Pod一样。在扩容时，后续新增的Pod会从前往后依次创建，创建完成后才开始下一个
 Pod 的创建；</p>
@@ -617,7 +618,7 @@ Pod开始，从后往前依次删除，完全删除后才开始下一个Pod的�
 Pod。</p></li>
 </ul>
 <section id="stsdeployment">
-<h3><a class="toc-backref" href="#id13">7.1 sts和deployment的滚动更新差异</a><a class="headerlink" href="#stsdeployment" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">7.1 sts和deployment的滚动更新差异</a><a class="headerlink" href="#stsdeployment" title="Permalink to this heading">¶</a></h3>
 <p>StatefulSet控制器和Deployment控制器的滚动更新，有一些细节上的差异。</p>
 <ul class="simple">
 <li><p>因为StatefulSet控制器是有序的，所以它会从编号最大的Pod到最小的Pod依次更新，而且在更新前不会立即删除旧的Pod，而是

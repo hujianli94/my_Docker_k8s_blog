@@ -14,6 +14,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -120,7 +121,7 @@
 </ul>
 </div>
 <section id="hpa">
-<h1><a class="toc-backref" href="#id3">HPA 控制器</a><a class="headerlink" href="#hpa" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id3">HPA 控制器</a><a class="headerlink" href="#hpa" title="Permalink to this heading">¶</a></h1>
 <p>在前面的学习中我们使用用一个 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">scale</span></code> 命令可以来实现 Pod
 的扩缩容功能，但是这个毕竟是完全手动操作的，要应对线上的各种复杂情况，我们需要能够做到自动化去感知业务，来自动进行扩缩容。</p>
 <p>为此，Kubernetes
@@ -135,7 +136,7 @@ Pod 的副本数量，这是 HPA 最基本的原理：</p>
 参数进行设置），查询指定的资源中的 Pod
 资源使用率，并且与创建时设定的值和指标做对比，从而实现自动伸缩的功能。</p>
 <section id="metrics-server">
-<h2><a class="toc-backref" href="#id4">1.Metrics Server</a><a class="headerlink" href="#metrics-server" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">1.Metrics Server</a><a class="headerlink" href="#metrics-server" title="Permalink to this heading">¶</a></h2>
 <p>在 HPA 的第一个版本中，我们需要 <code class="docutils literal notranslate"><span class="pre">Heapster</span></code> 提供 CPU 和内存指标，在 HPA
 v2 过后就需要安装 Metrcis Server 了，<code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code> 可以通过标准的
 Kubernetes API 把监控数据暴露出来，有了 <code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code>
@@ -153,7 +154,7 @@ Kubernetes API 把监控数据暴露出来，有了 <code class="docutils litera
 <p><img alt="image1" src="../../_images/image-20220713145956919.png" /></p>
 </section>
 <section id="api">
-<h2><a class="toc-backref" href="#id5">2.聚合 API</a><a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">2.聚合 API</a><a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Aggregator</span></code> 允许开发人员编写一个自己的服务，把这个服务注册到
 Kubernetes 的 APIServer 里面去，这样我们就可以像原生的 APIServer 提供的
 API 使用自己的 API 了，我们把自己的服务运行在 Kubernetes 集群里面，然后
@@ -173,7 +174,7 @@ API。</p></li>
 </ul>
 </section>
 <section id="id1">
-<h2><a class="toc-backref" href="#id6">3.安装</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">3.安装</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <p>所以现在我们要使用 HPA，就需要在集群中安装 <code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code>
 服务，要安装 <code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code> 就需要开启 <code class="docutils literal notranslate"><span class="pre">Aggregator</span></code>，因为
 <code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code> 就是通过该代理进行扩展的，不过我们集群是通过 Kubeadm
@@ -286,28 +287,28 @@ ydzs-node4    168m         4%     2514Mi          32%
 <code class="docutils literal notranslate"><span class="pre">Metrics</span> <span class="pre">Server</span></code> 已经安装成功了。</p>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id7">4.HPA</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">4.HPA</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
 <p>现在我们用 Deployment 来创建一个 Nginx Pod，然后利用 <code class="docutils literal notranslate"><span class="pre">HPA</span></code>
 来进行自动扩缩容。资源清单如下所示：</p>
 <p><code class="docutils literal notranslate"><span class="pre">hpa-demo.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hpa-demo</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">selector</span><span class="p">:</span>
-    <span class="nt">matchLabels</span><span class="p">:</span>
-      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-  <span class="nt">template</span><span class="p">:</span>
-    <span class="nt">metadata</span><span class="p">:</span>
-      <span class="nt">labels</span><span class="p">:</span>
-        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-    <span class="nt">spec</span><span class="p">:</span>
-      <span class="nt">containers</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-        <span class="nt">ports</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hpa-demo</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
 </pre></div>
 </div>
 <p>然后直接创建 Deployment：</p>
@@ -423,28 +424,28 @@ Events:
 读取不到 CPU 指标信息，所以如果要想让 HPA 生效，对应的 Pod 资源必须添加
 requests 资源声明，更新我们的资源清单文件：</p>
 <p><code class="docutils literal notranslate"><span class="pre">hpa-demo.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hpa-demo</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">selector</span><span class="p">:</span>
-    <span class="nt">matchLabels</span><span class="p">:</span>
-      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-  <span class="nt">template</span><span class="p">:</span>
-    <span class="nt">metadata</span><span class="p">:</span>
-      <span class="nt">labels</span><span class="p">:</span>
-        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-    <span class="nt">spec</span><span class="p">:</span>
-      <span class="nt">containers</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-        <span class="nt">ports</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
-        <span class="nt">resources</span><span class="p">:</span>
-          <span class="nt">requests</span><span class="p">:</span>
-            <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50Mi</span>
-            <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50m</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hpa-demo</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
+<span class="w">        </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50Mi</span><span class="w"></span>
+<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50m</span><span class="w"></span>
 </pre></div>
 </div>
 <p>然后重新更新 Deployment，重新创建 HPA 对象：</p>
@@ -571,7 +572,7 @@ hpa-demo   <span class="m">1</span>/1     <span class="m">1</span>            <s
 Pod 进行扩缩容。</p>
 </section>
 <section id="demo">
-<h2><a class="toc-backref" href="#id8">5.demo示例</a><a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">5.demo示例</a><a class="headerlink" href="#demo" title="Permalink to this heading">¶</a></h2>
 <p>例如，首先创建一个名为myapp的Deployment控制器，而后通过一个同名的HPA控制器自动管控其Pod副本规模：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl run myapp --image<span class="o">=</span>ikubernetes/myapp:v1 --replicas<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
     --requests<span class="o">=</span><span class="s1">&#39;cpu=50m,memory=256Mi&#39;</span> --limits<span class="o">=</span><span class="s1">&#39;cpu=50m,memory=256Mi&#39;</span> <span class="se">\</span>

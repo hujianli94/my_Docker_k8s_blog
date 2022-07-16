@@ -14,6 +14,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -104,43 +105,43 @@
 </ul>
 </div>
 <section id="pod">
-<h1><a class="toc-backref" href="#id1">资源调度-为Pod设置计算资源</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id1">资源调度-为Pod设置计算资源</a><a class="headerlink" href="#pod" title="Permalink to this heading">¶</a></h1>
 <p>容器运行时（container
 runtime）通常会提供一些机制来限制容器能够使用的计算资源的大小，例如，最多可以使用多少CPU或内存。如果超过计算资源的限制，容器就会被终止。</p>
 <p>例如，在Docker中，通过docker
 run命令中的<strong>–cpu-shares、–cpu-quota、–memory</strong>等参数，可以指定容器对CPU和内存的使用限度。同样，在Pod模板中也提供了这个功能，Pod模板中的相关参数如下所示。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployment</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
-  <span class="nt">selector</span><span class="p">:</span>
-    <span class="nt">matchLabels</span><span class="p">:</span>
-      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
-  <span class="nt">template</span><span class="p">:</span>
-    <span class="nt">metadata</span><span class="p">:</span>
-      <span class="nt">labels</span><span class="p">:</span>
-        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
-    <span class="nt">spec</span><span class="p">:</span>
-      <span class="nt">containers</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span>
-        <span class="c1">#资源限制和请求的设置</span>
-        <span class="nt">resources</span><span class="p">:</span>
-          <span class="c1">#资源限制的设置</span>
-          <span class="nt">limits</span><span class="p">:</span>
-            <span class="c1">#CPU的限制，单位为CPU内核数，将用于docker run --cpu-quota 参数；</span>
-            <span class="c1">#也可以使用小数，例如0.1，它等价于表达式100m（表示100milicore）</span>
-            <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;600m&quot;</span>
-            <span class="c1">#内存限制，单位可以为MiB/GiB/MB/GB，将用于docker run --memory参数，</span>
-            <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;500Mi&quot;</span>
-          <span class="c1">#资源请求的设置</span>
-          <span class="nt">requests</span><span class="p">:</span>
-            <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;100m&quot;</span>
-            <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;100Mi&quot;</span>
-        <span class="nt">ports</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampledeployment</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span><span class="w"></span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span><span class="w"></span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span><span class="w"></span>
+<span class="w">        </span><span class="c1">#资源限制和请求的设置</span><span class="w"></span>
+<span class="w">        </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="c1">#资源限制的设置</span><span class="w"></span>
+<span class="w">          </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="c1">#CPU的限制，单位为CPU内核数，将用于docker run --cpu-quota 参数；</span><span class="w"></span>
+<span class="w">            </span><span class="c1">#也可以使用小数，例如0.1，它等价于表达式100m（表示100milicore）</span><span class="w"></span>
+<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;600m&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="c1">#内存限制，单位可以为MiB/GiB/MB/GB，将用于docker run --memory参数，</span><span class="w"></span>
+<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500Mi&quot;</span><span class="w"></span>
+<span class="w">          </span><span class="c1">#资源请求的设置</span><span class="w"></span>
+<span class="w">          </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;100m&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;100Mi&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
 </pre></div>
 </div>
 <p>requests和limits属性从不同维度保证Pod的资源占用情况。</p>
@@ -149,23 +150,23 @@ run命令中的<strong>–cpu-shares、–cpu-quota、–memory</strong>等参�
 <p>而limits表示容器能够使用资源的最大限度，如果超过这个值，容器将被终止。</p>
 <p>本节用两个示例演示limits和requests的功能。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforresource.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforresource</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplecontainerforresource</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">vish/stress</span>
-    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;-mem-total&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;150Mi&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-mem-alloc-size&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;5Mi&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-mem-alloc-sleep&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;1s&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">resources</span><span class="p">:</span>
-      <span class="nt">limits</span><span class="p">:</span>
-        <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;1&quot;</span>
-        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;100Mi&quot;</span>
-      <span class="nt">requests</span><span class="p">:</span>
-        <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;200m&quot;</span>
-        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;50Mi&quot;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforresource</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplecontainerforresource</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vish/stress</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;-mem-total&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;150Mi&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-mem-alloc-size&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;5Mi&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;-mem-alloc-sleep&#39;</span><span class="p p-Indicator">,</span><span class="s">&#39;1s&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;100Mi&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;200m&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;50Mi&quot;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>在本例中，我们定义了一个名为examplecontainerforresource的容器，</p>
@@ -218,20 +219,20 @@ examplepodforresource                     <span class="m">0</span>/1     OOMKill
 </div>
 <p>创建另一个示例，首先，创建examplepodforerror.yml文件</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforerror.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforerror</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplecontainerforerror</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">resources</span><span class="p">:</span>
-      <span class="nt">requests</span><span class="p">:</span>
-        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;500Gi&quot;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforerror</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplecontainerforerror</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500Gi&quot;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>本例中的Pod和之前相比并没有什么特别之处，但设置了它的resource.requests.memory属性，其值为500GiB（1GiB=2

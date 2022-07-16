@@ -14,6 +14,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -124,9 +125,9 @@
 </ul>
 </div>
 <section id="chart">
-<h1><a class="toc-backref" href="#id6">chart的高级功能</a><a class="headerlink" href="#chart" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id6">chart的高级功能</a><a class="headerlink" href="#chart" title="Permalink to this heading">¶</a></h1>
 <section id="id1">
-<h2><a class="toc-backref" href="#id7">1. chart依赖项</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">1. chart依赖项</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Chart.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>apiVersion: v2
 name: rocket
@@ -167,46 +168,46 @@ dependencies:
 <p><a class="reference external" href="https://www.bookstack.cn/read/helm-3.7.1-zh/c181f93165dcab38.md">https://www.bookstack.cn/read/helm-3.7.1-zh/c181f93165dcab38.md</a></p>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id8">2. 库类型Chart</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">2. 库类型Chart</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
 <p>参考文献</p>
 <p><a class="reference external" href="https://www.bookstack.cn/read/helm-3.7.1-zh/f3f0a05a1bde5886.md">https://www.bookstack.cn/read/helm-3.7.1-zh/f3f0a05a1bde5886.md</a></p>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id9">3. 钩子</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">3. 钩子</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
 <p>Helm提供了一种在发布过程中钩住事件并采取行动的方法。如果你希望将一些动作捆绑为发布的一部分，这将非常有用。</p>
 <p>例如，在升级过程中对数据库进行备份的能力，同时确保在升级Kubernetes资源之前进行备份。</p>
 <p>钩子类似于常规模板，它们封装的功能是通过运行在Kubernetes集群中的容器以及应用程序的其他资源提供的。</p>
 <p>钩子与其他资源的区别在于设置了特殊注解。当Helm看到helm.sh/hook注解时，它将资源用作钩子。</p>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id10">4. 向chart中添加测试</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">4. 向chart中添加测试</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
 <p>测试是软件开发不可或缺的一部分，Helm通过使用test钩子和Kubernetes资源提供了测试chart的能力。</p>
 <p>这意味着测试在Kubernetes集群中与工作负载（可以访问chart安装的组件）一起运行。</p>
 <p>除了Helm中内置的chart测试之外，Helm项目还提供了一个名为Chart
 Testing的测试工具。由于Chart
 Testing建立在Helm客户端的特性之上，因此我们将首先查看Helm客户端中内置的功能。</p>
 <section id="helm">
-<h3><a class="toc-backref" href="#id11">4.1 Helm测试</a><a class="headerlink" href="#helm" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">4.1 Helm测试</a><a class="headerlink" href="#helm" title="Permalink to this heading">¶</a></h3>
 <p>Helm有一个helm test命令，该命令在运行的chart实例上执行test钩子。</p>
 <p>实现这些钩子的资源可以用来检查数据库能否访问、数据库模式是否正确就位、工作负载之间的连接是否工作以及其他操作细节。</p>
 <p>如果测试失败，Helm将使用非零的退出代码退出，并向你提供失败的Kubernetes资源的名称。</p>
 <p>非零的退出代码在与某些自动测试系统（以这种方式检测故障）配对时非常有用。当你拥有Kubernetes资源的名称时，可以查看日志以查看失败的内容。测试通常位于templates目录的tests子目录中。将测试放在这个目录中提供了一个有用的分离。这是一个约定，不是运行测试所必需的。</p>
 <p><code class="docutils literal notranslate"><span class="pre">anvil/templates/tests/test-connection.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">include</span><span class="nv"> </span><span class="s">&quot;</span><span class="l l-Scalar l-Scalar-Plain">anvil.fullname&quot; . }}-test-connection&quot;</span>
-  <span class="nt">labels</span><span class="p">:</span>
-    <span class="p p-Indicator">{{</span><span class="nv">- include &quot;anvil.labels&quot; . | nindent 4</span> <span class="p p-Indicator">}}</span>
-  <span class="nt">annotations</span><span class="p">:</span>
-    <span class="s">&quot;helm.sh/hook&quot;</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">test-success</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wget</span>
-      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-      <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;wget&#39;</span><span class="p p-Indicator">]</span>
-      <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">include</span><span class="nv"> </span><span class="s">&quot;anvil.fullname&quot;</span><span class="nv"> </span><span class="s">.</span><span class="nv"> </span><span class="s">}}:{{</span><span class="nv"> </span><span class="s">.Values.service.port</span><span class="nv"> </span><span class="s">}}&#39;</span><span class="p p-Indicator">]</span>
-  <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">include</span><span class="nv"> </span><span class="s">&quot;</span><span class="l l-Scalar l-Scalar-Plain">anvil.fullname&quot; . }}-test-connection&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">{{</span><span class="nv">- include &quot;anvil.labels&quot; . | nindent 4</span><span class="w"> </span><span class="p p-Indicator">}}</span><span class="w"></span>
+<span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="s">&quot;helm.sh/hook&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-success</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wget</span><span class="w"></span>
+<span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;wget&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">include</span><span class="nv"> </span><span class="s">&quot;anvil.fullname&quot;</span><span class="nv"> </span><span class="s">.</span><span class="nv"> </span><span class="s">}}:{{</span><span class="nv"> </span><span class="s">.Values.service.port</span><span class="nv"> </span><span class="s">}}&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
 </pre></div>
 </div>
 <p>这个测试是在运行helm
@@ -245,13 +246,13 @@ NOTES:
 </div>
 </section>
 <section id="chart-testing">
-<h3><a class="toc-backref" href="#id12">4.2 Chart Testing工具</a><a class="headerlink" href="#chart-testing" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">4.2 Chart Testing工具</a><a class="headerlink" href="#chart-testing" title="Permalink to this heading">¶</a></h3>
 <p>Chart
 Testing可以用各种方式安装和使用。例如，你可以将其用作开发系统上的二进制应用程序或持续集成系统中的容器中的二进制应用程序。在项目页面（<a class="reference external" href="https://oreil.ly/sJXpR">https://oreil.ly/sJXpR</a>）上可了解有关使用和设置它的更多信息。</p>
 </section>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id13">5. 安全注意事项</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">5. 安全注意事项</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
 <p>参考文档</p>
 <p><a class="reference external" href="https://helm.sh/zh/docs/topics/provenance/">https://helm.sh/zh/docs/topics/provenance/</a></p>
 </section>

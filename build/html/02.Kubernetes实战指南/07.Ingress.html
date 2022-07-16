@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -143,7 +144,7 @@
 </ul>
 </div>
 <section id="ingress">
-<h1><a class="toc-backref" href="#id12">Ingress</a><a class="headerlink" href="#ingress" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id12">Ingress</a><a class="headerlink" href="#ingress" title="Permalink to this heading">¶</a></h1>
 <p>NodePort Service存在太多缺陷，不适合生产环境。LoadBlancer
 Service则不太灵活，比如针对微服务架构，那么不同服务是否需要多个负载均衡服务呢？我们还有其他选择么？有，那就是Ingress。</p>
 <p>Ingress将集群外部的HTTP和HTTPS路由暴露给集群中的Service，相当于集群的入口，而入口规则由Ingress定义的规则来控制。</p>
@@ -151,12 +152,12 @@ Service则不太灵活，比如针对微服务架构，那么不同服务是否�
 Controller（入口控制器），例如ingress-nginx。Ingress负责定义抽象的规则，而Ingress
 Controller负责具体实现。通常情况下，Ingress搭配负载均衡一起使用。接下来，结合一个简单的微服务Demo来使用Ingress进行负载分发。</p>
 <section id="id1">
-<h2><a class="toc-backref" href="#id13">1.简介</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">1.简介</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <p>示意图如下：</p>
 <p><img alt="image0" src="../_images/k8s_ingreess0001.png" /></p>
 </section>
 <section id="demo">
-<h2><a class="toc-backref" href="#id14">2.Demo示例</a><a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">2.Demo示例</a><a class="headerlink" href="#demo" title="Permalink to this heading">¶</a></h2>
 <p>为了便于大家理解，我们先做一个简单的规划。整体规划图如图</p>
 <p><img alt="image1" src="../_images/k8s_ingress_demo001.png" /></p>
 <p>Demo规划的整体步骤如下所示：</p>
@@ -165,7 +166,7 @@ Controller负责具体实现。通常情况下，Ingress搭配负载均衡一起
 <p>（3）创建Ingress，配置不同的转发规则。</p>
 <p>（4）为了访问方便，我们需要配置域名映射。</p>
 <section id="id2">
-<h3><a class="toc-backref" href="#id15">2.1 准备Demo并完成部署</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">2.1 准备Demo并完成部署</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>apidemo1</p></li>
 </ul>
@@ -188,7 +189,7 @@ nodeIP:31011/api/demo2
 </div></blockquote>
 </section>
 <section id="id3">
-<h3><a class="toc-backref" href="#id16">2.2 创建部署资源</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">2.2 创建部署资源</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">demo1-deploy.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span> <span class="c1">#api版本</span>
@@ -254,7 +255,7 @@ nodeIP:31011/api/demo2
 </div>
 </section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id17">2.3 创建服务资源</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">2.3 创建服务资源</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">demo2-deploy.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span> <span class="c1">#api版本</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span> <span class="c1">#使用部署对象</span>
@@ -333,7 +334,7 @@ nodeIP:31011/api/demo2
 </div>
 </section>
 <section id="id5">
-<h3><a class="toc-backref" href="#id18">2.4 创建Ingress资源并配置转发规则</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">2.4 创建Ingress资源并配置转发规则</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
 <p>接下来我们需要创建Ingress并配置好转发规则达成如下目标：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>● 使用同一个IP访问多个API服务，这里对应的是“apidemo1”和“apidemo2”。
 ● 通过地址http://demo.hu-uiapi123.com:31010/api/demo1访问应用“apidemo1”。
@@ -380,7 +381,7 @@ nodeIP:31011/api/demo2
 </section>
 </section>
 <section id="id6">
-<h2><a class="toc-backref" href="#id19">3.Ingress实战</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">3.Ingress实战</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
 <p>Ingress 是 Kubernetes 的一种 API 对象，将集群内部的 Service 通过
 HTTP/HTTPS 方式暴露到集群外部，并通过规则定义 HTTP/HTTPS 的路由。Ingress
 具备如下特性：集群外部可访问的 URL、负载均衡、SSL
@@ -395,10 +396,10 @@ Termination、按域名路由（name-based virtual hosting）。</p>
 <p>验证配置</p>
 <p>在浏览器访问 a.demo.yourdomain.com，将得到 404 NotFound 错误页面</p>
 <section id="yaml">
-<h3><a class="toc-backref" href="#id20">3.1 应用yaml</a><a class="headerlink" href="#yaml" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">3.1 应用yaml</a><a class="headerlink" href="#yaml" title="Permalink to this heading">¶</a></h3>
 <p>这里以flaskapp为例</p>
 <section id="namespace">
-<h4>3.1.1 创建namespace<a class="headerlink" href="#namespace" title="Permalink to this headline">¶</a></h4>
+<h4>3.1.1 创建namespace<a class="headerlink" href="#namespace" title="Permalink to this heading">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">flask-namespace.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Namespace</span>
@@ -408,7 +409,7 @@ Termination、按域名路由（name-based virtual hosting）。</p>
 </div>
 </section>
 <section id="deployment">
-<h4>3.1.2 创建deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h4>
+<h4>3.1.2 创建deployment<a class="headerlink" href="#deployment" title="Permalink to this heading">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">flask-app.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
@@ -470,7 +471,7 @@ Termination、按域名路由（name-based virtual hosting）。</p>
 </div>
 </section>
 <section id="id7">
-<h4>3.1.3 创建Ingress<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<h4>3.1.3 创建Ingress<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">flask-ingress.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">networking</span><span class="o">.</span><span class="n">k8s</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">v1beta1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Ingress</span>
@@ -514,7 +515,7 @@ Termination、按域名路由（name-based virtual hosting）。</p>
 </div>
 </section>
 <section id="id8">
-<h4>3.1.4 设置域名解析<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<h4>3.1.4 设置域名解析<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h4>
 <p>如果没有dns，修改windows 10的hosts，添加一条记录</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168.1.75</span> <span class="n">flaskapp</span><span class="o">.</span><span class="n">baidu</span><span class="o">.</span><span class="n">com</span>
 </pre></div>
@@ -530,11 +531,11 @@ Termination、按域名路由（name-based virtual hosting）。</p>
 </section>
 </section>
 <section id="ingress-http-7">
-<h2><a class="toc-backref" href="#id21">4. Ingress：HTTP 7层路由机制</a><a class="headerlink" href="#ingress-http-7" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id21">4. Ingress：HTTP 7层路由机制</a><a class="headerlink" href="#ingress-http-7" title="Permalink to this heading">¶</a></h2>
 <section id="yaml-1">
-<span id="id9"></span><h3><a class="toc-backref" href="#id22">4.1 应用yaml</a><a class="headerlink" href="#yaml-1" title="Permalink to this headline">¶</a></h3>
+<span id="id9"></span><h3><a class="toc-backref" href="#id22">4.1 应用yaml</a><a class="headerlink" href="#yaml-1" title="Permalink to this heading">¶</a></h3>
 <section id="nginx-deployment">
-<h4>4.1.1 nginx 的deployment<a class="headerlink" href="#nginx-deployment" title="Permalink to this headline">¶</a></h4>
+<h4>4.1.1 nginx 的deployment<a class="headerlink" href="#nginx-deployment" title="Permalink to this heading">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">nginx-deployment.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
@@ -604,7 +605,7 @@ Termination、按域名路由（name-based virtual hosting）。</p>
 </div>
 </section>
 <section id="httpdeployment">
-<h4>4.1.2 http的deployment<a class="headerlink" href="#httpdeployment" title="Permalink to this headline">¶</a></h4>
+<h4>4.1.2 http的deployment<a class="headerlink" href="#httpdeployment" title="Permalink to this heading">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">http-deployment.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
@@ -675,7 +676,7 @@ Termination、按域名路由（name-based virtual hosting）。</p>
 </div>
 </section>
 <section id="podsevice">
-<h4>4.1.3 检查pod和sevice状态<a class="headerlink" href="#podsevice" title="Permalink to this headline">¶</a></h4>
+<h4>4.1.3 检查pod和sevice状态<a class="headerlink" href="#podsevice" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// 应用yaml文件，生成deployment
 [root@ci-base ingress-demo2]# kubectl create -f http-deployment.yaml nginx-deployment.yaml
 
@@ -696,7 +697,7 @@ service/cloud-nginx   ClusterIP   10.103.8.159     &lt;none&gt;        8088/TCP 
 </div>
 </section>
 <section id="nodenginxhttpserver-clusterip">
-<h4>4.1.4 node上访问nginx和http的server（ClusterIP）<a class="headerlink" href="#nodenginxhttpserver-clusterip" title="Permalink to this headline">¶</a></h4>
+<h4>4.1.4 node上访问nginx和http的server（ClusterIP）<a class="headerlink" href="#nodenginxhttpserver-clusterip" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[root@k8s-w1 ~]# curl 10.107.170.205:8089
 &lt;html&gt;&lt;body&gt;&lt;h1&gt;It works!&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
 [root@k8s-w1 ~]# curl 10.103.8.159:8088
@@ -708,7 +709,7 @@ service/cloud-nginx   ClusterIP   10.103.8.159     &lt;none&gt;        8088/TCP 
 </div>
 </section>
 <section id="id10">
-<h4>4.1.5 创建ingress规则<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<h4>4.1.5 创建ingress规则<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">ingress.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">networking</span><span class="o">.</span><span class="n">k8s</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">v1beta1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Ingress</span>
@@ -742,7 +743,7 @@ service/cloud-nginx   ClusterIP   10.103.8.159     &lt;none&gt;        8088/TCP 
 </div>
 </section>
 <section id="dns">
-<h4>4.1.6 模拟dns解析<a class="headerlink" href="#dns" title="Permalink to this headline">¶</a></h4>
+<h4>4.1.6 模拟dns解析<a class="headerlink" href="#dns" title="Permalink to this heading">¶</a></h4>
 <p>修改主机hosts文件</p>
 <blockquote>
 <div><p>192.168.1.75 为node节点的IP信息</p>
@@ -758,7 +759,7 @@ service/cloud-nginx   ClusterIP   10.103.8.159     &lt;none&gt;        8088/TCP 
 </section>
 </section>
 <section id="ingress-tls">
-<h2><a class="toc-backref" href="#id23">5. 部署Ingress TLS</a><a class="headerlink" href="#ingress-tls" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">5. 部署Ingress TLS</a><a class="headerlink" href="#ingress-tls" title="Permalink to this heading">¶</a></h2>
 <p>创建ca-csr证书，运行命令如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">ingress</span><span class="o">-</span><span class="n">demo</span><span class="p">]</span><span class="c1"># mkdir TLS-ingress</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">ingress</span><span class="o">-</span><span class="n">demo</span><span class="p">]</span><span class="c1"># cd TLS-ingress/</span>
@@ -1126,7 +1127,7 @@ service/cloud-nginx   ClusterIP   10.103.8.159     &lt;none&gt;        8088/TCP 
 </div>
 </section>
 <section id="id11">
-<h2><a class="toc-backref" href="#id24">6. 相关参考文献</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id24">6. 相关参考文献</a><a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.cloudcared.cn/3113.html">https://www.cloudcared.cn/3113.html</a></p>
 </section>
 </section>

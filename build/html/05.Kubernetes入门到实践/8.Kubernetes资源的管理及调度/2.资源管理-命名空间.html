@@ -14,6 +14,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -126,7 +127,7 @@
 </ul>
 </div>
 <section id="id1">
-<h1><a class="toc-backref" href="#id8">资源管理-命名空间</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id8">资源管理-命名空间</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h1>
 <p>命名空间（namespace）的主要作用是对Kubernetes集群资源进行划分，这种划分并非物理划分，而是逻辑划分，用于实现多租户的资源隔离。</p>
 <p>如果使用Kubernetes的用户很少，可以不使用命名空间。</p>
 <p>但如果使用Kubernetes的团队或用户众多，各种资源管理起来就会比较麻烦。这时就应考虑使用命名空间来进行划分，这样集群内部
@@ -134,7 +135,7 @@
 <p>使用命名空间划分资源</p>
 <p><img alt="image0" src="../../_images/image-20220419135141847.png" /></p>
 <section id="id2">
-<h2><a class="toc-backref" href="#id9">1.命名空间的基本操作</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">1.命名空间的基本操作</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
 <p>为了创建一个名为examplenamespace的命名空间</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 新建</span>
 $ kubectl create namespace examplenamespace
@@ -145,10 +146,10 @@ $ kubectl delete ns examplenamespace
 </div>
 <p>通过模板文件创建命名空间的方式如下。
 首先，通过命令创建<code class="docutils literal notranslate"><span class="pre">examplenamespace.yml</span></code>文件。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Namespace</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenamespace</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Namespace</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenamespace</span><span class="w"></span>
 </pre></div>
 </div>
 <p>通过模板创建命名空间</p>
@@ -170,19 +171,19 @@ examplenamespace   Active   2m7s
 </ul>
 <p>此时可以在刚才创建的examplenamespace命名空间下创建资源。为了创建一个Pod，首先，使用以下命令创建模板文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforns.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforns</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenamespace</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforns</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenamespace</span><span class="w"></span>
 
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">containers</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepod-container</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
-    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Hello</span><span class="nv"> </span><span class="s">Kubernetes!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepod-container</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Hello</span><span class="nv"> </span><span class="s">Kubernetes!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 <p>该模板和之前的示例几乎相同，唯一的区别在于，指定了namespace属性，它指向刚刚创建的examplenamespace命名空间。</p>
@@ -210,7 +211,7 @@ examplepodforns   <span class="m">1</span>/1     Running   <span class="m">0</sp
 <p><img alt="image2" src="../../_images/image-20220419140301998.png" /></p>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id10">2.命名空间中的服务发现</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">2.命名空间中的服务发现</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
 <p>命名空间和Service的DNS也有一定关系，之前章节提及过DNS服务发现的方式，其具体访问格式为</p>
 <p><strong>{ServiceName}.{Namespace}.svc.{ClusterDomain}。</strong></p>
 <p>之前的示例中因为没有使用命名空间，所以{Namespace}填写的都是default。</p>
@@ -233,7 +234,7 @@ resource quota”（没有资源配额）和“No resource limits”（没有资
 <p>对于某个命名空间，可以分别设置其资源配额（ResourceQuota）和限额范围（LimitRange）</p>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id11">3.命名空间的资源配额</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">3.命名空间的资源配额</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
 <p>命名空间的设计初衷是实现多租户的资源隔离。</p>
 <p>这只是逻辑隔离，实际上所有租户都共用同一个Kubernetes集群，所以还需要规划命名空间的资源配额（ResourceQuota），以免某个命名空间滥用集群资源而影响整个Kubernetes集群。</p>
 <p>可以通过ResourceQuota来定义资源配额，设置命名空间下能够使用的各类资源总量。</p>
@@ -246,47 +247,47 @@ resource quota”（没有资源配额）和“No resource limits”（没有资
 </ul>
 <p>资源配额模板的定义如下所示。</p>
 <p><code class="docutils literal notranslate"><span class="pre">template.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ResourceQuota</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span> <span class="c1">#资源配额名称</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span> <span class="c1">#所属命名空间</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">hard</span><span class="p">:</span>
-    <span class="c1">#计算资源配额</span>
-    <span class="nt">limits.cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#对于所有非终止状态的Pod，其CPU限额总量不能超过该值</span>
-    <span class="nt">limits.memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#对于所有非终止状态的Pod，其内存限额总量不能超过该值</span>
-    <span class="nt">requests.cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#对于所有非终止状态的Pod，其CPU需求总量不能超过该值</span>
-    <span class="nt">requests.memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#对于所有非终止状态的Pod，其内存需求总量不能超过该值</span>
-    <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#等同于requests.cpu</span>
-    <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#等同于requests.memory</span>
-    <span class="c1">#存储资源配额</span>
-    <span class="nt">requests.storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#在所有的PVC中，存储资源的需求不能超过该值</span>
-    <span class="nt">persistentvolumeclaims</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#允许存在的PVC数量</span>
-    <span class="p p-Indicator">{</span><span class="nv">storage-class-name</span><span class="p p-Indicator">}</span><span class="nt">.storageclass.storage.k8s.io/requests.storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#在所有与该storage-class-name相关的PVC中，存储资源的需求不能超过该值</span>
-    <span class="p p-Indicator">{</span><span class="nv">storage-class-name</span><span class="p p-Indicator">}</span><span class="nt">.storageclass.storage.k8s.io/persistentvolumeclaims</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#允许与该storage-class-name相关的PVC总量 对象数量配额</span>
-    <span class="nt">configmaps</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#允许存在的ConfigMap数量</span>
-    <span class="nt">pods</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#允许存在的非终止状态的Pod数量。如果Pod的status.phase为Failed或Succeeded那么它处于终止状态</span>
-    <span class="nt">replicationcontrollers</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#允许存在的ReplicationController数量</span>
-    <span class="nt">resourcequotas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#允许存在的资源配额数量</span>
-    <span class="nt">services</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#允许存在的Service数量</span>
-    <span class="nt">services.loadbalancers</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#允许存在的LoadBalancer类型的Service数量</span>
-    <span class="nt">services.nodeports</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#允许存在的NodePort类型的Service数量</span>
-    <span class="nt">secrets</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span> <span class="c1">#允许存在的Secret数量</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ResourceQuota</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"> </span><span class="c1">#资源配额名称</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"> </span><span class="c1">#所属命名空间</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">hard</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1">#计算资源配额</span><span class="w"></span>
+<span class="w">    </span><span class="nt">limits.cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#对于所有非终止状态的Pod，其CPU限额总量不能超过该值</span><span class="w"></span>
+<span class="w">    </span><span class="nt">limits.memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#对于所有非终止状态的Pod，其内存限额总量不能超过该值</span><span class="w"></span>
+<span class="w">    </span><span class="nt">requests.cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#对于所有非终止状态的Pod，其CPU需求总量不能超过该值</span><span class="w"></span>
+<span class="w">    </span><span class="nt">requests.memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#对于所有非终止状态的Pod，其内存需求总量不能超过该值</span><span class="w"></span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#等同于requests.cpu</span><span class="w"></span>
+<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#等同于requests.memory</span><span class="w"></span>
+<span class="w">    </span><span class="c1">#存储资源配额</span><span class="w"></span>
+<span class="w">    </span><span class="nt">requests.storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#在所有的PVC中，存储资源的需求不能超过该值</span><span class="w"></span>
+<span class="w">    </span><span class="nt">persistentvolumeclaims</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#允许存在的PVC数量</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">{</span><span class="nv">storage-class-name</span><span class="p p-Indicator">}</span><span class="nt">.storageclass.storage.k8s.io/requests.storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#在所有与该storage-class-name相关的PVC中，存储资源的需求不能超过该值</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">{</span><span class="nv">storage-class-name</span><span class="p p-Indicator">}</span><span class="nt">.storageclass.storage.k8s.io/persistentvolumeclaims</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#允许与该storage-class-name相关的PVC总量 对象数量配额</span><span class="w"></span>
+<span class="w">    </span><span class="nt">configmaps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#允许存在的ConfigMap数量</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pods</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#允许存在的非终止状态的Pod数量。如果Pod的status.phase为Failed或Succeeded那么它处于终止状态</span><span class="w"></span>
+<span class="w">    </span><span class="nt">replicationcontrollers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#允许存在的ReplicationController数量</span><span class="w"></span>
+<span class="w">    </span><span class="nt">resourcequotas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#允许存在的资源配额数量</span><span class="w"></span>
+<span class="w">    </span><span class="nt">services</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#允许存在的Service数量</span><span class="w"></span>
+<span class="w">    </span><span class="nt">services.loadbalancers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#允许存在的LoadBalancer类型的Service数量</span><span class="w"></span>
+<span class="w">    </span><span class="nt">services.nodeports</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#允许存在的NodePort类型的Service数量</span><span class="w"></span>
+<span class="w">    </span><span class="nt">secrets</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span><span class="w"> </span><span class="c1">#允许存在的Secret数量</span><span class="w"></span>
 </pre></div>
 </div>
 <p>为了给命名空间创建一个简单的资源配额，首先，通过命令创建模板文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">exampleresourcequota.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ResourceQuota</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleresourcequota</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenamespace</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">hard</span><span class="p">:</span>
-    <span class="nt">pods</span><span class="p">:</span> <span class="s">&quot;2&quot;</span>
-    <span class="nt">services</span><span class="p">:</span> <span class="s">&quot;1&quot;</span>
-    <span class="nt">persistentvolumeclaims</span><span class="p">:</span> <span class="s">&quot;4&quot;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ResourceQuota</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleresourcequota</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenamespace</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">hard</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pods</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">services</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">persistentvolumeclaims</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;4&quot;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>接下来，运行以下命令，通过模板创建资源配额。</p>
@@ -332,27 +333,27 @@ No LimitRange resource.
 </div>
 <p>此时可以尝试在该命名空间下继续创建Pod。目前Pod的使用量为1，上限为2。接下来，创建一个Deployment控制器并将其副本数设置为2，这样刚好超过上限，多出1个Pod，试试看会发生什么情况。为此，首先，通过命令创建模板文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">exampledeploymentforns.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeploymentforns</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenamespace</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-  <span class="nt">selector</span><span class="p">:</span>
-    <span class="nt">matchLabels</span><span class="p">:</span>
-      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentforns</span>
-  <span class="nt">template</span><span class="p">:</span>
-    <span class="nt">metadata</span><span class="p">:</span>
-      <span class="nt">labels</span><span class="p">:</span>
-        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentforns</span>
-    <span class="nt">spec</span><span class="p">:</span>
-      <span class="nt">containers</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
-        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span>
-        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-        <span class="nt">ports</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampledeploymentforns</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenamespace</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploymentforns</span><span class="w"></span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploymentforns</span><span class="w"></span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span><span class="w"></span>
+<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
 </pre></div>
 </div>
 <p>这里的Deployment示例除了指定命名空间为examplenamespace外，和之前的示例没有什么区别，其副本数设置为2。</p>
@@ -381,7 +382,7 @@ resourcequota命令查询时，计算机资源配额的Used属性其实并非CPU
 <p><img alt="image4" src="../../_images/image-20220419142214363.png" /></p>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id12">4.命名空间中单个资源的限额范围</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">4.命名空间中单个资源的限额范围</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
 <p>通过设置资源配额，可以限定一个命名空间下使用的资源总量。但这仅是总量设置，对于单个资源没有限制，很有可能单个
 Pod 或容器就会消耗完整个命名空间下资源配额所指定的CPU
 或内存总量。为了避免单个资源对象消耗所有的命名空间资源，可以通过LimitRange对象来对单个资源对象的资源占用量进行限定。</p>
@@ -397,28 +398,28 @@ Pod 或容器就会消耗完整个命名空间下资源配额所指定的CPU
 <strong>即使之后设置了LimitRange，那么对正在运行的Pod也没有影响，除非Pod重建。</strong></p>
 <p><strong>如果在命名空间下设置了PVC请求的存储大小，那么当定义PVC时如果请求的大小不在范围内，系统也会拒绝创建PVC。</strong></p>
 <section id="id6">
-<h3><a class="toc-backref" href="#id13">4.1 设置容器的限额范围</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">4.1 设置容器的限额范围</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
 <p>通过设置type为Container的限额范围，可以定义每个容器中最小与最大的内存/CPU限制，以及默认的内存/CPU请求及限制。首先，通过命令创建<code class="docutils literal notranslate"><span class="pre">limitrangeforcontainer.yml</span></code>文件。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">LimitRange</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">limitrangeforcontainer</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenamespace</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">limits</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">max</span><span class="p">:</span>
-      <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;200m&quot;</span>
-      <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;300Mi&quot;</span>
-    <span class="nt">min</span><span class="p">:</span>
-      <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;100m&quot;</span>
-      <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;150Mi&quot;</span>
-    <span class="nt">default</span><span class="p">:</span>
-      <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;180m&quot;</span>
-      <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;250Mi&quot;</span>
-    <span class="nt">defaultRequest</span><span class="p">:</span>
-      <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;110m&quot;</span>
-      <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;160Mi&quot;</span>
-    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Container</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LimitRange</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">limitrangeforcontainer</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenamespace</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">max</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;200m&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;300Mi&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">min</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;100m&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;150Mi&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;180m&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;250Mi&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">defaultRequest</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;110m&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;160Mi&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Container</span><span class="w"></span>
 </pre></div>
 </div>
 <p>接下来，运行以下命令，通过模板创建限额范围。</p>
@@ -450,23 +451,23 @@ memory≤300MiB</p></li>
 </ul>
 </section>
 <section id="pod">
-<h3><a class="toc-backref" href="#id14">4.2 设置Pod的限额范围</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">4.2 设置Pod的限额范围</a><a class="headerlink" href="#pod" title="Permalink to this heading">¶</a></h3>
 <p>可以设置type为Pod的限额范围，定义Pod中全部容器的内存/CPU限额总和的最小值以及最大值。首先，通过命令创建<code class="docutils literal notranslate"><span class="pre">limitrangeforpod.yml</span></code>文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">limitrangeforpod.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">LimitRange</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">limitrangeforpod</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenamespace</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">limits</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">max</span><span class="p">:</span>
-        <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;1&quot;</span>
-        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;600Mi&quot;</span>
-      <span class="nt">min</span><span class="p">:</span>
-        <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;100m&quot;</span>
-        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;150Mi&quot;</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LimitRange</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">limitrangeforpod</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenamespace</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">max</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;600Mi&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">min</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;100m&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;150Mi&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
 </pre></div>
 </div>
 <p>运行以下命令，通过模板创建限额范围。</p>
@@ -490,21 +491,21 @@ Pod         memory    150Mi  600Mi  -                -              -
 </ul>
 </section>
 <section id="pvc">
-<h3><a class="toc-backref" href="#id15">4.3 设置PVC的限额范围</a><a class="headerlink" href="#pvc" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">4.3 设置PVC的限额范围</a><a class="headerlink" href="#pvc" title="Permalink to this heading">¶</a></h3>
 <p>可以设置type为PersistentVolumeClaim的限额范围，定义PVC的最小与最大存储量。首先，通过命令创建<code class="docutils literal notranslate"><span class="pre">limitrangeforpvc.yml</span></code>文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">limitrangeforpvc.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">LimitRange</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">limitrangeforpvc</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenamespace</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">limits</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">PersistentVolumeClaim</span>
-    <span class="nt">max</span><span class="p">:</span>
-      <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1Gi</span>
-    <span class="nt">min</span><span class="p">:</span>
-      <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200Mi</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LimitRange</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">limitrangeforpvc</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenamespace</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PersistentVolumeClaim</span><span class="w"></span>
+<span class="w">    </span><span class="nt">max</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1Gi</span><span class="w"></span>
+<span class="w">    </span><span class="nt">min</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200Mi</span><span class="w"></span>
 </pre></div>
 </div>
 <p>运行以下命令，通过模板创建限额范围。</p>
@@ -527,23 +528,23 @@ PersistentVolumeClaim  storage   200Mi  1Gi  -                -              -
 </ul>
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id16">4.4 设置Pod或容器的比例限额范围</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">4.4 设置Pod或容器的比例限额范围</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
 <p>可以对Pod或容器设置请求资源量和上限资源量的比值。对于Pod来说，这是Pod模板中所有容器的resources.limits.cpu或memory的总和与所有容器的resources.
 requests.cpu或memory的总和之比；</p>
 <p>而对于容器来说，这是单个容器的resources.
 limits.cpu或memory与自身的resources.requests.cpu或memory之比。</p>
 <p>这里我们以Pod中的memory限额范围为例进行介绍。</p>
 <p><code class="docutils literal notranslate"><span class="pre">limitrangeforratiopod.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">LimitRange</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">limitrangeforratiopod</span>
-  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenamespace</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">limits</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">maxLimitRequestRatio</span><span class="p">:</span>
-      <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;2&quot;</span>
-    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LimitRange</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">limitrangeforratiopod</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenamespace</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">maxLimitRequestRatio</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
 </pre></div>
 </div>
 <p>运行以下命令，通过模板创建限额范围。</p>
@@ -597,7 +598,7 @@ Resource Limits
 </section>
 </section>
 <section id="kubernetes">
-<h2><a class="toc-backref" href="#id17">5. Kubernetes 多租户：资源配额</a><a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id17">5. Kubernetes 多租户：资源配额</a><a class="headerlink" href="#kubernetes" title="Permalink to this heading">¶</a></h2>
 <blockquote>
 <div><p>参考文献</p>
 <p>Kubernetes 多租户：多租户介绍</p>

@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -51,7 +52,6 @@
 <li class="toctree-l2"><a class="reference internal" href="06.Docker%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Docker数据管理</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html">Docker使用网络</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html">使用Dockerfile创建镜像</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html#id7">指令        说明</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
 <li class="toctree-l2"><a class="reference internal" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html">Docker核心实现技术</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11.%E9%85%8D%E7%BD%AE%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.html">配置私有仓库</a></li>
@@ -133,13 +133,13 @@
 </ul>
 </div>
 <section id="web">
-<h1><a class="toc-backref" href="#id6">搭建一个Web应用栈</a><a class="headerlink" href="#web" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id6">搭建一个Web应用栈</a><a class="headerlink" href="#web" title="Permalink to this heading">¶</a></h1>
 <p>搭建一个包含6个节点的Docker应用栈,包括一个代理节点，两个web应用节点，一个主数据库节点，
 两个从数据库节点。</p>
 <p>应用栈具体结构图，如下</p>
 <p><img alt="image0" src="../_images/docker_web_stack.PNG" /></p>
 <section id="id1">
-<h2><a class="toc-backref" href="#id7">1.获取应用栈各节点所需的镜像</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">1.获取应用栈各节点所需的镜像</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 配置一个加速器</span>
 <span class="n">curl</span> <span class="o">-</span><span class="n">sSL</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">get</span><span class="o">.</span><span class="n">daocloud</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">daotools</span><span class="o">/</span><span class="n">set_mirror</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">sh</span> <span class="o">-</span><span class="n">s</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">f1361db2</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">daocloud</span><span class="o">.</span><span class="n">io</span>
 
@@ -161,7 +161,7 @@
 </div>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id8">2. 启动各个栈节点</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">2. 启动各个栈节点</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>· 启动redis-Master容器节点
 · 两个redis-Slave容器节点启动时链接到redis-master
 · 两个APP容器节点启动时链接到redis-master
@@ -215,7 +215,7 @@ b9032e85813f        django              &quot;/bin/bash&quot;              About
 </div>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id9">3.应用栈容器节点配置</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">3.应用栈容器节点配置</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
 <p>volume应用说明</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>· 在应用栈的个容器节点都启动后，需要对他们进行配置和修改，以便使他们实现特定功能和通信协作，在linux系统下，可以利用volume来实现文件的创建（利用-v 参数挂载volume,在主机和容器间共享数据，这样就可以直接在主机上创建和编辑相关启动配置文件）
 · 查看volume挂载情况 docker inspect -f&#39;{{.Mounts}}&#39;+容器名或id
@@ -232,7 +232,7 @@ fc28215aa5d/_data /data local  true }]
 在宿主机上为目录/var/lib/docker/volumes/5920a23b5e230a449230bbd4807912793bbc3bab0a05ae085ff95423301f0d6c/_data，在容器中为/data</p>
 <p>· 在宿主机上创建redis的启动配置文件redis.conf</p>
 <section id="redis-master">
-<h3><a class="toc-backref" href="#id10">Redis Master配置</a><a class="headerlink" href="#redis-master" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id10">Redis Master配置</a><a class="headerlink" href="#redis-master" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 是否作为守护进程运行，生产环境用yes</span>
 <span class="n">daemonize</span> <span class="n">yes</span>
 
@@ -395,7 +395,7 @@ fc28215aa5d/_data /data local  true }]
 注意是将no修改为yes，使Redis在容器前端运行，在前端运行时无法进行其他操作，可以再开一个终端
 。 pidfile /var/run/redis.pid</p>
 <section id="redis-slave1redis-slave">
-<h4>Redis slave1和redis slave从数据库容器节点配置<a class="headerlink" href="#redis-slave1redis-slave" title="Permalink to this headline">¶</a></h4>
+<h4>Redis slave1和redis slave从数据库容器节点配置<a class="headerlink" href="#redis-slave1redis-slave" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>redisslave从数据库容器节点配置与主数据库配置类似，先 docker inspect -f&#39;{{.Mounts}}&#39;+容器名或id 查看volume中主机与容器之间的共享位置是什么，然后再进入主机上的容器共享数据位置创建启动配置文件redis.conf
 </pre></div>
 </div>
@@ -427,7 +427,7 @@ fc28215aa5d/_data /data local  true }]
 </div>
 </section>
 <section id="id4">
-<h4>主数据库容器节点测试<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<h4>主数据库容器节点测试<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>· 进入redis-master主容器节点存储数据 docker exec -it redis-master /bin/bash
 · redis-cli
 · set master test#存数据
@@ -479,7 +479,7 @@ root@6e8923271c96:/data# redis-cli
 </section>
 </section>
 <section id="app-django">
-<h3><a class="toc-backref" href="#id11">APP容器节点（Django）的配置</a><a class="headerlink" href="#app-django" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">APP容器节点（Django）的配置</a><a class="headerlink" href="#app-django" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>· Django容器启动后，需要利用Django框架，开发一个简单的Web程序。为了访问数据库，需要在容器中安装Python的Redis支持包
 · 进入Django容器内部docker exec -it APP1 /bin/bash
 · 更新匹配并安装Python语言的Redis支持包:
@@ -698,7 +698,7 @@ vim urls.py</p>
 </section>
 </section>
 <section id="haproxy">
-<h2><a class="toc-backref" href="#id12">4.Haproxy容器节点配置</a><a class="headerlink" href="#haproxy" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">4.Haproxy容器节点配置</a><a class="headerlink" href="#haproxy" title="Permalink to this heading">¶</a></h2>
 <p>·
 说明：所有对应用栈的访问均通过HAproxy负载均衡代理容器节点实现负载均衡，使外网能够访问到app节点</p>
 <p>haproxy文件配置</p>
@@ -756,7 +756,7 @@ vim urls.py</p>
 </div>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id13">5.应用访问测试</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">5.应用访问测试</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
 <p>在浏览器中输入IP地址:6301/helloworld即可看到App的views，刷新页面可以看到两个不同的页面，也可以改一下app的名字就可以专门访问不同的app了。
 说明：下面第一张图为APP1的视图，第二张为APP2的视图</p>
 <p>APP1 <img alt="image1" src="../_images/docker_web_app1.PNG" /></p>

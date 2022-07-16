@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -51,7 +52,6 @@
 <li class="toctree-l2"><a class="reference internal" href="06.Docker%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86.html">Docker数据管理</a></li>
 <li class="toctree-l2"><a class="reference internal" href="07.Docker%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C.html">Docker使用网络</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html">使用Dockerfile创建镜像</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08.%E4%BD%BF%E7%94%A8Dockerfile%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F.html#id7">指令        说明</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09.%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.html">实战案例</a></li>
 <li class="toctree-l2"><a class="reference internal" href="10.Docker%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF.html">Docker核心实现技术</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">配置私有仓库</a><ul>
@@ -166,18 +166,18 @@
 </ul>
 </div>
 <section id="id1">
-<h1><a class="toc-backref" href="#id14">配置私有仓库</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id14">配置私有仓库</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h1>
 <p>在使用Docker一段时间后，往往会发现手头积累了大量的自定义镜像文件，这些文件通过公有仓库（如Dockerhub）进行管理并不方便；另外有时候只是希望在内部用户之间进行分享，不希望暴露出去。在这种情况下，就有必要搭建一个本地私有镜像仓库。</p>
 <p>在第一部分中，笔者曾介绍快速使用Registry镜像搭建一个私有仓库的方法。本章将具体讲解Registry的使用技巧，并通过案例来展示如何搭建一个功能完善的私有镜像仓库。在搭建完成本地的私有仓库服务后，来会剖析Registry的配置参数，最后会介绍通过编写脚本来实现对镜像的快速批量化管理。</p>
 <section id="docker-registry">
-<h2><a class="toc-backref" href="#id15">1.安装Docker Registry</a><a class="headerlink" href="#docker-registry" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">1.安装Docker Registry</a><a class="headerlink" href="#docker-registry" title="Permalink to this heading">¶</a></h2>
 <p>Docker
 Registry工具目前最新为2.0系列版本，这一版本和一些类库和工具一起被打包为负责容器内容分发的工具集：Docker
 Distribution。目前其核心的功能组件仍为负责镜像仓库的管理。</p>
 <p>新版本的Registry基于Golang进行了重构，提供更好的性能和扩展性，并且支持Docker
 1.6+的API，非常适合用来构建私有的镜像注册服务器。官方仓库中也提供了Registry的镜像，因此用户可以通过容器运行和源码安装两种方式来使用Registry。</p>
 <section id="id2">
-<h3><a class="toc-backref" href="#id16">1.基于容器安装运行</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">1.基于容器安装运行</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
 <p>基于容器的运行方式十分简单，只需要一条命令：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker run -d -p <span class="m">5000</span>:5000 --restart<span class="o">=</span>always --name registry registry:2
 </pre></div>
@@ -203,7 +203,7 @@ Distribution。目前其核心的功能组件仍为负责镜像仓库的管理�
 </div>
 </section>
 <section id="id3">
-<h3><a class="toc-backref" href="#id17">2.本地安装运行</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">2.本地安装运行</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
 <p>有时候需要本地运行仓库服务，可以通过源码方式进行安装。</p>
 <p>首先安装Golang环境支持，以Ubuntu为例，可以执行如下命令：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
@@ -246,7 +246,7 @@ Date: Wed, <span class="m">31</span> Sep <span class="m">2016</span> <span class
 </section>
 </section>
 <section id="tls">
-<h2><a class="toc-backref" href="#id18">2.配置TLS证书</a><a class="headerlink" href="#tls" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">2.配置TLS证书</a><a class="headerlink" href="#tls" title="Permalink to this heading">¶</a></h2>
 <p>当本地主机运行Registry服务后，所有能访问到该主机的Docker
 Host都可以把它作为私有仓库使用，只需要在镜像名称前面添加上具体的服务器地址即可。</p>
 <p>例如将本地的ubuntu：latest镜像上传到私有仓库myrepo.com：</p>
@@ -262,7 +262,7 @@ $ docker tag myrepo.com:5000/ubuntu ubuntu
 <p>私有仓库需要启用TLS认证，否则会报错。在第一部分中，我们介绍了通过添加DOCKER_OPTS=”–insecure-registry
 myrepo.com：5000来避免这个问题。在这里将介绍如何获取和生成TLS证书。</p>
 <section id="id4">
-<h3><a class="toc-backref" href="#id19">1.自行生成证书</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">1.自行生成证书</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
 <p>使用Openssl工具可以很容易地生成私人证书文件：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mkdir -p certs
 $ openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/myrepo.key -x509 -days <span class="m">365</span> -out certs/myrepo.crt
@@ -276,7 +276,7 @@ Host上，注意路径需要跟域名一致，例如：</p>
 </div>
 </section>
 <section id="id5">
-<h3><a class="toc-backref" href="#id20">2.从代理商申请证书</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">2.从代理商申请证书</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
 <p>如果Registry服务需要对外公开，需要申请大家都认可的证书。知名的代理商包括SSLs.com、GoDaddy.com、LetsEncrypt.org、GlobalSign.com等，用户可以自行选择权威的证书提供商。</p>
 <p>3.启用证书</p>
 <p>当拥有秘钥文件和证书文件后，可以配置Registry启用证书支持，主要通过使用REGI-STRY_HTTP_TLS_CERTIFICATE和REGISTRY_HTTP_TLS_KEY参数：</p>
@@ -294,7 +294,7 @@ Host上，注意路径需要跟域名一致，例如：</p>
 </section>
 </section>
 <section id="id6">
-<h2><a class="toc-backref" href="#id21">3.管理访问权限</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id21">3.管理访问权限</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
 <p>通常在生产场景中，对私有仓库还需要进行访问代理并提供认证和用户管理。</p>
 <p><img alt="image0" src="../_images/docker_acl_00001.png" /></p>
 <p>图18-1　Docker Registry v2的认证模式</p>
@@ -448,12 +448,12 @@ Compose的快速启动Registry的模板：</p>
 </div>
 </section>
 <section id="registry">
-<h2><a class="toc-backref" href="#id22">4.配置Registry</a><a class="headerlink" href="#registry" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id22">4.配置Registry</a><a class="headerlink" href="#registry" title="Permalink to this heading">¶</a></h2>
 <p>Docker
 Registry利用提供了一些样例配置，用户可以直接使用它们进行开发或生产部署。</p>
 <p>笔者将以下面的示例配置为例，介绍如何使用配置文件来管理私有仓库。</p>
 <section id="id7">
-<h3><a class="toc-backref" href="#id23">1.示例配置</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">1.示例配置</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>version: <span class="m">0</span>.1
 log:
     level: debug
@@ -524,7 +524,7 @@ health:
 </div>
 </section>
 <section id="id8">
-<h3><a class="toc-backref" href="#id24">2.选项</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">2.选项</a><a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
 <p>这些选项以yaml文件格式提供，用户可以直接进行修改，也可以添加自定义的模板段。</p>
 <p>默认情况下变量可以从环境变量中读取，例如log.level：debug可以配置为：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">LOG_LEVEL</span><span class="o">=</span><span class="n">debug</span>
@@ -770,10 +770,10 @@ S3云存储和OpenStack Swift分布式存储等，代码如下：</p>
 </section>
 </section>
 <section id="id9">
-<h2><a class="toc-backref" href="#id25">5.批量管理镜像</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id25">5.批量管理镜像</a><a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h2>
 <p>在之前章节中，笔者介绍了如何对单个镜像进行上传、下载的操作。有时候，本地镜像很多，逐个打标记进行操作将十分浪费时间。这里将以批量上传镜像为例，介绍如何利用脚本实现对镜像的批量化处理。</p>
 <section id="id10">
-<h3><a class="toc-backref" href="#id26">1.批量上传指定镜像</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id26">1.批量上传指定镜像</a><a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
 <p>可以使用下面的push_images.sh脚本，批量上传本地的镜像到注册服务器中，默认是本地注册服务器127.0.0.1：5000，用户可以通过修改registry=127.0.0.1：5000这行来指定目标注册服务器：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
 <span class="c1"># This script will upload the given local images to a registry server ($registry is the default value).</span>
@@ -855,7 +855,7 @@ Done
 <p>上传后，查看本地镜像，会发现上传中创建的临时标签也同时被清理了。</p>
 </section>
 <section id="id11">
-<h3><a class="toc-backref" href="#id27">2.上传本地所有镜像</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">2.上传本地所有镜像</a><a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h3>
 <p>在push_images工具的基础上，还可以进一步地创建push_all工具，来上传本地所有镜像：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#!/bin/sh
 # This script will upload all local images to a registry server ($registry is the default value).
@@ -874,7 +874,7 @@ done
 </section>
 </section>
 <section id="id12">
-<h2><a class="toc-backref" href="#id28">6.使用通知系统</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id28">6.使用通知系统</a><a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h2>
 <p>Docker Registry
 v2还内置提供了Notification功能，提供了非常方便、快捷地集成接口，避免了v1中需要用户自己实现的麻烦。</p>
 <p>Notification功能其实就是Registry在有事件发生的时候，向用户自己定义的地址发送webhook通知。目前的事件包括镜像manifest的push、pull，镜像层的push、pull。这些动作会被序列化成webhook事件的payload，为集成服务提供事件详情，并通过Registry
@@ -954,7 +954,7 @@ Registry
 v2.4.0及以上的版本，在这个版本中对应的manifest事件中将会携带tag的属性，来标识该动作涉及的镜像版本信息。</p>
 </section>
 <section id="docker">
-<h2><a class="toc-backref" href="#id29">7. 基于Docker容器的内部循环开发工作流</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id29">7. 基于Docker容器的内部循环开发工作流</a><a class="headerlink" href="#docker" title="Permalink to this heading">¶</a></h2>
 <p>相关步骤说明如下：</p>
 <p>（1）开发。根据需求开发应用程序，和传统开发没有什么变化，不限编程语言。</p>
 <p>（2）编写Dockerfile。Dockerfile是由一系列命令和参数构成的脚本，用来构建镜像。</p>
@@ -967,7 +967,7 @@ up启动多个容器。</p>
 <p>（7）部署或继续开发。基于容器实现持续交付和部署。</p>
 </section>
 <section id="id13">
-<h2><a class="toc-backref" href="#id30">本章小结</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id30">本章小结</a><a class="headerlink" href="#id13" title="Permalink to this heading">¶</a></h2>
 <p>本章详细介绍了使用Docker
 Registry的两种主要方式：通过容器方式运行和通过本地安装运行并注册为系统服务，以及添加Nginx反向代理和添加用户认证功能。接下来还详细介绍了Docker
 Registry配置文件中各个选项的含义和使用。最后演示如何通过脚本来实现对镜像的批量管理，以及使用Registry的通知系统来支持更多应用场景。</p>

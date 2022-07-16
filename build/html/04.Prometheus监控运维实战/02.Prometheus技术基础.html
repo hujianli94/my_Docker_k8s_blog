@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -129,16 +130,16 @@
 </ul>
 </div>
 <section id="prometheus">
-<h1><a class="toc-backref" href="#id10">Prometheus技术基础</a><a class="headerlink" href="#prometheus" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id10">Prometheus技术基础</a><a class="headerlink" href="#prometheus" title="Permalink to this heading">¶</a></h1>
 <section id="exporter">
-<h2><a class="toc-backref" href="#id11">1.Exporter</a><a class="headerlink" href="#exporter" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">1.Exporter</a><a class="headerlink" href="#exporter" title="Permalink to this heading">¶</a></h2>
 <p>Prometheus核心组件中，Exporter是重要的组成部分，在实际中监控样本数据的收集都是由Exporter完成的，Prometheus服务器只需要定时从这些Exporter提供的HTTP服务获取监控数据即可。</p>
 <p>本章将对Exporter的类型以及文本数据格式进行说明，讨论如何从官方的Exporter列表获取常用的Exporter，比如用于监控基础设施中服务器性能的node_exporter、wmi_exporter，用于对数据库监控的mysqld_exporter和redis_exporter等。</p>
 <p>并对这些获取特定目标监控样本数据的Exporter软件包进行安装集成，最终可以很直观地通过Prometheus
 Web UI浏览采集到的各类监控数据。</p>
 </section>
 <section id="id1">
-<h2><a class="toc-backref" href="#id12">2.Exporter类型</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">2.Exporter类型</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <p>通常来说可以将Exporter分为两类：</p>
 <ul class="simple">
 <li><p>直接采集型。这类Exporter直接内置了相应的应用程序，用于向Prometheus直接提供Target数据支持。这样设计的好处是，可以更好地监控各自系统的内部运行状态，同时也适合更多自定义监控指标的项目实施。例如cAdvisor、Kubernetes等，它们均内置了用于向Prometheus提供监控数据的端点。</p></li>
@@ -147,7 +148,7 @@ Library编写该监控目标的监控采集程序，用户可以将该程序独�
 exporter，还有数据库或网站HTTP应用类等Exporter。</p></li>
 </ul>
 <section id="id2">
-<h3><a class="toc-backref" href="#id13">2.1 文本数据格式</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">2.1 文本数据格式</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
 <p>Prometheus的所有流程都需要使用基于文本的格式。现在我们可以使用浏览器访问已经部署完成的metrics，可以从Prometheus
 Web UI提供的页面http://192.168.24.17:9090/metrics来获取信息.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># HELP go_gc_duration_seconds A summary of the GC invocation durations.</span>
@@ -190,7 +191,7 @@ Web UI提供的页面http://192.168.24.17:9090/metrics来获取信息.</p>
 </section>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id14">2.2 获取Exporter</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">2.2 获取Exporter</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
 <p>Prometheus Exporter社区很活跃，提供了支持120+常见开源组件的Exporter，</p>
 <p>一些比较有名的技术厂商都专门编写对应的Prometheus
 Exporter，例如，Oracle编写的Weblogic Exporter，IBM编写的IBM MQ
@@ -204,29 +205,73 @@ exporter（official）。在这些Exporter的名称末尾都标示了（official
 GitHub官网https://github.com/prometheus上获取对应的Exporter最新版本。</p>
 <p>我们将以下演示环境中用到的应用信息进行汇总，方便大家后续操作中查看</p>
 <section id="id4">
-<h3><a class="toc-backref" href="#id15">2.2.1 测试主机列表及其软件</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<p>名称                  IP地址        软件信息                         端口
-===================== ============= ================================
-====
-prometheus            192.168.1.x   prometheus-2.4.0.linux…          9090
-Grafana               192.168.1.x   grafana-5.2.4-1.x86_64.zip       3000
-Linux主机             192.168.1.x   node_exporter-0.16.0.linux…      9100
-Windows主机           192.168.1.x   wmi_exporter-0.5.0-amd64.msi     9182
-MySQL主机             192.168.1.x   mysqld_exporter-0.11.0.linux…    9104
-Redis主机             192.168.1.xx  redis-exporter-v0.23.0.linux…    9121
-Nginx主机             192.168.1.xxx nginx-vts-exporter-0.10.3.linux… 9913
-Blackbox Exporter主机 192.168.1.xx  blackbox_exporter-0.14.0.linux…  9115
-===================== ============= ================================
-====</p>
+<h3><a class="toc-backref" href="#id15">2.2.1 测试主机列表及其软件</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 20%" />
+<col style="width: 42%" />
+<col style="width: 6%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>名称</p></th>
+<th class="head"><p>IP地址</p></th>
+<th class="head"><p>软件信息</p></th>
+<th class="head"><p>端口</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>prometheus</p></td>
+<td><p>192.168.1.x</p></td>
+<td><p>prometheus-2….</p></td>
+<td><p>9090</p></td>
+</tr>
+<tr class="row-odd"><td><p>Grafana</p></td>
+<td><p>192.168.1.x</p></td>
+<td><p>grafana-….zip</p></td>
+<td><p>3000</p></td>
+</tr>
+<tr class="row-even"><td><p>Linux主机</p></td>
+<td><p>192.168.1.x</p></td>
+<td><p>node_exporter-0….linux…</p></td>
+<td><p>9100</p></td>
+</tr>
+<tr class="row-odd"><td><p>Windows主机</p></td>
+<td><p>192.168.1.x</p></td>
+<td><p>wmi_exporter-0….msi</p></td>
+<td><p>9182</p></td>
+</tr>
+<tr class="row-even"><td><p>MySQL主机</p></td>
+<td><p>192.168.1.x</p></td>
+<td><p>mysqld_exporter….linux…</p></td>
+<td><p>9104</p></td>
+</tr>
+<tr class="row-odd"><td><p>Redis主机</p></td>
+<td><p>192.168.1.xx</p></td>
+<td><p>redis-exporter….linux…</p></td>
+<td><p>9121</p></td>
+</tr>
+<tr class="row-even"><td><p>Nginx主机</p></td>
+<td><p>192.168.1.xxx</p></td>
+<td><p>nginx-vts-exporter-….linux…</p></td>
+<td><p>9913</p></td>
+</tr>
+<tr class="row-odd"><td><p>Blackbox Exporter主机</p></td>
+<td><p>192.168.1.xx</p></td>
+<td><p>blackbox_exporter-….linux…</p></td>
+<td><p>9115</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="id5">
-<h3><a class="toc-backref" href="#id16">2.2.2 软件下载清单</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">2.2.2 软件下载清单</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
 <p>自行百度下载</p>
 </section>
 <section id="id6">
-<h3><a class="toc-backref" href="#id17">2.2.3 主机监控</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">2.2.3 主机监控</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
 <section id="linux">
-<h4>1 Linux主机监控<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h4>
+<h4>1 Linux主机监控<a class="headerlink" href="#linux" title="Permalink to this heading">¶</a></h4>
 <p><strong>1.下载部署</strong></p>
 <p>在安装之前，首先在官方下载页面https://prometheus.io/download/找到Nodeexporter列表，下载最新版本中特定平台的二进制文件。或者直接在官方的Prometheus
 GitHub下载，在https://github.com/prometheus/node_exporter/releases下载指定的Node
@@ -367,7 +412,7 @@ systemctl status node_exporter
 </div>
 </section>
 <section id="windows">
-<h4>2 Windows主机监控<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h4>
+<h4>2 Windows主机监控<a class="headerlink" href="#windows" title="Permalink to this heading">¶</a></h4>
 <p>下载页面地址：<a class="reference external" href="https://github.com/martinlindhe/wmi_exporter/releases">https://github.com/martinlindhe/wmi_exporter/releases</a>。选择当前最新版本：wmi_exporter-0.5.0-amd64.msi下载到被监控主机。直接双击文件进行快速安装即可。wmi_exporter会自动安装到C:_exporter目录下，安装程序将WMI
 Exporter设置为Windows服务，并在Windows防火墙中创建入站规则“WMI
 Exporter（HTTP
@@ -377,9 +422,9 @@ Exporter（HTTP
 </section>
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id18">2.2.4 数据库监控</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">2.2.4 数据库监控</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
 <section id="mysql-server-exporter">
-<h4>1 MySQL Server exporter<a class="headerlink" href="#mysql-server-exporter" title="Permalink to this headline">¶</a></h4>
+<h4>1 MySQL Server exporter<a class="headerlink" href="#mysql-server-exporter" title="Permalink to this heading">¶</a></h4>
 <p><strong>1.软件下载与部署</strong></p>
 <p>在安装之前，可以在官方下载页面https://prometheus.io/download/中找到mysqld_exporter列表，下载最新版本中特定平台的二进制文件。同样也可以直接在官方的Prometheus
 GitHub下载页面https://github.com/prometheus/mysqld_exporter/releases中下载指定的mysqld_exporter版本所对应特定平台的二进制文件。</p>
@@ -662,7 +707,7 @@ server集成在Windows操作系统且64位版本时，可以下载对应的软�
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12101494.html">promethus监控RDS</a></p>
 </section>
 <section id="redis-exporter">
-<h4>2 Redis exporter 单节点<a class="headerlink" href="#redis-exporter" title="Permalink to this headline">¶</a></h4>
+<h4>2 Redis exporter 单节点<a class="headerlink" href="#redis-exporter" title="Permalink to this heading">¶</a></h4>
 <p><strong>1.软件下载与部署</strong></p>
 <p>1）下载redis_exporter。</p>
 <p>下载地址为https://github.com/oliver006/redis_exporter/releases。选择当时最新版本redis_exporter-v0.23.0.linux-amd64.tar.gz，对Redis
@@ -744,14 +789,14 @@ UI提供的内容，可以看到在Targets页面列表中已经新增了redis_ex
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12101496.html">https://www.cnblogs.com/xiao987334176/p/12101496.html</a></p>
 </section>
 <section id="redis-exporterredis">
-<h4>3. Redis exporter监控redis集群<a class="headerlink" href="#redis-exporterredis" title="Permalink to this headline">¶</a></h4>
+<h4>3. Redis exporter监控redis集群<a class="headerlink" href="#redis-exporterredis" title="Permalink to this heading">¶</a></h4>
 <p>参考文献：</p>
 <p><a class="reference external" href="https://www.cnblogs.com/fsckzy/p/12053604.html">https://www.cnblogs.com/fsckzy/p/12053604.html</a></p>
 <p><a class="reference external" href="https://www.cnblogs.com/caoweixiong/p/12736384.html">https://www.cnblogs.com/caoweixiong/p/12736384.html</a></p>
 </section>
 </section>
 <section id="nginx">
-<h3><a class="toc-backref" href="#id19">2.2.5 Nginx监控</a><a class="headerlink" href="#nginx" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">2.2.5 Nginx监控</a><a class="headerlink" href="#nginx" title="Permalink to this heading">¶</a></h3>
 <p>在Prometheus官方文档中提供了2个Nginx使用的第三方Exporter：Nginxmetric
 library和nginx-vts-exporter。这里我们使用nginx-vts-exporter对已经安装好的Nginx服务进行监控数据采集。</p>
 <p>在安装nginx-vts-exporter前，如果你正在安装Nginx服务，此时，需要安装支持第三方的nginx
@@ -830,7 +875,7 @@ UI提供的页面内容，在Targets页面列表中已经新增了nginx-vts-expo
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/11180652.html">promethus监控nginx</a></p>
 </section>
 <section id="id8">
-<h3><a class="toc-backref" href="#id20">2.2.6 Prometheus之黑盒监控</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">2.2.6 Prometheus之黑盒监控</a><a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
 <p>Exporter的使用可以称为“白盒监控”，即需要把对应的Exporter程序安装到被监控的目标主机上，从而实现对主机各种资源及其状态的数据采集工作。但是由于某些情况下操作技术或其他原因，不是所有的Exporter都能部署到被监控的主机环境中，最典型的例子是监控全国网络质量的稳定性，通常的方法是使用ping操作，对选取的节点进行ICMP测试，此时不可能在他人应用环境中部署相关的Exporter程序。</p>
 <p>针对这样的应用的场景，Prometheus社区提供了黑盒解决方案，Blackbox
 Exporter无须安装在被监控的目标环境中，用户只需要将其安装在与Prometheus和被监控目标互通的环境中，通过HTTP、HTTPS、DNS、TCP、ICMP等方式对网络进行探测监控，还可以探测SSL证书过期时间。</p>
@@ -1087,7 +1132,7 @@ Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12022482.html">https://www.cnblogs.com/xiao987334176/p/12022482.html</a></p>
 </section>
 <section id="docker">
-<h3><a class="toc-backref" href="#id21">2.2.7 Docker监控</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">2.2.7 Docker监控</a><a class="headerlink" href="#docker" title="Permalink to this heading">¶</a></h3>
 <p><strong>监控一个容器服务(``常用的监控指标有: 内存，CPU,硬盘，网络，状态``)</strong></p>
 <p>cAdvisor (Container Advisor)
 用于收集正在允许的容器资源使用和性能信息。相当于zabbix-agent一样提供一个数据采集的接口</p>
@@ -1136,14 +1181,14 @@ Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监
 <p><a class="reference external" href="https://grafana.com/grafana/dashboards/10566">https://grafana.com/grafana/dashboards/10566</a></p>
 </section>
 <section id="kubernets">
-<h3><a class="toc-backref" href="#id22">2.2.8 kubernets监控</a><a class="headerlink" href="#kubernets" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">2.2.8 kubernets监控</a><a class="headerlink" href="#kubernets" title="Permalink to this heading">¶</a></h3>
 <p><a class="reference external" href="http://www.mydlq.club/article/112/">http://www.mydlq.club/article/112/</a></p>
 <p><a class="reference external" href="https://grafana.com/grafana/dashboards/8919">https://grafana.com/grafana/dashboards/8919</a></p>
 <p><a class="reference external" href="https://grafana.com/grafana/dashboards/16098">https://grafana.com/grafana/dashboards/16098</a></p>
 </section>
 </section>
 <section id="id9">
-<h2><a class="toc-backref" href="#id23">本章小结</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">本章小结</a><a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h2>
 <p>Prometheus监控环境中，具有更好的跨平台和可读性的基于文本的数据格式。</p>
 <ul class="simple">
 <li><p>Node Exporter对Linux主机进行数据监控采</p></li>
