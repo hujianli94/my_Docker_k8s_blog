@@ -636,6 +636,11 @@ Taints:             <span class="nv">restart</span><span class="o">=</span>hourl
 <p>其中，k8snode2有每小时重启的不稳定状况，所以不将Pod调度到该机器上；</p>
 <p>k8snode3处于开机维护状态，也不将Pod调度到该机器上；</p>
 <p>k8snode4的硬盘非常差，不推荐将Pod调度到该机器上。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|</span> <span class="n">k8snode1</span> <span class="o">|</span> <span class="n">k8snode2</span>                  <span class="o">|</span> <span class="n">k8snode3</span>                  <span class="o">|</span> <span class="n">k8snode4</span>                            <span class="o">|</span>
+<span class="o">|</span> <span class="o">--------</span> <span class="o">|</span> <span class="o">-------------------------</span> <span class="o">|</span> <span class="o">-------------------------</span> <span class="o">|</span> <span class="o">-----------------------------------</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">无污点</span>   <span class="o">|</span> <span class="n">restart</span><span class="o">=</span><span class="n">hourly</span><span class="p">:</span><span class="n">NoSchedule</span> <span class="o">|</span> <span class="n">isMaintain</span><span class="o">=</span><span class="n">true</span><span class="p">:</span><span class="n">NoExecute</span> <span class="o">|</span> <span class="n">diskSpeed</span><span class="o">=</span><span class="n">verySlow</span><span class="p">:</span><span class="n">PreferNoSchedule</span> <span class="o">|</span>
+</pre></div>
+</div>
 <p>如果此时定义一个任意的Pod，其调度过程将如下图所示。</p>
 <p>k8snode2和k8snode3因为存在污点，所以在预选阶段就会被筛除。</p>
 <p><strong>然后对k8snode1和k8snode4进行优先级选择，由于k8snode4存在不推荐的污点，因此k8snode1将获得最高优先级，</strong>

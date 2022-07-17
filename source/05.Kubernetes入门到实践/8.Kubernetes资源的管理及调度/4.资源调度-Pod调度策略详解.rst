@@ -614,14 +614,11 @@ k8snode3处于开机维护状态，也不将Pod调度到该机器上；
 
 k8snode4的硬盘非常差，不推荐将Pod调度到该机器上。
 
-+-----+------------------+------------------+--------------------------+
-| k8s | k8snode2         | k8snode3         | k8snode4                 |
-| nod |                  |                  |                          |
-| e1  |                  |                  |                          |
-+=====+==================+==================+==========================+
-| 无污点 | restart=hourly:N | isMaintain=true: | diskSpeed=verySlow:Prefe |
-|     | oSchedule        | NoExecute        | rNoSchedule              |
-+-----+------------------+------------------+--------------------------+
+::
+
+   | k8snode1 | k8snode2                  | k8snode3                  | k8snode4                            |
+   | -------- | ------------------------- | ------------------------- | ----------------------------------- |
+   | 无污点   | restart=hourly:NoSchedule | isMaintain=true:NoExecute | diskSpeed=verySlow:PreferNoSchedule |
 
 如果此时定义一个任意的Pod，其调度过程将如下图所示。
 

@@ -16,7 +16,6 @@ judges and incrementally updates it based on the md5 value
 Search_Path = os.path.abspath(os.path.dirname(os.path.abspath(__file__))) + "/source"
 # ENV_PATH = sys.path.append("D:\\Users\\pandocc-2.2.3.2")
 
-
 def log():
     def Out_Wrapper(func):
         def Internal(*args, **kwargs):

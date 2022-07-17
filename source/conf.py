@@ -34,6 +34,7 @@ class BCLLexer(RegexLexer):
         ]
     }
 
+
 lexers['MYLANG'] = BCLLexer(startinline=True)
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -63,20 +64,19 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'chinese_search',
-
 ]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # The suffix of source filenames.
-## 如果期望sphinx文档支持Markdown源文件，在前面的配置文件中找到source_suffix，修改成下面的配置即可。
-# from recommonmark.parser import CommonMarkParser
-
+# 如果期望sphinx文档支持Markdown源文件，在前面的配置文件中找到source_suffix，修改成下面的配置即可。
 # source_parsers = {
-#     '.md': CommonMarkParser,
+#     '.md': 'recommonmark.parser.CommonMarkParser',
 # }
+
 # source_suffix = ['.rst', '.md']
 source_suffix = ['.rst']
+
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
