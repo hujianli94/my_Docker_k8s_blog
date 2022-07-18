@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>API Server的身份认证、授权、准入控制 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -121,7 +120,7 @@
 </ul>
 </div>
 <section id="api-server">
-<h1><a class="toc-backref" href="#id9">API Server的身份认证、授权、准入控制</a><a class="headerlink" href="#api-server" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id9">API Server的身份认证、授权、准入控制</a><a class="headerlink" href="#api-server" title="Permalink to this headline">¶</a></h1>
 <p>之前我们使用的是kubectl反向代理，通过使kubectl反向代理API
 Server，可以直接使用kubectl命令的认证授权来访问API
 Server。然而，当在实际工作中使用API
@@ -134,11 +133,11 @@ Server是访问和管理资源对象的唯
 <p>访问API
 Server需要经过身份认证、授权及准入控制这三大关卡，如下图所示。只有这三大关卡都能通过，才可以访问Kubernetes集群中的资源。</p>
 <p>访问API Server的三大关卡</p>
-<p><img alt="image0" src="../../_images/image-20220420145604803.png" /></p>
+<img alt="../../_images/image-20220420145604803.png" src="../../_images/image-20220420145604803.png" />
 <p>身份认证主要用于确定用户能不能访问，授权则决定用户能够访问哪些资源，而准入控制决定用户访问这些资源时需要基于什么规范
 或准则。</p>
 <section id="id1">
-<h2><a class="toc-backref" href="#id10">1. 身份认证</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">1. 身份认证</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>要访问API Server，首先需要经过的第一个关卡就是身份认证。之前我们在使用
 kubectl反向代理或者直接使用kubectl命令时，其实也经历了身份认证。kubectl命令的认证是使用<code class="docutils literal notranslate"><span class="pre">~/.kube/config</span></code>文件进行的。通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">config</span> <span class="pre">view</span></code>命令，可以查看它的认证情况</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl config view
@@ -194,7 +193,7 @@ Server。</p></li>
 Server的身份标识，以便Pod可以从内部调用 API Server。</p></li>
 </ul>
 <section id="id2">
-<h3><a class="toc-backref" href="#id11">1.1 常规用户认证</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">1.1 常规用户认证</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>常规用户认证主要供普通用户或独立于Kubernetes之外的其他外部应用来使用，它主要有3种认证方式。</p>
 <ul class="simple">
 <li><p>HTTPS证书认证：基于CA证书签名的数字证书认证。</p></li>
@@ -250,12 +249,12 @@ Server，只需要在请求中带上 一个Header即可，其格式为Authorizat
 <p>Kubernetes已经识别出exampleuser正在进行访问，但因为只通过了认证，还没有授权，所以访问仍会失败。认证已经完成。</p>
 </section>
 <section id="serviceaccount">
-<h3><a class="toc-backref" href="#id12">1.2 ServiceAccount认证</a><a class="headerlink" href="#serviceaccount" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">1.2 ServiceAccount认证</a><a class="headerlink" href="#serviceaccount" title="Permalink to this headline">¶</a></h3>
 <p>ServiceAccount认证主要供集群内部Pod中的进程使用，以便Pod可以从内部调用API
 Server。</p>
 <p>常规用户认证是不限制命名空间（namespace）的，但ServiceAccount认证的局限于它所在的命名空间中。</p>
 <section id="id3">
-<h4>默认ServiceAccount<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h4>
+<h4>默认ServiceAccount<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p>每个命名空间都有一个默认的ServiceAccount，<strong>如果在创建Pod时没有明确指定用哪个ServiceAccount，就会用默认的</strong>
 <strong>ServiceAccount。</strong></p>
 <p>可以通过<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">serviceaccount</span></code>命令查看当前已有的ServiceAccount</p>
@@ -284,17 +283,17 @@ default-token-znfnr   kubernetes.io/service-account-token   <span class="m">3</s
 </pre></div>
 </div>
 <p>接下来，创建一个示例Pod，用它来进行讲解，其定义如下所示。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforheadlessservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testcontainer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker.io/appropriate/curl</span><span class="w"></span>
-<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;test</span><span class="nv"> </span><span class="s">pod</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">headless</span><span class="nv"> </span><span class="s">service!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforheadlessservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testcontainer</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.io/appropriate/curl</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;test</span><span class="nv"> </span><span class="s">pod</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">headless</span><span class="nv"> </span><span class="s">service!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>这个Pod的镜像为appropriate/curl。它是一种工具箱，里面存放了一些用于测试网络的工具，例如，curl命令正好可用于测试
@@ -302,8 +301,8 @@ API Server的访问。调用sleep 3600命令让该容器长期处于运行状态
 <p>此时执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pod</span> <span class="pre">examplepodforheadlessservice</span> <span class="pre">-o</span> <span class="pre">yaml</span></code>命令查看Pod定义的
 详情（或使用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pod</span> <span class="pre">examplepodforheadlessservice</span></code>命令查看Pod详情），</p>
 <p>可以发现Pod中引用了一个Secret类型的存储卷，这个存储卷我们并没有在模板中定义，而是由Kubernetes自动附加的</p>
-<p><img alt="image1" src="../../_images/image-20220420214329999.png" /></p>
-<p><img alt="image2" src="../../_images/image-20220420214438456.png" /></p>
+<img alt="../../_images/image-20220420214329999.png" src="../../_images/image-20220420214329999.png" />
+<img alt="../../_images/image-20220420214438456.png" src="../../_images/image-20220420214438456.png" />
 <p>Kubernetes在这个命名空间下以默认形式自动创建了一个ServiceAccount，而在default-token-znfnr里面存放了ServiceAccount的认证信息。</p>
 <p>使用这些认证信息，就可以访问APIServer。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl describe pod examplepodforheadlessservice
@@ -322,8 +321,8 @@ Annotations:  &lt;none&gt;
 <p>执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">secret</span> <span class="pre">default-token-znfnr</span> <span class="pre">-o</span> <span class="pre">yaml</span></code>命令</p>
 <p>（或<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">secret</span> <span class="pre">default-token-znfnr</span></code>命令），查看Secret定义的详情，</p>
 <p>可以发现它主要存放了3个信息——ca.crt（证书）、namespace、token。</p>
-<p><img alt="image3" src="../../_images/image-20220420215311073.png" /></p>
-<p><img alt="image4" src="../../_images/image-20220420215601123.png" /></p>
+<img alt="../../_images/image-20220420215311073.png" src="../../_images/image-20220420215311073.png" />
+<img alt="../../_images/image-20220420215601123.png" src="../../_images/image-20220420215601123.png" />
 <p>由于该Secret是以存储卷形式<strong>挂载到Pod容器当中的</strong>，因此可以使用映射路径获得证书和令牌，并用它们来访问API
 Server，例如，可 以使用以下路径。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">secrets</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">serviceaccount</span><span class="o">/</span><span class="n">ca</span><span class="o">.</span><span class="n">crt</span>
@@ -342,18 +341,18 @@ Server，例如，可 以使用以下路径。</p>
 <p>在本例中，我们通过<code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">/var/run/secrets/Kubernetes.io/serviceaccount/</span></code>
 token输出了存放在映射路径下的令牌。命令执行后，结果如下图
 所示，Kubernetes已经通过认证，识别到名为default的ServiceAccount正在进行访问，由于还未授权，因此访问会失败。</p>
-<p><img alt="image5" src="../../_images/image-20220420221321670.png" /></p>
+<img alt="../../_images/image-20220420221321670.png" src="../../_images/image-20220420221321670.png" />
 </section>
 <section id="id4">
-<h4>自定义ServiceAccount<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h4>
+<h4>自定义ServiceAccount<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>一般情况下，我们并不会更改默认ServiceAccount的授权。如果某些Pod需要访问API
 Server，通常会让它引用自定义ServiceAccount，并设置其授权。</p>
 <p>ServiceAccount的定义非常简单。首先，通过以下命令创建一个名为exampleserviceaccount的自定义ServiceAccount。</p>
 <p><code class="docutils literal notranslate"><span class="pre">exampleserviceaccount.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span>
 </pre></div>
 </div>
 <p>运行以下命令，通过模板创建ServiceAccount。</p>
@@ -385,18 +384,18 @@ Events:              &lt;none&gt;
 <p>此时再创建一个Pod，将它的spec.serviceAccountName属性设置为刚才创建的自定义ServiceAccount。</p>
 <p>首先，通过以下命令，创建模板文件。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforserviceaccount.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforserviceaccount</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testcontainer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker.io/appropriate/curl</span><span class="w"></span>
-<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;test</span><span class="nv"> </span><span class="s">pod</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">headless</span><span class="nv"> </span><span class="s">service!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforserviceaccount</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">serviceAccountName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testcontainer</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.io/appropriate/curl</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;test</span><span class="nv"> </span><span class="s">pod</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">headless</span><span class="nv"> </span><span class="s">service!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>在这个 Pod 的定义中，引用了先前创建的名为exampleserviceaccount
@@ -408,9 +407,9 @@ Events:              &lt;none&gt;
 <p>Pod创建后再执行<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pod</span> <span class="pre">examplepodforserviceaccount</span> <span class="pre">-o</span> <span class="pre">yaml</span></code></p>
 <p>命令查看Pod定义的详情（或用<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pod</span> <span class="pre">examplepodforserviceaccount</span></code>命令查看Pod详情），</p>
 <p>可以发现Pod中使用了自定义ServiceAccount的Secret，并将其配置为存储卷。</p>
-<p><img alt="image6" src="../../_images/image-20220421092530850.png" /></p>
+<img alt="../../_images/image-20220421092530850.png" src="../../_images/image-20220421092530850.png" />
 <p>可以看到cm配置文件已经挂载到容器中了。</p>
-<p><img alt="image7" src="../../_images/image-20220421092718760.png" /></p>
+<img alt="../../_images/image-20220421092718760.png" src="../../_images/image-20220421092718760.png" />
 <p>与默认的ServiceAccount一样，我们依然可以进入Pod内部，然后使用ServiceAccount的令牌来访问API
 Server。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl --insecure https://192.168.1.161:6443/api/v1/namespaces/default/pods -H <span class="se">\</span>
@@ -422,7 +421,7 @@ Server。</p>
 </section>
 </section>
 <section id="rbac">
-<h2><a class="toc-backref" href="#id13">2. RBAC授权</a><a class="headerlink" href="#rbac" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">2. RBAC授权</a><a class="headerlink" href="#rbac" title="Permalink to this headline">¶</a></h2>
 <p>Kubernetes中有基于属性的访问控制（Attribute Based
 AccessControl，ABAC）、</p>
 <p>基于角色的访问控制（Role Based AccessControl，RBAC）、</p>
@@ -432,27 +431,27 @@ AccessControl，ABAC）、</p>
 <p>（1）角色定义：指定角色名称，定义允许访问哪些资源及允许的访问方式。</p>
 <p>（2）角色绑定：将角色与用户（常规用户或ServiceAccount）进行绑定，这样用户就拥有与角色对应的权限。</p>
 <p>RBAC授权的原理如图</p>
-<p><img alt="image8" src="../../_images/image-20220421093626151.png" /></p>
+<img alt="../../_images/image-20220421093626151.png" src="../../_images/image-20220421093626151.png" />
 <p>角色定义和角色绑定分为两种。</p>
 <ul class="simple">
 <li><p>只拥有单一指定命名空间访问权限的角色：角色定义关键字为Role，角色绑定关键字为RoleBinding。</p></li>
 <li><p>拥有集群级别（不限命名空间）访问权限的角色：角色定义关键字为ClusterRole，角色绑定关键字为ClusterRoleBinding。</p></li>
 </ul>
 <section id="id5">
-<h3><a class="toc-backref" href="#id14">2.1 普通角色的定义与绑定</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">2.1 普通角色的定义与绑定</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <section id="id6">
-<h4>普通角色定义<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h4>
+<h4>普通角色定义<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
 <p>首先，定义一个普通角色，创建一个名为podreader.yml的模板文件。命令如下。</p>
 <p><code class="docutils literal notranslate"><span class="pre">podreader.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Role</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">podreader</span><span class="w"></span>
-<span class="nt">rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;pods&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;watch&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Role</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">podreader</span>
+<span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">apiGroups</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span>
+    <span class="nt">resources</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;pods&quot;</span><span class="p p-Indicator">]</span>
+    <span class="nt">verbs</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;watch&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;list&quot;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>这里介绍一下文件中的主要属性。</p>
@@ -494,36 +493,36 @@ PolicyRule:
 </div></blockquote>
 <p>例如，要查看Pod中有resources属性的类别以及支持的verbs属性，</p>
 <p>可以执行命令<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">curl</span> <span class="pre">http://localhost:8080/api/v1</span></code>，然后在返回结果中找到与Pod相关的信息。</p>
-<p><img alt="image9" src="../../_images/image-20220421094957631.png" /></p>
+<img alt="../../_images/image-20220421094957631.png" src="../../_images/image-20220421094957631.png" />
 <p>如果要查看Daemonsets控制器中resources属性的类别以及支持的verbs属性，</p>
 <p>可以执行命令<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">curl</span> <span class="pre">http://localhost:8080/apis/apps/v1</span></code>，</p>
 <p>然后在返回结果中找到与Daemonsets控制器相关的信息。</p>
 <p>与Daemonsets控制器相关的resources及verbs属性</p>
-<p><img alt="image10" src="../../_images/image-20220421095116198.png" /></p>
+<img alt="../../_images/image-20220421095116198.png" src="../../_images/image-20220421095116198.png" />
 </section>
 <section id="id7">
-<h4>普通角色绑定<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h4>
+<h4>普通角色绑定<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
 <p>定义角色后就可以绑定角色了。绑定可以针对常规用户认证，也可以针对ServiceAccount认证。</p>
 <p>在之前的示例中，我们创建过基于常规用户认证的用户，其名称为exampleuser，</p>
 <p>还设置过一个自定义ServiceAccount，其名称为exampleserviceaccount（另一个名为
 examplepodforserviceaccount的Pod引用了这个自定义ServiceAccount）。为了同时为它们进行角色绑定，首先，创建模板文件，命令如下。</p>
 <p><code class="docutils literal notranslate"><span class="pre">podreaderbinding.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RoleBinding</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">podreaderbinding</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
-<span class="nt">subjects</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">User</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleuser</span><span class="w"></span>
-<span class="w">    </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span><span class="w"></span>
-<span class="w">    </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
-<span class="nt">roleRef</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Role</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">podreader</span><span class="w"></span>
-<span class="w">  </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">RoleBinding</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">podreaderbinding</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="nt">subjects</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">User</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleuser</span>
+    <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span>
+    <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="nt">roleRef</span><span class="p">:</span>
+  <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Role</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">podreader</span>
+  <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
 </pre></div>
 </div>
 <p>这里介绍一下它的主要属性。</p>
@@ -574,19 +573,19 @@ Server访问Pod，命令如下。</p>
 </div>
 <p>为了使用ServiceAccount认证，首先，通过以下命令进入Pod内部，以便在Pod内部执行命令行。</p>
 <p><code class="docutils literal notranslate"><span class="pre">podreaderbinding-v2.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RoleBinding</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">podreaderbinding</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
-<span class="nt">subjects</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span><span class="w"></span>
-<span class="w">    </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
-<span class="nt">roleRef</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Role</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">podreader</span><span class="w"></span>
-<span class="w">  </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">RoleBinding</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">podreaderbinding</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="nt">subjects</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span>
+    <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="nt">roleRef</span><span class="p">:</span>
+  <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Role</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">podreader</span>
+  <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
 </pre></div>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl <span class="nb">exec</span> -ti examplepodforserviceaccount -- /bin/sh
@@ -599,7 +598,7 @@ Server访问Pod，命令如下。</p>
 </section>
 </section>
 <section id="id8">
-<h3><a class="toc-backref" href="#id15">2.2 集群角色的定义与绑定</a><a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">2.2 集群角色的定义与绑定</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <p>集群角色与普通角色类似，但二者存在以下区别。</p>
 <ul class="simple">
 <li><p>使用的关键字不同。普通角色使用的关键字为Role，绑定普通角色使用的关键字为RoleBinding；集群角色使用的关键字为ClusterRole，绑定集群角色使用的关键字为ClusterRoleBinding。</p></li>
@@ -673,34 +672,34 @@ run-efk-nfs-storage-nfs-client-provisioner             ClusterRole/efk-nfs-stora
 <p>在之前的示例中，我们定义了一个名为podreader的普通角色，并以普通角色绑定的方式将其绑定到认证主体上，也可以使用集群角色
 及绑定来实现同样的功能。具体模板的代码如下所示。</p>
 <p><code class="docutils literal notranslate"><span class="pre">clusterpodreader.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRole</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clusterpodreader</span><span class="w"></span>
-<span class="nt">rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;pods&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;watch&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterRole</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">clusterpodreader</span>
+<span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">apiGroups</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span>
+    <span class="nt">resources</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;pods&quot;</span><span class="p p-Indicator">]</span>
+    <span class="nt">verbs</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;watch&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;list&quot;</span><span class="p p-Indicator">]</span>
 
-<span class="nn">---</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRoleBinding</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clusterpodreaderbinding</span><span class="w"></span>
-<span class="nt">subjects</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># 常规用户认证</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">User</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleuser</span><span class="w"></span>
-<span class="w">    </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># ServiceAccount认证</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span><span class="w"></span>
-<span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
-<span class="w">    </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
-<span class="nt">roleRef</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRole</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clusterpodreader</span><span class="w"></span>
-<span class="w">  </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
+<span class="nn">---</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterRoleBinding</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">clusterpodreaderbinding</span>
+<span class="nt">subjects</span><span class="p">:</span>
+    <span class="c1"># 常规用户认证</span>
+  <span class="p p-Indicator">-</span> <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">User</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleuser</span>
+    <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+    <span class="c1"># ServiceAccount认证</span>
+  <span class="p p-Indicator">-</span> <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span>
+    <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
+    <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="nt">roleRef</span><span class="p">:</span>
+  <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterRole</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">clusterpodreader</span>
+  <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
 </pre></div>
 </div>
 <p>这段代码与之前的示例有几处区别。</p>
@@ -708,43 +707,47 @@ run-efk-nfs-storage-nfs-client-provisioner             ClusterRole/efk-nfs-stora
 <p>由于ServiceAccount是某个命名空间下的资源，因此需要指明是对哪个命名空间下的ServiceAccount绑定集群角色的。</p>
 <p>应用模板后，使用常规用户exampleuser以及ServiceAccount的exampleserviceaccount可以访问任何命名空间下的Pod资源，不再仅
 限于default命名空间。</p>
-<p>上述示例是将ClusterRole与ClusterRoleBinding关联在一起了，在实际使用过程中也可以将ClusterRole与RoleBinding关联在一起。
+<p>上述示例是将ClusterRole与ClusterRoleBinding关联在一起了，
+在实际使用过程中也可以将ClusterRole与RoleBinding关联在一起。
 因为ClusterRole是不限制命名空间的，所以如果想既给某个认证主体绑定
-ClusterRole，又想限制它能够使用的命名空间，就可以将它与
-RoleBinding关联以达到限定效果。可以修改模板来实现该功能，修改后的代码如下所示。</p>
+ClusterRole，又想限制它能够使用的命名空间， 就可以将它与
+RoleBinding关联以达到限定效果。可以修改模板来实现该功能，
+修改后的代码如下所示。</p>
 <p><code class="docutils literal notranslate"><span class="pre">clusterpodreader-v2.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRole</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clusterpodreader</span><span class="w"></span>
-<span class="nt">rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;pods&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;watch&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterRole</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">clusterpodreader</span>
+<span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">apiGroups</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span>
+    <span class="nt">resources</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;pods&quot;</span><span class="p p-Indicator">]</span>
+    <span class="nt">verbs</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;watch&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;list&quot;</span><span class="p p-Indicator">]</span>
 
-<span class="nn">---</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RoleBinding</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">podreaderbinding</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
-<span class="nt">subjects</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">User</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleuser</span><span class="w"></span>
-<span class="w">    </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span><span class="w"></span>
-<span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
-<span class="w">    </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
-<span class="nt">roleRef</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRole</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clusterpodreader</span><span class="w"></span>
-<span class="w">  </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
+<span class="nn">---</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">RoleBinding</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">podreaderbinding</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="nt">subjects</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">User</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleuser</span>
+    <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleserviceaccount</span>
+    <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
+    <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="nt">roleRef</span><span class="p">:</span>
+  <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterRole</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">clusterpodreader</span>
+  <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
 </pre></div>
 </div>
 <p>这段代码与上一个示例有几处区别。</p>
 <p>两个示例的关键字分别为ClusterRole和RoleBinding。ClusterRole没有指定命名空间，但RoleBinding指定命名空间为
-default（如果没有指定命名空间，默认也为default）。因为已经通过RoleBinding指定了命名空间，所以无须再给ServiceAccount指明命名空间。应用模板后，使用常规用户的exampleuser以及ServiceAccount的exampleserviceaccount只能访问default命名空间下的Pod资源。</p>
+default（如果没有指定命名空间，默认也为default）。
+因为已经通过RoleBinding指定了命名空间，所以无须再给ServiceAccount指明命名空间。</p>
+<p>应用模板后，使用常规用户的exampleuser以及ServiceAccount的exampleserviceaccount只能访问default命名空间下的Pod资源。</p>
 </section>
 </section>
 </section>
