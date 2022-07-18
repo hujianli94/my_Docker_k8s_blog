@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>StorageClass &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -127,7 +126,7 @@
 </ul>
 </div>
 <section id="storageclass">
-<h1><a class="toc-backref" href="#id4">StorageClass</a><a class="headerlink" href="#storageclass" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id4">StorageClass</a><a class="headerlink" href="#storageclass" title="Permalink to this headline">¶</a></h1>
 <p>之前介绍了PV及PVC的使用方式，读者从中可以发现，这是一种静态创建PV的方法，先要创建各种固定大小的PV，而这些PV都是手动创
 建的，过程非常麻烦。有时开发人员在申请PVC资源时，不一定有匹配条件的PV可用，这又带来了新的问题。</p>
 <p>为了解决这类问题，Kubernetes提供了StorageClass抽象来动态创建PV，StorageClass大大简化了PV的创建过程。</p>
@@ -139,7 +138,7 @@
 <p><a class="reference external" href="https://www.cnblogs.com/leozhanggg/p/13611982.html">动态存储管理StorageClass</a></p>
 </div></blockquote>
 <section id="id1">
-<h2><a class="toc-backref" href="#id5">1. 安装存储分配器</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">1. 安装存储分配器</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>NFS 存储分配器的安装过程并不复杂。首先，执行以下命令，下载 NFS
 存储分配器的deployment.yaml配置。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/kubernetes-retired/external-storage.git
@@ -148,45 +147,45 @@ $ <span class="nb">cd</span> external-storage/nfs-client/deploy/
 </div>
 <p>下载完成后，使用以下命令编辑yaml配置文件。修改文件中的部分配置，然后保存，具体修改内容参见下方粗体
 代码。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># replace with namespace where provisioner is deployed</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
-<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Recreate</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span><span class="w"></span>
-<span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quay.io/external_storage/nfs-client-provisioner:latest</span><span class="w"></span>
-<span class="w">          </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-client-root</span><span class="w"></span>
-<span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/persistentvolumes</span><span class="w"></span>
-<span class="w">          </span><span class="nt">env</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PROVISIONER_NAME</span><span class="w"></span>
-<span class="w">              </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fuseim.pri/ifs</span><span class="w"></span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NFS_SERVER</span><span class="w"></span>
-<span class="w">              </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.60</span><span class="w"></span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NFS_PATH</span><span class="w"></span>
-<span class="w">              </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/nfstest</span><span class="w"></span>
-<span class="w">      </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-client-root</span><span class="w"></span>
-<span class="w">          </span><span class="nt">nfs</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.60</span><span class="w"></span>
-<span class="w">            </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/nfstest</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span>
+  <span class="c1"># replace with namespace where provisioner is deployed</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">strategy</span><span class="p">:</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Recreate</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">serviceAccountName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span>
+      <span class="nt">containers</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-client-provisioner</span>
+          <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">quay.io/external_storage/nfs-client-provisioner:latest</span>
+          <span class="nt">volumeMounts</span><span class="p">:</span>
+            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-client-root</span>
+              <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/persistentvolumes</span>
+          <span class="nt">env</span><span class="p">:</span>
+            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">PROVISIONER_NAME</span>
+              <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fuseim.pri/ifs</span>
+            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NFS_SERVER</span>
+              <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">192.168.1.60</span>
+            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NFS_PATH</span>
+              <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/nfstest</span>
+      <span class="nt">volumes</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-client-root</span>
+          <span class="nt">nfs</span><span class="p">:</span>
+            <span class="nt">server</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">192.168.1.60</span>
+            <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/nfstest</span>
 </pre></div>
 </div>
 <p>在env属性中，PROVISIONER_NAME表示存储分配器的名称，nfs-gitee-test。</p>
@@ -194,13 +193,13 @@ $ <span class="nb">cd</span> external-storage/nfs-client/deploy/
 <p>NFS_PATH表示NFS共享目录地址，在本例中为/nfstest。在volumes属性中，也将server与path改为之前配置的NFS服务器地址和共享目录。</p>
 <p><code class="docutils literal notranslate"><span class="pre">class.yaml</span></code>中的provisioner要与<code class="docutils literal notranslate"><span class="pre">deployment.yaml</span></code>中一致</p>
 <p>安装完成后可以创建StorageClass了。首先，创建<code class="docutils literal notranslate"><span class="pre">class.yaml</span></code>文件。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">storage.k8s.io/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StorageClass</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">managed-nfs-storage</span><span class="w"></span>
-<span class="nt">provisioner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fuseim.pri/ifs</span><span class="w"> </span><span class="c1"># or choose another name, must match deployment&#39;s env PROVISIONER_NAME&#39;</span><span class="w"></span>
-<span class="nt">parameters</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">archiveOnDelete</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;false&quot;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">storage.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">StorageClass</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">managed-nfs-storage</span>
+<span class="nt">provisioner</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fuseim.pri/ifs</span> <span class="c1"># or choose another name, must match deployment&#39;s env PROVISIONER_NAME&#39;</span>
+<span class="nt">parameters</span><span class="p">:</span>
+  <span class="nt">archiveOnDelete</span><span class="p">:</span> <span class="s">&quot;false&quot;</span>
 </pre></div>
 </div>
 <p>该模板的主要含义如下。</p>
@@ -216,42 +215,42 @@ fuseim.pri/ifs。</p></li>
 </ul>
 <p>接下来修改测试pvc和pod，用于验证</p>
 <p><code class="docutils literal notranslate"><span class="pre">test-claim.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PersistentVolumeClaim</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-claim</span><span class="w"></span>
-<span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volume.beta.kubernetes.io/storage-class</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;managed-nfs-storage&quot;</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteMany</span><span class="w"></span>
-<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1Mi</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">PersistentVolumeClaim</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test-claim</span>
+  <span class="nt">annotations</span><span class="p">:</span>
+    <span class="nt">volume.beta.kubernetes.io/storage-class</span><span class="p">:</span> <span class="s">&quot;managed-nfs-storage&quot;</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">accessModes</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteMany</span>
+  <span class="nt">resources</span><span class="p">:</span>
+    <span class="nt">requests</span><span class="p">:</span>
+      <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1Mi</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">test-pod.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-pod</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-pod</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox:latest</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;/bin/sh&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;-c&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;touch</span><span class="nv"> </span><span class="s">/mnt/SUCCESS</span><span class="nv"> </span><span class="s">&amp;&amp;</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">0</span><span class="nv"> </span><span class="s">||</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">1&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-pvc</span><span class="w"></span>
-<span class="w">        </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/mnt&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Never&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-pvc</span><span class="w"></span>
-<span class="w">      </span><span class="nt">persistentVolumeClaim</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">claimName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-claim</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test-pod</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test-pod</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox:latest</span>
+    <span class="nt">command</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;/bin/sh&quot;</span>
+    <span class="nt">args</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;-c&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;touch</span><span class="nv"> </span><span class="s">/mnt/SUCCESS</span><span class="nv"> </span><span class="s">&amp;&amp;</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">0</span><span class="nv"> </span><span class="s">||</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">1&quot;</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-pvc</span>
+        <span class="nt">mountPath</span><span class="p">:</span> <span class="s">&quot;/mnt&quot;</span>
+  <span class="nt">restartPolicy</span><span class="p">:</span> <span class="s">&quot;Never&quot;</span>
+  <span class="nt">volumes</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-pvc</span>
+      <span class="nt">persistentVolumeClaim</span><span class="p">:</span>
+        <span class="nt">claimName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test-claim</span>
 </pre></div>
 </div>
 <p>接下来，执行以下命令，创建StorageClass。</p>
@@ -331,7 +330,7 @@ Events:        &lt;none&gt;
 <p><a class="reference external" href="https://chenjiandongx.me/2021/02/06/k8s-nfs-storageclass/">https://chenjiandongx.me/2021/02/06/k8s-nfs-storageclass/</a></p>
 </div></blockquote>
 <section id="nfs-server-provisioner">
-<h3><a class="toc-backref" href="#id6">1.1 使用nfs-server-provisioner</a><a class="headerlink" href="#nfs-server-provisioner" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id6">1.1 使用nfs-server-provisioner</a><a class="headerlink" href="#nfs-server-provisioner" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>kubernetes部署nfs-subdir-external-provisioner</p>
 <p><a class="reference external" href="https://blog.csdn.net/networken/article/details/86697018">https://blog.csdn.net/networken/article/details/86697018</a></p>
@@ -345,14 +344,14 @@ Events:        &lt;none&gt;
 </div></blockquote>
 </section>
 <section id="kubernetesnfs-storageclass">
-<h3><a class="toc-backref" href="#id7">1.2 在Kubernetes中部署nfs storageClass</a><a class="headerlink" href="#kubernetesnfs-storageclass" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id7">1.2 在Kubernetes中部署nfs storageClass</a><a class="headerlink" href="#kubernetesnfs-storageclass" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>参考文献</p>
 <p><a class="reference external" href="https://www.treesir.pub/post/k8s-nfs-strage-class/">https://www.treesir.pub/post/k8s-nfs-strage-class/</a></p>
 </div></blockquote>
 </section>
 <section id="nfs">
-<h3><a class="toc-backref" href="#id8">1.3 NFS动态存储卷报错问题记录</a><a class="headerlink" href="#nfs" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id8">1.3 NFS动态存储卷报错问题记录</a><a class="headerlink" href="#nfs" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>我的问题：</p>
 </div></blockquote>
@@ -384,10 +383,10 @@ kubectl delete pod/kube-apiserver-gitee-k8s-m3 -n kube-system
 </section>
 </section>
 <section id="pvpvc">
-<h2><a class="toc-backref" href="#id9">2. PV和PVC的生命周期</a><a class="headerlink" href="#pvpvc" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">2. PV和PVC的生命周期</a><a class="headerlink" href="#pvpvc" title="Permalink to this headline">¶</a></h2>
 <p>PV是Kubernetes集群的存储资源，而PVC则代表着资源需求。创建PVC时对PV发起的使用申请，即为“绑定”。PV和PVC是一一对应的关系，可用于响应PVC申请的PV必须要能够容纳PVC的请求条件，它们二者的交互遵循如下生命周期。</p>
 <section id="id2">
-<h3><a class="toc-backref" href="#id10">2.1 存储供给</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id10">2.1 存储供给</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>存储供给（Provisioning）是指为PVC准备可用PV的机制。Kubernetes支持两种PV供给方式：静态供给和动态供给。</p>
 <p>（1）静态供给</p>
 <p>静态供给是指由集群管理员手动创建一定数量的PV的资源供应方式。这些PV负责处理存储系统的细节，并将其抽象成易用的存储资源供用户使用。静态提供的PV可能属于某存储类（StorageClass），也可能没有存储类，这一点取决于管理员的设定。</p>
@@ -398,7 +397,7 @@ controller）启用“DefaultStorageClass”选项，这一点通过“–admiss
 Server进行设定即可，后文会对准入控制器予以描述。</p>
 </section>
 <section id="id3">
-<h3><a class="toc-backref" href="#id11">2.2 存储绑定</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">2.2 存储绑定</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>用户基于一系列存储需求和访问模式定义好PVC后，Kubernetes系统的控制器即会为其查找匹配的PV，并于找到之后在此二者之间建立起关联关系，而后它们二者之间的状态即转为“绑定”（Binding）。若PV是为PVC而动态创建的，则该PV专用于其PVC。</p>
 <p>若是无法为PVC找到可匹配的PV，则PVC将一直处于未绑定（unbound）状态，直到有符合条件的PV出现并完成绑定方才可用。</p>
 <p>（1）存储使用（Using）</p>
@@ -408,7 +407,7 @@ Server进行设定即可，后文会对准入控制器予以描述。</p>
 <p>处于此种阶段的PVC资源的status字段为“Termination”，并且其Finalizers字段中包含“kubernetes.io/pvc-protection”。</p>
 </section>
 <section id="reclaiming">
-<h3><a class="toc-backref" href="#id12">2.3 存储回收（Reclaiming）</a><a class="headerlink" href="#reclaiming" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">2.3 存储回收（Reclaiming）</a><a class="headerlink" href="#reclaiming" title="Permalink to this headline">¶</a></h3>
 <p>完成存储卷的使用目标之后，即可删除PVC对象以便进行资源回收。不过，至于如何操作则取决于PV的回收策略。目前，可用的回收策略有三种：Retained、Recycled和Deleted。</p>
 <p><strong>（1）留存（Retain）</strong></p>
 <p>留存策略意味着在删除PVC之后，Kubernetes系统不会自动删除PV，而仅仅是将它置于“释放”（released）状态。不过，此种状态的PV尚且不能被其他PVC申请所绑定，因为此前的申请生成的数据仍然存在，需要由管理员手动决定其后续处理方案。这就意味着，如果想要再次使用此类的PV资源，则需要由管理员按下面的步骤手动执行删除操作。</p>
@@ -423,7 +422,7 @@ EBS、GCE PD、Azure
 Disk或Cinder。动态创建的PV资源的回收策略取决于相关存储类上的定义，存储类上相关的默认策略为Delete，大多数情况下，管理员都需要按用户期望的处理机制修改此默认策略，以免导致数据非计划内的误删除。</p>
 </section>
 <section id="pvc">
-<h3><a class="toc-backref" href="#id13">2.4 扩展PVC</a><a class="headerlink" href="#pvc" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">2.4 扩展PVC</a><a class="headerlink" href="#pvc" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes自1.8版本起增加了扩展PV空间的特性，截至目前，它所支持的扩展PVC机制的存储卷共有以下几种。</p>
 <ul class="simple">
 <li><p>gcePersistentDisk</p></li>

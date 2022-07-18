@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>libnetwork插件化网络功能 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -122,11 +121,11 @@
 </ul>
 </div>
 <section id="libnetwork">
-<h1><a class="toc-backref" href="#id4">libnetwork插件化网络功能</a><a class="headerlink" href="#libnetwork" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id4">libnetwork插件化网络功能</a><a class="headerlink" href="#libnetwork" title="Permalink to this headline">¶</a></h1>
 <p>从1.7.0版本开始，Docker正式把网络与存储这两部分的功能实现都以插件化形式剥离出来，允许用户通过指令来选择不同的后端实现。剥离出来的独立容器网络项目即为libnetwork项目。Docker希望将来能为不同类型的容器定义统一规范的网络层标准，支持多种操作系统平台，这也是Docker希望构建强大容器生态系统的一些积极的尝试。</p>
 <p>本章将介绍libnetwork的概念和使用，包括容器网络模型、相关操作命令，以及具体如何利用libnetwork来构建跨主机的容器网络。</p>
 <section id="id1">
-<h2><a class="toc-backref" href="#id5">1.容器网络模型</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">1.容器网络模型</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>libnetwork中容器网络模型（Container Networking
 Model，CNM）十分简洁和抽象，可以让其上层使用网络功能的容器最大程度地忽略底层具体实现。</p>
 <p>容器网络模型的结构如图21-1所示。</p>
@@ -155,7 +154,7 @@ Neutron）就可以接进来。</p>
 Kuryr项目，使用libnetwork，让Docker可以直接使用Neutron提供的网络功能。Calico等团队也编写了插件支持libnetwork，可以无缝地支持Docker高级网络功能。</p>
 </section>
 <section id="docker">
-<h2><a class="toc-backref" href="#id6">2.Docker网络命令</a><a class="headerlink" href="#docker" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">2.Docker网络命令</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
 <p>在libnetwork支持下，Docker网络相关操作都作为network的子命令出现。</p>
 <p>围绕着CNM生命周期的管理，主要包括以下命令：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·create：创建一个网络；
@@ -242,7 +241,7 @@ adbc1879bac5        host                host
 <p>命令格式为docker network rm NETWORK[NETWORK…]。</p>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id7">3.构建跨主机容器网络</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">3.构建跨主机容器网络</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>在这里，笔者将演示使用libnetwork自带的Overlay类型驱动来轻松实现跨主机的网络通信。Overlay驱动默认采用VXLAN协议，在IP地址可以互相访问的多个主机之间搭建隧道，让容器可以互相访问。</p>
 <p>1.配置网络信息管理数据库</p>
 <p>我们知道，在现实世界中，要连通不同的主机，需要交换机或路由器（跨子网时需要）这样的互联设备。这些设备一方面是在物理上起到连接作用，但更重要的是起到了网络管理的功能。例如，主机位置在什么地方，地址是多少等信息，都需要网络管理平面来维护。</p>
@@ -385,7 +384,7 @@ PING c1 <span class="o">(</span><span class="m">10</span>.0.0.2<span class="o">)
 </div>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id8">本章小结</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">本章小结</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>本章介绍了Docker最新的网络功能和插件化网络工具：libnetwork。Docker在1.7.0之前主要支持本地主机网络，之后重点加强了跨主机通信网络能力。目前，Docker的功能已经从单主机上小规模服务场景，拓展到了大规模的集群场景甚至数据中心场景，为容器云场景提供了便利支持。从位置上看，libnetwork位于整个容器网络栈最核心的中间层。通过容器网络模型，libnetwork抽象了下层的网络实现，让其上容器可以无缝使用不同的底层网络支持技术。无论是物理网络还是虚拟网络，只要支持容器网络模型标准，即可被Docker容器所使用。</p>
 <p>相比传统场景，容器自身的动态性、高密度都对网络技术带来了更多新的挑战。Docker从1.12.0开始将Swarm模式也内嵌到了引擎中，以提供对集群网络更好的支持。笔者相信，能否更好地利用好软件定义网络技术，将是容器在大规模集群场景下得到有效使用的关键。</p>
 </section>

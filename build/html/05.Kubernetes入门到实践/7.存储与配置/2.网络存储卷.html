@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>网络存储卷 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -120,7 +119,7 @@
 </ul>
 </div>
 <section id="id1">
-<h1><a class="toc-backref" href="#id6">网络存储卷</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id6">网络存储卷</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <p>由于Kubernetes是分布式容器集群，因此如何在多个Pod之间或多个Node之间进行数据存储和共享是非常重要的问题。为了解决这个问
 题，Kubernetes引入了网络存储卷，它支持为数众多的云提供商的产品和网络存储方案例如：</p>
 <p><strong>NFS/iSCSI/GlusterFS/RDB/azureDisk/flocker</strong>等。</p>
@@ -128,14 +127,14 @@
 <p>因为大部分网络存储卷是集成各种第三方的存储系统，所以在配置上各有差别，如果要一一讲解会占用非常大的篇幅。</p>
 <p>为了简化案例，展示核心原理，本章主要以NFS为例讲解网络存储卷的使用。</p>
 <section id="nfs">
-<h2><a class="toc-backref" href="#id7">1.安装NFS</a><a class="headerlink" href="#nfs" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">1.安装NFS</a><a class="headerlink" href="#nfs" title="Permalink to this headline">¶</a></h2>
 <p>网络文件系统（Network File
 System，NFS）允许网络中的计算机通过TCP/IP网络共享资源。</p>
 <p>通过NFS，本地NFS的客户端应用可以直接读写NFS服务器上的文件，就像访问本地文件一样。</p>
 <p>NFS可以通过网络让不同主机之间或不同的操作系统之间进行数据存储和共享。
 因为NFS是第三方系统，所以先安装NFS</p>
 <section id="id2">
-<h3><a class="toc-backref" href="#id8">1.1 安装NFS服务器端</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id8">1.1 安装NFS服务器端</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>在Debian/Ubuntu系统上，执行以下命令，安装NFS服务器端应用。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ apt install nfs-kernel-server
 </pre></div>
@@ -191,7 +190,7 @@ $ exportfs
 </div></blockquote>
 </section>
 <section id="id3">
-<h3><a class="toc-backref" href="#id9">1.2 安装NFS客户端</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id9">1.2 安装NFS客户端</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>每台需要使用NFS的Node都需要安装NFS。</p>
 <p>在Debian/Ubuntu系统上，请执行以下命令，安装NFS客户端应用。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ apt install nfs-common
@@ -209,37 +208,37 @@ $ systemctl restart nfs
 <p>在本例中执行命令 <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">showmount</span> <span class="pre">-e</span> <span class="pre">192.168.1.60</span></code></p>
 </section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id10">1.3 使用NFS</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id10">1.3 使用NFS</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>安装完成后可以使用NFS作为存储卷。只需要简单地配置就可以将NFS挂载到Pod当中，NFS中的数据可以永久保存，且可以被多个Pod同时读写。</p>
 <p>为了演示NFS存储卷的使用方式，首先，创建<code class="docutils literal notranslate"><span class="pre">exampledeployfornfs.yml</span></code>文件。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampledeployfornfs</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplefornfs</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplefornfs</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">containerfornfs</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&quot;</span><span class="nv"> </span><span class="s">&gt;&gt;</span><span class="nv"> </span><span class="s">/dir/data;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfsdata</span><span class="w"></span>
-<span class="w">            </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dir</span><span class="w"></span>
-<span class="w">      </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfsdata</span><span class="w"></span>
-<span class="w">        </span><span class="nt">nfs</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/nfstest</span><span class="w"></span>
-<span class="w">          </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.60</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployfornfs</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplefornfs</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplefornfs</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">containerfornfs</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&quot;</span><span class="nv"> </span><span class="s">&gt;&gt;</span><span class="nv"> </span><span class="s">/dir/data;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">volumeMounts</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfsdata</span>
+            <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/dir</span>
+      <span class="nt">volumes</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfsdata</span>
+        <span class="nt">nfs</span><span class="p">:</span>
+          <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/nfstest</span>
+          <span class="nt">server</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">192.168.1.60</span>
 </pre></div>
 </div>
 <p>本例中创建的存储卷名称为nfsdata，这个名称会被容器设置中的volumeMounts所引用。</p>
@@ -308,7 +307,7 @@ my name is hujianli
 </section>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id11">2. 参考文献</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">2. 参考文献</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>K8S 部署nfs服务器</p>
 <p><a class="reference external" href="https://cloud.tencent.com/developer/article/1914388">https://cloud.tencent.com/developer/article/1914388</a></p>

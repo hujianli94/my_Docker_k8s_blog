@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kubernetes的资源对象 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -185,25 +184,25 @@
 </ul>
 </div>
 <section id="kubernetes">
-<h1><a class="toc-backref" href="#id42">Kubernetes的资源对象</a><a class="headerlink" href="#kubernetes" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id42">Kubernetes的资源对象</a><a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h1>
 <section id="pod">
-<h2><a class="toc-backref" href="#id43">Pod</a><a class="headerlink" href="#pod" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id43">Pod</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h2>
 <p>Pod是Kubernetes的基本操作单元，也是应用运行的载体。整个Kubernetes系统都是围绕着Pod展开的，比如如何部署运行Pod、如何保证Pod的可靠性、如何访问Pod等。另外，Pod是一个或多个相关容器的集合，这可以说是一大创新点，提供了一种容器组合的模型，当然也使得在Pod的操作和生命周期管理上稍有不同。</p>
 <p>同一Pod中，这些共享PID、IPC、Network和UTS名称空间的容器彼此间可通过IPC通信，共享使用主机名和网络接口、IP地址、端口和路由等各种网络资源，因而各容器进程能够通过lo网络接口通信且不能使用相同的网络套接字地址。</p>
 <p>尽管可以把Pod类比为物理机或虚拟机，但一个Pod内通常仅应该运行具有强耦合关系的容器，否则除了pause以外，只应该存在单个容器，或者只存在单个主容器和一个以上的辅助类容器（例如服务网格中的Sidecar容器等），这也更符合单进程应用容器的设计初衷。</p>
 <section id="hello-world">
-<h3><a class="toc-backref" href="#id44">国际惯例的Hello World</a><a class="headerlink" href="#hello-world" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id44">国际惯例的Hello World</a><a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">hello-world-pod.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OnFailure</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ubuntu:14.04&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/bin/echo&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;Hello&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;World&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">OnFailure</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;ubuntu:14.04&quot;</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;/bin/echo&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;Hello&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;World&quot;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>root@172-26-128-31 k8s-pod<span class="o">]</span><span class="c1"># kubectl create -f hello-world-pod.yaml</span>
@@ -226,21 +225,21 @@ pod <span class="s2">&quot;hello-world&quot;</span> deleted
 </div>
 </section>
 <section id="id1">
-<h3><a class="toc-backref" href="#id45">Pod的基本管理</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id45">Pod的基本管理</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <section id="id2">
-<h4>创建Pod<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h4>
+<h4>创建Pod<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p>如果Pod的定义存在错误，kubectl
 create会打印错误信息，现有一个Pod的错误定义文件error-pod.yaml：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mybe</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ubuntu:14.04&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/bin/echo&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;Hello&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;World&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Mybe</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;ubuntu:14.04&quot;</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;/bin/echo&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;Hello&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;World&quot;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>创建失败时，查看提示的信息</p>
@@ -250,7 +249,7 @@ The Pod <span class="s2">&quot;hello-world&quot;</span> is invalid: spec.restart
 </div>
 </section>
 <section id="id3">
-<h4>查询Pod<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h4>
+<h4>查询Pod<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p>最常用的查询命令就是kubectl
 get，可以查询一个或者多个Pod的信息，现在查询指定Pod：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pod my-pod
@@ -306,12 +305,12 @@ exec命令额外使用-it选项，并指定运行镜像中可用的shell程序�
 <span class="p">[</span><span class="n">root</span><span class="nd">@demoapp</span><span class="o">-</span><span class="mi">5</span><span class="n">f8989b6c5</span><span class="o">-</span><span class="n">xvjfg</span> <span class="o">/</span><span class="p">]</span><span class="c1"># netstat -tunpl</span>
 <span class="n">Active</span> <span class="n">Internet</span> <span class="n">connections</span> <span class="p">(</span><span class="n">only</span> <span class="n">servers</span><span class="p">)</span>
 <span class="n">Proto</span> <span class="n">Recv</span><span class="o">-</span><span class="n">Q</span> <span class="n">Send</span><span class="o">-</span><span class="n">Q</span> <span class="n">Local</span> <span class="n">Address</span>           <span class="n">Foreign</span> <span class="n">Address</span>         <span class="n">State</span>       <span class="n">PID</span><span class="o">/</span><span class="n">Program</span> <span class="n">name</span>
-<span class="n">tcp</span>        <span class="mi">0</span>      <span class="mi">0</span> <span class="mf">0.0.0.0</span><span class="p">:</span><span class="mi">80</span>              <span class="mf">0.0.0.0</span><span class="p">:</span><span class="o">*</span>               <span class="n">LISTEN</span>      <span class="mi">1</span><span class="o">/</span><span class="n">python3</span>
+<span class="n">tcp</span>        <span class="mi">0</span>      <span class="mi">0</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">80</span>              <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="o">*</span>               <span class="n">LISTEN</span>      <span class="mi">1</span><span class="o">/</span><span class="n">python3</span>
 </pre></div>
 </div>
 </section>
 <section id="id4">
-<h4>删除Pod<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h4>
+<h4>删除Pod<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 通过kubernetes delete命令删除Pod</span>
 $ kubectl delete pod hello-world
 
@@ -329,7 +328,7 @@ kubectl delete -f FILENAME。
 </div>
 </section>
 <section id="id5">
-<h4>更新Pod<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h4>
+<h4>更新Pod<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pod在创建之后，进行更新，修改Pod的定义文件后执行</span>
 $ kubectl replace -f hello-world-pod.yaml --force
 </pre></div>
@@ -339,7 +338,7 @@ replace命令设置<code class="docutils literal notranslate"><span class="pre">
 </section>
 </section>
 <section id="id6">
-<h3><a class="toc-backref" href="#id46">小结</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id46">小结</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>基本管理：
 # 创建pod资源
 kubectl create -f pod.yaml
@@ -355,9 +354,9 @@ kubectl delete pod pod-test
 </div>
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id47">Pod与容器</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id47">Pod与容器</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <section id="id8">
-<h4>镜像<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h4>
+<h4>镜像<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 <p>运行容器必须先指定镜像，镜像的名称则遵循Docker的命名规范。运行容器前需要本地存在对应的镜像，如果镜像不存在，会从Docker镜像仓库下载。Kubernetes中可以选择镜像的下载策略，支持的策略如下。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>▪ Always：每次启动Pod时都要从指定的仓库下载镜像。
 
@@ -369,9 +368,9 @@ kubectl delete pod pod-test
 <p>Kubernetes
 Node是容器运行的宿主机，Pod被分配到Node之后，会根据镜像下载策略选择是否下载镜像。有时候网络下载是一个较大的开销，可以根据需要自行选择策略，但是无论如何要确保镜像在本地或者镜像仓库存在，否则Pod无法运行。</p>
 <p>示例：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span><span class="w"></span>
-<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ubuntu:14.04&quot;</span><span class="w"></span>
-<span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Always</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello</span>
+<span class="nt">image</span><span class="p">:</span> <span class="s">&quot;ubuntu:14.04&quot;</span>
+<span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Always</span>
 </pre></div>
 </div>
 <p>​ kubernetes用来进行Docker私有镜像仓库的认证：</p>
@@ -384,55 +383,55 @@ Node是容器运行的宿主机，Pod被分配到Node之后，会根据镜像下
 </div></blockquote>
 </section>
 <section id="id9">
-<h4>启动命令<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h4>
+<h4>启动命令<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 <p>启动命令用来说明容器是如何运行的，在Pod的定义中可以设置容器启动命令和参数。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ubuntu:14.04&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/bin/echo&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;Hello&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;World&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;ubuntu:14.04&quot;</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;/bin/echo&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;Hello&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;World&quot;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>另外，容器的启动命令也可以配置为:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/bin/echo&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Hello&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;World&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;/bin/echo&quot;</span><span class="p p-Indicator">]</span>
+<span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Hello&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;World&quot;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 </section>
 <section id="id10">
-<h4>环境变量<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h4>
+<h4>环境变量<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
 <p>在一些场景下，Pod中的容器希望获取本身的信息，比如Pod的名称、Pod所在的Namespace等。在Kubernetes中提供了Downward
 API获取这些信息，并且可以通过环境变量告诉容器目前支持的信息。</p>
 <p>现在创建一个Pod并通过环境变量来获取Downward
 API，Pod的定义文件<code class="docutils literal notranslate"><span class="pre">downwardapi-env.yaml</span></code>：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">downwardapi-env</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-containers</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ubuntu:14.04&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Always</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/bin/bash&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;while</span><span class="nv"> </span><span class="s">true;do</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">5;done&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">env</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MY_POD_NAME</span><span class="w"></span>
-<span class="w">        </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metadata.name</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MY_POD_NAMESPACE</span><span class="w"></span>
-<span class="w">        </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metadata.namespace</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MY_POD_IP</span><span class="w"></span>
-<span class="w">        </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">status.podIP</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">downwardapi-env</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test-containers</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;ubuntu:14.04&quot;</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Always</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;/bin/bash&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;while</span><span class="nv"> </span><span class="s">true;do</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">5;done&quot;</span><span class="p p-Indicator">]</span>
+    <span class="nt">env</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MY_POD_NAME</span>
+        <span class="nt">valueFrom</span><span class="p">:</span>
+          <span class="nt">fieldRef</span><span class="p">:</span>
+            <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.name</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MY_POD_NAMESPACE</span>
+        <span class="nt">valueFrom</span><span class="p">:</span>
+          <span class="nt">fieldRef</span><span class="p">:</span>
+            <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.namespace</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MY_POD_IP</span>
+        <span class="nt">valueFrom</span><span class="p">:</span>
+          <span class="nt">fieldRef</span><span class="p">:</span>
+            <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">status.podIP</span>
 </pre></div>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f downwardapi-env.yaml
@@ -488,67 +487,67 @@ kubectl <span class="nb">exec</span> <span class="o">[</span>POD<span class="o">
 <span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">example02</span><span class="p">]</span><span class="c1"># kubectl exec demoapp-76c56d6f54-9sj8k -n dev -- netstat -tnl</span>
 <span class="n">Active</span> <span class="n">Internet</span> <span class="n">connections</span> <span class="p">(</span><span class="n">only</span> <span class="n">servers</span><span class="p">)</span>
 <span class="n">Proto</span> <span class="n">Recv</span><span class="o">-</span><span class="n">Q</span> <span class="n">Send</span><span class="o">-</span><span class="n">Q</span> <span class="n">Local</span> <span class="n">Address</span>           <span class="n">Foreign</span> <span class="n">Address</span>         <span class="n">State</span>
-<span class="n">tcp</span>        <span class="mi">0</span>      <span class="mi">0</span> <span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">8080</span>          <span class="mf">0.0.0.0</span><span class="p">:</span><span class="o">*</span>               <span class="n">LISTEN</span>
+<span class="n">tcp</span>        <span class="mi">0</span>      <span class="mi">0</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8080</span>          <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="o">*</span>               <span class="n">LISTEN</span>
 </pre></div>
 </div>
 </section>
 <section id="id11">
-<h4>端口<a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h4>
+<h4>端口<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
 <p>在使用docker
 run运行容器的时候往往通过–publish/-p参数设置端口映射规则，同样的，可以在Pod的定义中设置容器的端口映射规则，比如下面这个Pod的设置容器nginx的端口映射规则为0.0.0.0:80-&gt;80/TCP：</p>
 <p><code class="docutils literal notranslate"><span class="pre">nginx.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-nginx</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-nginx</span>
 
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OnFailure</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
-<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
-<span class="w">      </span><span class="nt">hostIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0</span><span class="w"></span>
-<span class="w">      </span><span class="nt">hostPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">OnFailure</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+    <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web</span>
+      <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+      <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+      <span class="nt">hostIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.0.0.0</span>
+      <span class="nt">hostPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
 </pre></div>
 </div>
 <p>使用宿主机端口需要考虑端口冲突问题，幸运的是，Kubernetes在调度Pod的时候，会检查宿主机端口是否冲突。比如两个Pod都需要使用宿主机端口80，那么调度的时候就会将这两个Pod调度到不同Node上。不过，如果所有Node的端口都被占用了，那么Pod调度会失败。</p>
 </section>
 <section id="id12">
-<h4>数据持久化和共享<a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h4>
+<h4>数据持久化和共享<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
 <p>容器是临时存在的，如果容器被销毁，容器中的数据将会丢失。为了能够持久化数据以及共享容器间的数据，Docker提出了数据卷（Volume）的概念。简单来说，数据卷就是目录或者文件，它可以绕过默认的联合文件系统，而以正常的文件或者目录的形式存在于宿主机上。</p>
 <p>在使用docker
 run运行容器的时候，我们经常使用参数–volume/-v创建数据卷，即将宿主机上的目录或者文件挂载到容器中。即使容器被销毁，数据卷中的数据仍然保存在宿主机上。</p>
 <p>一方面，在Kubernetes中对Docker数据卷进行了扩展，支持对接第三方存储系统。另一方面，Kubernetes中的数据卷是Pod级别的，Pod中的容器可以访问共同的数据卷，实现容器间的数据共享。</p>
 <p>在Pod中声明创建数据卷，Pod中的两个容器将共享数据卷，容器write写入数据，容器hello读出数据，Hello
 World Pod的定义文件<code class="docutils literal notranslate"><span class="pre">hello-world-pod.yaml</span></code>：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world-wr</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world-wr</span>
 
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ubuntu:14.04&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;bash&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;echo</span><span class="nv"> </span><span class="s">\&quot;Hello</span><span class="nv"> </span><span class="s">World\&quot;</span><span class="nv"> </span><span class="s">&gt;&gt;</span><span class="nv"> </span><span class="s">/data/hello&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span><span class="w"></span>
-<span class="w">        </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ubuntu:14.04&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;bash&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;sleep</span><span class="nv"> </span><span class="s">2;</span><span class="nv"> </span><span class="s">cat</span><span class="nv"> </span><span class="s">/data/hello&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span><span class="w"></span>
-<span class="w">        </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data</span><span class="w"></span>
-<span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span><span class="w"></span>
-<span class="w">      </span><span class="nt">hostPath</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">write</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;ubuntu:14.04&quot;</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;bash&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;echo</span><span class="nv"> </span><span class="s">\&quot;Hello</span><span class="nv"> </span><span class="s">World\&quot;</span><span class="nv"> </span><span class="s">&gt;&gt;</span><span class="nv"> </span><span class="s">/data/hello&quot;</span><span class="p p-Indicator">]</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">data</span>
+        <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/data</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;ubuntu:14.04&quot;</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;bash&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;sleep</span><span class="nv"> </span><span class="s">2;</span><span class="nv"> </span><span class="s">cat</span><span class="nv"> </span><span class="s">/data/hello&quot;</span><span class="p p-Indicator">]</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">data</span>
+        <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/data</span>
+  <span class="nt">volumes</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">data</span>
+      <span class="nt">hostPath</span><span class="p">:</span>
+        <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/tmp</span>
 </pre></div>
 </div>
 <p>Pod中的两个容器都通过.spec.containers[].
@@ -565,7 +564,7 @@ Hello World
 </section>
 </section>
 <section id="id13">
-<h3><a class="toc-backref" href="#id48">Pod的网络</a><a class="headerlink" href="#id13" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id48">Pod的网络</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 在Pod运行后，查询Pod的PodIP</span>
 $ kubectl get pod redis-master-trlnk --template<span class="o">={{</span>.status.podIP<span class="o">}}</span>
 <span class="m">192</span>.168.1.92
@@ -576,19 +575,19 @@ $ kubectl get pod redis-slave-m2jfs --template<span class="o">={{</span>.status.
 </div>
 <p>可以设置Pod为Host网络模式，即直接使用宿主机的网络，不进行网络虚拟化隔离。这样一来，Pod中的所有容器就直接暴露在宿主机的网络环境中，这时候，Pod的PodIP就是其所在Node的IP。</p>
 <p>下面定义的Pod设置为Host网络模式（.spec.hostNetwork=true）：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
-<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
-<span class="w">  </span><span class="nt">hostNetwork</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-app</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">app</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+    <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">web</span>
+      <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+      <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+  <span class="nt">hostNetwork</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 <p>使用Host网络模式需要特别注意，一方面，因为不存在网络隔离，容易发生端口冲突；另一方面，Pod可以直接访问宿主机上的所有网络设备和服务，从安全性上来说这是不可控的。</p>
@@ -602,7 +601,7 @@ pod/my-app created
 </div>
 </section>
 <section id="id14">
-<h3><a class="toc-backref" href="#id49">Pod的重启策略</a><a class="headerlink" href="#id14" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id49">Pod的重启策略</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <p>Pod的重启策略指的是当Pod中的容器终止退出后，重启容器的策略。需要注意的是，因为Docker容器的轻量级，重启容器的做法实际上是直接重建容器，所以容器中的数据将会丢失，如有需要持久化的数据，那么需要使用数据卷进行持久化设置。</p>
 <p>重启策略是通过Pod定义中的.spec.restartPolicy进行设置的，目前支持以下3种策略。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Always：当容器终止退出后，总是重启容器，默认策略。
@@ -614,16 +613,16 @@ pod/my-app created
 </div>
 <p>现在创建一个Pod，其中的容器将异常退出（exit
 1），而Pod的重启策略为OnFailure，Pod的定义文件<code class="docutils literal notranslate"><span class="pre">on-failure-restart-pod.yaml</span></code>：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">on-failure-restart-pod</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu:14.04</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;bash&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;exit</span><span class="nv"> </span><span class="s">1&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OnFailure</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">on-failure-restart-pod</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">container</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ubuntu:14.04</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;bash&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;exit</span><span class="nv"> </span><span class="s">1&quot;</span><span class="p p-Indicator">]</span>
+  <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">OnFailure</span>
 </pre></div>
 </div>
 <p>通过定义文件创建Pod</p>
@@ -645,7 +644,7 @@ container:4
 </div>
 </section>
 <section id="id15">
-<h3><a class="toc-backref" href="#id50">Pod资源限制</a><a class="headerlink" href="#id15" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id50">Pod资源限制</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <p>官方文档：<a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/">https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/</a></p>
 <p>Pod和Container的资源请求和限制：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">spec</span><span class="o">.</span><span class="n">containers</span><span class="p">[]</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">limits</span><span class="o">.</span><span class="n">cpu</span>
@@ -656,33 +655,33 @@ container:4
 </div>
 <p>限制Pod使用资源时为了防止在异常情况下资源使用的溢出，从而影响整个宿主机，Pod资源限制如下：</p>
 <p>1、创建测试实例 <code class="docutils literal notranslate"><span class="pre">vim</span> <span class="pre">pod.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mysql</span><span class="w"></span>
-<span class="w">    </span><span class="nt">env</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MYSQL_ROOT_PASSWORD</span><span class="w"></span>
-<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;password&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;64Mi&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;250m&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;128Mi&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wp</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wordpress</span><span class="w"></span>
-<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;64Mi&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;250m&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;128Mi&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">db</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mysql</span>
+    <span class="nt">env</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MYSQL_ROOT_PASSWORD</span>
+      <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;password&quot;</span>
+    <span class="nt">resources</span><span class="p">:</span>
+      <span class="nt">requests</span><span class="p">:</span>
+        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;64Mi&quot;</span>
+        <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;250m&quot;</span>
+      <span class="nt">limits</span><span class="p">:</span>
+        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;128Mi&quot;</span>
+        <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;500m&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wp</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wordpress</span>
+    <span class="nt">resources</span><span class="p">:</span>
+      <span class="nt">requests</span><span class="p">:</span>
+        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;64Mi&quot;</span>
+        <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;250m&quot;</span>
+      <span class="nt">limits</span><span class="p">:</span>
+        <span class="nt">memory</span><span class="p">:</span> <span class="s">&quot;128Mi&quot;</span>
+        <span class="nt">cpu</span><span class="p">:</span> <span class="s">&quot;500m&quot;</span>
 </pre></div>
 </div>
 <p>2、查看pod创建实例</p>
@@ -698,7 +697,7 @@ container:4
 <p>4、Node 跑的Pod资源利用率</p>
 <p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">nodes</span> <span class="pre">192.168.1.111</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.....</span>
- <span class="n">Kube</span><span class="o">-</span><span class="n">Proxy</span> <span class="n">Version</span><span class="p">:</span>         <span class="n">v1</span><span class="mf">.12.1</span>
+ <span class="n">Kube</span><span class="o">-</span><span class="n">Proxy</span> <span class="n">Version</span><span class="p">:</span>         <span class="n">v1</span><span class="o">.</span><span class="mf">12.1</span>
 <span class="n">Non</span><span class="o">-</span><span class="n">terminated</span> <span class="n">Pods</span><span class="p">:</span>         <span class="p">(</span><span class="mi">4</span> <span class="ow">in</span> <span class="n">total</span><span class="p">)</span>
   <span class="n">Namespace</span>                  <span class="n">Name</span>                               <span class="n">CPU</span> <span class="n">Requests</span>  <span class="n">CPU</span> <span class="n">Limits</span>  <span class="n">Memory</span> <span class="n">Requests</span>  <span class="n">Memory</span> <span class="n">Limits</span>
   <span class="o">---------</span>                  <span class="o">----</span>                               <span class="o">------------</span>  <span class="o">----------</span>  <span class="o">---------------</span>  <span class="o">-------------</span>
@@ -725,9 +724,9 @@ container:4
 </div></blockquote>
 </section>
 <section id="id16">
-<h3><a class="toc-backref" href="#id51">Pod的状态和生命周期</a><a class="headerlink" href="#id16" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id51">Pod的状态和生命周期</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <section id="id17">
-<h4>容器状态<a class="headerlink" href="#id17" title="Permalink to this heading">¶</a></h4>
+<h4>容器状态<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
 <p>Kubernetes中对于Pod中的容器进行了状态的记录，其中每种状态下包含的信息如下所示。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Waiting：容器正在等待创建，比如正在下载镜像。
 
@@ -790,7 +789,7 @@ Containers:
 </div>
 </section>
 <section id="id18">
-<h4>Pod的生命周期阶段<a class="headerlink" href="#id18" title="Permalink to this heading">¶</a></h4>
+<h4>Pod的生命周期阶段<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h4>
 <p>Pod的生命周期可以简单描述为：首先Pod被创建，紧接着Pod被调度到Node进行部署运行。Pod是非常忠诚的，一旦被分配到Node后，就不会离开这个Node，直到它被删除，生命周期完结。</p>
 <p>Pod的生命周期被定义为以下几个阶段。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Pending：Pod已经被创建，但是一个或者多个容器还未创建，这包括Pod调度阶段，以及容器镜像的下载过程。
@@ -846,7 +845,7 @@ Controller删除，也有可能是当Pod进入Succeeded或者Failed阶段过期�
 Controller进行重建，那也是新的Pod，因为Pod的ID已经发生了变化，所以实际上Pod迁移，准确的说法是在新的Node上重建Pod。</p>
 </section>
 <section id="id19">
-<h4>生命周期回调函数<a class="headerlink" href="#id19" title="Permalink to this heading">¶</a></h4>
+<h4>生命周期回调函数<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h4>
 <p>Kubernetes提供了回调函数，在容器的生命周期的特定阶段执行调用，比如容器在停止前希望执行某项操作，就可以注册相应的钩子函数。目前提供的生命周期回调函数如下所示。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• PostStart：在容器创建成功后调用该回调函数。
 • PreStop：在容器被终止前调用该回调函数。
@@ -857,10 +856,10 @@ Controller进行重建，那也是新的Pod，因为Pod的ID已经发生了变�
 <p>说明 在容器中执行指定的命令。</p>
 <p>配置参数 command：需要执行的命令，字符串数组。</p>
 <p>示例</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">exec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cat</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/health</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">exec</span><span class="p">:</span>
+  <span class="nt">command</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cat</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/tmp/health</span>
 </pre></div>
 </div>
 <p><strong>• HTTPGet</strong></p>
@@ -870,7 +869,7 @@ host：请求的IP，可选项，默认是Pod的PodIP。
 scheme：请求的协议，可选项，默认是HTTP。</p>
 <p>示例</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">httpGet</span><span class="p">:</span>
-  <span class="n">host</span><span class="p">:</span> <span class="mf">192.168.1.1</span>
+  <span class="n">host</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.1</span>
   <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">notify</span>
   <span class="n">port</span><span class="p">:</span> <span class="mi">8080</span>
 </pre></div>
@@ -878,7 +877,7 @@ scheme：请求的协议，可选项，默认是HTTP。</p>
 </section>
 </section>
 <section id="id20">
-<h3><a class="toc-backref" href="#id52">自定义检查Pod</a><a class="headerlink" href="#id20" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id52">自定义检查Pod</a><a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
 <p>我们需要更加精确的检查机制来判断Pod和容器是否准备就绪，从而让Kubernetes判断是否分发请求给Pod。</p>
 <p>针对这些需求，Kubernetes中提供了Probe机制，有以下两种类型的Probe。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>• Liveness Probe：用于容器的自定义健康检查，如果Liveness Probe检查失败，Kubernetes将杀死容器，然后根据Pod的重启策略来决定是否重启容器。
@@ -892,18 +891,18 @@ scheme：请求的协议，可选项，默认是HTTP。</p>
 在容器中执行指定的命令进行检查，当命令执行成功（返回码为0），检查成功。</p>
 <p>配置参数 command：检查的命令，字符串数组。</p>
 <p>示例</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">exec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cat</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/health</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">exec</span><span class="p">:</span>
+  <span class="nt">command</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cat</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/tmp/health</span>
 </pre></div>
 </div>
 <p><strong>• TCPSocketAction</strong></p>
 <p>说明 对于容器中的指定TCP端口进行检查，当TCP端口被占用，检查成功。</p>
 <p>配置参数 port：检查的TCP端口</p>
 <p>示例</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">tcpSocket</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">tcpSocket</span><span class="p">:</span>
+  <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
 </pre></div>
 </div>
 <p><strong>• HTTPGetAction</strong></p>
@@ -912,15 +911,15 @@ scheme：请求的协议，可选项，默认是HTTP。</p>
 host：请求的IP，可选项，默认是Pod的PodIP。
 scheme：请求的协议，可选项，默认是HTTP。 示例</p>
 <p>示例</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">httpGet</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/healthz</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">httpGet</span><span class="p">:</span>
+  <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/healthz</span>
+  <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
 </pre></div>
 </div>
 <section id="id21">
-<h4>Pod的健康检查<a class="headerlink" href="#id21" title="Permalink to this heading">¶</a></h4>
+<h4>Pod的健康检查<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h4>
 <section id="exec">
-<h5>exec探针<a class="headerlink" href="#exec" title="Permalink to this heading">¶</a></h5>
+<h5>exec探针<a class="headerlink" href="#exec" title="Permalink to this headline">¶</a></h5>
 <p>定义一个Pod，使用Liveness
 Probe通过ExecAction方式检查容器的健康状态，Pod的定义文件<code class="docutils literal notranslate"><span class="pre">liveness-exec-pod.yaml</span></code>：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
@@ -956,7 +955,7 @@ Probe通过ExecAction方式检查容器的健康状态，Pod的定义文件<code
 <span class="n">spec</span><span class="p">:</span>
   <span class="n">containers</span><span class="p">:</span>
   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">demo</span>
-    <span class="n">image</span><span class="p">:</span> <span class="n">ikubernetes</span><span class="o">/</span><span class="n">demoapp</span><span class="p">:</span><span class="n">v1</span><span class="mf">.0</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">ikubernetes</span><span class="o">/</span><span class="n">demoapp</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mi">0</span>
     <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">IfNotPresent</span>
     <span class="n">livenessProbe</span><span class="p">:</span>
       <span class="n">exec</span><span class="p">:</span>
@@ -981,7 +980,7 @@ liveness-exec-pod   <span class="m">0</span>/1     CrashLoopBackOff   <span clas
 </div>
 </section>
 <section id="http">
-<h5>HTTP探针<a class="headerlink" href="#http" title="Permalink to this heading">¶</a></h5>
+<h5>HTTP探针<a class="headerlink" href="#http" title="Permalink to this headline">¶</a></h5>
 <p>HTTP探针是基于HTTP协议的探测（HTTPGetAction），通过向目标容器发起一个GET请求，并根据其响应码进行结果判定，2xx或3xx类的响应码表示检测通过。</p>
 <p><code class="docutils literal notranslate"><span class="pre">liveness-httpget-demo.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Maintainer: MageEdu &lt;mage@magedu.com&gt;</span>
@@ -995,7 +994,7 @@ liveness-exec-pod   <span class="m">0</span>/1     CrashLoopBackOff   <span clas
 <span class="n">spec</span><span class="p">:</span>
   <span class="n">containers</span><span class="p">:</span>
   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">demo</span>
-    <span class="n">image</span><span class="p">:</span> <span class="n">ikubernetes</span><span class="o">/</span><span class="n">demoapp</span><span class="p">:</span><span class="n">v1</span><span class="mf">.0</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">ikubernetes</span><span class="o">/</span><span class="n">demoapp</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mi">0</span>
     <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">IfNotPresent</span>
     <span class="n">livenessProbe</span><span class="p">:</span>
       <span class="n">httpGet</span><span class="p">:</span>
@@ -1007,7 +1006,7 @@ liveness-exec-pod   <span class="m">0</span>/1     CrashLoopBackOff   <span clas
 </div>
 </section>
 <section id="tcp">
-<h5>TCP探针<a class="headerlink" href="#tcp" title="Permalink to this heading">¶</a></h5>
+<h5>TCP探针<a class="headerlink" href="#tcp" title="Permalink to this headline">¶</a></h5>
 <p>TCP探针是基于TCP协议进行存活性探测（TCPSocketAction），通过向容器的特定端口发起TCP请求并尝试建立连接进行结果判定，连接建立成功即为通过检测。相比较来说，它比基于HTTP协议的探测要更高效、更节约资源，但精准度略低，毕竟连接建立成功未必意味着页面资源可用。</p>
 <p><code class="docutils literal notranslate"><span class="pre">liveness-tcpsocket-demo.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
@@ -1018,7 +1017,7 @@ liveness-exec-pod   <span class="m">0</span>/1     CrashLoopBackOff   <span clas
 <span class="n">spec</span><span class="p">:</span>
   <span class="n">containers</span><span class="p">:</span>
   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">demo</span>
-    <span class="n">image</span><span class="p">:</span> <span class="n">ikubernetes</span><span class="o">/</span><span class="n">demoapp</span><span class="p">:</span><span class="n">v1</span><span class="mf">.0</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">ikubernetes</span><span class="o">/</span><span class="n">demoapp</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mi">0</span>
     <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">IfNotPresent</span>
     <span class="n">ports</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">http</span>
@@ -1037,30 +1036,30 @@ liveness-exec-pod   <span class="m">0</span>/1     CrashLoopBackOff   <span clas
 </section>
 </section>
 <section id="id22">
-<h4>Pod的准备状况检查<a class="headerlink" href="#id22" title="Permalink to this heading">¶</a></h4>
+<h4>Pod的准备状况检查<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h4>
 <p>定义一个Pod，使用Readiness
 Probe通过ExecAction方式检查容器的准备状况，Pod的定义文件readiness-exec-pod.yaml：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">readiness</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">readiness-exec-pod</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">readiness</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ubuntu:14.04&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/bin/sh</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-c</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo ok &gt; /tmp/ready; sleep 60; rm -rf /tmp/ready; sleep 600</span><span class="w"></span>
-<span class="w">    </span><span class="nt">readinessProbe</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">exec</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cat</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/ready</span><span class="w"></span>
-<span class="w">      </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15</span><span class="w"></span>
-<span class="w">      </span><span class="nt">timeoutSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">test</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">readiness</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">readiness-exec-pod</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">readiness</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;ubuntu:14.04&quot;</span>
+    <span class="nt">command</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/bin/sh</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">-c</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo ok &gt; /tmp/ready; sleep 60; rm -rf /tmp/ready; sleep 600</span>
+    <span class="nt">readinessProbe</span><span class="p">:</span>
+      <span class="nt">exec</span><span class="p">:</span>
+        <span class="nt">command</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cat</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/tmp/ready</span>
+      <span class="nt">initialDelaySeconds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">15</span>
+      <span class="nt">timeoutSeconds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
 </pre></div>
 </div>
 <p>通过定义文件创建Pod：</p>
@@ -1088,7 +1087,7 @@ readiness-exec-pod   <span class="m">0</span>/1        Running   <span class="m"
 </section>
 </section>
 <section id="id23">
-<h3><a class="toc-backref" href="#id53">Pod的调度约束</a><a class="headerlink" href="#id23" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id53">Pod的调度约束</a><a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
 <p>Pod的调度指的是Pod在创建之后分配到哪一个Node上，调度算法分为两个步骤，第一步筛选出符合条件的Node，第二步选择最优的Node。</p>
 <p>Pod在正式上线前，需要先在测试的Node上运行，测试完成再发布到生产环境的Node上运行。这时候就可以用到Node
 Selector，通过Node的Label进行选择。</p>
@@ -1108,19 +1107,19 @@ $ kubectl describe nodes k8s-node01
 </div>
 <p>在定义Pod的时候通过设置 Node Selector（.spec.nodeSelector）来选择
 Node，Pod的定义文件nginx-pod.yaml：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">env</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">  </span><span class="nt">nodeSelector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">env</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">env</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+  <span class="nt">nodeSelector</span><span class="p">:</span>
+    <span class="nt">env</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
 </pre></div>
 </div>
 <p>Pod创建成功后将会被分配到Node k8s-node01：</p>
@@ -1135,7 +1134,7 @@ nginx   <span class="m">1</span>/1     Running   <span class="m">0</span>       
 <span class="n">metadata</span><span class="p">:</span>
   <span class="n">name</span><span class="p">:</span> <span class="n">mypod</span>
 <span class="n">spec</span><span class="p">:</span>
-  <span class="n">nodeName</span><span class="p">:</span> <span class="mf">192.168.10.7</span>    <span class="c1"># 指定pod运行的node ip地址</span>
+  <span class="n">nodeName</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">10.7</span>    <span class="c1"># 指定pod运行的node ip地址</span>
   <span class="n">containers</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span>
       <span class="n">image</span><span class="p">:</span> <span class="n">nginx</span><span class="p">:</span><span class="mf">1.14</span>
@@ -1146,7 +1145,7 @@ nginx   <span class="m">1</span>/1     Running   <span class="m">0</span>       
 <p><a class="reference external" href="https://www.cnblogs.com/xiangsikai/p/11413002.html">https://www.cnblogs.com/xiangsikai/p/11413002.html</a></p>
 </section>
 <section id="id24">
-<h3><a class="toc-backref" href="#id54">问题定位指南</a><a class="headerlink" href="#id24" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id54">问题定位指南</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
 <p>Pod是应用的承载体，当Pod运行异常的时候，可能是Kubernetes系统问题，也可能是应用本身的问题，那么就需要提供足够的信息用于问题定位，Kubernetes针对Pod提供的事件记录、日志查询和远程调试功能进行问题定位。</p>
 <p>Kubernetes从Pod的创建开始，在Pod的生命周期内会产生各种事件信息，比如Pod完成调度、下载镜像完成等。在Pod运行异常的时候，通过排除相关事件可以了解是否是由于Kubernetes的原因导致Pod异常。</p>
 <p>事件查询可以先查询所有的事件：</p>
@@ -1158,31 +1157,31 @@ nginx   <span class="m">1</span>/1     Running   <span class="m">0</span>       
 </pre></div>
 </div>
 <section id="id25">
-<h4>日志查询<a class="headerlink" href="#id25" title="Permalink to this heading">¶</a></h4>
+<h4>日志查询<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h4>
 <p>日志是一项很重要的信息，可以用来定位问题和显示应用运行状态。Docker容器可以使用docker
 logs命令查询日志，可以通过kubectl logs命令查询Pod中容器的日志。</p>
 <p>现在要定义一个Pod，包含两个容器，容器container1输出一条日志然后正常退出（exit
 0），容器container2输出一条日志异常退出（exit
 1），并且设置Pod的重启策略是OnFailure，即当容器异常退出时才进行重启，Pod的定义文件<code class="docutils literal notranslate"><span class="pre">log-pod.yaml</span></code>：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">log-pod</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu:14.04</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;bash&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;-c&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;echo</span><span class="nv"> </span><span class="s">\&quot;container1:</span><span class="nv"> </span><span class="s">`date</span><span class="nv"> </span><span class="s">--rfc-3339</span><span class="nv"> </span><span class="s">ns`\&quot;;</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">0&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu:14.04</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;bash&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;-c&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;echo</span><span class="nv"> </span><span class="s">\&quot;container2:</span><span class="nv"> </span><span class="s">`date</span><span class="nv"> </span><span class="s">--rfc-3339</span><span class="nv"> </span><span class="s">ns`\&quot;;</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">1&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OnFailure</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">log-pod</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">container1</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ubuntu:14.04</span>
+    <span class="nt">command</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;bash&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;-c&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;echo</span><span class="nv"> </span><span class="s">\&quot;container1:</span><span class="nv"> </span><span class="s">`date</span><span class="nv"> </span><span class="s">--rfc-3339</span><span class="nv"> </span><span class="s">ns`\&quot;;</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">0&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">container2</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ubuntu:14.04</span>
+    <span class="nt">command</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;bash&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;-c&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;echo</span><span class="nv"> </span><span class="s">\&quot;container2:</span><span class="nv"> </span><span class="s">`date</span><span class="nv"> </span><span class="s">--rfc-3339</span><span class="nv"> </span><span class="s">ns`\&quot;;</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">1&quot;</span>
+  <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">OnFailure</span>
 </pre></div>
 </div>
 <p>通过定义文件创建Pod：</p>
@@ -1214,23 +1213,23 @@ container2: 2015-11-21 14:53:37.377629086+00:00
 </section>
 </section>
 <section id="id26">
-<h3><a class="toc-backref" href="#id55">Pod的临终遗言</a><a class="headerlink" href="#id26" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id55">Pod的临终遗言</a><a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
 <p>前面我们提到过容器停止前的日志价值更高，能够获取最后的错误异常消息、调用栈等，我们可以把这些信息形象地称为临终遗言，临终遗言对于问题定位是很有帮助的。在Kubernetes中为Pod提供了一个持久化文件，用来保存临终遗言。</p>
 <p>Pod的定义中通过<code class="docutils literal notranslate"><span class="pre">.spec.containers[].terminationMessagePath</span></code>指定在容器中的临终遗言日志文件的路径，默认值是/dev/termination-log。这个文件在Pod的整个生命周期内都会保存，每次新建一个Pod，都会在宿主机上创建一个文件，然后挂载到Pod的容器中，这些文件不会因为容器的销毁而丢失，所以容器可以把临终遗言写入这个文件，方便问题排错。</p>
 <p>现在创建一个Pod，其中的容器将写入临终遗言，Pod的定义文件<code class="docutils literal notranslate"><span class="pre">w-message-pod.yaml</span></code>：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">w-message-pod</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">messager</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ubuntu:14.04&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">terminationMessagePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/termination-log</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;bash&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;-c&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;echo</span><span class="nv"> </span><span class="s">\&quot;`date</span><span class="nv"> </span><span class="s">--rfc-3339</span><span class="nv"> </span><span class="s">ns`</span><span class="nv"> </span><span class="s">I</span><span class="nv"> </span><span class="s">was</span><span class="nv"> </span><span class="s">going</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">die\&quot;</span><span class="nv"> </span><span class="s">&gt;&gt;</span><span class="nv"> </span><span class="s">/dev/termination-log;&quot;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">w-message-pod</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">messager</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;ubuntu:14.04&quot;</span>
+    <span class="nt">terminationMessagePath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/dev/termination-log</span>
+    <span class="nt">command</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;bash&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;-c&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;echo</span><span class="nv"> </span><span class="s">\&quot;`date</span><span class="nv"> </span><span class="s">--rfc-3339</span><span class="nv"> </span><span class="s">ns`</span><span class="nv"> </span><span class="s">I</span><span class="nv"> </span><span class="s">was</span><span class="nv"> </span><span class="s">going</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">die\&quot;</span><span class="nv"> </span><span class="s">&gt;&gt;</span><span class="nv"> </span><span class="s">/dev/termination-log;&quot;</span>
 </pre></div>
 </div>
 <p>通过定义文件创建Pod：</p>
@@ -1248,7 +1247,7 @@ w-message-pod   <span class="m">0</span>/1     CrashLoopBackOff   <span class="m
 </div>
 </section>
 <section id="id27">
-<h3><a class="toc-backref" href="#id56">远程连接容器</a><a class="headerlink" href="#id27" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id56">远程连接容器</a><a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
 <p>问题定位时往往需要连接到应用的运行环境进行操作，相比于传统的SSH方式，Docker提供了docker
 attach和docker
 exec两个命令可以连接容器进行操作。同样的，Kubernetes对应地提供了kubectl
@@ -1270,10 +1269,10 @@ Wed Jan  <span class="m">6</span> <span class="m">18</span>:19:07 CST <span clas
 </section>
 </section>
 <section id="kubernetes-1">
-<span id="id28"></span><h2><a class="toc-backref" href="#id57">kubernetes的资源对象</a><a class="headerlink" href="#kubernetes-1" title="Permalink to this heading">¶</a></h2>
+<span id="id28"></span><h2><a class="toc-backref" href="#id57">kubernetes的资源对象</a><a class="headerlink" href="#kubernetes-1" title="Permalink to this headline">¶</a></h2>
 <p>以资源的主要功能作为分类标准，Kubernetes的API对象大体可分为工作负载、发现与负载均衡、配置与存储、集群和元数据几个类别。它们基本都是围绕一个核心目的而设计：如何更好地运行和丰富Pod资源，从而为容器化应用提供更灵活和更完善的操作与管理组件。</p>
 <section id="id29">
-<h3><a class="toc-backref" href="#id58">1. 工作负载型资源</a><a class="headerlink" href="#id29" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id58">1. 工作负载型资源</a><a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
 <p>应用程序分为无状态和有状态两种类型</p>
 <ul class="simple">
 <li><p>无状态应用：ReplicationController、ReplicaSet和Deployment负责管理无状态应用</p></li>
@@ -1303,19 +1302,19 @@ Wed Jan  <span class="m">6</span> <span class="m">18</span>:19:07 CST <span clas
 </div>
 </section>
 <section id="id30">
-<h3><a class="toc-backref" href="#id59">2. 发现与负载均衡</a><a class="headerlink" href="#id30" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id59">2. 发现与负载均衡</a><a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
 <p>Service是Kubernetes标准的资源类型之一，用于为工作负载实例提供固定的访问入口及负载均衡服务，它把每个可用后端实例定义为Endpoint资源对象，通过IP地址和端口等属性映射至Pod实例或相应的服务端点。</p>
 <p>Ingress资源则为工作负载提供7层（HTTP/HTTPS）代理及负载均衡功能。</p>
 </section>
 <section id="id31">
-<h3><a class="toc-backref" href="#id60">3. 配置与存储</a><a class="headerlink" href="#id31" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id60">3. 配置与存储</a><a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes支持众多类型的存储设备或存储系统，例如GlusterFS、Ceph
 RBD和Flocker等，还可通过FlexVolume及CSI（Container Storage
 Interface）存储接口扩展支持更多类型的存储系统。</p>
 <p>Kubernetes的ConfigMap资源能够以环境变量或存储卷的方式接入Pod资源的容器中，并可被多个同类的Pod共享引用，从而做到“一次修改，多处生效”。不过，这种方式不适用于存储敏感数据，例如证书、私钥和密码等，那是另一个资源类型Secret的功能。</p>
 </section>
 <section id="id32">
-<h3><a class="toc-backref" href="#id61">4.集群型资源</a><a class="headerlink" href="#id32" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id61">4.集群型资源</a><a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes还存在一些用于定义集群自身配置信息的资源类型，它们不属于任何名称空间且仅应该由集群管理员操作。常用的集群型资源有如下几种。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>▪Namespace：名称空间，为资源对象的名称提供了限定条件或作用范围，它为使用同一集群的多个团队或项目提供了逻辑上的隔离机制，降低或消除了资源对象名称冲突的可能性。
 
@@ -1333,9 +1332,9 @@ Interface）存储接口扩展支持更多类型的存储系统。</p>
 </section>
 </section>
 <section id="id33">
-<h2><a class="toc-backref" href="#id62">名称空间</a><a class="headerlink" href="#id33" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id62">名称空间</a><a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h2>
 <section id="id34">
-<h3><a class="toc-backref" href="#id63">名称空间的作用</a><a class="headerlink" href="#id34" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id63">名称空间的作用</a><a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
 <p>名称空间的核心功能在于限制集群上对象名称的作用域：同一类型的资源对象名称在同一个名称空间中必须唯一，但不同名称空间却可为同一类型的资源使用相同的名称。对于某些场景，这种功能有着非常实用的价值，例如名称空间可用于分隔不同应用程序的生命周期环境（例如开发、预发和生产等），从而能够在每个环境中维护具有相同名称的同一类型的资源对象。名称空间本身并不具有网络隔离和访问限制等功能，但它可以作为网络访问控制策略（NetworkPolicy）、授权策略（RBAC）、资源限制策略（ResourceQuota）和Pod安全策略（PodSecurityPolicy）等管理逻辑的承载组件，这也是支撑集群“多租户”机制</p>
 <p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">namespaces</span></code>命令可以查看系统上的namespaces资源：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="o">~</span><span class="p">]</span><span class="c1"># kubectl get ns</span>
@@ -1355,7 +1354,7 @@ Interface）存储接口扩展支持更多类型的存储系统。</p>
 </div>
 </section>
 <section id="namespace">
-<h3><a class="toc-backref" href="#id64">管理Namespace资源</a><a class="headerlink" href="#namespace" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id64">管理Namespace资源</a><a class="headerlink" href="#namespace" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic">
 <li><p>命令式对象</p>
 <p>管理通常是针对集群上的活动对象直接进行，用户或管理员针对指定的资源运行create、get、describe、edit和delete命令即能完成资源的创建、查看、编辑和删除等基础管理操作。</p>
@@ -1401,9 +1400,9 @@ Interface）存储接口扩展支持更多类型的存储系统。</p>
 </section>
 </section>
 <section id="kubectl">
-<h2><a class="toc-backref" href="#id65">kubectl-备忘单</a><a class="headerlink" href="#kubectl" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id65">kubectl-备忘单</a><a class="headerlink" href="#kubectl" title="Permalink to this headline">¶</a></h2>
 <section id="id35">
-<h3><a class="toc-backref" href="#id66">Kubectl 自动补全</a><a class="headerlink" href="#id35" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id66">Kubectl 自动补全</a><a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
 <p>Linux</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>yum install -y bash-completion
 <span class="nb">source</span> /usr/share/bash-completion/bash_completion
@@ -1427,9 +1426,9 @@ $ <span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion 
 </div>
 </section>
 <section id="kubernets-label">
-<h3><a class="toc-backref" href="#id67">kubernets 标签Label操作</a><a class="headerlink" href="#kubernets-label" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id67">kubernets 标签Label操作</a><a class="headerlink" href="#kubernets-label" title="Permalink to this headline">¶</a></h3>
 <section id="id36">
-<h4>1.添加<a class="headerlink" href="#id36" title="Permalink to this heading">¶</a></h4>
+<h4>1.添加<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl label nodes kube-node <span class="nv">label_name</span><span class="o">=</span>label_value
 
 示例：
@@ -1440,7 +1439,7 @@ node/k8s-test01 labeled
 </div>
 </section>
 <section id="id37">
-<h4>2.查询<a class="headerlink" href="#id37" title="Permalink to this heading">¶</a></h4>
+<h4>2.查询<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看所有标签</span>
 $ kubectl get nodes --show-labels
 
@@ -1450,14 +1449,14 @@ $ kubectl describe nodes k8s-test01
 </div>
 </section>
 <section id="id38">
-<h4>3.删除<a class="headerlink" href="#id38" title="Permalink to this heading">¶</a></h4>
+<h4>3.删除<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h4>
 <p>删除一个label，只需在命令行最后指定label的key名并与一个减号相连即可：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl label nodes k8s-test01 gpu-
 </pre></div>
 </div>
 </section>
 <section id="id39">
-<h4>4.修改<a class="headerlink" href="#id39" title="Permalink to this heading">¶</a></h4>
+<h4>4.修改<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h4>
 <p>修改一个label的值，需要加上–overwrite参数：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl label nodes k8s-test01 <span class="nv">gpu</span><span class="o">=</span><span class="nb">false</span> --overwrite
 </pre></div>
@@ -1465,7 +1464,7 @@ $ kubectl describe nodes k8s-test01
 </section>
 </section>
 <section id="kubectl-context-configuration">
-<h3><a class="toc-backref" href="#id68">Kubectl Context Configuration</a><a class="headerlink" href="#kubectl-context-configuration" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id68">Kubectl Context Configuration</a><a class="headerlink" href="#kubectl-context-configuration" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl config view <span class="c1"># Show Merged kubeconfig settings.</span>
 
 <span class="c1"># use multiple kubeconfig files at the same time and view merged config</span>
@@ -1496,7 +1495,7 @@ kubectl config <span class="nb">unset</span> users.foo                       <sp
 </div>
 </section>
 <section id="creating-objects">
-<h3><a class="toc-backref" href="#id69">Creating Objects</a><a class="headerlink" href="#creating-objects" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id69">Creating Objects</a><a class="headerlink" href="#creating-objects" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes manifests can be defined in json or yaml. The file extension
 <code class="docutils literal notranslate"><span class="pre">.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">.yml</span></code>, and <code class="docutils literal notranslate"><span class="pre">.json</span></code> can be used.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl apply -f ./my-manifest.yaml           <span class="c1"># create resource(s)</span>
@@ -1548,7 +1547,7 @@ cat <span class="s">&lt;&lt;EOF | kubectl apply -f -</span>
 </div>
 </section>
 <section id="viewing-finding-resources">
-<h3><a class="toc-backref" href="#id70">Viewing, Finding Resources</a><a class="headerlink" href="#viewing-finding-resources" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id70">Viewing, Finding Resources</a><a class="headerlink" href="#viewing-finding-resources" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get commands with basic output</span>
 kubectl get services                          <span class="c1"># List all services in the namespace</span>
 kubectl get pods --all-namespaces             <span class="c1"># List all pods in all namespaces</span>
@@ -1619,12 +1618,12 @@ kubectl get deploy -o<span class="o">=</span>custom-columns-file<span class="o">
 </section>
 </section>
 <section id="id40">
-<h2><a class="toc-backref" href="#id71">常用的清理 Kubernetes 集群资源命令</a><a class="headerlink" href="#id40" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id71">常用的清理 Kubernetes 集群资源命令</a><a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h2>
 <p>参考：</p>
 <p><a class="reference external" href="https://mp.weixin.qq.com/s/yPX882-XHH8Rp-QWKhjP6A">https://mp.weixin.qq.com/s/yPX882-XHH8Rp-QWKhjP6A</a></p>
 </section>
 <section id="id41">
-<h2><a class="toc-backref" href="#id72">应用部署、运行与管理</a><a class="headerlink" href="#id41" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id72">应用部署、运行与管理</a><a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h2>
 <p>一个综合案例</p>
 <p>下面的示例中有一个初始化容器和两个应用容器，其中sidecar-proxy为Sidecar容器，负责为主容器demo代理服务客户端请求。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">create</span> <span class="n">ns</span> <span class="n">dev</span>
@@ -1649,7 +1648,7 @@ kubectl get deploy -o<span class="o">=</span>custom-columns-file<span class="o">
         <span class="o">-</span> <span class="n">NET_ADMIN</span>
   <span class="n">containers</span><span class="p">:</span>
   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">sidecar</span><span class="o">-</span><span class="n">proxy</span>
-    <span class="n">image</span><span class="p">:</span> <span class="n">envoyproxy</span><span class="o">/</span><span class="n">envoy</span><span class="o">-</span><span class="n">alpine</span><span class="p">:</span><span class="n">v1</span><span class="mf">.13.1</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">envoyproxy</span><span class="o">/</span><span class="n">envoy</span><span class="o">-</span><span class="n">alpine</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mf">13.1</span>
     <span class="n">command</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;/bin/sh&#39;</span><span class="p">,</span><span class="s1">&#39;-c&#39;</span><span class="p">]</span>
     <span class="n">args</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sleep 3 &amp;&amp; envoy -c /etc/envoy/envoy.yaml&#39;</span><span class="p">]</span>
     <span class="n">lifecycle</span><span class="p">:</span>
@@ -1665,7 +1664,7 @@ kubectl get deploy -o<span class="o">=</span>custom-columns-file<span class="o">
         <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
       <span class="n">initialDelaySeconds</span><span class="p">:</span> <span class="mi">5</span>
   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">demo</span>
-    <span class="n">image</span><span class="p">:</span> <span class="n">ikubernetes</span><span class="o">/</span><span class="n">demoapp</span><span class="p">:</span><span class="n">v1</span><span class="mf">.0</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">ikubernetes</span><span class="o">/</span><span class="n">demoapp</span><span class="p">:</span><span class="n">v1</span><span class="o">.</span><span class="mi">0</span>
     <span class="n">imagePullPolicy</span><span class="p">:</span> <span class="n">IfNotPresent</span>
     <span class="n">env</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">PORT</span>

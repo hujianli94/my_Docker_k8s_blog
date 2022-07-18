@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kubernetes实战案例 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -143,17 +142,17 @@
 </ul>
 </div>
 <section id="kubernetes">
-<h1><a class="toc-backref" href="#id2">Kubernetes实战案例</a><a class="headerlink" href="#kubernetes" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id2">Kubernetes实战案例</a><a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><p>可以参考kubernetes的官方example中的例子</p>
 </div></blockquote>
 <p><a class="reference external" href="https://github.com/kubernetes/examples">https://github.com/kubernetes/examples</a></p>
 <section id="kubernetes-mysql">
-<h2><a class="toc-backref" href="#id3">1.kubernetes mysql 持久化实战（单节点）</a><a class="headerlink" href="#kubernetes-mysql" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">1.kubernetes mysql 持久化实战（单节点）</a><a class="headerlink" href="#kubernetes-mysql" title="Permalink to this headline">¶</a></h2>
 <p>安装nfs服务器，将nfs服务器的<code class="docutils literal notranslate"><span class="pre">/data/mysql_nfs</span></code>路径进行共享。</p>
 <p>这里nfs服务器地址为：<code class="docutils literal notranslate"><span class="pre">192.168.1.40</span></code></p>
 <section id="mysqlnamespaces">
-<h3><a class="toc-backref" href="#id4">1.1 创建mysql的namespaces</a><a class="headerlink" href="#mysqlnamespaces" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id4">1.1 创建mysql的namespaces</a><a class="headerlink" href="#mysqlnamespaces" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">mysql-namespaces.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Namespace</span>
@@ -163,7 +162,7 @@
 </div>
 </section>
 <section id="pv">
-<h3><a class="toc-backref" href="#id5">1.2 创建pv</a><a class="headerlink" href="#pv" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id5">1.2 创建pv</a><a class="headerlink" href="#pv" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">mysql-pv.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">PersistentVolume</span>
@@ -177,14 +176,14 @@
   <span class="o">-</span> <span class="n">ReadWriteMany</span>
   <span class="n">nfs</span><span class="p">:</span>
     <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">data</span>      <span class="c1">#nfs共享目录</span>
-    <span class="n">server</span><span class="p">:</span> <span class="mf">192.168.186.129</span>     <span class="c1">#nfs服务器地址</span>
+    <span class="n">server</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">186.129</span>     <span class="c1">#nfs服务器地址</span>
   <span class="n">persistentVolumeReclaimPolicy</span><span class="p">:</span> <span class="n">Recycle</span>
   <span class="n">storageClassName</span><span class="p">:</span> <span class="n">nfs</span>
 </pre></div>
 </div>
 </section>
 <section id="pvc">
-<h3><a class="toc-backref" href="#id6">1.3 创建pvc</a><a class="headerlink" href="#pvc" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id6">1.3 创建pvc</a><a class="headerlink" href="#pvc" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">mysql-pvc.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kind</span><span class="p">:</span> <span class="n">PersistentVolumeClaim</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
@@ -202,7 +201,7 @@
 </div>
 </section>
 <section id="configmap">
-<h3><a class="toc-backref" href="#id7">1.4 创建ConfigMap</a><a class="headerlink" href="#configmap" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id7">1.4 创建ConfigMap</a><a class="headerlink" href="#configmap" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">mysql-cm.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">ConfigMap</span>
@@ -216,7 +215,7 @@
         <span class="n">socket</span>          <span class="o">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">mysqld</span><span class="o">/</span><span class="n">mysqld</span><span class="o">.</span><span class="n">sock</span>
         <span class="n">datadir</span>         <span class="o">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span>
         <span class="n">log</span><span class="o">-</span><span class="n">error</span>      <span class="o">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">error</span><span class="o">.</span><span class="n">log</span>
-        <span class="n">bind</span><span class="o">-</span><span class="n">address</span>   <span class="o">=</span> <span class="mf">0.0.0.0</span>
+        <span class="n">bind</span><span class="o">-</span><span class="n">address</span>   <span class="o">=</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span>
         <span class="c1"># Disabling symbolic-links is recommended to prevent assorted security risks</span>
         <span class="n">symbolic</span><span class="o">-</span><span class="n">links</span><span class="o">=</span><span class="mi">0</span>
         <span class="n">max_connections</span><span class="o">=</span><span class="mi">1000</span>
@@ -231,7 +230,7 @@
 </div>
 </section>
 <section id="mysql-deployment">
-<h3><a class="toc-backref" href="#id8">1.5 创建mysql deployment</a><a class="headerlink" href="#mysql-deployment" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id8">1.5 创建mysql deployment</a><a class="headerlink" href="#mysql-deployment" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">mysql-deployment.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">apps</span><span class="o">/</span><span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Deployment</span>
@@ -252,7 +251,7 @@
     <span class="n">spec</span><span class="p">:</span>
       <span class="n">containers</span><span class="p">:</span>
         <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">mysql</span>
-          <span class="n">image</span><span class="p">:</span> <span class="n">registry</span><span class="o">.</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bzvs</span><span class="o">/</span><span class="n">mysql5</span><span class="mf">.7</span><span class="p">:</span><span class="n">latest</span>
+          <span class="n">image</span><span class="p">:</span> <span class="n">registry</span><span class="o">.</span><span class="n">cn</span><span class="o">-</span><span class="n">hangzhou</span><span class="o">.</span><span class="n">aliyuncs</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bzvs</span><span class="o">/</span><span class="n">mysql5</span><span class="o">.</span><span class="mi">7</span><span class="p">:</span><span class="n">latest</span>
           <span class="n">ports</span><span class="p">:</span>
             <span class="o">-</span> <span class="n">containerPort</span><span class="p">:</span> <span class="mi">3306</span>
               <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
@@ -331,19 +330,19 @@
 <span class="n">pod</span><span class="o">/</span><span class="n">mysql</span><span class="o">-</span><span class="mi">565</span><span class="n">b7cd487</span><span class="o">-</span><span class="n">hw5lc</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Running</span>   <span class="mi">0</span>          <span class="mi">8</span><span class="n">m20s</span>
 
 <span class="n">NAME</span>            <span class="n">TYPE</span>       <span class="n">CLUSTER</span><span class="o">-</span><span class="n">IP</span>     <span class="n">EXTERNAL</span><span class="o">-</span><span class="n">IP</span>   <span class="n">PORT</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>          <span class="n">AGE</span>
-<span class="n">service</span><span class="o">/</span><span class="n">mysql</span>   <span class="n">NodePort</span>   <span class="mf">10.98.67.121</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">3306</span><span class="p">:</span><span class="mi">30006</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">8</span><span class="n">m11s</span>
+<span class="n">service</span><span class="o">/</span><span class="n">mysql</span>   <span class="n">NodePort</span>   <span class="mf">10.98</span><span class="o">.</span><span class="mf">67.121</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>        <span class="mi">3306</span><span class="p">:</span><span class="mi">30006</span><span class="o">/</span><span class="n">TCP</span>   <span class="mi">8</span><span class="n">m11s</span>
 </pre></div>
 </div>
 </section>
 <section id="mysql">
-<h3><a class="toc-backref" href="#id9">1.6 测试mysql连接是否正常</a><a class="headerlink" href="#mysql" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id9">1.6 测试mysql连接是否正常</a><a class="headerlink" href="#mysql" title="Permalink to this headline">¶</a></h3>
 <p><img alt="image0" src="../_images/k8s_mysql0001.png" /></p>
 </section>
 </section>
 <section id="lnmp">
-<h2><a class="toc-backref" href="#id10">2.部署群集应用 lnmp平台</a><a class="headerlink" href="#lnmp" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">2.部署群集应用 lnmp平台</a><a class="headerlink" href="#lnmp" title="Permalink to this headline">¶</a></h2>
 <section id="namespace">
-<h3><a class="toc-backref" href="#id11">2.1 创建namespace</a><a class="headerlink" href="#namespace" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">2.1 创建namespace</a><a class="headerlink" href="#namespace" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">namespace.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Namespace</span>
@@ -353,7 +352,7 @@
 </div>
 </section>
 <section id="pv-pvc">
-<h3><a class="toc-backref" href="#id12">2.2 创建pv,pvc</a><a class="headerlink" href="#pv-pvc" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">2.2 创建pv,pvc</a><a class="headerlink" href="#pv-pvc" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">pv.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">PersistentVolume</span>
@@ -367,7 +366,7 @@
     <span class="o">-</span> <span class="n">ReadWriteMany</span>
   <span class="n">nfs</span><span class="p">:</span>
     <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span><span class="o">/</span><span class="n">mysql</span>
-    <span class="n">server</span><span class="p">:</span> <span class="mf">192.168.1.40</span>
+    <span class="n">server</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.40</span>
 <span class="o">---</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">PersistentVolume</span>
@@ -381,7 +380,7 @@
     <span class="o">-</span> <span class="n">ReadWriteMany</span>
   <span class="n">nfs</span><span class="p">:</span>
     <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span><span class="o">/</span><span class="n">data</span>
-    <span class="n">server</span><span class="p">:</span> <span class="mf">192.168.1.40</span>
+    <span class="n">server</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.40</span>
 <span class="o">---</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">PersistentVolume</span>
@@ -395,7 +394,7 @@
     <span class="o">-</span> <span class="n">ReadWriteMany</span>
   <span class="n">nfs</span><span class="p">:</span>
     <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nfs</span><span class="o">/</span><span class="n">data</span>
-    <span class="n">server</span><span class="p">:</span> <span class="mf">192.168.1.40</span>
+    <span class="n">server</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.40</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">pvc.yaml</span></code></p>
@@ -447,7 +446,7 @@
 </div>
 </section>
 <section id="svc-deployment">
-<h3><a class="toc-backref" href="#id13">2.3 创建svc，deployment</a><a class="headerlink" href="#svc-deployment" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">2.3 创建svc，deployment</a><a class="headerlink" href="#svc-deployment" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">mysql-deployment.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
 <span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
@@ -665,7 +664,7 @@ spec:
 </div>
 </section>
 <section id="ingress">
-<h3><a class="toc-backref" href="#id14">2.4 创建Ingress</a><a class="headerlink" href="#ingress" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">2.4 创建Ingress</a><a class="headerlink" href="#ingress" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">ingress.yaml</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apiVersion</span><span class="p">:</span> <span class="n">networking</span><span class="o">.</span><span class="n">k8s</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">v1beta1</span>
 <span class="n">kind</span><span class="p">:</span> <span class="n">Ingress</span>
@@ -697,11 +696,11 @@ spec:
 </section>
 </section>
 <section id="kubernetesmysql">
-<h2><a class="toc-backref" href="#id15">3. 实战|基于Kubernetes使用MySQL</a><a class="headerlink" href="#kubernetesmysql" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">3. 实战|基于Kubernetes使用MySQL</a><a class="headerlink" href="#kubernetesmysql" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://mp.weixin.qq.com/s/uKtSzAz7fN7lBPCZKURwHg">https://mp.weixin.qq.com/s/uKtSzAz7fN7lBPCZKURwHg</a></p>
 </section>
 <section id="id1">
-<h2><a class="toc-backref" href="#id16">4. Kubernetes部署MySQL 主从架构</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">4. Kubernetes部署MySQL 主从架构</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p><strong>实验目的</strong></p>
 <ul class="simple">
 <li><p>搭建一个<code class="docutils literal notranslate"><span class="pre">主从复制</span></code>（Master-Slave）的MySQL集群</p></li>
@@ -714,7 +713,7 @@ spec:
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">helm</span> <span class="n">repo</span> <span class="n">add</span> <span class="n">azure</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mirror</span><span class="o">.</span><span class="n">azure</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">/</span><span class="n">charts</span><span class="o">/</span>
 <span class="n">helm</span> <span class="n">repo</span> <span class="n">update</span>
 
-<span class="n">helm</span> <span class="n">pull</span>  <span class="n">azure</span><span class="o">/</span><span class="n">nfs</span><span class="o">-</span><span class="n">client</span><span class="o">-</span><span class="n">provisioner</span>  <span class="o">--</span><span class="n">version</span> <span class="mf">1.2.8</span>
+<span class="n">helm</span> <span class="n">pull</span>  <span class="n">azure</span><span class="o">/</span><span class="n">nfs</span><span class="o">-</span><span class="n">client</span><span class="o">-</span><span class="n">provisioner</span>  <span class="o">--</span><span class="n">version</span> <span class="mf">1.2</span><span class="o">.</span><span class="mi">8</span>
 <span class="n">tar</span> <span class="n">xvf</span> <span class="n">nfs</span><span class="o">-</span><span class="n">client</span><span class="o">-</span><span class="n">provisioner</span><span class="o">-*.</span><span class="n">tgz</span>
 </pre></div>
 </div>
@@ -722,7 +721,7 @@ spec:
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">create</span> <span class="n">ns</span> <span class="n">nfs</span>
 
 <span class="n">helm</span> <span class="n">install</span> <span class="n">nfs</span><span class="o">-</span><span class="n">client</span><span class="o">-</span><span class="n">provisioner</span> <span class="o">-</span><span class="n">n</span> <span class="n">nfs</span> \
-<span class="o">--</span><span class="nb">set</span> <span class="n">nfs</span><span class="o">.</span><span class="n">server</span><span class="o">=</span><span class="mf">192.168.1.60</span> \
+<span class="o">--</span><span class="nb">set</span> <span class="n">nfs</span><span class="o">.</span><span class="n">server</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.60</span> \
 <span class="o">--</span><span class="nb">set</span> <span class="n">nfs</span><span class="o">.</span><span class="n">path</span><span class="o">=/</span><span class="n">mysql57</span>  \
 <span class="o">--</span><span class="nb">set</span> <span class="n">storageClass</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="n">mysql</span><span class="o">-</span><span class="n">nfs</span><span class="p">,</span><span class="n">storageClass</span><span class="o">.</span><span class="n">reclaimPolicy</span><span class="o">=</span><span class="n">Retain</span> \
 <span class="o">--</span><span class="nb">set</span> <span class="n">storageClass</span><span class="o">.</span><span class="n">defaultClass</span><span class="o">=</span><span class="n">true</span> \

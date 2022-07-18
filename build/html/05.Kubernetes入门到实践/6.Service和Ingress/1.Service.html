@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Service &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -138,7 +137,7 @@
 </ul>
 </div>
 <section id="service">
-<h1><a class="toc-backref" href="#id12">Service</a><a class="headerlink" href="#service" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id12">Service</a><a class="headerlink" href="#service" title="Permalink to this headline">¶</a></h1>
 <p>在Kubernetes中，Service是充当基础内部负载均衡器的一种组件。</p>
 <p>Service会将相同功能的Pod在逻辑上组合到一起，一般会采用标签选择器进行组合，让它们表现得如同单个实体。</p>
 <p>Service与Pod</p>
@@ -188,7 +187,7 @@ Service具体路由到哪个Pod，其IP地址都保持稳定。通过Service，�
 <p><code class="docutils literal notranslate"><span class="pre">ClusterIP</span></code>、<code class="docutils literal notranslate"><span class="pre">NodePort</span></code>、<code class="docutils literal notranslate"><span class="pre">LoadBalancer</span></code>、<code class="docutils literal notranslate"><span class="pre">ExternalName</span></code>这4类Service。</p>
 <p>而ClusterIP类服务还可以分为<code class="docutils literal notranslate"><span class="pre">普通Service</span></code>和<code class="docutils literal notranslate"><span class="pre">无头Service</span></code>两类，所以总共分为5类。</p>
 <section id="id1">
-<h2><a class="toc-backref" href="#id13">1. 3个向外发布服务方式</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">1. 3个向外发布服务方式</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>3种向外发布的方式分别如下。</p>
 <ul class="simple">
 <li><p>ClusterIP-普通Service:这是默认方式，使用时可以不填写<code class="docutils literal notranslate"><span class="pre">spec.type</span></code>。在Kubernetes集群内部发布服务时，会为Service分配一个集群内部可以访问的固定虚拟IP（即ClusterIP）地址。集群中的机器（即Master和Node）以及集群中的Pod都可以访问这个IP地址。</p></li>
@@ -198,29 +197,29 @@ Service具体路由到哪个Pod，其IP地址都保持稳定。通过Service，�
 个“NodeIP:端口”上。这样，Kubernetes集群外部的机器就可以通过负载均衡器访问Service。</p></li>
 </ul>
 <p>定义模板文件，创建一个名为<code class="docutils literal notranslate"><span class="pre">exampledeployforservice.yml</span></code>的模板文件</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampledeployforservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforservice</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforservice</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pythonservice</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python:3.7</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;&lt;p&gt;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&lt;/p&gt;&quot;</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">index.html;</span><span class="nv"> </span><span class="s">python</span><span class="nv"> </span><span class="s">-m</span><span class="nv"> </span><span class="s">http.server</span><span class="nv"> </span><span class="s">80&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="w">          </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployforservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pythonservice</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python:3.7</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;&lt;p&gt;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&lt;/p&gt;&quot;</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">index.html;</span><span class="nv"> </span><span class="s">python</span><span class="nv"> </span><span class="s">-m</span><span class="nv"> </span><span class="s">http.server</span><span class="nv"> </span><span class="s">80&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http</span>
+          <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
 </pre></div>
 </div>
 <p>各个Pod的标签为“example:
@@ -246,22 +245,22 @@ exampledeployforservice-65cd75b4bb-vjkvs   <span class="m">1</span>/1     Runnin
 </div>
 <p>前面已经提过，因为Pod的IP地址不是固定的，而且直接访问Pod的IP地址也无法实现负载均衡，所以会以Service作为入口，提供稳定的IP地址及负载均衡功能，供集群内外使用。</p>
 <section id="clusterip">
-<h3><a class="toc-backref" href="#id14">1.1 通过ClusterIP发布</a><a class="headerlink" href="#clusterip" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">1.1 通过ClusterIP发布</a><a class="headerlink" href="#clusterip" title="Permalink to this headline">¶</a></h3>
 <section id="id2">
-<h4>普通Service<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h4>
+<h4>普通Service<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">exampleclusteripservice.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleclusteripservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforservice</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
-<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
-<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterIP</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleclusteripservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -329,7 +328,7 @@ Events:            &lt;none&gt;
 </div>
 </section>
 <section id="id3">
-<h4>Service访问及负载均衡原理<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h4>
+<h4>Service访问及负载均衡原理<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p>为什么在给这3个Pod设置了Service以后，就可以实现负载均衡了呢？在每个节点中都有一个叫作kube-proxy的组件，这个组件识别Service和Pod的动态变化，并将变化的地址信息写入本地的IPTables中。而IPTables使用NAT等技术将virtualIP的流量转至Endpoint。默认情况下，Kubernetes使用的是IPTables模式</p>
 <p><img alt="image2" src="../../_images/image-20220413114947962.png" /></p>
 <p>我们可以进入任意一台Kubernetes机器（Master或者Node），运行以下命令查看IPTables的配置</p>
@@ -349,23 +348,23 @@ Events:            &lt;none&gt;
 </section>
 </section>
 <section id="nodeport">
-<h3><a class="toc-backref" href="#id15">1.2 通过NodePort发布</a><a class="headerlink" href="#nodeport" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">1.2 通过NodePort发布</a><a class="headerlink" href="#nodeport" title="Permalink to this headline">¶</a></h3>
 <p>通过NodePort发布的方式基于通过ClusterIP发布的方式，先生成一个ClusterIP，然后将这个虚拟IP地址及端口映射到各个集群机器
 （即Master和Node）的指定端口上，这样，Kubernetes集群外部的机器就可以通过“NodeIP:端口”方式访问Service。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplenode-portservice.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenodeportservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforservice</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
-<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
-<span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
-<span class="w">    </span><span class="nt">nodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30001</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NodePort</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenodeportservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">ports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+    <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+    <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+    <span class="nt">nodePort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30001</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NodePort</span>
 </pre></div>
 </div>
 <p>除了更改type属性之外，这里还添加了nodePort:
@@ -389,7 +388,7 @@ examplenodeportservice   NodePort    <span class="m">10</span>.111.156.147   &lt
 <p><img alt="image3" src="../../_images/image-20220413152445119.png" /></p>
 </section>
 <section id="loadbalancer">
-<h3><a class="toc-backref" href="#id16">1.3 通过LoadBalancer发布</a><a class="headerlink" href="#loadbalancer" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">1.3 通过LoadBalancer发布</a><a class="headerlink" href="#loadbalancer" title="Permalink to this headline">¶</a></h3>
 <p>LoadBalancer方式基于ClusterIP方式和NodePort方式来创建服务，除此以外，还会申请使用外部负载均衡器，由负载均衡器映射到
 各个“NodeIP:端口”上。</p>
 <p>这样，Kubernetes集群外部的机器就可以通过负载均衡器访问Service。</p>
@@ -407,20 +406,20 @@ examplenodeportservice   NodePort    <span class="m">10</span>.111.156.147   &lt
       <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
       <span class="n">targetPort</span><span class="p">:</span> <span class="mi">9376</span>
       <span class="n">nodePort</span><span class="p">:</span> <span class="mi">30061</span>
-  <span class="n">clusterIP</span><span class="p">:</span> <span class="mf">10.0.171.12</span>
-  <span class="n">loadBalancerIP</span><span class="p">:</span> <span class="mf">78.11.42.19</span>
+  <span class="n">clusterIP</span><span class="p">:</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">171.12</span>
+  <span class="n">loadBalancerIP</span><span class="p">:</span> <span class="mf">78.11</span><span class="o">.</span><span class="mf">42.19</span>
   <span class="nb">type</span><span class="p">:</span> <span class="n">loadBalancer</span>
 <span class="n">status</span><span class="p">:</span>
   <span class="n">loadBalancer</span><span class="p">:</span>
     <span class="n">ingress</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">ip</span><span class="p">:</span> <span class="mf">146.147.12.155</span> <span class="c1">#这个是云服务商提供的负载IP</span>
+    <span class="o">-</span> <span class="n">ip</span><span class="p">:</span> <span class="mf">146.147</span><span class="o">.</span><span class="mf">12.155</span> <span class="c1">#这个是云服务商提供的负载IP</span>
 </pre></div>
 </div>
 <p>然而，Kubernetes没有为私有集群提供网络负载均衡器（类型为LoadBalancer的Service）的实现。</p>
 <p>如果你的Kubernetes集群没有在公有云的IaaS平台（GCP、AWS、Azure等）上运行，则LoadBalancer将在创建时无限期地处于“Pending”状态。</p>
 <p><strong>也就是说，只有公有云厂商的Kubernetes支持LoadBalancer。</strong></p>
 <section id="metallb-load-balancer">
-<h4>MetalLB实现 Load Balancer 负载均衡<a class="headerlink" href="#metallb-load-balancer" title="Permalink to this heading">¶</a></h4>
+<h4>MetalLB实现 Load Balancer 负载均衡<a class="headerlink" href="#metallb-load-balancer" title="Permalink to this headline">¶</a></h4>
 <p>我们使用的是MetalLB，它为不在公有云平台上运行的私有Kubernetes集群提供网络负载均衡器实现，从而有效地在任何集群中使用LoadBalancer
 Service。</p>
 <p>MetalLB官网：<a class="reference external" href="https://metallb.org/">https://metallb.org/</a></p>
@@ -470,19 +469,19 @@ $ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/man
 <p>然后，还需要创建一个配置文件发送给MetalLB，以提供对应的集群IP地址及相关协议配置。</p>
 <p><code class="docutils literal notranslate"><span class="pre">metallb-config.yaml</span></code></p>
 <p>编辑地址池，以把自己的集群地址配置进去。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metallb-system</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config</span><span class="w"></span>
-<span class="nt">data</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">config</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">    </span><span class="no">address-pools:</span><span class="w"></span>
-<span class="w">    </span><span class="no">- name: default</span><span class="w"></span>
-<span class="w">      </span><span class="no">protocol: layer2</span><span class="w"></span>
-<span class="w">      </span><span class="no">addresses:</span><span class="w"></span>
-<span class="w">      </span><span class="no">- 192.168.1.251-192.168.1.253</span><span class="w"></span>
-<span class="w">      </span><span class="no"># - 192.168.1.0/28</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metallb-system</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">config</span>
+<span class="nt">data</span><span class="p">:</span>
+  <span class="nt">config</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+    <span class="no">address-pools:</span>
+    <span class="no">- name: default</span>
+      <span class="no">protocol: layer2</span>
+      <span class="no">addresses:</span>
+      <span class="no">- 192.168.1.251-192.168.1.253</span>
+      <span class="no"># - 192.168.1.0/28</span>
 </pre></div>
 </div>
 <p>接下来，执行以下命令，让配置生效。</p>
@@ -492,18 +491,18 @@ $ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/man
 <p>此时，MetalLB的安装与配置就完成了。
 为了创建对应的Service，先执行以下命令。</p>
 <p><code class="docutils literal notranslate"><span class="pre">exampleloadbalancerservice.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleloadbalancerservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforservice</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
-<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
-<span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LoadBalancer</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleloadbalancerservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">ports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+    <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+    <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">LoadBalancer</span>
 </pre></div>
 </div>
 <p>通过模板创建Service</p>
@@ -539,7 +538,7 @@ kubernetes                   ClusterIP      <span class="m">10</span>.96.0.1    
 </div></blockquote>
 </section>
 <section id="openelb-load-balancer">
-<h4>OpenELB实现 Load Balancer 负载均衡<a class="headerlink" href="#openelb-load-balancer" title="Permalink to this heading">¶</a></h4>
+<h4>OpenELB实现 Load Balancer 负载均衡<a class="headerlink" href="#openelb-load-balancer" title="Permalink to this headline">¶</a></h4>
 <blockquote>
 <div><p>参考文献：</p>
 <p><a class="reference external" href="https://www.qikqiak.com/post/service-use-openelb/">https://www.qikqiak.com/post/service-use-openelb/</a></p>
@@ -548,7 +547,7 @@ kubernetes                   ClusterIP      <span class="m">10</span>.96.0.1    
 </section>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id17">2.2 个向内发布服务方式</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id17">2.2 个向内发布服务方式</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>2种向内发布的方式分别如下。</p>
 <ul class="simple">
 <li><p>ClusterIP-无头Service（headless
@@ -558,7 +557,7 @@ service）：这种方式不会分配ClusterIP地址，也不通过kube-proxy进
 <li><p>ExternalName：和上面提到的3种向外发布的方式不太一样，在那3种方式中都将Kubernetes集群内部的服务发布出去，而ExternalName则将外部服务引入进来，通过一定格式映射到Kubernetes集群，从而为集群内部提供服务。</p></li>
 </ul>
 <section id="id5">
-<h3><a class="toc-backref" href="#id18">2.1 通过无头Service</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">2.1 通过无头Service</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>无头Service（headless service）是一种特殊的Service类型。</p>
 <p><strong>通过无头Service发布，不会分配任何ClusterIP地址，也不通过kube-proxy进行反向代理和负载均衡。</strong></p>
 <p><em>无头Service是通过DNS提供稳定的网络ID来进行访问的，DNS会将无头Service的后端直接解析为Pod的IP地址列表，通过标签选择器将后端的Pod列表返回给调用的客户端。</em></p>
@@ -568,45 +567,45 @@ service）：这种方式不会分配ClusterIP地址，也不通过kube-proxy进
 IP地址，所以开发人员可以自己控制负载均衡策略，降低与Kubernetes
 系统的耦合性。</p>
 <p><code class="docutils literal notranslate"><span class="pre">exampledeployforservice.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampledeployforservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforservice</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforservice</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pythonservice</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python:3.7</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;&lt;p&gt;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&lt;/p&gt;&quot;</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">index.html;</span><span class="nv"> </span><span class="s">python</span><span class="nv"> </span><span class="s">-m</span><span class="nv"> </span><span class="s">http.server</span><span class="nv"> </span><span class="s">80&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="w">          </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployforservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pythonservice</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python:3.7</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;&lt;p&gt;The</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">$(hostname)&lt;/p&gt;&quot;</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">index.html;</span><span class="nv"> </span><span class="s">python</span><span class="nv"> </span><span class="s">-m</span><span class="nv"> </span><span class="s">http.server</span><span class="nv"> </span><span class="s">80&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http</span>
+          <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">exampleheadlessservice.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleheadlessservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleforservice</span><span class="w"></span>
-<span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
-<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
-<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterIP</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleheadlessservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleforservice</span>
+  <span class="nt">clusterIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">None</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
 </pre></div>
 </div>
 <p>和上一个示例不同的是，这里指定了一个属性<code class="docutils literal notranslate"><span class="pre">clusterIP:None</span></code>，它表示不分配任何虚拟IP地址。</p>
@@ -627,17 +626,17 @@ exampleheadlessservice   ClusterIP   None         &lt;none&gt;        <span clas
 <p>而Namespace没有在yml文件中指定，默认值为Default。</p>
 <p>为了访问这个地址，先创建一个测试用的Pod，用它来尝试访问Service。命令如下。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplepodforheadlessservice.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepodforheadlessservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testcontainer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker.io/appropriate/curl</span><span class="w"></span>
-<span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;test</span><span class="nv"> </span><span class="s">pod</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">headless</span><span class="nv"> </span><span class="s">service!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplepodforheadlessservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testcontainer</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.io/appropriate/curl</span>
+    <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;test</span><span class="nv"> </span><span class="s">pod</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">headless</span><span class="nv"> </span><span class="s">service!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>这个Pod并没有什么特别之处，其镜像为appropriate/curl。该Pod是一种工具箱，里面存放了一些测试网络和DNS使用的工具（例
@@ -675,18 +674,18 @@ Address 3: 10.0.36.243 10-0-36-243.exampleheadlessservice.default.svc.cluster.lo
 <p>这种方式更适用于由StatefulSet产生的有状态Pod。</p>
 </section>
 <section id="externalname">
-<h3><a class="toc-backref" href="#id19">2.2 通过ExternalName</a><a class="headerlink" href="#externalname" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">2.2 通过ExternalName</a><a class="headerlink" href="#externalname" title="Permalink to this headline">¶</a></h3>
 <p>向外发布方式都将Kubernetes集群内部的服务发布出去，而ExternalName恰恰相反，将外部服务引入进来，通过一定格式映射到Kubernetes集群，从而为集群内部提供服务。</p>
 <p>也就是说，ExternalName类型的Service没有选择器，也没有定义任何的端口和端点。</p>
 <p>相反，对于运行在集群外部的服务，通过返回外部服务别名这种方式来提供服务。</p>
 <p><code class="docutils literal notranslate"><span class="pre">exampleexternalnameservice.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleexternalnameservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExternalName</span><span class="w"></span>
-<span class="w">  </span><span class="nt">externalName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">www.baidu.com</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleexternalnameservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ExternalName</span>
+  <span class="nt">externalName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">www.baidu.com</span>
 </pre></div>
 </div>
 <p>ExternalName类型的Service所需要的属性很简单，只需要指定type，并通过ExternalName引入外部服务的地址即可，这里直接将百
@@ -727,10 +726,10 @@ Address <span class="m">2</span>: <span class="m">14</span>.215.177.38
 </section>
 </section>
 <section id="id6">
-<h2><a class="toc-backref" href="#id20">3. 服务发现</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id20">3. 服务发现</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>Kubernetes支持两种基本的服务发现模式—通过环境变量和通过DNS。通过这两种方式，可以在Pod中发现这些服务。</p>
 <section id="id7">
-<h3><a class="toc-backref" href="#id21">3.1 环境变量</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">3.1 环境变量</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>在配置的这些环境变量中，<code class="docutils literal notranslate"><span class="pre">{ServiceName}_SERVICE_HOST</span></code>和
 <code class="docutils literal notranslate"><span class="pre">{ServiceName}_</span> <span class="pre">SERVICE_PORT</span></code>格式的变量表示KubernetesService的环境变量（{ServiceName}全转换为大写，横线转换为下
 划线），而其他类型格式则是Docker Link形式的环境变量。</p>
@@ -748,7 +747,7 @@ Address <span class="m">2</span>: <span class="m">14</span>.215.177.38
 <p>除此以外，还要求Service和Pod在同一命名空间中，其他命名空间中的变量不会配置到Pod中。</p>
 </section>
 <section id="dns">
-<h3><a class="toc-backref" href="#id22">3.2 DNS</a><a class="headerlink" href="#dns" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">3.2 DNS</a><a class="headerlink" href="#dns" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes网络中常见四种通信方式</p>
 <ol class="arabic">
 <li><p>同一个pod的内部通信；</p></li>
@@ -777,7 +776,7 @@ Address <span class="m">2</span>: <span class="m">14</span>.215.177.38
 </ul>
 <p>对于普通Service和无头Service，DNS的解析会略有区别。</p>
 <section id="id8">
-<h4>1.无头Service<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h4>
+<h4>1.无头Service<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 <p>在解析DNS时，会直接将其解析为相关Pod的IP地址及Pod域名列表，以便客户端通过自己的规则动态地使用这些地址</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl exec -ti examplepodforheadlessservice -- /bin/sh
 / # nslookup exampleheadlessservice.default.svc.cluster.local
@@ -791,7 +790,7 @@ Address 3: 10.0.36.243 10-0-36-243.exampleheadlessservice.default.svc.cluster.lo
 </div>
 </section>
 <section id="service-1">
-<span id="id9"></span><h4>2.普通Service<a class="headerlink" href="#service-1" title="Permalink to this heading">¶</a></h4>
+<span id="id9"></span><h4>2.普通Service<a class="headerlink" href="#service-1" title="Permalink to this headline">¶</a></h4>
 <p>在解析DNS时会将其解析为Service的ClusterIP地址，不会直接获取Pod的各个地址.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f exampleclusteripservice.yml
 
@@ -814,9 +813,9 @@ Address 1: 10.109.135.25 exampleclusteripservice.default.svc.cluster.local
 </section>
 </section>
 <section id="id10">
-<h2><a class="toc-backref" href="#id23">4.其他配置方式</a><a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">4.其他配置方式</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <section id="id11">
-<h3><a class="toc-backref" href="#id24">4.1 未设置选择器的Service</a><a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">4.1 未设置选择器的Service</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p>Service是对Pod进行访问时最常用的抽象，还可以在以下情况下抽象其他类型的后端。</p>
 <ul class="simple">
 <li><p>如果希望在生产环境中使用外部数据库，但在测试环境中使用自己的数据库。</p></li>
@@ -825,15 +824,15 @@ Address 1: 10.109.135.25 exampleclusteripservice.default.svc.cluster.local
 </ul>
 <p>在这些情况下，都可以使用没有设置选择器的Service，并自定义Endpoint类型。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplenoselectorservice.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenoselectorservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
-<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
-<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenoselectorservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
 </pre></div>
 </div>
 <p>可以发现，这个Service里面没有关于选择器的配置，无法与Pod产生关联。</p>
@@ -877,15 +876,15 @@ NAME                                 READY   STATUS    RESTARTS   AGE   IP      
 exampledeployment-656c6d8f4c-lww4h   <span class="m">1</span>/1     Running   <span class="m">0</span>          75s   <span class="m">10</span>.0.36.160   gitee-k8s-w08   &lt;none&gt;           &lt;none&gt;
 </pre></div>
 </div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Endpoints</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplenoselectorservice</span><span class="w"></span>
-<span class="nt">subsets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">addresses</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.36.160</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Endpoints</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplenoselectorservice</span>
+<span class="nt">subsets</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">addresses</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">ip</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10.0.36.160</span>
+    <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
 </pre></div>
 </div>
 <p>这里的IP地址和port可以设置为Kubernetes集群内Pod的IP地址和端口，也可以是Node的IP地址和端口，甚至可以配置成外部集群或外
@@ -925,7 +924,7 @@ Endpoints:         <span class="m">10</span>.0.36.160:80
 </div>
 </section>
 <section id="ip">
-<h3><a class="toc-backref" href="#id25">4.2 配置外部IP地址</a><a class="headerlink" href="#ip" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">4.2 配置外部IP地址</a><a class="headerlink" href="#ip" title="Permalink to this headline">¶</a></h3>
 <p><strong>externalIPs 通过svc创建,在指定的node上监听端口</strong></p>
 <p>如果要让Kubernetes集群之外的机器访问集群内部的服务，另一种方式是配置外部IP地址。</p>
 <p>Kubernetes的Service会由externalIP地址发布出去，这样集群之外的机器就可以通过这个外部IP地址来访问Service。</p>
@@ -933,41 +932,41 @@ Endpoints:         <span class="m">10</span>.0.36.160:80
 Name）中。</p>
 <p>举例说明</p>
 <p><code class="docutils literal notranslate"><span class="pre">nginxdeployment.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampledeployment</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span><span class="w"></span>
-<span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80[</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampledeployment</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx:1.7.9</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80[</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">exampleexternalipservice.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleexternalipservice</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
-<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8081</span><span class="w"></span>
-<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w"></span>
-<span class="w">  </span><span class="nt">externalIPs</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.80</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exampleexternalipservice</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">example</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">deploymentfornginx</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8081</span>
+      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+  <span class="nt">externalIPs</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">192.168.1.80</span>
 </pre></div>
 </div>
 <p>这个Service其实就是简单的ClusterIP
@@ -1001,7 +1000,7 @@ Endpoints:         <span class="m">10</span>.0.36.190:80
 </section>
 </section>
 <section id="kubernets-pod">
-<h2><a class="toc-backref" href="#id26">5. kubernets Pod的四种网络模式</a><a class="headerlink" href="#kubernets-pod" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id26">5. kubernets Pod的四种网络模式</a><a class="headerlink" href="#kubernets-pod" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>参考文献：</p>
 <p><a class="reference external" href="https://www.cnblogs.com/iiiiher/p/8051947.html">https://www.cnblogs.com/iiiiher/p/8051947.html</a></p>

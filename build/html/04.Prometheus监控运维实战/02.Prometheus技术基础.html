@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prometheus技术基础 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -130,16 +129,16 @@
 </ul>
 </div>
 <section id="prometheus">
-<h1><a class="toc-backref" href="#id10">Prometheus技术基础</a><a class="headerlink" href="#prometheus" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id10">Prometheus技术基础</a><a class="headerlink" href="#prometheus" title="Permalink to this headline">¶</a></h1>
 <section id="exporter">
-<h2><a class="toc-backref" href="#id11">1.Exporter</a><a class="headerlink" href="#exporter" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">1.Exporter</a><a class="headerlink" href="#exporter" title="Permalink to this headline">¶</a></h2>
 <p>Prometheus核心组件中，Exporter是重要的组成部分，在实际中监控样本数据的收集都是由Exporter完成的，Prometheus服务器只需要定时从这些Exporter提供的HTTP服务获取监控数据即可。</p>
 <p>本章将对Exporter的类型以及文本数据格式进行说明，讨论如何从官方的Exporter列表获取常用的Exporter，比如用于监控基础设施中服务器性能的node_exporter、wmi_exporter，用于对数据库监控的mysqld_exporter和redis_exporter等。</p>
 <p>并对这些获取特定目标监控样本数据的Exporter软件包进行安装集成，最终可以很直观地通过Prometheus
 Web UI浏览采集到的各类监控数据。</p>
 </section>
 <section id="id1">
-<h2><a class="toc-backref" href="#id12">2.Exporter类型</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">2.Exporter类型</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>通常来说可以将Exporter分为两类：</p>
 <ul class="simple">
 <li><p>直接采集型。这类Exporter直接内置了相应的应用程序，用于向Prometheus直接提供Target数据支持。这样设计的好处是，可以更好地监控各自系统的内部运行状态，同时也适合更多自定义监控指标的项目实施。例如cAdvisor、Kubernetes等，它们均内置了用于向Prometheus提供监控数据的端点。</p></li>
@@ -148,7 +147,7 @@ Library编写该监控目标的监控采集程序，用户可以将该程序独�
 exporter，还有数据库或网站HTTP应用类等Exporter。</p></li>
 </ul>
 <section id="id2">
-<h3><a class="toc-backref" href="#id13">2.1 文本数据格式</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">2.1 文本数据格式</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Prometheus的所有流程都需要使用基于文本的格式。现在我们可以使用浏览器访问已经部署完成的metrics，可以从Prometheus
 Web UI提供的页面http://192.168.24.17:9090/metrics来获取信息.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># HELP go_gc_duration_seconds A summary of the GC invocation durations.</span>
@@ -191,7 +190,7 @@ Web UI提供的页面http://192.168.24.17:9090/metrics来获取信息.</p>
 </section>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id14">2.2 获取Exporter</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">2.2 获取Exporter</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>Prometheus Exporter社区很活跃，提供了支持120+常见开源组件的Exporter，</p>
 <p>一些比较有名的技术厂商都专门编写对应的Prometheus
 Exporter，例如，Oracle编写的Weblogic Exporter，IBM编写的IBM MQ
@@ -205,7 +204,7 @@ exporter（official）。在这些Exporter的名称末尾都标示了（official
 GitHub官网https://github.com/prometheus上获取对应的Exporter最新版本。</p>
 <p>我们将以下演示环境中用到的应用信息进行汇总，方便大家后续操作中查看</p>
 <section id="id4">
-<h3><a class="toc-backref" href="#id15">2.2.1 测试主机列表及其软件</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">2.2.1 测试主机列表及其软件</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 32%" />
@@ -265,13 +264,13 @@ GitHub官网https://github.com/prometheus上获取对应的Exporter最新版本�
 </table>
 </section>
 <section id="id5">
-<h3><a class="toc-backref" href="#id16">2.2.2 软件下载清单</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">2.2.2 软件下载清单</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>自行百度下载</p>
 </section>
 <section id="id6">
-<h3><a class="toc-backref" href="#id17">2.2.3 主机监控</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">2.2.3 主机监控</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <section id="linux">
-<h4>1 Linux主机监控<a class="headerlink" href="#linux" title="Permalink to this heading">¶</a></h4>
+<h4>1 Linux主机监控<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h4>
 <p><strong>1.下载部署</strong></p>
 <p>在安装之前，首先在官方下载页面https://prometheus.io/download/找到Nodeexporter列表，下载最新版本中特定平台的二进制文件。或者直接在官方的Prometheus
 GitHub下载，在https://github.com/prometheus/node_exporter/releases下载指定的Node
@@ -349,7 +348,7 @@ root     <span class="m">25878</span>  <span class="m">0</span>.0  <span class="
 <p>注意，这里的YAML语法空格缩进；prometheus.yml配置文件中的prometheus和node_exporter均部署不同的主机上。</p>
 <p>进入Targets页面后，可以在列表中看到刚才配置好的node_exporter的状态为“UP”，说明Prometheus最后一次从Node
 exporter中采集数据是成功的，此刻，被监控的服务器主机工作运行状态是正常的。</p>
-<p><img alt="image0" src="../_images/prometheus-004.png" /></p>
+<img alt="../_images/prometheus-004.png" src="../_images/prometheus-004.png" />
 <p>当然，我们也可以使用浏览器访问Prometheus web
 UI提供的graph页面地址http://192.168.1.37:9090/graph，在搜索框中输入“up”进行搜索，或者直接在“Execute”按钮后的选项框中，点击下拉按钮选择最末尾的“up”，再点击“Execute”进行搜索.</p>
 <p><strong>3.metrics查看</strong></p>
@@ -412,7 +411,7 @@ systemctl status node_exporter
 </div>
 </section>
 <section id="windows">
-<h4>2 Windows主机监控<a class="headerlink" href="#windows" title="Permalink to this heading">¶</a></h4>
+<h4>2 Windows主机监控<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h4>
 <p>下载页面地址：<a class="reference external" href="https://github.com/martinlindhe/wmi_exporter/releases">https://github.com/martinlindhe/wmi_exporter/releases</a>。选择当前最新版本：wmi_exporter-0.5.0-amd64.msi下载到被监控主机。直接双击文件进行快速安装即可。wmi_exporter会自动安装到C:_exporter目录下，安装程序将WMI
 Exporter设置为Windows服务，并在Windows防火墙中创建入站规则“WMI
 Exporter（HTTP
@@ -422,9 +421,9 @@ Exporter（HTTP
 </section>
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id18">2.2.4 数据库监控</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">2.2.4 数据库监控</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <section id="mysql-server-exporter">
-<h4>1 MySQL Server exporter<a class="headerlink" href="#mysql-server-exporter" title="Permalink to this heading">¶</a></h4>
+<h4>1 MySQL Server exporter<a class="headerlink" href="#mysql-server-exporter" title="Permalink to this headline">¶</a></h4>
 <p><strong>1.软件下载与部署</strong></p>
 <p>在安装之前，可以在官方下载页面https://prometheus.io/download/中找到mysqld_exporter列表，下载最新版本中特定平台的二进制文件。同样也可以直接在官方的Prometheus
 GitHub下载页面https://github.com/prometheus/mysqld_exporter/releases中下载指定的mysqld_exporter版本所对应特定平台的二进制文件。</p>
@@ -476,7 +475,7 @@ CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设
 <span class="n">user</span><span class="o">=</span><span class="n">xxxx</span>
 <span class="n">password</span><span class="o">=</span><span class="n">xxxx</span>
 <span class="n">port</span><span class="o">=</span><span class="mi">3306</span>
-<span class="n">host</span><span class="o">=</span><span class="mf">127.0.0.1</span>
+<span class="n">host</span><span class="o">=</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>
 </pre></div>
 </div>
 <p>我们选择使用第二种方法，在与“mysqld_exports”文件同目录下创建“.mysqld_exporter.cnf”文件，并添加如下内容</p>
@@ -485,7 +484,7 @@ CLIENT授权，且为了避免有些高负载MySQL服务器过载，为用户设
 <span class="n">user</span><span class="o">=</span><span class="n">mysqld_exporter</span>
 <span class="n">password</span><span class="o">=</span><span class="n">OSChina</span><span class="o">@</span><span class="mi">2021</span>
 <span class="n">port</span><span class="o">=</span><span class="mi">3306</span>
-<span class="n">host</span><span class="o">=</span><span class="mf">192.168.1.61</span>
+<span class="n">host</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.61</span>
 </pre></div>
 </div>
 <p>查看目录结构</p>
@@ -707,7 +706,7 @@ server集成在Windows操作系统且64位版本时，可以下载对应的软�
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12101494.html">promethus监控RDS</a></p>
 </section>
 <section id="redis-exporter">
-<h4>2 Redis exporter 单节点<a class="headerlink" href="#redis-exporter" title="Permalink to this heading">¶</a></h4>
+<h4>2 Redis exporter 单节点<a class="headerlink" href="#redis-exporter" title="Permalink to this headline">¶</a></h4>
 <p><strong>1.软件下载与部署</strong></p>
 <p>1）下载redis_exporter。</p>
 <p>下载地址为https://github.com/oliver006/redis_exporter/releases。选择当时最新版本redis_exporter-v0.23.0.linux-amd64.tar.gz，对Redis
@@ -784,19 +783,19 @@ UI提供的内容，可以看到在Targets页面列表中已经新增了redis_ex
 <p>redis_exporter 在 Grafana 上为我们提供好了 Dashboard
 模板：<a class="reference external" href="http://www.eryajf.net/go?url=https://grafana.com/dashboards/763">https://grafana.com/dashboards/763</a></p>
 <p>下载后在 Grafana 中导入 json 模板就可以看到官方这样的示例截图啦：</p>
-<p><img alt="image1" src="../_images/prometheus_redis202101.png" /></p>
+<img alt="../_images/prometheus_redis202101.png" src="../_images/prometheus_redis202101.png" />
 <p>参考文献：</p>
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12101496.html">https://www.cnblogs.com/xiao987334176/p/12101496.html</a></p>
 </section>
 <section id="redis-exporterredis">
-<h4>3. Redis exporter监控redis集群<a class="headerlink" href="#redis-exporterredis" title="Permalink to this heading">¶</a></h4>
+<h4>3. Redis exporter监控redis集群<a class="headerlink" href="#redis-exporterredis" title="Permalink to this headline">¶</a></h4>
 <p>参考文献：</p>
 <p><a class="reference external" href="https://www.cnblogs.com/fsckzy/p/12053604.html">https://www.cnblogs.com/fsckzy/p/12053604.html</a></p>
 <p><a class="reference external" href="https://www.cnblogs.com/caoweixiong/p/12736384.html">https://www.cnblogs.com/caoweixiong/p/12736384.html</a></p>
 </section>
 </section>
 <section id="nginx">
-<h3><a class="toc-backref" href="#id19">2.2.5 Nginx监控</a><a class="headerlink" href="#nginx" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">2.2.5 Nginx监控</a><a class="headerlink" href="#nginx" title="Permalink to this headline">¶</a></h3>
 <p>在Prometheus官方文档中提供了2个Nginx使用的第三方Exporter：Nginxmetric
 library和nginx-vts-exporter。这里我们使用nginx-vts-exporter对已经安装好的Nginx服务进行监控数据采集。</p>
 <p>在安装nginx-vts-exporter前，如果你正在安装Nginx服务，此时，需要安装支持第三方的nginx
@@ -827,7 +826,7 @@ git://github.com/vozlt/nginx-module-vts.git。若没有加载nginx-module-vts模
 </pre></div>
 </div>
 <p>正确添加后，重新加载Nginx配置文件使配置生效，通过浏览器访问/status，可以看到Nginx模块nginx-module-vts已经开始正常运行。</p>
-<p><img alt="image2" src="../_images/prometheus_vts-nginx01.png" /></p>
+<img alt="../_images/prometheus_vts-nginx01.png" src="../_images/prometheus_vts-nginx01.png" />
 <p><strong>1.软件下载与部署</strong></p>
 <p>1）下载nginx-vts-exporter。</p>
 <p>下载页面地址为https://github.com/hnlq715/nginx-vts-exporter/releases。选择当时最新版本nginx-vts-exporter-0.10.3.linux-amd64.tar.gz，支持nginx-1.4..x版本和nginx-1.6.x以上版本。</p>
@@ -867,7 +866,7 @@ git://github.com/vozlt/nginx-module-vts.git。若没有加载nginx-module-vts模
 <p>配置完成后，仍然需要我们重新启动Prometheus或动态热加载配置文件。现在，可以在浏览器中输入Prometheus示例页面地址http://192.168.24.17:9090，访问Prometheus
 Web
 UI提供的页面内容，在Targets页面列表中已经新增了nginx-vts-exporter显示项，且nginx-vts-exporter状态为“UP”。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
 </pre></div>
 </div>
 <p>参考文献：</p>
@@ -875,7 +874,7 @@ UI提供的页面内容，在Targets页面列表中已经新增了nginx-vts-expo
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/11180652.html">promethus监控nginx</a></p>
 </section>
 <section id="id8">
-<h3><a class="toc-backref" href="#id20">2.2.6 Prometheus之黑盒监控</a><a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">2.2.6 Prometheus之黑盒监控</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <p>Exporter的使用可以称为“白盒监控”，即需要把对应的Exporter程序安装到被监控的目标主机上，从而实现对主机各种资源及其状态的数据采集工作。但是由于某些情况下操作技术或其他原因，不是所有的Exporter都能部署到被监控的主机环境中，最典型的例子是监控全国网络质量的稳定性，通常的方法是使用ping操作，对选取的节点进行ICMP测试，此时不可能在他人应用环境中部署相关的Exporter程序。</p>
 <p>针对这样的应用的场景，Prometheus社区提供了黑盒解决方案，Blackbox
 Exporter无须安装在被监控的目标环境中，用户只需要将其安装在与Prometheus和被监控目标互通的环境中，通过HTTP、HTTPS、DNS、TCP、ICMP等方式对网络进行探测监控，还可以探测SSL证书过期时间。</p>
@@ -886,10 +885,10 @@ GitHub下载页面https://github.com/prometheus/blackbox_exporter/releases中下
 <p><strong>2.软件安装与部署</strong></p>
 <p>1）官网下载blackbox_exporter</p>
 <p>2）解压缩软件包到指定的安装目录。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="n">blackbox_exporter</span><span class="o">-</span><span class="mf">0.14.0</span><span class="o">.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>  <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="n">blackbox_exporter</span><span class="o">-</span><span class="mf">0.14</span><span class="o">.</span><span class="mf">0.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>  <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span>
 
 <span class="n">cd</span> <span class="o">/</span><span class="n">data</span>
-<span class="n">ln</span> <span class="o">-</span><span class="n">sv</span> <span class="n">blackbox_exporter</span><span class="o">-</span><span class="mf">0.14.0</span><span class="o">.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span> <span class="n">blackbox_exporter</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">sv</span> <span class="n">blackbox_exporter</span><span class="o">-</span><span class="mf">0.14</span><span class="o">.</span><span class="mf">0.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span> <span class="n">blackbox_exporter</span>
 </pre></div>
 </div>
 <p>3）添加blackbox_exporter为系统服务开机启动。同样，为了维护方便，将blackbox_exporter添加为系统服务且开机自启动。开始创建系统服务启动配置文件blackbox_exporter.service：</p>
@@ -924,7 +923,7 @@ root      1670  0.0  0.0 112808   972 pts/1    S+   01:19   0:00 grep --color=au
 </pre></div>
 </div>
 <p>其中配置文件直接使用了默认的blackbox.yml文件，blackbox_exporter正常启动后，可以查看到服务状态为Active：active（running），并且开启默认端口9115进行监听。现在使用浏览器访问示例地址http://192.168.1.37:9115/，</p>
-<p><img alt="image3" src="../_images/prometheus_black_exporter001.png" /></p>
+<img alt="../_images/prometheus_black_exporter001.png" src="../_images/prometheus_black_exporter001.png" />
 <p>Blackbox
 Exporter控制台包括允许监控自身的指标，可以点击“Metics”链接，如图中示例，访问地址http://192.168.1.37:9115/metrics可进行查看。控制台还包含最近执行的探测列表，它们的状态以及显示发生的事件的调试日志，这些对于调试探测很有用。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># HELP blackbox_exporter_build_info A metric with a constant &#39;1&#39; value labeled by version, revision, branch, and goversion from which blackbox_exporter was built.</span>
@@ -1031,7 +1030,7 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
 </pre></div>
 </div>
 <p>配置完成后通过重启BlackboxExporter服务或热加载方式：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
 </pre></div>
 </div>
 <p>使得配置文件生效。</p>
@@ -1043,7 +1042,7 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
     <span class="n">module</span><span class="p">:</span> <span class="p">[</span><span class="n">http_2xx</span><span class="p">]</span>
   <span class="n">static_configs</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">targets</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">www</span><span class="mf">.12306</span><span class="o">.</span><span class="n">cn</span>
+      <span class="o">-</span> <span class="n">www</span><span class="o">.</span><span class="mf">12306.</span><span class="n">cn</span>
       <span class="o">-</span> <span class="n">www</span><span class="o">.</span><span class="n">baidu</span><span class="o">.</span><span class="n">com</span>
   <span class="n">relabel_configs</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="n">__address__</span><span class="p">]</span>
@@ -1051,7 +1050,7 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
     <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="n">__param_target</span><span class="p">]</span>
       <span class="n">target_label</span><span class="p">:</span> <span class="n">instance</span>
     <span class="o">-</span> <span class="n">target_label</span><span class="p">:</span> <span class="n">__address__</span>
-      <span class="n">replacement</span><span class="p">:</span> <span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9115</span>
+      <span class="n">replacement</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9115</span>
 </pre></div>
 </div>
 <p>通过命令curl模拟http请求，可以看到输出的Metrics信息</p>
@@ -1080,7 +1079,7 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
 </div>
 <p>URL地址中使用的探针是通过其中的module参数来指定的，而target参数用来指定探测目标，探针所探测的结果通过Metrics的形式返回。从返回的样本中，用户可以获取站点的DNS解析耗时、响应时间、响应状态码、probe_http_ssl指示最终重定向是否使用SSL和指标probe_success为1的成功状态等相关监控指标。</p>
 <p>我们可以使用浏览器访问示例地址http://192.168.1.37:9090/targets</p>
-<p><img alt="image4" src="../_images/prometheus-block-exporter002.png" /></p>
+<img alt="../_images/prometheus-block-exporter002.png" src="../_images/prometheus-block-exporter002.png" />
 <p>如监控目标过多，prometheus.yml文件配置中的targets指定被探测目标地址时，就会使得配置文件过于“臃肿”。现在我们使用“file_sd_configs”重新对prometheus.yml进行配置，操作如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">PromStack</span><span class="o">/</span><span class="n">prometheus</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">probes</span> <span class="o">-</span><span class="n">p</span>
 <span class="n">vim</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">PromStack</span><span class="o">/</span><span class="n">prometheus</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">probes</span><span class="o">/</span><span class="n">http_probes</span><span class="o">.</span><span class="n">json</span>
@@ -1112,27 +1111,27 @@ Server的配置文件中声明用对应的模块去探测相应的targets。默�
     <span class="o">-</span> <span class="n">source_labels</span><span class="p">:</span> <span class="p">[</span><span class="n">__param_target</span><span class="p">]</span>
       <span class="n">target_label</span><span class="p">:</span> <span class="n">instance</span>
     <span class="o">-</span> <span class="n">target_label</span><span class="p">:</span> <span class="n">__address__</span>
-      <span class="n">replacement</span><span class="p">:</span> <span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9115</span>
+      <span class="n">replacement</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9115</span>
 </pre></div>
 </div>
 <p>热加载使配置文件生效</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
 </pre></div>
 </div>
 <p>同样，使用浏览器访问http://192.168.1.37:9090/targets，可以查看被探测的目标的target实例</p>
-<p><img alt="image5" src="../_images/prometheus-black_exporter003.png" /></p>
+<img alt="../_images/prometheus-black_exporter003.png" src="../_images/prometheus-black_exporter003.png" />
 <p>在blackbox.yml配置文件中，http_2xx监测模块对http探测类型进行定义，除以上定义内容外，还可以使用headers定义相关的请求头信息，使用body定义请求内容，针对HTTPS类型的服务可以对证书进行自定义设置，有兴趣的读者可以访问官方提供的配置参考，自己进行相关配置，参考地址https://github.com/prometheus/blackbox_exporter/blob/master/example.yml。</p>
 <p>对于Blackbox
 Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监控的操作过程都与HTTP探测流程一样，我们这里不一一进行演示，实际环境中有需要的读者可以访问https://www.robustperception.io/tag/blackbox_exporter，选择对应的模块内容，再结合官网提供的配置参考进行实际操作。</p>
 <p><strong>3. grafana中加入blackbox_exporter监控数据</strong></p>
 <p>此模板为9965号模板，数据源选择Prometheus 模板下载地址
 <a class="reference external" href="https://grafana.com/grafana/dashboards/9965">https://grafana.com/grafana/dashboards/9965</a></p>
-<p><img alt="image6" src="../_images/prometheus-block-exporter004.png" /></p>
+<img alt="../_images/prometheus-block-exporter004.png" src="../_images/prometheus-block-exporter004.png" />
 <p>参考文献：</p>
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/12022482.html">https://www.cnblogs.com/xiao987334176/p/12022482.html</a></p>
 </section>
 <section id="docker">
-<h3><a class="toc-backref" href="#id21">2.2.7 Docker监控</a><a class="headerlink" href="#docker" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">2.2.7 Docker监控</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h3>
 <p><strong>监控一个容器服务(``常用的监控指标有: 内存，CPU,硬盘，网络，状态``)</strong></p>
 <p>cAdvisor (Container Advisor)
 用于收集正在允许的容器资源使用和性能信息。相当于zabbix-agent一样提供一个数据采集的接口</p>
@@ -1167,7 +1166,7 @@ Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监
 </pre></div>
 </div>
 <p>热加载使配置文件生效</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.37</span><span class="p">:</span><span class="mi">9090</span><span class="o">/-/</span><span class="n">reload</span>
 </pre></div>
 </div>
 <p><a class="reference external" href="http://192.168.1.37:9090/targets">http://192.168.1.37:9090/targets</a> 可以看到监控指标说明获取数据成功</p>
@@ -1176,19 +1175,19 @@ Exporter，其他HTTPS、DNS、TCP、ICMP、SSH等方式对网络进行探测监
 </pre></div>
 </div>
 <p>使用193模板即可</p>
-<p><img alt="image7" src="../_images/prometheus_docker_monitor01.png" /></p>
+<img alt="../_images/prometheus_docker_monitor01.png" src="../_images/prometheus_docker_monitor01.png" />
 <p>但是这个模板，无法选择根据主机选择。推荐另外一个模板，它是可以选择主机的。</p>
 <p><a class="reference external" href="https://grafana.com/grafana/dashboards/10566">https://grafana.com/grafana/dashboards/10566</a></p>
 </section>
 <section id="kubernets">
-<h3><a class="toc-backref" href="#id22">2.2.8 kubernets监控</a><a class="headerlink" href="#kubernets" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">2.2.8 kubernets监控</a><a class="headerlink" href="#kubernets" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="http://www.mydlq.club/article/112/">http://www.mydlq.club/article/112/</a></p>
 <p><a class="reference external" href="https://grafana.com/grafana/dashboards/8919">https://grafana.com/grafana/dashboards/8919</a></p>
 <p><a class="reference external" href="https://grafana.com/grafana/dashboards/16098">https://grafana.com/grafana/dashboards/16098</a></p>
 </section>
 </section>
 <section id="id9">
-<h2><a class="toc-backref" href="#id23">本章小结</a><a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">本章小结</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <p>Prometheus监控环境中，具有更好的跨平台和可读性的基于文本的数据格式。</p>
 <ul class="simple">
 <li><p>Node Exporter对Linux主机进行数据监控采</p></li>

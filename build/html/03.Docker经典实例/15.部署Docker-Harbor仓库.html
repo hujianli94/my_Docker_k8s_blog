@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>部署Docker-Harbor仓库 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -151,16 +150,16 @@
 </ul>
 </div>
 <section id="docker-harbor">
-<h1><a class="toc-backref" href="#id13">部署Docker-Harbor仓库</a><a class="headerlink" href="#docker-harbor" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id13">部署Docker-Harbor仓库</a><a class="headerlink" href="#docker-harbor" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
-<h2><a class="toc-backref" href="#id14">一、介绍</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">一、介绍</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
 <li><p>Harbor，是一个英文单词，意思是港湾，港湾是干什么的呢，就是停放货物的，而货物呢，是装在集装箱中的，说到集装箱，就不得不提到Docker容器，因为docker容器的技术正是借鉴了集装箱的原理。所以，Harbor正是一个用于存储Docker镜像的企业级Registry服务。</p></li>
 <li><p>Registry是Dcoker官方的一个私有仓库镜像，可以将本地的镜像打标签进行标记然后push到以Registry起的容器的私有仓库中。企业可以根据自己的需求，使用Dokcerfile生成自己的镜像，并推到私有仓库中，这样可以大大提高拉取镜像的效率。</p></li>
 </ol>
 </section>
 <section id="harbor">
-<h2><a class="toc-backref" href="#id15">二、Harbor核心组件解释</a><a class="headerlink" href="#harbor" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">二、Harbor核心组件解释</a><a class="headerlink" href="#harbor" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><strong>Proxy</strong>：他是一个nginx的前端代理，代理Harbor的registry,UI,
 token等服务。</p></li>
@@ -175,7 +174,7 @@ pull镜像然后push到另一个registry，并记录job_log。</p></li>
 </ul>
 </section>
 <section id="harborregistry">
-<h2><a class="toc-backref" href="#id16">三：Harbor和Registry的比较</a><a class="headerlink" href="#harborregistry" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">三：Harbor和Registry的比较</a><a class="headerlink" href="#harborregistry" title="Permalink to this headline">¶</a></h2>
 <p>Harbor和Registry都是Docker的镜像仓库，但是Harbor作为更多企业的选择，是因为相比较于Regisrty来说，它具有很多的优势。</p>
 <p>1.提供分层传输机制，优化网络传输
 Docker镜像是是分层的，而如果每次传输都使用全量文件(所以用FTP的方式并不适合)，显然不经济。必须提供识别分层传输的机制，以层的UUID为标识，确定传输的对象。</p>
@@ -188,9 +187,9 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 <p>5.Harbor提供了基于角色的访问控制机制，并通过项目来对镜像进行组织和访问权限的控制。kubernetes中通过namespace来对资源进行隔离，在企业级应用场景中，通过将两者进行结合可以有效将kubernetes使用的镜像资源进行管理和访问控制，增强镜像使用的安全性。尤其是在多租户场景下，可以通过租户、namespace和项目相结合的方式来实现对多租户镜像资源的管理和访问控制。</p>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id17">四：Harbor简单部署</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id17">四：Harbor简单部署</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <section id="id3">
-<h3><a class="toc-backref" href="#id18">官方最小配置</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">官方最小配置</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>2个cpu</p></li>
 <li><p>4g内存</p></li>
@@ -198,7 +197,7 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 </ul>
 </section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id19">安装前配置</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">安装前配置</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>在真正安装之前，我们还要安装下面这几个组件</p>
 <ul class="simple">
 <li><p>docker</p></li>
@@ -208,7 +207,7 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 </ul>
 </section>
 <section id="docker">
-<h3><a class="toc-backref" href="#id20">安装docker</a><a class="headerlink" href="#docker" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">安装docker</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h3>
 <p>更新apt源,并添加https支持</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">apt</span><span class="o">-</span><span class="n">transport</span><span class="o">-</span><span class="n">https</span> <span class="n">ca</span><span class="o">-</span><span class="n">certificates</span> <span class="n">curl</span> <span class="n">software</span><span class="o">-</span><span class="n">properties</span><span class="o">-</span><span class="n">common</span> <span class="o">-</span><span class="n">y</span>
 </pre></div>
@@ -224,12 +223,12 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 <p>安装docker-ce</p>
 <p>目前最新版本是19.03.1</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">docker</span><span class="o">-</span><span class="n">ce</span><span class="o">=</span><span class="mi">5</span><span class="p">:</span><span class="mf">19.03.1</span><span class="o">~</span><span class="mi">3</span><span class="o">-</span><span class="mi">0</span><span class="o">~</span><span class="n">ubuntu</span><span class="o">-</span><span class="n">xenial</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">docker</span><span class="o">-</span><span class="n">ce</span><span class="o">=</span><span class="mi">5</span><span class="p">:</span><span class="mf">19.03</span><span class="o">.</span><span class="mi">1</span><span class="o">~</span><span class="mi">3</span><span class="o">-</span><span class="mi">0</span><span class="o">~</span><span class="n">ubuntu</span><span class="o">-</span><span class="n">xenial</span>
 </pre></div>
 </div>
 </section>
 <section id="docker-compose">
-<h3><a class="toc-backref" href="#id21">安装docker-compose</a><a class="headerlink" href="#docker-compose" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">安装docker-compose</a><a class="headerlink" href="#docker-compose" title="Permalink to this headline">¶</a></h3>
 <p>参考官方链接：<a class="reference external" href="https://docs.docker.com/compose/install/">https://docs.docker.com/compose/install/</a></p>
 <p>运行此命令下载docker compose的当前稳定版本：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="s2">&quot;https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)&quot;</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span>
@@ -241,17 +240,17 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 </div>
 <p>由于ubuntu 16.04，默认已经有了python3，openssl也已经安装好了。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="nd">@ubuntu</span><span class="p">:</span><span class="o">~</span><span class="c1"># dpkg -l |grep openssl</span>
-<span class="n">ii</span>  <span class="n">libgnutls</span><span class="o">-</span><span class="n">openssl27</span><span class="p">:</span><span class="n">amd64</span>           <span class="mf">3.4.10</span><span class="o">-</span><span class="mi">4</span><span class="n">ubuntu1</span><span class="mf">.4</span>                          <span class="n">amd64</span>        <span class="n">GNU</span> <span class="n">TLS</span> <span class="n">library</span> <span class="o">-</span> <span class="n">OpenSSL</span> <span class="n">wrapper</span>
-<span class="n">ii</span>  <span class="n">openssl</span>                             <span class="mf">1.0.2</span><span class="n">g</span><span class="o">-</span><span class="mi">1</span><span class="n">ubuntu4</span><span class="mf">.10</span>                         <span class="n">amd64</span>        <span class="n">Secure</span> <span class="n">Sockets</span> <span class="n">Layer</span> <span class="n">too</span>
+<span class="n">ii</span>  <span class="n">libgnutls</span><span class="o">-</span><span class="n">openssl27</span><span class="p">:</span><span class="n">amd64</span>           <span class="mf">3.4</span><span class="o">.</span><span class="mi">10</span><span class="o">-</span><span class="mi">4</span><span class="n">ubuntu1</span><span class="o">.</span><span class="mi">4</span>                          <span class="n">amd64</span>        <span class="n">GNU</span> <span class="n">TLS</span> <span class="n">library</span> <span class="o">-</span> <span class="n">OpenSSL</span> <span class="n">wrapper</span>
+<span class="n">ii</span>  <span class="n">openssl</span>                             <span class="mf">1.0</span><span class="o">.</span><span class="mi">2</span><span class="n">g</span><span class="o">-</span><span class="mi">1</span><span class="n">ubuntu4</span><span class="o">.</span><span class="mi">10</span>                         <span class="n">amd64</span>        <span class="n">Secure</span> <span class="n">Sockets</span> <span class="n">Layer</span> <span class="n">too</span>
 </pre></div>
 </div>
 </section>
 <section id="id5">
-<h3><a class="toc-backref" href="#id22">下载Harbor离线包</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">下载Harbor离线包</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="https://github.com/vmware/harbor/releases">https://github.com/vmware/harbor/releases</a> 安装有两种方式，一种是off-line
 ，一种是on-line，即离线和在线安装，离线安装需要下载的安装包较大，在线安装下载的安装包很小，课题根据自己的情况选择，我选择的是1.8.1版本</p>
 <p>下载在线安装包</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">storage</span><span class="o">.</span><span class="n">googleapis</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">harbor</span><span class="o">-</span><span class="n">releases</span><span class="o">/</span><span class="n">release</span><span class="o">-</span><span class="mf">1.8.0</span><span class="o">/</span><span class="n">harbor</span><span class="o">-</span><span class="n">online</span><span class="o">-</span><span class="n">installer</span><span class="o">-</span><span class="n">v1</span><span class="mf">.8.1</span><span class="o">.</span><span class="n">tgz</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">storage</span><span class="o">.</span><span class="n">googleapis</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">harbor</span><span class="o">-</span><span class="n">releases</span><span class="o">/</span><span class="n">release</span><span class="o">-</span><span class="mf">1.8</span><span class="o">.</span><span class="mi">0</span><span class="o">/</span><span class="n">harbor</span><span class="o">-</span><span class="n">online</span><span class="o">-</span><span class="n">installer</span><span class="o">-</span><span class="n">v1</span><span class="o">.</span><span class="mf">8.1</span><span class="o">.</span><span class="n">tgz</span>
 </pre></div>
 </div>
 <p>如果无法访问google，我已经上传到百度网盘了，可自行下载</p>
@@ -259,9 +258,9 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 <p>提取码：<code class="docutils literal notranslate"><span class="pre">xsc0</span></code></p>
 </section>
 <section id="id6">
-<h3><a class="toc-backref" href="#id23">安装Harbor</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">安装Harbor</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>解压安装包</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="n">zxvf</span> <span class="n">harbor</span><span class="o">-</span><span class="n">online</span><span class="o">-</span><span class="n">installer</span><span class="o">-</span><span class="n">v1</span><span class="mf">.8.1</span><span class="o">.</span><span class="n">tgz</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="n">zxvf</span> <span class="n">harbor</span><span class="o">-</span><span class="n">online</span><span class="o">-</span><span class="n">installer</span><span class="o">-</span><span class="n">v1</span><span class="o">.</span><span class="mf">8.1</span><span class="o">.</span><span class="n">tgz</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span>
 <span class="n">cd</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">harbor</span>
 </pre></div>
 </div>
@@ -270,12 +269,12 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
 </pre></div>
 </div>
 <p>修改hostname为本机ip地址</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hostname</span><span class="p">:</span> <span class="mf">192.168.10.122</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hostname</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">10.122</span>
 </pre></div>
 </div>
 <p>其它参数，可以根据实际情况修改，去除多余的注释和空行，配置文件如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="nd">@ubuntu</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">harbor</span><span class="c1"># cat harbor.yml |grep -v &quot;^#&quot;|grep -v &quot;  #&quot;|grep -v &quot;^$&quot;</span>
-<span class="n">hostname</span><span class="p">:</span> <span class="mf">192.168.10.122</span>
+<span class="n">hostname</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">10.122</span>
 <span class="n">http</span><span class="p">:</span>
   <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
 <span class="n">harbor_admin_password</span><span class="p">:</span> <span class="n">Harbor12345</span>
@@ -286,7 +285,7 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
   <span class="n">updaters_interval</span><span class="p">:</span> <span class="mi">12</span>
   <span class="n">http_proxy</span><span class="p">:</span>
   <span class="n">https_proxy</span><span class="p">:</span>
-  <span class="n">no_proxy</span><span class="p">:</span> <span class="mf">127.0.0.1</span><span class="p">,</span><span class="n">localhost</span><span class="p">,</span><span class="n">core</span><span class="p">,</span><span class="n">registry</span>
+  <span class="n">no_proxy</span><span class="p">:</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">,</span><span class="n">localhost</span><span class="p">,</span><span class="n">core</span><span class="p">,</span><span class="n">registry</span>
 <span class="n">jobservice</span><span class="p">:</span>
   <span class="n">max_job_workers</span><span class="p">:</span> <span class="mi">10</span>
 <span class="n">chart</span><span class="p">:</span>
@@ -296,7 +295,7 @@ Docker镜像是是分层的，而如果每次传输都使用全量文件(所以�
   <span class="n">rotate_count</span><span class="p">:</span> <span class="mi">50</span>
   <span class="n">rotate_size</span><span class="p">:</span> <span class="mi">200</span><span class="n">M</span>
   <span class="n">location</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">harbor</span>
-<span class="n">_version</span><span class="p">:</span> <span class="mf">1.8.0</span>
+<span class="n">_version</span><span class="p">:</span> <span class="mf">1.8</span><span class="o">.</span><span class="mi">0</span>
 </pre></div>
 </div>
 <p>之后直接执行</p>
@@ -313,18 +312,18 @@ For more details, please visit https://github.com/goharbor/harbor .
 <p>之后如果你想修改某一个配置比如你要把域名修改一下,我是这么做的先修改上面harbor.cfg这个文件,之后重新执行install.sh这个文件就可以了</p>
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id24">访问页面</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168.10.122</span>
+<h3><a class="toc-backref" href="#id24">访问页面</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">10.122</span>
 </pre></div>
 </div>
 <p>使用默认的账号:admin,密码:Harbor12345登录验证</p>
 </section>
 </section>
 <section id="id8">
-<h2><a class="toc-backref" href="#id25">五、测试推送镜像</a><a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id25">五、测试推送镜像</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <p>登录到另外一台服务器，确保docker已经安装好了。</p>
 <section id="id9">
-<h3><a class="toc-backref" href="#id26">本地配置仓库地址</a><a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id26">本地配置仓库地址</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <p>由于默认的harbor，已经创建了一个公开项目 libary。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">docker</span><span class="o">/</span><span class="n">daemon</span><span class="o">.</span><span class="n">json</span>
 </pre></div>
@@ -339,7 +338,7 @@ For more details, please visit https://github.com/goharbor/harbor .
 </div>
 </section>
 <section id="id10">
-<h3><a class="toc-backref" href="#id27">推送镜像</a><a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">推送镜像</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>登录仓库，admin密码还是Harbor12345</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>root@k8s-node1:~# docker login 192.168.10.122
 Username: admin
@@ -356,12 +355,12 @@ Login Succeeded
 </pre></div>
 </div>
 <p>给镜像打tag</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">tag</span> <span class="n">alpine</span><span class="p">:</span><span class="n">latest</span> <span class="mf">192.168.10.122</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">alpine</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">tag</span> <span class="n">alpine</span><span class="p">:</span><span class="n">latest</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">10.122</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">alpine</span>
 </pre></div>
 </div>
 <p>推送镜像</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">node1</span><span class="p">:</span><span class="o">~</span><span class="c1"># docker push 192.168.10.122/library/alpine</span>
-<span class="n">The</span> <span class="n">push</span> <span class="n">refers</span> <span class="n">to</span> <span class="n">repository</span> <span class="p">[</span><span class="mf">192.168.10.122</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">alpine</span><span class="p">]</span>
+<span class="n">The</span> <span class="n">push</span> <span class="n">refers</span> <span class="n">to</span> <span class="n">repository</span> <span class="p">[</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">10.122</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">alpine</span><span class="p">]</span>
 <span class="mi">1</span><span class="n">bfeebd65323</span><span class="p">:</span> <span class="n">Pushed</span>
 <span class="n">latest</span><span class="p">:</span> <span class="n">digest</span><span class="p">:</span> <span class="n">sha256</span><span class="p">:</span><span class="mi">57334</span><span class="n">c50959f26ce1ee025d08f136c2292c128f84e7b229d1b0da5dac89e9866</span> <span class="n">size</span><span class="p">:</span> <span class="mi">528</span>
 </pre></div>
@@ -378,14 +377,14 @@ Login Succeeded
 </div>
 </section>
 <section id="id11">
-<h3><a class="toc-backref" href="#id28">注意事项</a><a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id28">注意事项</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p><strong>公开的项目，推送镜像时，docker必须要登录。</strong></p>
 <p><strong>下载镜像时，无须登录。</strong></p>
 <p><strong>非公开项目，下载和推送，必须docker登录才行。</strong></p>
 </section>
 </section>
 <section id="id12">
-<h2><a class="toc-backref" href="#id29">参考文献</a><a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id29">参考文献</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.cnblogs.com/xiao987334176/p/11326467.html">https://www.cnblogs.com/xiao987334176/p/11326467.html</a></p>
 </section>
 </section>

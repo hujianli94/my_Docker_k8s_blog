@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Docker数据管理 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -151,14 +150,14 @@
 </ul>
 </div>
 <section id="docker">
-<h1><a class="toc-backref" href="#id13">Docker数据管理</a><a class="headerlink" href="#docker" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id13">Docker数据管理</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h1>
 <p>容器中管理数据主要有两种方式：</p>
 <ul class="simple">
 <li><p>数据卷（Data Volumes）：容器内数据直接映射到本地主机环境；</p></li>
 <li><p>数据卷容器（Data Volume Containers）：使用特定容器维护数据卷。</p></li>
 </ul>
 <section id="id1">
-<h2><a class="toc-backref" href="#id14">1.数据卷</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">1.数据卷</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>数据卷是一个可供容器使用的特殊目录，它将主机操作系统目录直接映射进容器，类似于Linux中的mount操作。</p>
 <p>数据卷可以提供很多有用的特性，如下所示：</p>
 <ul class="simple">
@@ -168,7 +167,7 @@
 <li><p>卷会一直存在，直到没有容器使用，可以安全地卸载它。</p></li>
 </ul>
 <section id="id2">
-<h3><a class="toc-backref" href="#id15">1.1 创建一个数据卷</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">1.1 创建一个数据卷</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 在用docker run命令的时候，使用-v标记可以在容器内创建一个数据卷。</span>
 <span class="c1"># 多次重复使用-v标记可以创建多个数据卷。多个-v同时可以使用</span>
 
@@ -210,7 +209,7 @@ curl <span class="m">127</span>.0.0.1:8080 再次查看
 </div>
 </section>
 <section id="id3">
-<h3><a class="toc-backref" href="#id16">1.2 挂载主机目录作为数据卷</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">1.2 挂载主机目录作为数据卷</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker run -d -P --name web -v /src/webapp:/opt/webapp training/webapp python app.py
 <span class="c1">#上面的命令加载主机的/src/webapp目录到容器的/opt/webapp目录。</span>
 
@@ -229,7 +228,7 @@ cc9bb6df41e1        training/webapp     <span class="s2">&quot;python app.py&quo
 </div>
 </section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id17">1.3 挂载本地主机文件作为数据卷</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">1.3 挂载本地主机文件作为数据卷</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># -v标记也可以从主机挂载单个文件到容器中作为数据卷（不推荐）。</span>
 $ docker run --rm -it -v ~/.bash_history:/.bash_history ubuntu /bin/bash
 </pre></div>
@@ -237,7 +236,7 @@ $ docker run --rm -it -v ~/.bash_history:/.bash_history ubuntu /bin/bash
 </section>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id18">2. 数据卷容器</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">2. 数据卷容器</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span> <span class="c1"># 如果用户需要在多个容器之间共享一些持续更新的数据，最简单的方式是使用数据卷容器。数据卷容器也是一个容器，但是它的目的是专门用来提供数据卷供其他容器挂载。</span>
 
 $ docker run -it -v /dbdata --name dbdata ubuntu
@@ -311,10 +310,10 @@ dbdata
 rm-v命令来指定同时删除关联的容器。</p>
 </section>
 <section id="id6">
-<h2><a class="toc-backref" href="#id19">3.利用数据卷容器来迁移数据</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">3.利用数据卷容器来迁移数据</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>利用数据卷容器来备份、恢复、迁移数据卷</p>
 <section id="id7">
-<h3><a class="toc-backref" href="#id20">3.1 备份</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">3.1 备份</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#使用  --volumes-from  标记来创建一个加载 dbdata容器卷的容器，并从主机挂载当前目录到容器的/backup目录</span>
 
 sudo docker run --volumes-from dbdata -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/backup ubuntu tar cvf /backup/backup.tar /dbdata
@@ -323,7 +322,7 @@ sudo docker run --volumes-from dbdata -v <span class="k">$(</span><span class="n
 </div>
 </section>
 <section id="id8">
-<h3><a class="toc-backref" href="#id21">3.2 恢复</a><a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">3.2 恢复</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#如果要恢复数据到一个容器，首先创建一个带有空数据卷的容器 dbdata2。</span>
 sudo docker run -v /dbdata --name dbdata2 ubuntu /bin/bash
 
@@ -337,9 +336,9 @@ sudo docker run --volumes-from dbdata2 busybox /bin/ls /dbdata
 </section>
 </section>
 <section id="id9">
-<h2><a class="toc-backref" href="#id22">4.容器连接</a><a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id22">4.容器连接</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <section id="id10">
-<h3><a class="toc-backref" href="#id23">4.1 容器命名</a><a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">4.1 容器命名</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>容器连接依赖于容器名，所以当需要使用容器连接时，首先需要命名容器，然后使用
 –link 参数进行连接。</p>
 <p>容器命名的好处：</p>
@@ -360,7 +359,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 <p>可以看到，我们的 webapp 容器已经已经运行起来了</p>
 </section>
 <section id="id11">
-<span id="id12"></span><h3><a class="toc-backref" href="#id24">4.2 容器连接</a><a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h3>
+<span id="id12"></span><h3><a class="toc-backref" href="#id24">4.2 容器连接</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p>连接的格式为 –link name:alias ，其中 name 是源容器的名称， alias
 是这个连接的别名.</p>
 <p>举例：<code class="docutils literal notranslate"><span class="pre">web容器+dbdata容器连接互联</span></code></p>

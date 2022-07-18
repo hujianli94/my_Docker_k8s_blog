@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>服务发现 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -125,7 +124,7 @@
 </ul>
 </div>
 <section id="id1">
-<h1><a class="toc-backref" href="#id3">服务发现</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id3">服务发现</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <p>服务发现是一种容许计算机网络上的任意服务均可以找到它所需要通信的其他服务的机制。</p>
 <p>它是大多数分布式系统的核心组件。
 如果用户的基础设施是运行或者遵循的面向服务的架构（Service Oriented
@@ -141,7 +140,7 @@ Architecture，SOA），那么毫无疑问， 用户需要部署某种服务发�
 </pre></div>
 </div>
 <section id="consul">
-<h2><a class="toc-backref" href="#id4">1.consul</a><a class="headerlink" href="#consul" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">1.consul</a><a class="headerlink" href="#consul" title="Permalink to this headline">¶</a></h2>
 <p>consul是一款由HashiCorp公司编写的多功能分布式系统工具。同之前介绍过的etcd一样，consul也是使用Go语言实现。consul很好地将它所有的特性集成为一个可定制化软件，并易于使用和运维。在这里，我们不会花太多篇幅去介绍什么是consul，关于这一点读者可以在它的官方网站上找到一个非常全面的文档，里面包含了大量的实际案例。取而代之的是，我们将会去总结它的主要特性并且探讨在Docker基础设施里如何借助它来实现服务发现。最后，在本章的末尾我们将会介绍一个实际案例，它利consul提供的功能特性，将consul作为一个插件式的后端服务，为运行在Docker容器里的应用提供了即插即用的服务发现功能。</p>
 <p>我们选择用多功能一词来描述consul的目的正是在于consul的确可以无需花费其他任何额外的精力，
 作为一款单独运行的工具提供下述任意一项功能：
@@ -165,7 +164,7 @@ API，这使得各种不同的编程语言实现的客户端访问该服务更�
 </div>
 <p>这里讨论到的只是consul一些基本的内容，实际上它所提供的还远不止这些，因此强烈建议读者去细读一下consul强大的官方文档。如果想知道consul和市面上其他工具的差异，不要犹豫，赶紧去看一下专门讨论这一话题的官方文档吧。接下来，让我们一起来看看我们该如何将consul用于基础设施里的服务发现。</p>
 <section id="id2">
-<h3><a class="toc-backref" href="#id5">1.1 基于consul的服务发现</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id5">1.1 基于consul的服务发现</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>迄今为止，在我们介绍过的工具中，作为一款可定制的服务发现解决方案，consul无疑是最容易上手的一个。
 用户可以通过以下几种方式将自己的服务注册到consul的服务目录里：</p>
 <ul class="simple">
@@ -189,7 +188,7 @@ Consul可以作为一个单独的工具使用，也可以作为构建一个复�
 在下一节里，我们将会介绍一款名为registrator的工具，它使用consul作为它的一个可插拔的后端服务，它为运行在Docker容器里的应用提供了一个非常易于上手的、自动服务注册的解决方案。</p>
 </section>
 <section id="registrator">
-<h3><a class="toc-backref" href="#id6">1.2 registrator</a><a class="headerlink" href="#registrator" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id6">1.2 registrator</a><a class="headerlink" href="#registrator" title="Permalink to this headline">¶</a></h3>
 <p>从整体上来说，registrator会去监听Docker的Unix套接字来获取Docker容器启动和消亡时的事件，并且它会通过在事先配置好的一个可插拔的后端服务中创建新记录的形式自动完成容器的服务注册。这就意味着它必须以一个Docker容器的身份来运行。读者可以在Docker
 Hub上找到registrator的Docker镜像。registrator提供了相当多的配置参数选择，因此，尽情去GitHub项目页面的文档库里去查找关于它们的详细解释吧。</p>
 <p>我们一起来看一个简短的实际案例。
@@ -263,7 +262,7 @@ latest: Pulling from library/redis
 因此，在这个例子中，当注册一个新服务时registrator使用的Docker镜像名便会是redis.service.consul（当然，必要的话也可以修改这个设置）。</p>
 <p>那么，现在让我们来试着运行一下DNS的查询吧：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@swarm3</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># dig @172.16.74.22 -p 8600 redis.service.consul +short</span>
-<span class="mf">172.17.0.4</span>
+<span class="mf">172.17</span><span class="o">.</span><span class="mf">0.4</span>
 </pre></div>
 </div>
 <p>如今我们已经获得了redis服务器的IP地址，但是同该服务通信所需的信息还远不止这些。

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Docker高级网络实战 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -118,9 +117,9 @@
 </ul>
 </div>
 <section id="docker">
-<h1><a class="toc-backref" href="#id1">Docker高级网络实战</a><a class="headerlink" href="#docker" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id1">Docker高级网络实战</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h1>
 <section id="linux-network-namespace">
-<h2><a class="toc-backref" href="#id2">1.玩转Linux Network Namespace</a><a class="headerlink" href="#linux-network-namespace" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id2">1.玩转Linux Network Namespace</a><a class="headerlink" href="#linux-network-namespace" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 创建2个network namespace</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">px</span><span class="o">-</span><span class="n">node1</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># sudo ip netns add nstet</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">px</span><span class="o">-</span><span class="n">node1</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># sudo ip netns add nstest</span>
@@ -139,7 +138,7 @@
 <span class="mi">1</span><span class="p">:</span> <span class="n">lo</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">LOOPBACK</span><span class="o">&gt;</span> <span class="n">mtu</span> <span class="mi">65536</span> <span class="n">qdisc</span> <span class="n">noop</span> <span class="n">state</span> <span class="n">DOWN</span> <span class="n">group</span> <span class="n">default</span> <span class="n">qlen</span> <span class="mi">1000</span>
     <span class="n">link</span><span class="o">/</span><span class="n">loopback</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="n">brd</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>
 <span class="mi">2</span><span class="p">:</span> <span class="n">tunl0</span><span class="nd">@NONE</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">NOARP</span><span class="o">&gt;</span> <span class="n">mtu</span> <span class="mi">1480</span> <span class="n">qdisc</span> <span class="n">noop</span> <span class="n">state</span> <span class="n">DOWN</span> <span class="n">group</span> <span class="n">default</span> <span class="n">qlen</span> <span class="mi">1000</span>
-    <span class="n">link</span><span class="o">/</span><span class="n">ipip</span> <span class="mf">0.0.0.0</span> <span class="n">brd</span> <span class="mf">0.0.0.0</span>
+    <span class="n">link</span><span class="o">/</span><span class="n">ipip</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span> <span class="n">brd</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span>
 </pre></div>
 </div>
 <p>在namespace中启动一个shell，具体示例如下：</p>
@@ -151,7 +150,7 @@
 </div>
 </section>
 <section id="ipnetwork-namespace">
-<h2><a class="toc-backref" href="#id3">2.使用ip命令为network namespace配置网卡</a><a class="headerlink" href="#ipnetwork-namespace" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">2.使用ip命令为network namespace配置网卡</a><a class="headerlink" href="#ipnetwork-namespace" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 启动回环地址</span>
 <span class="n">sudo</span> <span class="n">ip</span> <span class="n">netns</span> <span class="n">exec</span> <span class="n">nstest</span> <span class="n">ip</span> <span class="n">link</span> <span class="nb">set</span> <span class="n">dev</span> <span class="n">lo</span> <span class="n">up</span>
 
@@ -166,16 +165,16 @@
 <span class="mi">1</span><span class="p">:</span> <span class="n">lo</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">LOOPBACK</span><span class="p">,</span><span class="n">UP</span><span class="p">,</span><span class="n">LOWER_UP</span><span class="o">&gt;</span> <span class="n">mtu</span> <span class="mi">65536</span> <span class="n">qdisc</span> <span class="n">noqueue</span> <span class="n">state</span> <span class="n">UNKNOWN</span> <span class="n">mode</span> <span class="n">DEFAULT</span> <span class="n">group</span> <span class="n">default</span> <span class="n">qlen</span> <span class="mi">1000</span>
     <span class="n">link</span><span class="o">/</span><span class="n">loopback</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="n">brd</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>
 <span class="mi">2</span><span class="p">:</span> <span class="n">tunl0</span><span class="nd">@NONE</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">NOARP</span><span class="o">&gt;</span> <span class="n">mtu</span> <span class="mi">1480</span> <span class="n">qdisc</span> <span class="n">noop</span> <span class="n">state</span> <span class="n">DOWN</span> <span class="n">mode</span> <span class="n">DEFAULT</span> <span class="n">group</span> <span class="n">default</span> <span class="n">qlen</span> <span class="mi">1000</span>
-    <span class="n">link</span><span class="o">/</span><span class="n">ipip</span> <span class="mf">0.0.0.0</span> <span class="n">brd</span> <span class="mf">0.0.0.0</span>
+    <span class="n">link</span><span class="o">/</span><span class="n">ipip</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span> <span class="n">brd</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span>
 <span class="mi">49</span><span class="p">:</span> <span class="n">veth</span><span class="o">-</span><span class="n">b</span><span class="nd">@if50</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">BROADCAST</span><span class="p">,</span><span class="n">MULTICAST</span><span class="o">&gt;</span> <span class="n">mtu</span> <span class="mi">1500</span> <span class="n">qdisc</span> <span class="n">noop</span> <span class="n">state</span> <span class="n">DOWN</span> <span class="n">mode</span> <span class="n">DEFAULT</span> <span class="n">group</span> <span class="n">default</span> <span class="n">qlen</span> <span class="mi">1000</span>
     <span class="n">link</span><span class="o">/</span><span class="n">ether</span> <span class="n">fa</span><span class="p">:</span><span class="n">b1</span><span class="p">:</span><span class="mi">98</span><span class="p">:</span><span class="n">b9</span><span class="p">:</span><span class="mi">4</span><span class="n">f</span><span class="p">:</span><span class="mi">17</span> <span class="n">brd</span> <span class="n">ff</span><span class="p">:</span><span class="n">ff</span><span class="p">:</span><span class="n">ff</span><span class="p">:</span><span class="n">ff</span><span class="p">:</span><span class="n">ff</span><span class="p">:</span><span class="n">ff</span> <span class="n">link</span><span class="o">-</span><span class="n">netnsid</span> <span class="mi">0</span>
 
 <span class="c1"># 为网卡分配IP并启动网卡</span>
-<span class="n">sudo</span> <span class="n">ip</span> <span class="n">addr</span> <span class="n">add</span> <span class="mf">10.0.0.1</span><span class="o">/</span><span class="mi">24</span> <span class="n">dev</span> <span class="n">veth</span><span class="o">-</span><span class="n">a</span>
+<span class="n">sudo</span> <span class="n">ip</span> <span class="n">addr</span> <span class="n">add</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.1</span><span class="o">/</span><span class="mi">24</span> <span class="n">dev</span> <span class="n">veth</span><span class="o">-</span><span class="n">a</span>
 <span class="n">sudo</span> <span class="n">ip</span> <span class="n">link</span> <span class="nb">set</span> <span class="n">dev</span> <span class="n">veth</span><span class="o">-</span><span class="n">a</span> <span class="n">up</span>
 
 <span class="c1"># 为nstest中的veth-b配置IP并启动</span>
-<span class="n">sudo</span> <span class="n">ip</span> <span class="n">netns</span> <span class="n">exec</span> <span class="n">nstest</span> <span class="n">ip</span> <span class="n">addr</span> <span class="n">add</span> <span class="mf">10.0.0.2</span><span class="o">/</span><span class="mi">24</span> <span class="n">dev</span> <span class="n">veth</span><span class="o">-</span><span class="n">b</span>
+<span class="n">sudo</span> <span class="n">ip</span> <span class="n">netns</span> <span class="n">exec</span> <span class="n">nstest</span> <span class="n">ip</span> <span class="n">addr</span> <span class="n">add</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.2</span><span class="o">/</span><span class="mi">24</span> <span class="n">dev</span> <span class="n">veth</span><span class="o">-</span><span class="n">b</span>
 <span class="n">sudo</span> <span class="n">ip</span> <span class="n">netns</span> <span class="n">exec</span> <span class="n">nstest</span> <span class="n">ip</span> <span class="n">link</span> <span class="nb">set</span> <span class="n">dev</span> <span class="n">veth</span><span class="o">-</span><span class="n">b</span> <span class="n">up</span>
 </pre></div>
 </div>
@@ -183,12 +182,12 @@
 route或route -a命令查看一下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 在主机中</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">px</span><span class="o">-</span><span class="n">node1</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># sudo ip route</span>
-<span class="n">default</span> <span class="n">via</span> <span class="mf">172.16.72.254</span> <span class="n">dev</span> <span class="n">eth0</span>
-<span class="mf">10.0.0.0</span><span class="o">/</span><span class="mi">24</span> <span class="n">dev</span> <span class="n">veth</span><span class="o">-</span><span class="n">a</span> <span class="n">proto</span> <span class="n">kernel</span> <span class="n">scope</span> <span class="n">link</span> <span class="n">src</span> <span class="mf">10.0.0.1</span>
+<span class="n">default</span> <span class="n">via</span> <span class="mf">172.16</span><span class="o">.</span><span class="mf">72.254</span> <span class="n">dev</span> <span class="n">eth0</span>
+<span class="mf">10.0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">24</span> <span class="n">dev</span> <span class="n">veth</span><span class="o">-</span><span class="n">a</span> <span class="n">proto</span> <span class="n">kernel</span> <span class="n">scope</span> <span class="n">link</span> <span class="n">src</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.1</span>
 
 <span class="c1">#在nstest network namespace中</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">px</span><span class="o">-</span><span class="n">node1</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># sudo ip netns exec nstest ip route</span>
-<span class="mf">10.0.0.0</span><span class="o">/</span><span class="mi">24</span> <span class="n">dev</span> <span class="n">veth</span><span class="o">-</span><span class="n">b</span> <span class="n">proto</span> <span class="n">kernel</span> <span class="n">scope</span> <span class="n">link</span> <span class="n">src</span> <span class="mf">10.0.0.2</span>
+<span class="mf">10.0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">24</span> <span class="n">dev</span> <span class="n">veth</span><span class="o">-</span><span class="n">b</span> <span class="n">proto</span> <span class="n">kernel</span> <span class="n">scope</span> <span class="n">link</span> <span class="n">src</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.2</span>
 </pre></div>
 </div>
 <p>这两条路由表名的意义是目的地址为10.0.0.0/24网络的IP包分别从veth-a和veth-b发出。</p>
@@ -197,16 +196,16 @@ namespace的nstest有了直接的网卡、IP地址、路由表等信息，俨然
 <p>测试一下连通性：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 从宿主机ping network namespace的veth-a网卡去pingveth-b网卡</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">px</span><span class="o">-</span><span class="n">node1</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># ping 10.0.0.2</span>
-<span class="n">PING</span> <span class="mf">10.0.0.2</span> <span class="p">(</span><span class="mf">10.0.0.2</span><span class="p">)</span> <span class="mi">56</span><span class="p">(</span><span class="mi">84</span><span class="p">)</span> <span class="nb">bytes</span> <span class="n">of</span> <span class="n">data</span><span class="o">.</span>
-<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">10.0.0.2</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">1</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.308</span> <span class="n">ms</span>
-<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">10.0.0.2</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">2</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.090</span> <span class="n">ms</span>
+<span class="n">PING</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.2</span> <span class="p">(</span><span class="mf">10.0</span><span class="o">.</span><span class="mf">0.2</span><span class="p">)</span> <span class="mi">56</span><span class="p">(</span><span class="mi">84</span><span class="p">)</span> <span class="nb">bytes</span> <span class="n">of</span> <span class="n">data</span><span class="o">.</span>
+<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.2</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">1</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.308</span> <span class="n">ms</span>
+<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.2</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">2</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.090</span> <span class="n">ms</span>
 </pre></div>
 </div>
 <p>从network namespace的nstest 中的veth-b网卡ping主机的veth-a网卡</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@k8s</span><span class="o">-</span><span class="n">px</span><span class="o">-</span><span class="n">node1</span> <span class="n">centos</span><span class="p">]</span><span class="c1"># sudo ip netns exec nstest ping 10.0.0.1</span>
-<span class="n">PING</span> <span class="mf">10.0.0.1</span> <span class="p">(</span><span class="mf">10.0.0.1</span><span class="p">)</span> <span class="mi">56</span><span class="p">(</span><span class="mi">84</span><span class="p">)</span> <span class="nb">bytes</span> <span class="n">of</span> <span class="n">data</span><span class="o">.</span>
-<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">10.0.0.1</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">1</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.200</span> <span class="n">ms</span>
-<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">10.0.0.1</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">2</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.082</span> <span class="n">ms</span>
+<span class="n">PING</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.1</span> <span class="p">(</span><span class="mf">10.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">)</span> <span class="mi">56</span><span class="p">(</span><span class="mi">84</span><span class="p">)</span> <span class="nb">bytes</span> <span class="n">of</span> <span class="n">data</span><span class="o">.</span>
+<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">1</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.200</span> <span class="n">ms</span>
+<span class="mi">64</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span> <span class="n">icmp_seq</span><span class="o">=</span><span class="mi">2</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">64</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.082</span> <span class="n">ms</span>
 </pre></div>
 </div>
 </section>

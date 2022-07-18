@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kubernetes的核心对象 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -128,11 +127,11 @@
 </ul>
 </div>
 <section id="kubernetes">
-<h1><a class="toc-backref" href="#id7">Kubernetes的核心对象</a><a class="headerlink" href="#kubernetes" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id7">Kubernetes的核心对象</a><a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h1>
 <p>Kubernetes的基本对象模型</p>
 <p><img alt="image0" src="../../_images/image-20220403155842930.png" /></p>
 <section id="pod">
-<h2><a class="toc-backref" href="#id8">1.Pod</a><a class="headerlink" href="#pod" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">1.Pod</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h2>
 <p>Pod是Kubernetes处理的最基本单元。容器本身并不会直接分配到主机上，而是会封装到名为Pod的对象中。</p>
 <p>Pod通常表示单个应用程序，由一个或多个关系紧密的容器构成，如图所示。这些容器拥有同样的生命周期，作为一个整体一起编排到Node上。</p>
 <p>这些容器共享环境、存储卷和IP空间。尽管Pod基于一个或多个容器，但应将Pod视作单一的整体、单独的应用程序。Kubernetes以Pod为最小单位进行调度、伸缩并共享资源、管理生命周期。</p>
@@ -141,11 +140,11 @@
 <p>一般来说，用户不应自行管理Pod，因为Pod并没有提供应用程序通常会用到的一些特性，如复杂的生命周期管理及动态伸缩。</p>
 <p>建议用户使用将Pod或Pod模板作为基本组件的更高级别对象，这些对象会拥有更多的特性。</p>
 <section id="id1">
-<h3><a class="toc-backref" href="#id9">1.1控制器</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id9">1.1控制器</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>一般来说，用户不会直接创建Pod，而是创建控制器，让控制器来管理Pod。在控制器中定义Pod的部署方式（如有多少个副本、需要在
 哪种Node上运行等），根据不同的业务场景，Kubernetes提供了多种控制器。</p>
 <section id="replicationcontrollerreplicaset">
-<h4>1.ReplicationController和ReplicaSet控制器<a class="headerlink" href="#replicationcontrollerreplicaset" title="Permalink to this heading">¶</a></h4>
+<h4>1.ReplicationController和ReplicaSet控制器<a class="headerlink" href="#replicationcontrollerreplicaset" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>ReplicationController</p></li>
 </ul>
@@ -161,7 +160,7 @@
 <p>缺少一些在其他复杂对象中具有的更细粒度的生命周期管理功能。</p>
 </section>
 <section id="deployment">
-<h4>2.Deployment控制器<a class="headerlink" href="#deployment" title="Permalink to this heading">¶</a></h4>
+<h4>2.Deployment控制器<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h4>
 <p>Deployment控制器可能是最常用的工作负载对象之一。
 Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增加了更灵活的生命周期管理功能。</p>
 <p>Deployment控制器解决了之前在
@@ -175,7 +174,7 @@ Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增
 <p><img alt="image2" src="../../_images/image-20220403174443747.png" /></p>
 </section>
 <section id="statefulset">
-<h4>3.StatefulSet控制器<a class="headerlink" href="#statefulset" title="Permalink to this heading">¶</a></h4>
+<h4>3.StatefulSet控制器<a class="headerlink" href="#statefulset" title="Permalink to this headline">¶</a></h4>
 <p>StatefulSet控制器是一种提供了排序和唯一性保证的特殊Pod控制器。</p>
 <p>当有与部署顺序、持久数据或固定网络等相关的特殊需求时，可以使用StatefulSet控制器来进行更细粒度的控制。</p>
 <p>StatefulSet控制器主要用于有状态的应用，例如，StatefulSet控制器通常与面向数据的应用程序（比如数据库）相关联。</p>
@@ -187,12 +186,12 @@ Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增
 力，它在某些情况下很有用。</p>
 </section>
 <section id="daemonset">
-<h4>4.DaemonSet控制器<a class="headerlink" href="#daemonset" title="Permalink to this heading">¶</a></h4>
+<h4>4.DaemonSet控制器<a class="headerlink" href="#daemonset" title="Permalink to this headline">¶</a></h4>
 <p>DaemonSet控制器是另一种特殊的Pod控制器，它会在集群的各个节点上运行单一的Pod副本。</p>
 <p>DaemonSet控制器非常适合部署那些为节点本身提供服务或执行维护的Pod。</p>
 </section>
 <section id="jobcronjob">
-<h4>5.Job控制器和CronJob控制器<a class="headerlink" href="#jobcronjob" title="Permalink to this heading">¶</a></h4>
+<h4>5.Job控制器和CronJob控制器<a class="headerlink" href="#jobcronjob" title="Permalink to this headline">¶</a></h4>
 <p>Kubernetes中还有一种叫作Job控制器的工作负载对象，它基于特定任务而运行。</p>
 <p>当运行任务的容器完成工作后，Job就会成功退出。如果需要执行一次性的任务，而非提供连续的服务，Job控制器非常适合。</p>
 <p>CronJob控制器其实在Job控制器的基础上增加了时间调度，可以在给定的时间点运行一个任务，也可以周期性地在给定时间点运行一个任务。</p>
@@ -201,9 +200,9 @@ Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增
 </section>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id10">2.服务与存储</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">2.服务与存储</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <section id="serviceingress">
-<h3><a class="toc-backref" href="#id11">2.1Service组件和Ingress</a><a class="headerlink" href="#serviceingress" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">2.1Service组件和Ingress</a><a class="headerlink" href="#serviceingress" title="Permalink to this headline">¶</a></h3>
 <p>通过Service组件可以发布服务，可以跟踪并路由到所有指定类型的后端容器。</p>
 <p>内部使用者只需要知道Service组件提供的稳定端点即可进行访问。另外，Service组件抽象可以根据需要来伸缩或替换后端的
 工作单元，无论Service组件具体路由到哪个Pod，其IP地址都保持稳定。通过Service组件，可以轻松获得服务发现的能力。</p>
@@ -216,7 +215,7 @@ Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增
 </section>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id12">3.存储卷和持久存储卷</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">3.存储卷和持久存储卷</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>Kubernetes定义了自己的存储卷（volume）
 抽象，允许Pod中的所有容器共享数据，并在Pod终止之前一直保持可用，如图2-10所示。</p>
 <p>这意味着紧密耦合的Pod可以轻松共享文件而不需要复杂的外部机制，Pod中的容器故障不会影响对共享文件的访问。
@@ -229,16 +228,16 @@ volume）是一种更健壮的抽象机制，不依赖于Pod的生命周期。�
 <p>持久性数据可预防节点级的故障，并分配比本地更多的可用存储空间。</p>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id13">4.资源划分</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">4.资源划分</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <section id="id5">
-<h3><a class="toc-backref" href="#id14">4.1 命名空间</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">4.1 命名空间</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>命名空间（namespace）的主要作用是对Kubernetes集群资源进行划分。</p>
 <p>这种划分并非物理划分而是逻辑划分，用于实现多租户的资源隔离.</p>
 <p>使用命名空间隔离资源</p>
 <p><img alt="image6" src="../../_images/image-20220403181143488.png" /></p>
 </section>
 <section id="id6">
-<h3><a class="toc-backref" href="#id15">4.2 标签和注解</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">4.2 标签和注解</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes中的标签（label）是一种语义化标记，可以附加到Kubernetes对象上，对它们进行标记或划分。</p>
 <p>如果要针对不同的实例进行管理或路由，可以用标签来进行选择。</p>
 <p>例如，每种基于控制器的对象都可以使用标签来识别需要操作的Pod。</p>

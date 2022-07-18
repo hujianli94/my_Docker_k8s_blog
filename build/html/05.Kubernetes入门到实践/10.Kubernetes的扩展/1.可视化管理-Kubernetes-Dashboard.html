@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>可视化管理-Kubernetes Dashboard &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -133,7 +132,7 @@
 </ul>
 </div>
 <section id="kubernetes-dashboard">
-<h1><a class="toc-backref" href="#id9">可视化管理-Kubernetes Dashboard</a><a class="headerlink" href="#kubernetes-dashboard" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id9">可视化管理-Kubernetes Dashboard</a><a class="headerlink" href="#kubernetes-dashboard" title="Permalink to this headline">¶</a></h1>
 <p>Kubernetes
 Dashboard是一个非常受欢迎的项目，为Kubernetes用户管理Kubernetes集群提供了非常便捷的可视化管理工具。</p>
 <p>Kubernetes
@@ -151,9 +150,9 @@ Dashboard，您可以：</p>
 <p>例如：您可以伸缩一个 Deployment、执行滚动更新、重启一个 Pod
 或部署一个新的应用程序</p>
 <section id="id1">
-<h2><a class="toc-backref" href="#id10">1. 安装Kubernetes Dashboard</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">1. 安装Kubernetes Dashboard</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <section id="id2">
-<h3><a class="toc-backref" href="#id11">1.1 创建证书</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">1.1 创建证书</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>因为自动生成的证书很多浏览器无法使用，所以自己创建证书</p>
 <ul class="simple">
 <li><p>新建证书存放目录</p></li>
@@ -194,7 +193,7 @@ $ <span class="nb">cd</span> /etc/kubernetes/dashboard-certs/
 </div>
 </section>
 <section id="id3">
-<h3><a class="toc-backref" href="#id12">1.2 下载并修改配置文件</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">1.2 下载并修改配置文件</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>下载配置文件</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mkdir kubernetes-dashboard
 $ <span class="nb">cd</span> kubernetes-dashboard
@@ -205,26 +204,26 @@ $ wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/
 <li><p>修改配置文件，增加直接访问端口</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">vim</span> <span class="pre">recommended.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">......</span><span class="w"></span>
-<span class="nn">---</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">k8s-app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NodePort</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span><span class="w"></span>
-<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8443</span><span class="w"></span>
-<span class="w">      </span><span class="nt">nodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30010</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">k8s-app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">......</span>
+<span class="nn">---</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">k8s-app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NodePort</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">443</span>
+      <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8443</span>
+      <span class="nt">nodePort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30010</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">k8s-app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span>
 
-<span class="nn">---</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">.....</span><span class="w"></span>
+<span class="nn">---</span>
+<span class="l l-Scalar l-Scalar-Plain">.....</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -246,41 +245,41 @@ $ wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/
 </div>
 </section>
 <section id="dashboard">
-<h3><a class="toc-backref" href="#id13">1.3 运行dashboard</a><a class="headerlink" href="#dashboard" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">1.3 运行dashboard</a><a class="headerlink" href="#dashboard" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f recommended.yaml
 </pre></div>
 </div>
 </section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id14">1.4 更新配置信息</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">1.4 更新配置信息</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>创建Dashboard管理员账号dashboard-admin.yaml，并apply</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">dashboard-admin.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">k8s-app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dashboard-admin</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">k8s-app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dashboard-admin</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">dashboard-admin-bind-cluster-role.yaml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRoleBinding</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dashboard-admin-bind-cluster-role</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">k8s-app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span><span class="w"></span>
-<span class="nt">roleRef</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io</span><span class="w"></span>
-<span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRole</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster-admin</span><span class="w"></span>
-<span class="nt">subjects</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dashboard-admin</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterRoleBinding</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dashboard-admin-bind-cluster-role</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">k8s-app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span>
+<span class="nt">roleRef</span><span class="p">:</span>
+  <span class="nt">apiGroup</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io</span>
+  <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterRole</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cluster-admin</span>
+<span class="nt">subjects</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dashboard-admin</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes-dashboard</span>
 </pre></div>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f dashboard-admin.yaml
@@ -289,7 +288,7 @@ $ kubectl apply -f dashboard-admin-bind-cluster-role.yaml
 </div>
 </section>
 <section id="token">
-<h3><a class="toc-backref" href="#id15">1.5 获取token信息</a><a class="headerlink" href="#token" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">1.5 获取token信息</a><a class="headerlink" href="#token" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl -n kubernetes-dashboard describe secret <span class="k">$(</span>kubectl -n kubernetes-dashboard get secret <span class="p">|</span> grep dashboard-admin <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
 Name:         dashboard-admin-token-5chxg
 Namespace:    kubernetes-dashboard
@@ -308,22 +307,22 @@ token:      eyJhbGciOiJSUzI1NiIsImtpZCI6Im9aREhrU2JwdEZZc3B5Tk9fOU5CNmRWQkE4MWpa
 </div>
 </section>
 <section id="id5">
-<h3><a class="toc-backref" href="#id16">1.6 登录访问dashboard</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">1.6 登录访问dashboard</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>登录访问: <code class="docutils literal notranslate"><span class="pre">https://192.168.1.58:30010/</span></code></p>
 <p><img alt="image0" src="../../_images/image-20220421132345927.png" /></p>
 <p><img alt="image1" src="../../_images/image-20220421132622419.png" /></p>
 </section>
 </section>
 <section id="id6">
-<h2><a class="toc-backref" href="#id17">2.使用Kubernetes Dashboard</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id17">2.使用Kubernetes Dashboard</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>图形界面点点点即可实现部署、更新回滚。</p>
 <p>相对于直接使用命令行来说，使用Kubernetes
 Dashboard对集群资源进行可视化管理更清晰、直观、方便。</p>
 </section>
 <section id="dashboard-kubeconfig">
-<h2><a class="toc-backref" href="#id18">3.Dashboard组件安装-kubeconfig</a><a class="headerlink" href="#dashboard-kubeconfig" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">3.Dashboard组件安装-kubeconfig</a><a class="headerlink" href="#dashboard-kubeconfig" title="Permalink to this headline">¶</a></h2>
 <section id="id7">
-<h3><a class="toc-backref" href="#id19">3.1 设置变量</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">3.1 设置变量</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>获取dashboard-admin-token的名称</p></li>
 </ul>
@@ -338,39 +337,39 @@ Dashboard对集群资源进行可视化管理更清晰、直观、方便。</p>
 </div>
 </section>
 <section id="id8">
-<h3><a class="toc-backref" href="#id20">3.2 初始化集群信息</a><a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">3.2 初始化集群信息</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <p>提供API Server的URL，以及验证API Server证书所用到的CA证书等</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl config set-cluster kubernetes --server<span class="o">=</span><span class="m">192</span>.168.1.56:6443 --kubeconfig<span class="o">=</span>/root/dashbord-admin.conf
 </pre></div>
 </div>
 </section>
 <section id="dashboard-admintoken">
-<h3><a class="toc-backref" href="#id21">3.3 获取dashboard-admin的token</a><a class="headerlink" href="#dashboard-admintoken" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">3.3 获取dashboard-admin的token</a><a class="headerlink" href="#dashboard-admintoken" title="Permalink to this headline">¶</a></h3>
 <p>并将其作为认证信息。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl config set-credentials dashboard-admin --token<span class="o">=</span><span class="nv">$DASH_TOCKEN</span> --kubeconfig<span class="o">=</span>/root/dashbord-admin.conf
 </pre></div>
 </div>
 </section>
 <section id="context">
-<h3><a class="toc-backref" href="#id22">3.4 设置context列表</a><a class="headerlink" href="#context" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">3.4 设置context列表</a><a class="headerlink" href="#context" title="Permalink to this headline">¶</a></h3>
 <p>定义一个名为dashboard-admin的context：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl config set-context dashboard-admin@kubernetes  --cluster<span class="o">=</span>kubernetes  --user<span class="o">=</span>dashboard-admin --kubeconfig<span class="o">=</span>/root/dashbord-admin.conf
 </pre></div>
 </div>
 </section>
 <section id="contextdashboard-admincontext">
-<h3><a class="toc-backref" href="#id23">3.5 使用的context为前面定义的名为dashboard-admin的context：</a><a class="headerlink" href="#contextdashboard-admincontext" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">3.5 使用的context为前面定义的名为dashboard-admin的context：</a><a class="headerlink" href="#contextdashboard-admincontext" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl config use-context dashboard-admin@kubernetes  --kubeconfig<span class="o">=</span>/root/dashbord-admin.conf
 </pre></div>
 </div>
 </section>
 <section id="kubeconfig-kubeconfig">
-<h3><a class="toc-backref" href="#id24">3.6 传输kubeconfig，然后使用kubeconfig登录</a><a class="headerlink" href="#kubeconfig-kubeconfig" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">3.6 传输kubeconfig，然后使用kubeconfig登录</a><a class="headerlink" href="#kubeconfig-kubeconfig" title="Permalink to this headline">¶</a></h3>
 <p>下载<code class="docutils literal notranslate"><span class="pre">/root/dashbord-admin.conf</span></code>文件用于dashboard的UI界面登录。</p>
 <p><img alt="image2" src="../../_images/image-20220421140130392.png" /></p>
 </section>
 <section id="admin">
-<h3><a class="toc-backref" href="#id25">3.7 切换到admin用户</a><a class="headerlink" href="#admin" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">3.7 切换到admin用户</a><a class="headerlink" href="#admin" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl config use-context kubernetes-admin@kubernetes
 </pre></div>
 </div>

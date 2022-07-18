@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Job与CronJob控制器 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -134,14 +133,14 @@
 </ul>
 </div>
 <section id="jobcronjob">
-<h1><a class="toc-backref" href="#id6">Job与CronJob控制器</a><a class="headerlink" href="#jobcronjob" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id6">Job与CronJob控制器</a><a class="headerlink" href="#jobcronjob" title="Permalink to this headline">¶</a></h1>
 <p>Kubernetes中还有一种叫作Job的工作负载对象，它基于某一特定任务而运行。</p>
 <p>当运行任务的容器完成工作后，就会成功退出。</p>
 <p>如果需要执行一次性任务，而非提供连续的服务，Job就非常适合。</p>
 <p>CronJob控制器其实就是在Job的基础上加上了时间调度，可以在给定的时间点运行一个任务，也可以定期地运行。</p>
 <p><strong>这个控制器实际上和Linux系统中的crontab命令非常类似。</strong></p>
 <section id="job">
-<h2><a class="toc-backref" href="#id7">1.Job控制器的基本操作</a><a class="headerlink" href="#job" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">1.Job控制器的基本操作</a><a class="headerlink" href="#job" title="Permalink to this headline">¶</a></h2>
 <p>Job控制器可以执行3种类型的任务。</p>
 <ul class="simple">
 <li><p>一次性任务：通常只会启动一个Pod（除非Pod失败）。一旦Pod成功终止，Job就算完成了。</p></li>
@@ -151,70 +150,70 @@ spec.parallelism指定并发数，也可以配合
 spec.completions属性指定总任务的执行次数。</p></li>
 </ul>
 <section id="job-yaml">
-<h3><a class="toc-backref" href="#id8">1.1. Job yaml模板</a><a class="headerlink" href="#job-yaml" title="Permalink to this heading">¶</a></h3>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span><span class="w">  </span><span class="c1">#必填，版本号</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span><span class="w"> </span><span class="c1"># 必填，资源类型</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="c1"># 必填，元数据</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;-job</span><span class="w"> </span><span class="c1"># 必填，资源名称</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="w"> </span><span class="c1"># pod所属的命名空间</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"> </span><span class="c1"># 自定义标签</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"> </span><span class="c1">#自定义标签名字&lt;key: value&gt;</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"> </span><span class="c1"># 必填，部署的详细定义</span><span class="w"></span>
-<span class="w">  </span><span class="nt">completions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"> </span><span class="c1"># 资源重复作业数，默认值: 1</span><span class="w"></span>
-<span class="w">  </span><span class="nt">parallelism</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"> </span><span class="c1"># 资源并行作业数，默认值: 1</span><span class="w"></span>
-<span class="w">  </span><span class="nt">backoffLimit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"> </span><span class="c1"># 资源失败重试次数，默认值：6</span><span class="w"></span>
-<span class="w">  </span><span class="nt">activeDeadlineSecond</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"> </span><span class="c1"># 资源作业超时时间，默认0 永不超时</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ttlSecondsAfterFinished</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"> </span><span class="c1"># 任务执行完，多少秒自动删除，默认300</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"> </span><span class="c1"># 必填，应用容器模板定义</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"> </span><span class="c1">#此处参考pod的containers</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox:latest</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;echo&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;hello</span><span class="nv"> </span><span class="s">world&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"> </span><span class="c1"># job类型资源重启策略必须为Never或者OnFailure</span><span class="w"></span>
+<h3><a class="toc-backref" href="#id8">1.1. Job yaml模板</a><a class="headerlink" href="#job-yaml" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>  <span class="c1">#必填，版本号</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span> <span class="c1"># 必填，资源类型</span>
+<span class="nt">metadata</span><span class="p">:</span> <span class="c1"># 必填，元数据</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;-job</span> <span class="c1"># 必填，资源名称</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span> <span class="c1"># pod所属的命名空间</span>
+  <span class="nt">labels</span><span class="p">:</span> <span class="c1"># 自定义标签</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span> <span class="c1">#自定义标签名字&lt;key: value&gt;</span>
+<span class="nt">spec</span><span class="p">:</span> <span class="c1"># 必填，部署的详细定义</span>
+  <span class="nt">completions</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1"># 资源重复作业数，默认值: 1</span>
+  <span class="nt">parallelism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1"># 资源并行作业数，默认值: 1</span>
+  <span class="nt">backoffLimit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1"># 资源失败重试次数，默认值：6</span>
+  <span class="nt">activeDeadlineSecond</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1"># 资源作业超时时间，默认0 永不超时</span>
+  <span class="nt">ttlSecondsAfterFinished</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1"># 任务执行完，多少秒自动删除，默认300</span>
+  <span class="nt">template</span><span class="p">:</span> <span class="c1"># 必填，应用容器模板定义</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span> <span class="c1">#此处参考pod的containers</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox:latest</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;echo&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;hello</span><span class="nv"> </span><span class="s">world&quot;</span><span class="p p-Indicator">]</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span> <span class="c1"># job类型资源重启策略必须为Never或者OnFailure</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p>yaml示例：以busybox镜像启动，输出hello
 world举例。记得将重启策略设置为Never或者OnFailure</p></li>
 </ul>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-job</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-job</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox:latest</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;echo&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;hello</span><span class="nv"> </span><span class="s">world&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-job</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-job</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox:latest</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;echo&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;hello</span><span class="nv"> </span><span class="s">world&quot;</span><span class="p p-Indicator">]</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
 </pre></div>
 </div>
 </section>
 <section id="id1">
-<h3><a class="toc-backref" href="#id9">1.1 一次性任务</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id9">1.1 一次性任务</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">examplejobv1.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobv1</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Start</span><span class="nv"> </span><span class="s">Job!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">30;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;Job</span><span class="nv"> </span><span class="s">Done!&quot;&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobv1</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Start</span><span class="nv"> </span><span class="s">Job!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">30;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;Job</span><span class="nv"> </span><span class="s">Done!&quot;&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>该模板的含义如下。</p>
@@ -265,21 +264,21 @@ job.batch <span class="s2">&quot;examplejobv1&quot;</span> deleted
 <p>但坏处在于，如果执行次数越多，并且不删除，则这种垃圾式的残留
 Job也会越多，人工删除会略显麻烦。有没有自动删除的办法呢？</p>
 <p><em>答案是肯定的。只需要修改yml文件，加上一个spec.ttlSecondsAfterFinished属性，该属性用于确定在所有任务执行完成后，需要等待多少秒才可删除Job。</em></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobv1</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">automountServiceAccountToken</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w"></span>
-<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Start</span><span class="nv"> </span><span class="s">Job!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">30;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;Job</span><span class="nv"> </span><span class="s">Done!&quot;&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobv1</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">automountServiceAccountToken</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Start</span><span class="nv"> </span><span class="s">Job!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">30;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;Job</span><span class="nv"> </span><span class="s">Done!&quot;&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>这个功能默认是关闭的，需要手动开启，修改的组件包括apiserver、controller和scheduler。</p>
@@ -292,7 +291,7 @@ Job也会越多，人工删除会略显麻烦。有没有自动删除的办法�
 <span class="n">containers</span><span class="p">:</span>
 <span class="o">-</span> <span class="n">command</span><span class="p">:</span>
 <span class="o">-</span> <span class="n">kube</span><span class="o">-</span><span class="n">scheduler</span>
-<span class="o">-</span> <span class="o">--</span><span class="n">address</span><span class="o">=</span><span class="mf">127.0.0.1</span>
+<span class="o">-</span> <span class="o">--</span><span class="n">address</span><span class="o">=</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>
 <span class="o">-</span> <span class="o">--</span><span class="n">kubeconfig</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">Kubernetes</span><span class="o">/</span><span class="n">scheduler</span><span class="o">.</span><span class="n">conf</span>
 <span class="o">-</span> <span class="o">--</span><span class="n">leader</span><span class="o">-</span><span class="n">elect</span><span class="o">=</span><span class="n">true</span>
 <span class="o">-</span> <span class="o">--</span><span class="n">feature</span><span class="o">-</span><span class="n">gates</span><span class="o">=</span><span class="n">TTLAfterFinished</span><span class="o">=</span><span class="n">true</span>
@@ -301,27 +300,27 @@ Job也会越多，人工删除会略显麻烦。有没有自动删除的办法�
 </div>
 </section>
 <section id="id2">
-<h3><a class="toc-backref" href="#id10">1.2 串行式任务</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id10">1.2 串行式任务</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>串行式任务可以连续、多次地执行某一任务。</p>
 <p>当上一个任务完成时，接着执行下一个任务，直到全部任务执行完。</p>
 <p>可以通过spec.completions属性来指定执行次数。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplejobv2.yml</span></code></p>
 <p>这里，通过定义spec.completions，我们将这个任务的执行次数设置为5。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobv2</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">completions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Start</span><span class="nv"> </span><span class="s">Job!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">30;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;Job</span><span class="nv"> </span><span class="s">Done!&quot;&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobv2</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">completions</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Start</span><span class="nv"> </span><span class="s">Job!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">30;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;Job</span><span class="nv"> </span><span class="s">Done!&quot;&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>接下来，运行以下命令，通过模板创建Job。</p>
@@ -346,11 +345,11 @@ examplejobv2   <span class="m">3</span>/5           2m9s       3m5s
 <p>这里也可以看出，Job的执行是不会区分机器的。与Deployment控制器一样，Job会根据调度规则动态分配到各个Node上并执行.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">get</span> <span class="n">pod</span> <span class="o">-</span><span class="n">o</span> <span class="n">wide</span>
 <span class="n">NAME</span>                 <span class="n">READY</span>   <span class="n">STATUS</span>      <span class="n">RESTARTS</span>   <span class="n">AGE</span>     <span class="n">IP</span>           <span class="n">NODE</span>            <span class="n">NOMINATED</span> <span class="n">NODE</span>   <span class="n">READINESS</span> <span class="n">GATES</span>
-<span class="n">examplejobv2</span><span class="o">-</span><span class="mi">6</span><span class="n">mbqr</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">3</span><span class="n">m17s</span>   <span class="mf">10.0.6.186</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">examplejobv2</span><span class="o">-</span><span class="n">h4vzz</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">m11s</span>   <span class="mf">10.0.6.103</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">examplejobv2</span><span class="o">-</span><span class="n">l9xwx</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">99</span><span class="n">s</span>     <span class="mf">10.0.6.228</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">examplejobv2</span><span class="o">-</span><span class="n">ltchr</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">m43s</span>   <span class="mf">10.0.6.170</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">examplejobv2</span><span class="o">-</span><span class="n">vwbzd</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">66</span><span class="n">s</span>     <span class="mf">10.0.6.66</span>    <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">examplejobv2</span><span class="o">-</span><span class="mi">6</span><span class="n">mbqr</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">3</span><span class="n">m17s</span>   <span class="mf">10.0</span><span class="o">.</span><span class="mf">6.186</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">examplejobv2</span><span class="o">-</span><span class="n">h4vzz</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">m11s</span>   <span class="mf">10.0</span><span class="o">.</span><span class="mf">6.103</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">examplejobv2</span><span class="o">-</span><span class="n">l9xwx</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">99</span><span class="n">s</span>     <span class="mf">10.0</span><span class="o">.</span><span class="mf">6.228</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">examplejobv2</span><span class="o">-</span><span class="n">ltchr</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">2</span><span class="n">m43s</span>   <span class="mf">10.0</span><span class="o">.</span><span class="mf">6.170</span>   <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+<span class="n">examplejobv2</span><span class="o">-</span><span class="n">vwbzd</span>   <span class="mi">0</span><span class="o">/</span><span class="mi">1</span>     <span class="n">Completed</span>   <span class="mi">0</span>          <span class="mi">66</span><span class="n">s</span>     <span class="mf">10.0</span><span class="o">.</span><span class="mf">6.66</span>    <span class="n">gitee</span><span class="o">-</span><span class="n">k8s</span><span class="o">-</span><span class="n">w27</span>   <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>           <span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
 <span class="p">[</span><span class="n">root</span><span class="nd">@ci</span><span class="o">-</span><span class="n">base</span> <span class="n">job</span><span class="o">-</span><span class="n">cronjob</span><span class="p">]</span><span class="c1"># kubectl get jobs</span>
 <span class="n">NAME</span>           <span class="n">COMPLETIONS</span>   <span class="n">DURATION</span>   <span class="n">AGE</span>
 <span class="n">examplejobv2</span>   <span class="mi">5</span><span class="o">/</span><span class="mi">5</span>           <span class="mi">2</span><span class="n">m43s</span>      <span class="mi">3</span><span class="n">m19s</span>
@@ -358,28 +357,28 @@ examplejobv2   <span class="m">3</span>/5           2m9s       3m5s
 </div>
 </section>
 <section id="id3">
-<h3><a class="toc-backref" href="#id11">1.3 并行式任务</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">1.3 并行式任务</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>当任务比较多时（比如执行几十甚至上百次），串行式任务就不太合适了。</p>
 <p>此时可以将其设定为并行式任务，同一时间并发多次执行任务。可以通过spec.parallelism指定并发数，也可以配合
 spec.completions属性来指定总任务的执行次数。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplejobv3.yml</span></code></p>
 <p>通过定义spec.completions，我们将这个任务设置为执行11次，并行数为4。</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobv3</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">completions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span><span class="w"></span>
-<span class="w">  </span><span class="nt">parallelism</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Start</span><span class="nv"> </span><span class="s">Job!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">30;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;Job</span><span class="nv"> </span><span class="s">Done!&quot;&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobv3</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">completions</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">11</span>
+  <span class="nt">parallelism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Start</span><span class="nv"> </span><span class="s">Job!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">30;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;Job</span><span class="nv"> </span><span class="s">Done!&quot;&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>运行以下命令，通过模板创建Pod。</p>
@@ -392,29 +391,29 @@ ContainerCreating）状态，直到达到设置的执行总数（11个）。</p>
 </section>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id12">2. Job的异常处理</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">2. Job的异常处理</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>因为不同于需要持续提供服务的Pod，Job中的Pod在正常完成任务后，需要及时退出，所以Pod模板中restartPolicy字段的值可以为
 Always、OnFailure和Never。</p>
 <p>但在Job中，该字段的值只能是<code class="docutils literal notranslate"><span class="pre">OnFailure</span></code>和<code class="docutils literal notranslate"><span class="pre">Never</span></code>中的一个。</p>
 <p>这里，我们将故意产生错误，看看restartPolicy字段分别设置为OnFailure和Never会有什么区别。</p>
 <section id="onfailure">
-<h3><a class="toc-backref" href="#id13">2.1 OnFailure</a><a class="headerlink" href="#onfailure" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">2.1 OnFailure</a><a class="headerlink" href="#onfailure" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">examplejobforonfailure.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobforonfailure</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">backoffLimit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OnFailure</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;this</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">error</span><span class="nv"> </span><span class="s">command!!&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobforonfailure</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">backoffLimit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">OnFailure</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;this</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">error</span><span class="nv"> </span><span class="s">command!!&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>backoffLimit属性表示重试次数的上限，默认为6次。这里的设置和默认值一样，不写也可以，之所以写出来是为了让读者明确地
@@ -431,24 +430,24 @@ BackOff），然后不断重启，RESTARTS的值不断累加</p>
 <p><img alt="image1" src="../../_images/image-20220412182246885.png" /></p>
 </section>
 <section id="never">
-<h3><a class="toc-backref" href="#id14">2.2 Never</a><a class="headerlink" href="#never" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">2.2 Never</a><a class="headerlink" href="#never" title="Permalink to this headline">¶</a></h3>
 <p>然后，再来看看restartPolicy字段设置为Never会发生什么事情。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplejobfornever.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobfornever</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">backoffLimit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;this</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">error</span><span class="nv"> </span><span class="s">command!!&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobfornever</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">backoffLimit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;this</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">error</span><span class="nv"> </span><span class="s">command!!&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>运行以下命令，通过模板创建Pod。</p>
@@ -463,25 +462,25 @@ BackOff），然后不断重启，RESTARTS的值不断累加</p>
 <p>除了上述明显的异常处理（如执行失败、执行中断等）之外，Job的执行过程中还有一类很难以察觉的异常。比如，任务中出现死循环，表现为一直卡在那里一动不动，看起来一直处于Running状态，但怎么执行都不会有结果。</p>
 </section>
 <section id="id5">
-<h3><a class="toc-backref" href="#id15">2.3 超时时间</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">2.3 超时时间</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>对于这类异常，Job模板提供了<code class="docutils literal notranslate"><span class="pre">spec.activeDeadlineSeconds</span></code>属性，指定执行任务的上限时间（单位为秒）。</p>
 <p>如果超过这个时间上限，任务将强制终止并删除,防止程序一直死循环或者假死。</p>
 <p><code class="docutils literal notranslate"><span class="pre">examplejobfordeadline.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobfordeadline</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">activeDeadlineSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Hello</span><span class="nv"> </span><span class="s">Kubernetes!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobfordeadline</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">activeDeadlineSeconds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Hello</span><span class="nv"> </span><span class="s">Kubernetes!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>这里将上限时间设置为10s，但在命令里面设置了长时间休眠，让这个任务持续执行3600s。</p>
@@ -495,7 +494,7 @@ restartPolicy字段设置为Never还是OnFailure）</p>
 </section>
 </section>
 <section id="cronjob">
-<h2><a class="toc-backref" href="#id16">3.CronJob控制器的基本操作</a><a class="headerlink" href="#cronjob" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">3.CronJob控制器的基本操作</a><a class="headerlink" href="#cronjob" title="Permalink to this headline">¶</a></h2>
 <p>CronJob控制器是比Job更高级的资源对象。CronJob控制器基于Job，并且添加了时间管理功能。通过CronJob控制器，可以实现以下
 类型的Job。</p>
 <ul class="simple">
@@ -503,82 +502,82 @@ restartPolicy字段设置为Never还是OnFailure）</p>
 <li><p>周期性地运行Job，例如，定期备份、发送邮件等。</p></li>
 </ul>
 <section id="cronjob-yaml">
-<h3><a class="toc-backref" href="#id17">3.1 CronJob控制器 yaml模板</a><a class="headerlink" href="#cronjob-yaml" title="Permalink to this heading">¶</a></h3>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span><span class="w">  </span><span class="c1">#必填，版本号</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span><span class="w"> </span><span class="c1"># 必填，资源类型</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="c1"># 必填，元数据</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;-cj</span><span class="w"> </span><span class="c1"># 必填，资源名称</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="w"> </span><span class="c1"># pod所属的命名空间</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"> </span><span class="c1"># 自定义标签</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"> </span><span class="c1">#自定义标签名字&lt;key: value&gt;</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"> </span><span class="c1"># 必填，部署的详细定义</span><span class="w"></span>
-<span class="w">  </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*&quot;</span><span class="w"> </span><span class="c1"># 必填，运行时间点</span><span class="w"></span>
-<span class="w">  </span><span class="nt">concurrencyPolicy</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Allow 允许|Forbid 禁止|Replace 替换</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># 并发执行策略，默认允许</span><span class="w"></span>
-<span class="w">  </span><span class="nt">failedJobHistoryLimit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"> </span><span class="c1"># 为失败的任务执行保留的历史记录数，默认为1</span><span class="w"></span>
-<span class="w">  </span><span class="nt">successfulJobsHistoryLimit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"> </span><span class="c1"># 为成功的任务执行保留的历史记录数，默认为3。</span><span class="w"></span>
-<span class="w">  </span><span class="nt">startingDeadlineSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"> </span><span class="c1"># 因各种原因缺乏执行作业的时间点所导致的启动作业错误的超时时长，会被记入错误历史记录。</span><span class="w"></span>
-<span class="w">  </span><span class="nt">suspend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span><span class="w"> </span><span class="c1"># 是否挂起后续的任务执行，默认为false，对运行中的作业不会产生影响。</span><span class="w"></span>
-<span class="w">  </span><span class="nt">jobTemplate</span><span class="p">:</span><span class="w"> </span><span class="c1"># 控制器模板，与template类似</span><span class="w"></span>
-<span class="w">    </span><span class="nt">metedata</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"> </span><span class="c1"># 自定义标签</span><span class="w"></span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"> </span><span class="c1">#自定义标签名字&lt;key: value&gt;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">template</span><span class="p">:</span><span class="w"> </span><span class="c1"># 必填，应用容器模板定义</span><span class="w"></span>
-<span class="w">        </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">containers</span><span class="p">:</span><span class="w"> </span><span class="c1">#此处参考pod的containers</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">            </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox:latest</span><span class="w"></span>
-<span class="w">            </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">            </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;echo&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;hello</span><span class="nv"> </span><span class="s">world&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">          </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"> </span><span class="c1"># job类型资源重启策略必须为Never或者OnFailure</span><span class="w"></span>
+<h3><a class="toc-backref" href="#id17">3.1 CronJob控制器 yaml模板</a><a class="headerlink" href="#cronjob-yaml" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>  <span class="c1">#必填，版本号</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span> <span class="c1"># 必填，资源类型</span>
+<span class="nt">metadata</span><span class="p">:</span> <span class="c1"># 必填，元数据</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;name&gt;-cj</span> <span class="c1"># 必填，资源名称</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span> <span class="c1"># pod所属的命名空间</span>
+  <span class="nt">labels</span><span class="p">:</span> <span class="c1"># 自定义标签</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span> <span class="c1">#自定义标签名字&lt;key: value&gt;</span>
+<span class="nt">spec</span><span class="p">:</span> <span class="c1"># 必填，部署的详细定义</span>
+  <span class="nt">schedule</span><span class="p">:</span> <span class="s">&quot;*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*&quot;</span> <span class="c1"># 必填，运行时间点</span>
+  <span class="nt">concurrencyPolicy</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">Allow 允许|Forbid 禁止|Replace 替换</span><span class="p p-Indicator">]</span> <span class="c1"># 并发执行策略，默认允许</span>
+  <span class="nt">failedJobHistoryLimit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1"># 为失败的任务执行保留的历史记录数，默认为1</span>
+  <span class="nt">successfulJobsHistoryLimit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1"># 为成功的任务执行保留的历史记录数，默认为3。</span>
+  <span class="nt">startingDeadlineSeconds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span> <span class="c1"># 因各种原因缺乏执行作业的时间点所导致的启动作业错误的超时时长，会被记入错误历史记录。</span>
+  <span class="nt">suspend</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">boolean</span> <span class="c1"># 是否挂起后续的任务执行，默认为false，对运行中的作业不会产生影响。</span>
+  <span class="nt">jobTemplate</span><span class="p">:</span> <span class="c1"># 控制器模板，与template类似</span>
+    <span class="nt">metedata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span> <span class="c1"># 自定义标签</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span> <span class="c1">#自定义标签名字&lt;key: value&gt;</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">template</span><span class="p">:</span> <span class="c1"># 必填，应用容器模板定义</span>
+        <span class="nt">spec</span><span class="p">:</span>
+          <span class="nt">containers</span><span class="p">:</span> <span class="c1">#此处参考pod的containers</span>
+          <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+            <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox:latest</span>
+            <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+            <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;echo&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;hello</span><span class="nv"> </span><span class="s">world&quot;</span><span class="p p-Indicator">]</span>
+          <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span> <span class="c1"># job类型资源重启策略必须为Never或者OnFailure</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p>yaml示例：以busybox镜像启动，输出hello
 world举例。记得将重启策略设置为Never或者OnFailure</p></li>
 </ul>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1beta1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CronJob</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-cj</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-cronjob</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*/2</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">jobTemplate</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-cronjob</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">            </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox:latest</span><span class="w"></span>
-<span class="w">            </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">            </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;echo&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;hello</span><span class="nv"> </span><span class="s">world&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">          </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1beta1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">CronJob</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-cj</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-cronjob</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">schedule</span><span class="p">:</span> <span class="s">&quot;*/2</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*&quot;</span>
+  <span class="nt">jobTemplate</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-cronjob</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">template</span><span class="p">:</span>
+        <span class="nt">spec</span><span class="p">:</span>
+          <span class="nt">containers</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+            <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox:latest</span>
+            <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+            <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;echo&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;hello</span><span class="nv"> </span><span class="s">world&quot;</span><span class="p p-Indicator">]</span>
+          <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">examplecronjob.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1beta1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CronJob</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplecronjob</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*/1</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">jobTemplate</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span><span class="w"></span>
-<span class="w">          </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span><span class="w"></span>
-<span class="w">            </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span><span class="w"></span>
-<span class="w">            </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
-<span class="w">            </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">            </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Start</span><span class="nv"> </span><span class="s">Job!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">30;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;Job</span><span class="nv"> </span><span class="s">Done!&quot;&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1beta1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">CronJob</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplecronjob</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">schedule</span><span class="p">:</span> <span class="s">&quot;*/1</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*&quot;</span>
+  <span class="nt">jobTemplate</span><span class="p">:</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">template</span><span class="p">:</span>
+        <span class="nt">spec</span><span class="p">:</span>
+          <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+          <span class="nt">containers</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examplejobcontainer</span>
+            <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+            <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+            <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;-c&#39;</span><span class="p p-Indicator">]</span>
+            <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;echo</span><span class="nv"> </span><span class="s">&quot;Start</span><span class="nv"> </span><span class="s">Job!&quot;;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">30;</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;Job</span><span class="nv"> </span><span class="s">Done!&quot;&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>CronJob控制器目前只存在于beta1版本中。CronJob控制器模板中的jobTemplate必须填入Job模板，这里引用了之前示例中的Job模板。

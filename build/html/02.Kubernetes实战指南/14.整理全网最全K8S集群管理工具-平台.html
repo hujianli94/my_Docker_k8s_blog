@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>整理全网最全K8S集群管理工具-平台 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -118,13 +117,13 @@
 </ul>
 </div>
 <section id="k8s">
-<h1><a class="toc-backref" href="#id4">整理全网最全K8S集群管理工具-平台</a><a class="headerlink" href="#k8s" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id4">整理全网最全K8S集群管理工具-平台</a><a class="headerlink" href="#k8s" title="Permalink to this headline">¶</a></h1>
 <p>参考文献：</p>
 <p><a class="reference external" href="https://www.cnblogs.com/aixing/p/15837547.html">https://www.cnblogs.com/aixing/p/15837547.html</a></p>
 <section id="kubernetespaas-kubegems">
-<h2><a class="toc-backref" href="#id5">1. 基于Kubernetes的通用开源PaaS 管理平台-<strong>KubeGems</strong></a><a class="headerlink" href="#kubernetespaas-kubegems" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">1. 基于Kubernetes的通用开源PaaS 管理平台-<strong>KubeGems</strong></a><a class="headerlink" href="#kubernetespaas-kubegems" title="Permalink to this headline">¶</a></h2>
 <section id="id1">
-<h3><a class="toc-backref" href="#id6">1.1 介绍</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id6">1.1 介绍</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>KubeGems 广泛的使用来自包括 云原生基金会（CNCF) 和 Istio社区
 开源的产品，并在此基础上做了二次开发和适配。针对产品内部比较通用的需求，KubeGems也会及时将代码以PR的方式回馈社区，以保证产品能够与社区进行同步更新。</p>
 <p>为更好地降低用户对云原生生态内的熟悉门槛，KubeGems
@@ -136,7 +135,7 @@ Kubernetes 集群之上，使用户能更完整能够体验到 KubeGems 的功�
 </div></blockquote>
 </section>
 <section id="id2">
-<h3><a class="toc-backref" href="#id7">1.2 安装</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id7">1.2 安装</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p><strong>KubeGems Installer Operator</strong> 是一个通过 Operator SDK 构建的 Ansible
 Kubernetes 控制器。通过 CRD 中的定义的字段对 Ansible
 进行变量传递。Installer Operator 的运行需要具备集群管理员的 RBAC
@@ -158,30 +157,30 @@ $ wget -O- https://github.com/kubegems/installer-operator/releases/download/<spa
 <p>更多使用方式可查看官方文档了解更多信息：<a class="reference external" href="https://www.kubegems.io/">https://www.kubegems.io/</a>。</p>
 <p>可以再创建一条 ingress 规则将 kubegems dashboard
 服务暴露出来，如下所示：</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ingress</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gems-dashboard</span><span class="w"></span>
-<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gemcloud-system</span><span class="w"></span>
-<span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kubernetes.io/ingress.class</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;nginx&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">nginx.ingress.kubernetes.io/proxy-read-timeout</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3600&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">nginx.ingress.kubernetes.io/proxy-connect-timeout</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3600&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">nginx.ingress.kubernetes.io/proxy-body-size</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;512m&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">nginx.org/proxy-buffering</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;false&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">nginx.org/websocket-services</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gems-dashboard</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubegems-dashboard.runjs.cn</span><span class="w"></span>
-<span class="w">      </span><span class="nt">http</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">paths</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span><span class="w"></span>
-<span class="w">            </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ImplementationSpecific</span><span class="w"></span>
-<span class="w">            </span><span class="nt">backend</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="nt">service</span><span class="p">:</span><span class="w"></span>
-<span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gems-dashboard</span><span class="w"></span>
-<span class="w">                </span><span class="nt">port</span><span class="p">:</span><span class="w"></span>
-<span class="w">                  </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8000</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gems-dashboard</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gemcloud-system</span>
+  <span class="nt">annotations</span><span class="p">:</span>
+    <span class="nt">kubernetes.io/ingress.class</span><span class="p">:</span> <span class="s">&quot;nginx&quot;</span>
+    <span class="nt">nginx.ingress.kubernetes.io/proxy-read-timeout</span><span class="p">:</span> <span class="s">&quot;3600&quot;</span>
+    <span class="nt">nginx.ingress.kubernetes.io/proxy-connect-timeout</span><span class="p">:</span> <span class="s">&quot;3600&quot;</span>
+    <span class="nt">nginx.ingress.kubernetes.io/proxy-body-size</span><span class="p">:</span> <span class="s">&quot;512m&quot;</span>
+    <span class="nt">nginx.org/proxy-buffering</span><span class="p">:</span> <span class="s">&quot;false&quot;</span>
+    <span class="nt">nginx.org/websocket-services</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gems-dashboard</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">rules</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubegems-dashboard.runjs.cn</span>
+      <span class="nt">http</span><span class="p">:</span>
+        <span class="nt">paths</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/</span>
+            <span class="nt">pathType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ImplementationSpecific</span>
+            <span class="nt">backend</span><span class="p">:</span>
+              <span class="nt">service</span><span class="p">:</span>
+                <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gems-dashboard</span>
+                <span class="nt">port</span><span class="p">:</span>
+                  <span class="nt">number</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8000</span>
 </pre></div>
 </div>
 <p>默认登录密码：</p>
@@ -190,7 +189,7 @@ $ wget -O- https://github.com/kubegems/installer-operator/releases/download/<spa
 </div></blockquote>
 </section>
 <section id="id3">
-<h3><a class="toc-backref" href="#id8">1.3 使用</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id8">1.3 使用</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>使用 <code class="docutils literal notranslate"><span class="pre">admin</span></code> 账号登录 KubeGems 管理后台，点击右下角 【工具箱】
 图标，进入 【系统管理】</p></li>

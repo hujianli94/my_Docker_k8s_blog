@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Docker镜像的使用 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -167,13 +166,13 @@
 </ul>
 </div>
 <section id="docker">
-<h1><a class="toc-backref" href="#id23">Docker镜像的使用</a><a class="headerlink" href="#docker" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id23">Docker镜像的使用</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h1>
 <p><strong>镜像</strong>
 是Docker三大核心概念中最重要的，自Docker诞生之日起镜像就是相关社区最为热门的关键词。</p>
 <p>Docker运行容器前需要本地存在对应的镜像，如果镜像不存在，Docker会尝试先从默认镜像仓库下载（默认使用Docker
 Hub公共注册服务器中的仓库），用户也可以通过配置，使用自定义的镜像仓库。</p>
 <section id="id1">
-<h2><a class="toc-backref" href="#id24">1. 镜像写时复制机制</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id24">1. 镜像写时复制机制</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>通过 docker run
 命令指定镜像创建一个容器时，实际上是在该镜像之上创建一个空的可读写文件系统层级。</p>
 <p>可以将这个文件系统当成一个新的临时镜像，而命令里所指定的镜像称为父镜像。父镜像的内容都是以只读方式挂载进来的，容器会读取共享父镜像的内容。</p>
@@ -215,9 +214,9 @@ $ docker search nginx
 </div>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id25">2. 本地镜像管理</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id25">2. 本地镜像管理</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <section id="id3">
-<h3><a class="toc-backref" href="#id26">2.1 获取镜像</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id26">2.1 获取镜像</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>镜像是运行容器的前提，官方的Docker
 Hub网站已经提供了数十万个镜像供大家开放下载。本节主要介绍Docker镜像的pull子命令。</p>
 <p>可以使用docker[image]pull命令直接从Docker
@@ -244,7 +243,7 @@ root@65663247040f:/# exit
 </div>
 </section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id27">2.2 查看镜像</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">2.2 查看镜像</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p><strong>1.使用images命令列出镜像</strong></p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker image ls
 <span class="c1"># 或者</span>
@@ -323,7 +322,7 @@ IMAGE        CREATED       CREATED BY              SIZE                   COMMEN
 <p><code class="docutils literal notranslate"><span class="pre">注意，过长的命令被自动截断了，可以使用前面提到的--no-trunc选项来输出完整命令。</span></code></p>
 </section>
 <section id="id5">
-<h3><a class="toc-backref" href="#id28">2.3 搜寻镜像</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id28">2.3 搜寻镜像</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>使用docker search命令可以搜索Docker Hub官方仓库中的镜像。语法为docker
 search[option]keyword。支持的命令选项主要包括：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>·-f，--filter filter：过滤输出内容；
@@ -357,7 +356,7 @@ tensorflow/tf_grpc_server Server <span class="k">for</span> TensorFlow GRPC Dist
 <p>可以看到返回了很多包含关键字的镜像，其中包括镜像名字、描述、收藏数（表示该镜像的受欢迎程度）、是否官方创建、是否自动创建等。默认的输出结果将按照星级评价进行排序。</p>
 </section>
 <section id="id6">
-<h3><a class="toc-backref" href="#id29">2.4 下载镜像</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id29">2.4 下载镜像</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 首先本地搜索ubuntu镜像，如果没有就去Docker Hub上拉取ubuntu镜像</span>
 $ docker run ubuntu <span class="nb">echo</span> <span class="s2">&quot;hello docker&quot;</span>
 
@@ -371,7 +370,7 @@ $ docker pull ubuntu
 </div>
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id30">2.5 删除镜像</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">2.5 删除镜像</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#1.使用标签删除镜像</span>
 $ docker rmi myubuntu:latest
 <span class="c1"># 或者</span>
@@ -426,7 +425,7 @@ image prune命令来进行清理。</p>
 </pre></div>
 </div>
 <section id="id8">
-<h4>清理删除未被使用的镜像<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h4>
+<h4>清理删除未被使用的镜像<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 <p>描述 cicd
 持久化部署节点越来越多的镜像，磁盘空间越来越不够，这时需要做一个定时清理没有使用的镜像。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>选项
@@ -439,7 +438,7 @@ until           仅删除在给定时间戳之前创建的映像
 </div>
 </section>
 <section id="id9">
-<h4>定时任务清理<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h4>
+<h4>定时任务清理<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 <p>清理10天前创建且当前无容器实例使用的镜像</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ cat &gt;&gt; /var/spool/cron/crontabs/root <span class="s">&lt;&lt; EOF</span>
 <span class="s"># 每周一清理无效镜像</span>
@@ -452,9 +451,9 @@ until           仅删除在给定时间戳之前创建的映像
 </section>
 </section>
 <section id="id10">
-<h3><a class="toc-backref" href="#id31">2.6 创建本地镜像</a><a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id31">2.6 创建本地镜像</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <section id="commit">
-<h4>1.基于已有容器commit创建<a class="headerlink" href="#commit" title="Permalink to this heading">¶</a></h4>
+<h4>1.基于已有容器commit创建<a class="headerlink" href="#commit" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>root@hujianli-docker01 centos<span class="o">]</span><span class="c1"># docker run -it ubuntu</span>
 
 root@d78a1c4c8541:/# apt-get update
@@ -492,7 +491,7 @@ root@aa51b9edac11:/# sqlite3 -version
 </div>
 </section>
 <section id="id11">
-<h4>2.基于本地模板导入<a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h4>
+<h4>2.基于本地模板导入<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
 <p>用户也可以直接从一个操作系统模板文件导入一个镜像，主要使用docker[container]import命令。</p>
 <p>命令格式为docker[image]import[OPTIONS]file|URL|-[REPOSITORY[：TAG]]</p>
 <p>要直接导入一个镜像，可以使用OpenVZ提供的模板来创建，或者用其他已导出的镜像模板来创建。</p>
@@ -510,14 +509,14 @@ centos                                                     <span class="m">7</sp
 </div>
 </section>
 <section id="dockerfile">
-<h4>3.基于Dockerfile创建<a class="headerlink" href="#dockerfile" title="Permalink to this heading">¶</a></h4>
+<h4>3.基于Dockerfile创建<a class="headerlink" href="#dockerfile" title="Permalink to this headline">¶</a></h4>
 <p>基于Dockerfile创建是最常见的方式。Dockerfile是一个文本文件，利用给定的指令描述基于某个父镜像创建新镜像的过程。</p>
 <p>下面给出Dockerfile的一个简单示例，基于debian：stretch-slim镜像安装Python
 3环境，构成一个新的python：3镜像：</p>
 <p><code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code></p>
-<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">debian:stretch-slim</span>
-<span class="k">LABEL</span><span class="w"> </span><span class="nv">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span> <span class="nv">maintainer</span><span class="o">=</span><span class="s2">&quot;docker user &lt;docker_user@github&gt;&quot;</span>
-<span class="k">RUN</span><span class="w"> </span>apt-get update <span class="o">&amp;&amp;</span> <span class="se">\</span>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span> <span class="s">debian:stretch-slim</span>
+<span class="k">LABEL</span> <span class="nv">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span> <span class="nv">maintainer</span><span class="o">=</span><span class="s2">&quot;docker user &lt;docker_user@github&gt;&quot;</span>
+<span class="k">RUN</span> apt-get update <span class="o">&amp;&amp;</span> <span class="se">\</span>
     apt-get install -y python3 <span class="o">&amp;&amp;</span> <span class="se">\</span>
     apt-get clean <span class="o">&amp;&amp;</span> <span class="se">\</span>
     rm -rf /var/lib/apt/lists/*
@@ -537,49 +536,49 @@ python <span class="m">3</span> 4b10f46eacc8 About a minute ago   <span class="m
 命令从这个文件中创建镜像。这种方法可以使镜像的创
 建变得透明和独立化，并且创建过程可以被重复执行。</p>
 <div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="c"># Version: 1.0.1</span>
-<span class="k">FROM</span><span class="w"> </span><span class="s">ubuntu:latest</span>
-<span class="k">MAINTAINER</span><span class="w"> </span><span class="s">xxh &quot;xxh@qq.com&quot;</span>
+<span class="k">FROM</span> <span class="s">ubuntu:latest</span>
+<span class="k">MAINTAINER</span><span class="s"> xxh &quot;xxh@qq.com&quot;</span>
 <span class="c">#设置root用户为后续命令的执行者</span>
-<span class="k">USER</span><span class="w"> </span><span class="s">root</span>
+<span class="k">USER</span><span class="s"> root</span>
 
 <span class="c">#执行操作</span>
-<span class="k">RUN</span><span class="w"> </span>apt-get update
-<span class="k">RUN</span><span class="w"> </span>apt-get install -y nginx
+<span class="k">RUN</span> apt-get update
+<span class="k">RUN</span> apt-get install -y nginx
 
 <span class="c">#使用&amp;&amp;拼接命令</span>
-<span class="k">RUN</span><span class="w"> </span>touch test.txt <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;abc&quot;</span> &gt;&gt; abc.txt
+<span class="k">RUN</span> touch test.txt <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;abc&quot;</span> &gt;&gt; abc.txt
 
 <span class="c">#对外暴露端口</span>
-<span class="k">EXPOSE</span><span class="w"> </span><span class="s">80 8080 1038</span>
+<span class="k">EXPOSE</span><span class="s"> 80 8080 1038</span>
 
 <span class="c">#添加文件</span>
-<span class="k">ADD</span><span class="w"> </span>abc.txt /opt/
+<span class="k">ADD</span> abc.txt /opt/
 
 <span class="c">#添加文件夹</span>
-<span class="k">ADD</span><span class="w"> </span>/webapp /opt/webapp
+<span class="k">ADD</span> /webapp /opt/webapp
 
 <span class="c">#添加网络文件</span>
-<span class="k">ADD</span><span class="w"> </span>https://www.baidu.com/img/bd_logo1.png /opt/
+<span class="k">ADD</span> https://www.baidu.com/img/bd_logo1.png /opt/
 
 
 <span class="c">#设置环境变量</span>
-<span class="k">ENV</span><span class="w"> </span><span class="nv">WEBAPP_PORT</span><span class="o">=</span><span class="m">9090</span>
+<span class="k">ENV</span> <span class="nv">WEBAPP_PORT</span><span class="o">=</span><span class="m">9090</span>
 
 <span class="c">#设置工作目录</span>
-<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/opt/</span>
+<span class="k">WORKDIR</span><span class="s"> /opt/</span>
 
 <span class="c">#设置启动命令</span>
-<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ls&quot;</span><span class="p">]</span>
+<span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&quot;ls&quot;</span><span class="p">]</span>
 
 <span class="c">#设置启动参数</span>
-<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;-l&quot;</span><span class="w"> </span><span class="p">]</span>
+<span class="k">CMD</span> <span class="p">[</span><span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-l&quot;</span> <span class="p">]</span>
 
 <span class="c">#设置卷</span>
-<span class="k">VOLUME</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/data&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/var/www&quot;</span><span class="p">]</span>
+<span class="k">VOLUME</span> <span class="p">[</span><span class="s2">&quot;/data&quot;</span><span class="p">,</span> <span class="s2">&quot;/var/www&quot;</span><span class="p">]</span>
 
 <span class="c">#设置子镜像的触发操作</span>
-<span class="k">ONBUILD</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span>. /app/src
-<span class="k">ONBUILD</span><span class="w"> </span><span class="k">RUN</span><span class="w"> </span><span class="nb">echo</span> <span class="s2">&quot;on build excuted&quot;</span> &gt;&gt; onbuild.txt
+<span class="k">ONBUILD</span> <span class="k">ADD</span> . /app/src
+<span class="k">ONBUILD</span> <span class="k">RUN</span> <span class="nb">echo</span> <span class="s2">&quot;on build excuted&quot;</span> &gt;&gt; onbuild.txt
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span> <span class="pre">-t</span> <span class="pre">xixihe/test:v1</span> <span class="pre">.</span></code></p>
@@ -600,7 +599,7 @@ xixihe/test:v2指向的是同一个镜像实体 8758374dc545 ：</p>
 </section>
 </section>
 <section id="id12">
-<h2><a class="toc-backref" href="#id32">3. 存出和载入镜像</a><a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id32">3. 存出和载入镜像</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <p>存出镜像</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker save -o ubuntu_14.04.tar ubuntu:14.04
 <span class="c1">#用户就可以通过复制ubuntu_14.04.tar文件将该镜像分享给他人使用了</span>
@@ -616,9 +615,9 @@ $ docker load &lt; ubuntu_14.04.tar
 images命令进行查看，与原镜像一致。</p>
 </section>
 <section id="id13">
-<h2><a class="toc-backref" href="#id33">4.上传镜像</a><a class="headerlink" href="#id13" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id33">4.上传镜像</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
 <section id="docker-hub">
-<h3><a class="toc-backref" href="#id34">4.1 推送到Docker Hub</a><a class="headerlink" href="#docker-hub" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id34">4.1 推送到Docker Hub</a><a class="headerlink" href="#docker-hub" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="m">1</span>. 登录Docker Hub
 <span class="m">2</span>. 推送镜像（如果命名空间不一致，就需要使用“docker tag”命令修改名称和标签）。
 <span class="m">3</span>. docker push <span class="m">1879324764</span>/myubuntu:latest
@@ -626,7 +625,7 @@ images命令进行查看，与原镜像一致。</p>
 </div>
 </section>
 <section id="id14">
-<h3><a class="toc-backref" href="#id35">4.2 推送到腾讯云镜像仓库</a><a class="headerlink" href="#id14" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id35">4.2 推送到腾讯云镜像仓库</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker login --username <span class="o">{</span>用户名<span class="o">}</span> ccr.ccs.tencentyun.com
 $ docker tag dingtalk.net ccr.css.tencentyun.com/xinlai/dingtalk.net
 $ docker images ccr.ccs.tencentyun.com/xinlai/ding*
@@ -635,7 +634,7 @@ $ docker push ccr.css.tencentyun.com/xinlai/dingtalk.net
 </div>
 </section>
 <section id="id15">
-<h3><a class="toc-backref" href="#id36">4.3推送到阿里云镜像仓库</a><a class="headerlink" href="#id15" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id36">4.3推送到阿里云镜像仓库</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="m">1</span>. 登录阿里云Docker Registry
 $ sudo docker login --username<span class="o">=</span>hujianli_722 registry.cn-hangzhou.aliyuncs.com
 // 密码提示：adminXXXX
@@ -652,7 +651,7 @@ $ sudo docker push registry.cn-hangzhou.aliyuncs.com/devops_hu/devops_hu:<span c
 </section>
 </section>
 <section id="id16">
-<h2><a class="toc-backref" href="#id37">5. Docker Hub</a><a class="headerlink" href="#id16" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id37">5. Docker Hub</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h2>
 <p>Docker
 Hub的网址是https://hub.docker.com，它与提供源代码托管服务的GitHub类似，</p>
 <p>不同的是Docker Hub提供的是镜像托管服务。利用Docker
@@ -664,7 +663,7 @@ redis 、 mysql 、 wordpress
 Hat等极具背景的大公司）进行
 开发维护，最后还需要Docker官方认证通过。另一类为普通用户镜像。</p>
 <section id="id17">
-<h3><a class="toc-backref" href="#id38">5.1 登录</a><a class="headerlink" href="#id17" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id38">5.1 登录</a><a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 登录Docker Hub账号</span>
 $ docker login
 
@@ -685,7 +684,7 @@ $ cat ~/.docker/config.json
 ，指定的仓库在本地的所有镜像都会上传到Docker Hub。</p>
 </section>
 <section id="id18">
-<span id="id19"></span><h3><a class="toc-backref" href="#id39">5.2 上传镜像</a><a class="headerlink" href="#id18" title="Permalink to this heading">¶</a></h3>
+<span id="id19"></span><h3><a class="toc-backref" href="#id39">5.2 上传镜像</a><a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#可以使用docker push命令上传镜像到仓库，默认上传到Docker Hub官方仓库</span>
 docker push NAME<span class="o">[</span>:TAG<span class="o">]</span> <span class="p">|</span> <span class="o">[</span>REGISTRY_HOST<span class="o">[</span>:REGISTRY_PORT<span class="o">]</span>/<span class="o">]</span>NAME<span class="o">[</span>:TAG<span class="o">]</span>
 
@@ -733,7 +732,7 @@ Login Succeeded
 </section>
 </section>
 <section id="id20">
-<h2><a class="toc-backref" href="#id40">7. 搭建自己的私有仓库</a><a class="headerlink" href="#id20" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id40">7. 搭建自己的私有仓库</a><a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h2>
 <p>除了使用Docker官方提供的注册服务器Docker
 Hub来存储管理镜像之外，我们还可以搭建自 己的注册服务器。Docker
 Hub所使用的注册服务器本身是开源的，并且以镜像的形式分发在 Docker Hub上。</p>
@@ -774,7 +773,7 @@ e35c26122c2ada4f2fb1a84542c3a0ec9e1e0dc191949e01cf5ba43da6aef410
 </div>
 </section>
 <section id="id21">
-<h2><a class="toc-backref" href="#id41">8. 镜像制作</a><a class="headerlink" href="#id21" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id41">8. 镜像制作</a><a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h2>
 <p>操作系统基础镜像制作目前，具有一定规模的企业都会自己制作操作系统镜像，而不是直接使用公有Hub上的镜像或者从镜像提供商的网站下载并直接使用，主要原因如下：</p>
 <p>1）下载的容器镜像文件过大，浪费空间，执行效率低。</p>
 <p>2）下载的容器镜像过小，不少驱动、工具或文件在容器镜像中并没有包括，不能满足应用的要求。</p>
@@ -797,7 +796,7 @@ image，其他镜像都是这个镜像的上层镜像。由于容器共享宿主
 <p><a class="reference external" href="https://pan.baidu.com/s/13tm-xRJz8LjHV3KtRxPVKw">https://pan.baidu.com/s/13tm-xRJz8LjHV3KtRxPVKw</a>，密码：jgwh。</p>
 </section>
 <section id="id22">
-<h2><a class="toc-backref" href="#id42">9. 系统资源限制配置说明</a><a class="headerlink" href="#id22" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id42">9. 系统资源限制配置说明</a><a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h2>
 <p>通过修改/etc/security/limit.conf文件可限制用户同一时刻打开文件数和开启进程数等。</p>
 <p>容器技术进行资源限制的方法有两种：</p>
 <p>1）修改<code class="docutils literal notranslate"><span class="pre">/usr/lib/systemd/system/docker.service</span></code>文件可实现全局性控制，docker

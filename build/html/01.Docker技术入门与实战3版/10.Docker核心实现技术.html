@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Docker核心实现技术 &mdash; 运维开发修炼之路</title>
@@ -14,7 +14,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -176,9 +175,9 @@
 </ul>
 </div>
 <section id="docker">
-<h1><a class="toc-backref" href="#id19">Docker核心实现技术</a><a class="headerlink" href="#docker" title="Permalink to this heading">¶</a></h1>
+<h1><a class="toc-backref" href="#id19">Docker核心实现技术</a><a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
-<h2><a class="toc-backref" href="#id20">1.基本架构</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id20">1.基本架构</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>作为最流行的容器虚拟化手段，Docker深度应用了操作系统相关领域的多项底层技术。</p>
 <p>最早期版本的Docker基于已经相对成熟的Linux
 Container（LXC）技术快速实现。自0.9版本起，Docker逐渐摆脱传统LXC的限制，转移到全新设计的libcontainer之上，后来更是以此为基础推出了开放容器运行时支持runc（<a class="reference external" href="https://github.com/opencontainers/runc">https://github.com/opencontainers/runc</a>
@@ -192,7 +191,7 @@ API来进行通信。如图:</p>
 <p>Docker基本架构</p>
 <p><img alt="image0" src="../_images/docker_basejiagou001.png" /></p>
 <section id="id2">
-<h3><a class="toc-backref" href="#id21">1.服务端</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">1.服务端</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Docker服务端一般在宿主主机后台运行，dockerd作为服务端接受来自客户的请求，并通过containerd具体处理与容器相关的请求，包括创建、运行、删除容器等。服务端主要包括四个组件：</p>
 <p>·dockerd：为客户端提供RESTful
 API，响应来自客户端的请求，采用模块化的架构，通过专门的Engine模块来分发管理各个来自客户端的任务。可以单独升级；</p>
@@ -223,7 +222,7 @@ root      <span class="m">3084</span>   <span class="m">934</span>  <span class=
 </div>
 </section>
 <section id="id3">
-<h3><a class="toc-backref" href="#id22">2.客户端</a><a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">2.客户端</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>Docker客户端为用户提供一系列可执行命令，使用这些命令可实现与Docker服务端交互。</p>
 <p>用户使用的Docker可执行命令即为客户端程序。与Docker服务端保持运行方式不同，客户端发送命令后，等待服务端返回；一旦收到返回后，客户端立刻执行结束并退出。用户执行新的命令，需要再次调用客户端命令。</p>
 <p>客户端默认通过本地的unix：///var/run/docker.sock套接字向服务端发送命令。如果服务端没有监听在默认的地址，则需要客户端在执行命令的时候显式地指定服务端地址。例如，假定服务端监听在本地的TCP连接1234端口为tcp：//127.0.0.1：1234，只有通过-H参数指定了正确的地址信息才能连接到服务端：</p>
@@ -238,7 +237,7 @@ Images: <span class="m">52</span>
 </div>
 </section>
 <section id="id4">
-<h3><a class="toc-backref" href="#id23">3.镜像仓库</a><a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">3.镜像仓库</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>镜像是使用容器的基础，Docker使用镜像仓库（Registry）在大规模场景下存储和分发Docker镜像。镜像仓库提供了对不同存储后端的支持，存放镜像文件，并且支持RESTful
 API，接收来自dockerd的命令，包括拉取、上传镜像等。</p>
 <p>用户从镜像仓库拉取的镜像文件会存储在本地使用；用户同时也可以上传镜像到仓库，方便其他人获取。使用镜像仓库可以极大地简化镜像管理和分发的流程。镜像仓库目前作为Docker分发项目，已经开源在Github（<a class="reference external" href="https://github.com/docker/distribution">https://github.com/docker/distribution</a>
@@ -246,7 +245,7 @@ API，接收来自dockerd的命令，包括拉取、上传镜像等。</p>
 </section>
 </section>
 <section id="id5">
-<h2><a class="toc-backref" href="#id24">2.命名空间</a><a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id24">2.命名空间</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <p>命名空间（namespace）是Linux内核的一个强大特性，为容器虚拟化的实现带来极大便利。利用这一特性，每个容器都可以拥有自己单独的命名空间，运行在其中的应用都像是在独立的操作系统环境中一样。命名空间机制保证了容器之间彼此互不影响。</p>
 <p>在操作系统中，包括内核、文件系统、网络、进程号（Process
 ID，PID）、用户号（User ID，UID）、进程间通信（InterProcess
@@ -255,7 +254,7 @@ Communication，IPC）等资源，所有的资源都是应用进程直接共享�
 <p>Docker容器每次启动时候，通过调用func
 setNamespaces（daemon<em>Daemon，s</em>specs.Spec，c*container.Container）error方法来完成对各个命名空间的配置。</p>
 <section id="id6">
-<h3><a class="toc-backref" href="#id25">1.进程命名空间</a><a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">1.进程命名空间</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>Linux通过进程命名空间管理进程号，对于同一进程（同一个task_struct），在不同的命名空间中，看到的进程号不相同。每个进程命名空间有一套自己的进程号管理方法。进程命名空间是一个父子关系的结构，子空间中的进程对于父空间是可见的。新fork出的一个进程，在父命名空间和子命名空间将分别对应不同的进程号。例如，查看Docker服务主进程（dockerd）的进程号是3393，它作为父进程启动了docker-containerd进程，进程号为3398，代码如下所示：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ ps -ef <span class="p">|</span>grep docker
 root      <span class="m">3393</span>     <span class="m">1</span>  <span class="m">0</span> Jan18 ?        <span class="m">00</span>:43:02 /usr/bin/dockerd -H fd:// -H tcp:// <span class="m">127</span>.0.0.1:2375 -H unix:///var/run/docker.sock
@@ -297,12 +296,12 @@ dockerd -H fd:// -H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock
 <p>图17-2　宿主机与容器内进程空间的关系</p>
 </section>
 <section id="ipc">
-<h3><a class="toc-backref" href="#id26">2.IPC命名空间</a><a class="headerlink" href="#ipc" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id26">2.IPC命名空间</a><a class="headerlink" href="#ipc" title="Permalink to this headline">¶</a></h3>
 <p>容器中的进程交互还是采用了Linux常见的进程间交互方法（Interprocess
 Communication，IPC），包括信号量、消息队列和共享内存等方式。PID命名空间和IPC命名空间可以组合起来一起使用，同一个IPC命名空间内的进程可以彼此可见，允许进行交互；不同空间的进程则无法交互。</p>
 </section>
 <section id="id7">
-<h3><a class="toc-backref" href="#id27">3.网络命名空间</a><a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">3.网络命名空间</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>有了进程命名空间后，不同命名空间中的进程号可以相互隔离，但是网络端口还是共享本地系统的端口。</p>
 <p>通过网络命名空间，可以实现网络隔离。一个网络命名空间为进程提供了一个完全独立的网络协议栈的视图。包括网络设备接口、IPv4和IPv6协议栈、IP路由表、防火墙规则、sockets等，这样每个容器的网络就能隔离开来。</p>
 <p>Docker采用虚拟网络设备（Virtual Network
@@ -328,12 +327,12 @@ docker0         <span class="m">8000</span>.0242cf315ef7       no              v
 </div>
 </section>
 <section id="id8">
-<h3><a class="toc-backref" href="#id28">4.挂载命名空间</a><a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id28">4.挂载命名空间</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <p>类似于chroot，挂载（Mount，MNT）命名空间可以将一个进程的根文件系统限制到一个特定的目录下。</p>
 <p>挂载命名空间允许不同命名空间的进程看到的本地文件位于宿主机中不同路径下，每个命名空间中的进程所看到的文件目录彼此是隔离的。例如，不同命名空间中的进程，都认为自己独占了一个完整的根文件系统（rootfs），但实际上，不同命名空间中的文件彼此隔离，不会造成相互影响，同时也无法影响宿主机文件系统中的其他路径。</p>
 </section>
 <section id="uts">
-<h3><a class="toc-backref" href="#id29">5.UTS命名空间</a><a class="headerlink" href="#uts" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id29">5.UTS命名空间</a><a class="headerlink" href="#uts" title="Permalink to this headline">¶</a></h3>
 <p>UTS（UNIX Time-sharing
 System）命名空间允许每个容器拥有独立的主机名和域名，从而可以虚拟出一个有独立主机名和网络空间的环境，就跟网络上一台独立的主机一样。</p>
 <p>如果没有手动指定主机名称，Docker容器的主机名就是返回的容器ID的前6字节前缀，否则为指定的用户名：</p>
@@ -349,7 +348,7 @@ test2
 </div>
 </section>
 <section id="id9">
-<h3><a class="toc-backref" href="#id30">6.用户命名空间</a><a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">6.用户命名空间</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <p>每个容器可以有不同的用户和组id，也就是说，可以在容器内使用特定的内部用户执行程序，而非本地系统上存在的用户。</p>
 <p>每个容器内部都可以有最高权限的root帐号，但跟宿主主机不在一个命名空间。通过使用隔离的用户命名空间，可以提高安全性，避免容器内的进程获取到额外的权限；同时通过使用不同用户也可以进一步在容器内控制权限。</p>
 <p>例如，下面的命令在容器内创建了test用户，只有普通权限，无法访问更高权限的资源：</p>
@@ -365,7 +364,7 @@ cat: /proc/1/environ: Permission denied
 </section>
 </section>
 <section id="id10">
-<h2><a class="toc-backref" href="#id31">3.控制组</a><a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id31">3.控制组</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <p>控制组（CGroups）是Linux内核的一个特性，主要用来对共享资源进行隔离、限制、审计等。只有将分配到容器的资源进行控制，才能避免多个容器同时运行时对宿主机系统的资源竞争。每个控制组是一组对资源的限制，支持层级化结构。</p>
 <p>控制组技术最早是由Google的程序员在2006年提出的，Linux内核自2.6.24开始原生支持，可以提供对容器的内存、CPU、磁盘IO等资源进行限制和计费管理。最初的设计目标是为不同的应用情况提供统一的接口，从控制单一进程（比如nice工具）到系统级虚拟化（包括OpenVZ，Linux-VServer，LXC等）。</p>
 <p>具体来看，控制组提供如下功能：</p>
@@ -440,11 +439,11 @@ total_unevictable <span class="m">0</span>
 <p>同时，可以在创建或启动容器时为每个容器指定资源的限制，例如使用-c|–cpu-shares[=0]参数可调整容器使用CPU的权重；使用-m|–memory[=MEMORY]参数可调整容器最多使用内存的大小。</p>
 </section>
 <section id="id11">
-<h2><a class="toc-backref" href="#id32">4.联合文件系统</a><a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id32">4.联合文件系统</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
 <p>联合文件系统（UnionFS）是一种轻量级的高性能分层文件系统，它支持将文件系统中的修改信息作为一次提交，并层层叠加，同时可以将不同目录挂载到同一个虚拟文件系统下，应用看到的是挂载的最终结果。联合文件系统是实现Docker镜像的技术基础。</p>
 <p>Docker镜像可以通过分层来进行继承。例如，用户基于基础镜像（用来生成其他镜像的基础，往往没有父镜像）来制作各种不同的应用镜像。这些镜像共享同一个基础镜像层，提高了存储效率。此外，当用户改变了一个Docker镜像（比如升级程序到新的版本），则会创建一个新的层（layer）。因此，用户不用替换整个原镜像或者重新建立，只需要添加新层即可。用户分发镜像的时候，也只需要分发被改动的新层内容（增量部分）。这让Docker的镜像管理变得十分轻量和快速。</p>
 <section id="id12">
-<h3><a class="toc-backref" href="#id33">1.Docker存储原理</a><a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id33">1.Docker存储原理</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <p>Docker目前通过插件化方式支持多种文件系统后端。Debian/Ubuntu上成熟的AUFS（Another
 Union File System，或v2版本往后的Advanced multi layered Unification File
 System），就是一种联合文件系统实现。AUFS支持为每一个成员目录（类似Git的分支）设定只读（readonly）、读写（readwrite）或写出（whiteout-able）权限，同时AUFS里有一个类似分层的概念，对只读权限的分支可以逻辑上进行增量地修改（不影响只读部分的）。</p>
@@ -463,7 +462,7 @@ IMAGE               CREATED             CREATED BY                              
 <p>另外，对于频繁启停Docker容器的场景下，文件系统的IO性能也将十分关键。</p>
 </section>
 <section id="id13">
-<h3><a class="toc-backref" href="#id34">2.Docker存储结构</a><a class="headerlink" href="#id13" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id34">2.Docker存储结构</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <p>所有的镜像和容器都存储都在Docker指定的存储目录下，以Ubuntu宿主系统为例，默认路径是<code class="docutils literal notranslate"><span class="pre">/var/lib/docker</span></code>。在这个目录下面，存储由Docker镜像和容器运行相关的文件和目录，可能包括builder、containerd、containers、image、network、aufs/overlay2、plugins、runtimes、swarm、tmp、trust、volumes等。</p>
 <p>其中，如果使用AUFS存储后端，则最关键的就是aufs目录，保存Docker镜像和容器相关数据和信息。包括layers、diff和mnt三个子目录。1.9版本和之前的版本中，命名跟镜像层的ID是匹配的；而自1.10开始，层数据相关的文件和目录名与层ID不再匹配。</p>
 <p>layers子目录包含层属性文件，用来保存各个镜像层的元数据：某镜像的某层下面包括哪些层。例如：某镜像由5层组成，则文件内容应该如下：</p>
@@ -486,7 +485,7 @@ dev  etc
 <p>mnt子目录下面的子目录是各个容器最终的挂载点，所有相关的AUFS层在这里挂载到一起，形成最终效果。一个运行中容器的根文件系统就挂载在这下面的子目录上。同样，1.10版本之前的Docker中，子目录名和容器ID是一致的。其中，还包括容器的元数据、配置文件和运行日志等。</p>
 </section>
 <section id="id14">
-<h3><a class="toc-backref" href="#id35">3.多种文件系统比较</a><a class="headerlink" href="#id14" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id35">3.多种文件系统比较</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <p>Docker目前支持的联合文件系统种类包括AUFS、btrfs、Device
 Mapper、overlay、over-lay2、vfs、zfs等。多种文件系统目前的支持情况总结如下：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>·AUFS：最早支持的文件系统，对Debian/Ubuntu支持好，虽然没有合并到Linux内核中，但成熟度很高；
@@ -508,11 +507,11 @@ Mapper、overlay、over-lay2、vfs、zfs等。多种文件系统目前的支持�
 </section>
 </section>
 <section id="linux">
-<h2><a class="toc-backref" href="#id36">5.Linux网络虚拟化</a><a class="headerlink" href="#linux" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id36">5.Linux网络虚拟化</a><a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
 <p>Docker的本地网络实现其实就是利用了Linux上的网络命名空间和虚拟网络设备（特别是veth
 pair）。熟悉这两部分的基本概念有助于理解Docker网络的实现过程。</p>
 <section id="id15">
-<h3><a class="toc-backref" href="#id37">1.基本原理</a><a class="headerlink" href="#id15" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id37">1.基本原理</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <p>直观上看，要实现网络通信，机器需要至少一个网络接口（物理接口或虚拟接口）与外界相通，并可以收发数据包；此外，如果不同子网之间要进行通信，还需要额外的路由机制。</p>
 <p>Docker中的网络接口默认都是虚拟接口。虚拟接口的最大优势就是转发效率极高。这是因为Linux通过在内核中进行数据复制来实现虚拟接口之间的数据转发，即发送接口的发送缓存中的数据包将被直接复制到接收接口的接收缓存中，而无须通过外部物理网络设备进行交换。对于本地系统和容器内系统来看，虚拟接口跟一个正常的以太网卡相比并无区别，只是它的速度要快得多。</p>
 <p>Docker容器网络就很好地利用了Linux虚拟网络技术，它在本地主机和容器内分别创建一个虚拟接口veth，并连通（这样的一对虚拟接口叫做veth
@@ -521,7 +520,7 @@ pair），如图17-4所示。</p>
 <p><img alt="image3" src="../_images/docker_veth00001.png" /></p>
 </section>
 <section id="id16">
-<h3><a class="toc-backref" href="#id38">2.网络创建过程</a><a class="headerlink" href="#id16" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id38">2.网络创建过程</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <p>一般情况下，Docker创建一个容器的时候，会具体执行如下操作：</p>
 <p>1）创建一对虚拟接口，分别放到本地主机和新容器的命名空间中；</p>
 <p>2）本地主机一端的虚拟接口连接到默认的docker0网桥或指定网桥上，并具有一个以veth开头的唯一名字，如veth1234；</p>
@@ -537,7 +536,7 @@ pair），如图17-4所示。</p>
 <p>·–net=user_defined_network：用户自行用network相关命令创建一个网络，之后将容器连接到指定的已创建网络上去。</p>
 </section>
 <section id="id17">
-<h3><a class="toc-backref" href="#id39">3.手动配置网络</a><a class="headerlink" href="#id17" title="Permalink to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id39">3.手动配置网络</a><a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 <p>用户使用–net=none后，Docker将不对容器网络进行配置。下面，介绍手动完成配置网络的整个过程。通过这个过程，可以了解到Docker配置网络的更多细节。</p>
 <p>首先，启动一个ubuntu：16.04容器，指定–net=none参数：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run -i -t --rm --net=none ubuntu:16.04 /bin/bash
@@ -579,7 +578,7 @@ netns exec命令在指定网络命名空间中进行配置，从而更新容器�
 </section>
 </section>
 <section id="id18">
-<h2><a class="toc-backref" href="#id40">本章小结</a><a class="headerlink" href="#id18" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id40">本章小结</a><a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h2>
 <p>本章具体剖析了Docker实现的一些核心技术，包括Docker基本架构、runc，以及实现所依赖的操作系统中的命名空间、控制组、联合文件系统、虚拟网络支持等各种特性。</p>
 <p>从本章的讲解中，读者可以看到，Docker的优秀特性跟操作系统自身的支持，特别是Linux上成熟的已有容器技术支持是分不开的。在实际使用Docker容器的过程中，还将涉及如何调整系统配置来优化容器性能，这些都需要有丰富的Linux系统运维知识和实践经验。通过runc等更通用的容器运行时技术标准，Docker目前已经可以移植到Linux之外的多种平台上，这将使得它的应用范围更为广泛。</p>
 <p>此外，通过引入插件化组件（如网络插件），Docker还可以支持更丰富的功能，这将在后续章节中介绍。</p>
