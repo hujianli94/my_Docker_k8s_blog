@@ -5,13 +5,13 @@
 Docker三剑客之Docker-Swarm
 ==========================
 
-Docker-swarm
-------------
+1. Docker-swarm
+---------------
 
 Docker
 Swarm是Docker官方编排(Orchestration)项目之一,负责对Docker集群进行管理。
 
-|image0|
+.. image:: ../_static/docker_swarm001.png
 
 作为容器集群管理器,swarm
 最大的优势之一就是原生支持API,给用户使用带来极大的便利。
@@ -25,124 +25,144 @@ Swarm采用了经典的“主从”结构，通过Raft协议来在多个管理�
 
 用户提交服务请求只需要发给管理节点即可，管理节点会安装调度策略在机器中分配节点来运行服务相关的任务。
 
-|image1|
+.. image:: ../_static/docker_swarm002.png
 
-基本概念
---------
+2.基本概念
+----------
 
-1.Swarm 集群
-~~~~~~~~~~~~
+1.1 Swarm 集群
+~~~~~~~~~~~~~~
+
+Swarm 集群（ Cluster ） 为一组被统一管理起来的Docker 主机。
+
+集群是Swarm 所管理的对象。这些主机通过Docker
+引擎的模式相互沟通,其中部分主机可能作为管理节点 （ manager)
+响应外部的管理请求,其他主机作为工作节点（ worker) 来实际运行Docker
+容器。
+
+当然,同一个主机也可以即作为管理节点， 同时作为工作节点。当用户使用swarm
+集群时,首先定义一个服务（
+指定状态、复制个数、网络、存储、暴露端口等）,然后通过管理节点发出启动服务的指令，
+管理节点随后会按照指定的服务规则进行调度,在集群中启动起来整个服务,并确保它正常运行。
+
+1.2 节点
+~~~~~~~~
+
+节点（ Node ） 是Swarm 集群的最小资源单位。每个节点实际上都是一台Docker
+主机。 Swarm 集群中节点分为两种：
+
+-  管理节点（ manager node ） ： 负责响应外部对集群的操作请求，
+   并维持集群中资源， 分发任务给工作节点。同时， 多个管理节点之间通过R
+   祖协议构成共识。一般推荐每个集群设置5 个或7 个管理节点；
+-  工作节点（ worker node ） ：
+   负责执行管理节点安排的具体任务。默认情况下，
+   管理节点自身也同时是工作节点。每个工作节点上运行代理（ agent ）
+   来汇报任务完成情况。用户可以通过docker node promote
+   命令来提升一个工作节点为管理节点； 或者通过docker node demote
+   命令来将一个管理节点降级为工作节点。
+
+1.3 服务
+~~~~~~~~
+
+服务（ Service ） 是Docker 支持复杂多容器协作场景的利器。
+一个服务可以由若干个任务组成，
+每个任务为某个具体的应用。服务还包括对应的存储、网络、端口映射、副本个数、访问配置、升级配置等附加参数。
+
+一般来说， 服务需要面向特定的场景， 例如一个典型的web
+服务可能包括前端应用、后端应用，
+以及数据库等。这些应用都属于该服务的管理范畴。
+
+Swarm 集群中服务类型也分为两种（ 可以通过-mode 指定） ：
+
+-  复制服务（ replicated services ） 模式： 默认模式，
+   每个任务在集群中会存在若干副本，这些副本会被管理节点按照调度策略分发到集群中的工作节点上。此模式下可以使用-replicas
+   参数设置副本数量；
+-  全局服务（ global services ） 模式：
+   调度器将在每个可用节点都执行一个相同的任务。
+   该模式适合运行节点的检查， 如监控应用等。
+
+1.4 任务
+~~~~~~~~
+
+任务是swarm 集群中最小的调度单位，
+即一个指定的应用容器。例如仅仅运行前端业务的前端容器。
+
+任务从生命周期上将可能处于创建（ NEW) 、等待（ PENDING) 、分配（
+ASSIGNED) 、接受（ ACCEPTED) 、准备（ PREPARING ） 、开始（ STARTING)
+、运行(RUNNING ） 、完成(COMPLETE ） 、失败(FAILED ） 、关闭（ SHUTDOWN)
+、拒绝(REJECTED ） 、孤立（ ORPHANED ） 等不同状态。
+
+swarm
+集群中的管理节点会按照调度要求将任务分配到工作节点上。例如指定副本为2时，
+可能会被分配到两个不同的工作节点上。一旦当某个任务被分配到一个工作节点，
+将无法被转移到另外的工作节点， 即swarm 中的任务不支持迁移。
+
+1.5 服务的外部访问
+~~~~~~~~~~~~~~~~~~
+
+swarm 集群中的服务要被集群外部访问，
+必须要能允许任务的响应端口映射出来。 swarm 中支持人口负载均衡（ ingress
+load balancing ） 的映射模式。
+
+该模式下， 每个服务都会被分配一个公开端口（ PublishedPort) ，
+该端口在集群中任意节点上都可以访问到， 并被保留给该服务。
+
+当有请求发送到任意节点的公开端口时，
+该节点若并没有实际执行服务相关的容器，
+则会通过路由机制将请求转发给实际执行了服务容器的工作节点。
+
+2.使用Swarm
+-----------
+
+用户在安装Docker
+1.12或更新的版本后，即可直接尝试Swarm模式的相关功能。假定分别准备两个Linux主机，作为管理节点（实际上也同时具备工作节点功能）和工作节点。
+
+Swarm集群的主要操作，包括：
 
 ::
-
-   Swarm 集群（ Cluster ） 为一组被统一管理起来的Docker 主机。集群是Swarm 所管理的
-   对象。这些主机通过Docker 引擎的模式相互沟通,其中部分主机可能作为管理节点
-   （ manager) 响应外部的管理请求,其他主机作为工作节点（ worker) 来实际运行Docker 容器。
-   当然,同一个主机也可以即作为管理节点， 同时作为工作节点。
-   当用户使用swarm 集群时,首先定义一个服务（ 指定状态、复制个数、网络、存储、暴
-   露端口等）,然后通过管理节点发出启动服务的指令， 管理节点随后会按照指定的服务规则进
-   行调度,在集群中启动起来整个服务,并确保它正常运行。
-
-2.节点
-~~~~~~
-
-::
-
-   节点（ Node ） 是Swarm 集群的最小资源单位。每个节点实际上都是一台Docker 主机。
-   Swarm 集群中节点分为两种：
-
-       囗  管理节点（ manager node ） ： 负责响应外部对集群的操作请求， 并维持集群中资源， 
-       分发任务给工作节点。
-
-   同时， 多个管理节点之间通过R 祖协议构成共识。一般推荐每个集群设置5 个或7 个管理节点；
-       囗  工作节点（ worker node ） ： 负责执行管理节点安排的具体任务。默认情况下， 管理节
-       点自身也同时是工作节点。每个工作节点上运行代理（ agent ） 来汇报任务完成情况。
-       用户可以通过docker node promote 命令来提升一个工作节点为管理节点； 或者通过
-       docker node demote 命令来将一个管理节点降级为工作节点。
-
-3.服务
-~~~~~~
-
-::
-
-   服务（ Service ） 是Docker 支持复杂多容器协作场景的利器。
-   一个服务可以由若干个任务组成， 每个任务为某个具体的应用。服务还包括对应的存储、网络、端口映射、副本个数、访问配置、升级配置等附加参数。
-
-   一般来说， 服务需要面向特定的场景， 例如一个典型的web 服务可能包括前端应用、后端应用， 以及数据库等。这些应用都属于该服务的管理范畴。
-
-
-   Swarm 集群中服务类型也分为两种（ 可以通过-mode 指定） ：
-       囗 复制服务（ replicated services ） 模式： 默认模式， 每个任务在集群中会存在若干副本，
-       这些副本会被管理节点按照调度策略分发到集群中的工作节点上。此模式下可以使用-replicas 参数设置副本数量；
-       
-       
-       囗 全局服务（ global services ） 模式： 调度器将在每个可用节点都执行一个相同的任务。
-       该模式适合运行节点的检查， 如监控应用等。
-
-4 .任务
-~~~~~~~
-
-::
-
-   任务是swarm 集群中最小的调度单位， 即一个指定的应用容器。例如仅仅运行前端业务的前端容器。
-
-   任务从生命周期上将可能处于创建（ NEW) 、等待（ PENDING) 、分配（ ASSIGNED) 、接受（ ACCEPTED) 、准备（ PREPARING ） 、开始（ STARTING) 、运行
-   (RUNNING ） 、完成(COMPLETE ） 、失败(FAILED ） 、关闭（ SHUTDOWN) 、拒绝(REJECTED ） 、孤立（ ORPHANED ） 等不同状态。
-   swarm 集群中的管理节点会按照调度要求将任务分配到工作节点上。例如指定副本为2
-   时， 可能会被分配到两个不同的工作节点上。一旦当某个任务被分配到一个工作节点， 将无
-   法被转移到另外的工作节点， 即swarm 中的任务不支持迁移。
-
-5.服务的外部访问
-~~~~~~~~~~~~~~~~
-
-::
-
-   swarm 集群中的服务要被集群外部访问， 必须要能允许任务的响应端口映射出来。
-   swarm 中支持人口负载均衡（ ingress load balancing ） 的映射模式。
-
-   该模式下， 每个服务都会被分配一个公开端口（ PublishedPort) ， 该端口在集群中任意节点上都可以访问到， 并被保留给该服务。
-
-   当有请求发送到任意节点的公开端口时， 该节点若并没有实际执行服务相关的容器， 
-   则会通过路由机制将请求转发给实际执行了服务容器的工作节点。
-
-使用Swarm
----------
-
-::
-
-   用户在安装Docker 1.12或更新的版本后，即可直接尝试Swarm模式的相关功能。假定分别准备两个Linux主机，作为管理节点（实际上也同时具备工作节点功能）和工作节点。
-
-   Swarm集群的主要操作，包括：
 
    囗 swarm init: 在管理节点上创建一个集群；
    囗 node 1ist： 列出集群中的节点信息；
    囗 swarm join: 加人一个新的节点到已有集群中；
    囗 swarm update ： 更新一个Swarm 集群；
    囗 swarm leave ： 离开一个Swarm 集群。
-   此外， 还可以使用docker service命令部署Docker应用服务到集群中；
 
-1.创建集群
-~~~~~~~~~~
+此外， 还可以使用docker service命令部署Docker应用服务到集群中。
+
+2.1 创建集群
+~~~~~~~~~~~~
+
+修改/etc/docker/daemon.json文件内容
 
 ::
 
-   [root@172-16-72-20 centos]# docker swarm init --advertise-addr 172.16.72.20
-   Swarm initialized: current node (qtbcvtilbdk1yry0y3ji0jejm) is now a manager.
+   $ cat /etc/docker/daemon.json
+   {
+   “live-restore”: false
+   }
+
+   $ systemctl restart docker
+
+::
+
+   $ docker swarm init --advertise-addr 192.168.1.132
+
+   Swarm initialized: current node (kt2rfnf20kewfbk7ca0lmtkdy) is now a manager.
 
    To add a worker to this swarm, run the following command:
 
-       docker swarm join --token SWMTKN-1-34puzsk7pznuagjojdvj6zbzq10px8h4h43vcl4l3v5zxbm79q-2jd79domv5d1e16hz0uurs8k5 172.16.72.20:2377
+       docker swarm join --token SWMTKN-1-4i80eo6fvvaqc2zin10fc30g42jfliqcf42dzbsefjqu1u93x1-4zlvwzzghgy4qchqix40hiax7 192.168.1.132:2377
 
    To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
 
 swarm初始化，集群初始化子命令的相关选项：\ ``docker swarm init``
 
-2.查看集群信息
-~~~~~~~~~~~~~~
+2.2 查看集群信息
+~~~~~~~~~~~~~~~~
 
 ::
 
-   [root@172-16-72-20 centos]# docker info
+   $ docker info
    .....
    Swarm: active
     NodeID: qtbcvtilbdk1yry0y3ji0jejm
@@ -197,25 +217,25 @@ swarm初始化，集群初始化子命令的相关选项：\ ``docker swarm init
 
    WARNING: bridge-nf-call-ip6tables is disabled
 
-3.加入集群
-~~~~~~~~~~
+2.3 加入集群
+~~~~~~~~~~~~
 
 ::
 
-   [root@172-16-72-15 centos]# docker swarm join --token SWMTKN-1-34puzsk7pznuagjojdvj6zbzq10px8h4h43vcl4l3v5zxbm79q-2jd79domv5d1e16hz0uurs8k5 172.16.72.20:2377
+   $ docker swarm join --token SWMTKN-1-4i80eo6fvvaqc2zin10fc30g42jfliqcf42dzbsefjqu1u93x1-4zlvwzzghgy4qchqix40hiax7 192.168.1.132:2377
    This node joined a swarm as a worker.
 
-   [root@172-16-72-29 centos]# docker swarm join --token SWMTKN-1-34puzsk7pznuagjojdvj6zbzq10px8h4h43vcl4l3v5zxbm79q-2jd79domv5d1e16hz0uurs8k5 172.16.72.20:2377
+   $ docker swarm join --token SWMTKN-1-4i80eo6fvvaqc2zin10fc30g42jfliqcf42dzbsefjqu1u93x1-4zlvwzzghgy4qchqix40hiax7 192.168.1.132:2377
    This node joined a swarm as a worker.
 
 加入集群的子命令：\ ``docker swarm join``\ 包含是个子选项
 
-4.管理添加节点的口令
-~~~~~~~~~~~~~~~~~~~~
+2.4 管理添加节点的口令
+~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
-   [root@swarm1 docker_swarm]# docker swarm join-token --rotate manager
+   $ docker swarm join-token --rotate manager
    Successfully rotated manager join token.
 
    To add a manager to this swarm, run the following command:
@@ -224,14 +244,14 @@ swarm初始化，集群初始化子命令的相关选项：\ ``docker swarm init
 
 
 
-   [root@swarm1 docker_swarm]# docker swarm join-token -q manager
+   $ docker swarm join-token -q manager
    SWMTKN-1-0ug4ffl4d918qa8xc3q3ynujvqoby5qjhug6mdyq03c1lgg64w-cdserqy6fyxlzd6pgapkjewd4
 
 在管理节点上查看集群中节点的情况，可以看到新加入的工作节点。
 
 ::
 
-   [root@172-16-72-20 centos]# docker node ls
+   $ docker node ls
    ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
    8w1cozqwakizb1vnxuzkvn6dn     172-16-72-15        Ready               Active                                  18.03.1-ce
    qtbcvtilbdk1yry0y3ji0jejm *   172-16-72-20        Ready               Active              Leader              18.03.1-ce
@@ -243,9 +263,10 @@ swarm初始化，集群初始化子命令的相关选项：\ ``docker swarm init
    active状态下，node可以接受来自manager节点的任务分派；
    drain状态下，node节点会结束task，且不再接受来自manager节点的任务分派（也就是下线节点）
 
-   [root@172-16-72-19 centos]# docker node update --availability drain ftnode-172-16-72-8
+   $ docker node update --availability drain ftnode-172-16-72-8
    ftnode-172-16-72-8
-   [root@172-16-72-19 centos]# docker node ls
+
+   $ docker node ls
    ID                            HOSTNAME              STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
    3d1iieyvw8q7q2u2i95schbkn *   172-16-72-19          Ready               Active              Leader              19.03.5
    kdp5b8ja34x52a4v2xc5byhrd     ftnode-172-16-72-8    Ready               Drain                                   19.03.5
@@ -254,44 +275,55 @@ swarm初始化，集群初始化子命令的相关选项：\ ``docker swarm init
    ============================================ 上线节点 ===========================================
    如上，当node1的状态改为drain后，那么该节点就不会接受task任务分发，就算之前已经接受的任务也会转移到别的节点上。
    再次修改为active状态（及将下线的节点再次上线）
-   [root@172-16-72-19 centos]# docker node update --availability active ftnode-172-16-72-8
+   $ docker node update --availability active ftnode-172-16-72-8
    ftnode-172-16-72-8
-   [root@172-16-72-19 centos]# docker node ls
+
+   $ docker node ls
    ID                            HOSTNAME              STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
    3d1iieyvw8q7q2u2i95schbkn *   172-16-72-19          Ready               Active              Leader              19.03.5
    kdp5b8ja34x52a4v2xc5byhrd     ftnode-172-16-72-8    Ready               Active                                  19.03.5
    3pqduino59ug7ujhokzph874t     ftnode-172-16-72-20   Ready               Active                                  19.03.5
 
-6.离开集群
-~~~~~~~~~~
+2.6 离开集群
+~~~~~~~~~~~~
+
+节点可以在任何时候通过swarm leave
+命令离开一个集群。命令格式为\ ``docker swarm leave [OPTIONS)`` ,支持 -f,
+–force 意味着强制离开集群。
 
 ::
 
-   [root@swarm2 ~]# docker swarm leave
+   # node上离开集群
+   $ docker swarm leave
    Node left the swarm.
 
-7,使用集群服务
-~~~~~~~~~~~~~~
+   # leader上删除node信息
+   $ docker node rm namoa44dyu2g8eexmfzygwo4u
+
+2.7 使用集群服务
+~~~~~~~~~~~~~~~~
 
 使用swarm 提供的服务实际上有两种方法，
 
-· 一种是使用Docker 原来的客户端命令， 只要指定使用Swarm manager
-服务的监听地址即可。 例如,manager服务监听的地址为:2377则可以通过指定-H
-:2377选项来继续使用Docker客户端, 执行任意Docker命令， 例如ps 、info
-、run 等。
+-  一种是使用Docker 原来的客户端命令， 只要指定使用Swarm manager
+   服务的监听地址即可。
+   例如,manager服务监听的地址为:2377则可以通过指定-H
+   :2377选项来继续使用Docker客户端, 执行任意Docker命令， 例如ps 、info
+   、run 等。
 
-· 另外一种方法， 也是推荐的做法， 是使用新的docker service 命令，
-可以获得包括多主机网络等更高级的特性支持。
+-  另外一种方法， 也是推荐的做法， 是使用新的docker service 命令，
+   可以获得包括多主机网络等更高级的特性支持。
 
 service命令及说明
 
-|image2|
+.. image:: ../_static/docker_swarm_server01.png
+
+(1)快速创建一个应用服务
 
 ::
 
-   (1)快速创建一个应用服务，2副本
-
-   [root@172-16-72-20 centos]# docker service create --replicas 2 --name ping_app debian:jessie ping docker.com
+   # 快速创建一个应用服务，2副本
+   $ docker service create --replicas 2 --name ping_app debian:jessie ping docker.com
    yfkves1nfm3j3hjvojwvybjnu
    overall progress: 2 out of 2 tasks 
    1/2: running   [==================================================>] 
@@ -299,14 +331,17 @@ service命令及说明
    verify: Service converged
 
 
-   (2)查看服务
-   [root@172-16-72-20 centos]# docker service ls
+
+
+
+   # 查看服务
+   $ docker service ls
    ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
    yfkves1nfm3j        ping_app            replicated          2/2                 debian:jessie    
 
 
    使用docker service inspect命令查看服务的具体信息
-   [root@172-16-72-20 centos]# docker service inspect --pretty ping_app
+   $ docker service inspect --pretty ping_app
 
    ID:     yfkves1nfm3j3hjvojwvybjnu
    Name:       ping_app
@@ -333,7 +368,7 @@ service命令及说明
 
 
    可以看到管理节点和工作节点都运行了一个容器，镜像为debian:jessie，命令为：ping docker.com
-   [root@172-16-72-20 centos]# docker service ps ping_app
+   $ docker service ps ping_app
    ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
    kxv54iqeaoik        ping_app.1          debian:jessie       172-16-72-20        Running             Running 2 minutes ago                       
    jwpovkw9t2tv        ping_app.2          debian:jessie       172-16-72-29        Running             Running 2 minutes ago    
@@ -343,28 +378,30 @@ service命令及说明
 
 ::
 
-   [root@172-16-72-20 centos]# docker service scale ping_app=1
+   $ docker service scale ping_app=1
    ping_app scaled to 1
    overall progress: 1 out of 1 tasks 
    1/1: running   [==================================================>] 
    verify: Service converged 
 
    再次查看，仅剩下管理节点运行了此容器
-   [root@172-16-72-20 centos]# docker service ps ping_app
+   $ docker service ps ping_app
    ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
    kxv54iqeaoik        ping_app.1          debian:jessie       172-16-72-20        Running             Running 5 minutes ago 
 
-   服务使用完成后可以通过docker service rm <SERVERCE-ID> 命令来进行删除。
-   服务命令更多的参数可以通过docker service help 进行查看。
+服务使用完成后可以通过\ ``docker service rm  <SERVERCE-ID>``
+命令来进行删除。 服务命令更多的参数可以通过docker service help
+进行查看。
 
 删除容器
 
 ::
 
-   [root@172-16-72-20 centos]# docker service ls
+   $ docker service ls
    ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
    yfkves1nfm3j        ping_app            replicated          1/1                 debian:jessie       
-   [root@172-16-72-20 centos]# docker service rm yfkves1nfm3j
+
+   $ docker service rm yfkves1nfm3j
    yfkves1nfm3j
 
 (3)使用外部服务地址
@@ -378,8 +415,8 @@ Swarm通过路由机制支持服务对外映射到指定端口，该端口可以
    —publ i sh publ i shed=<pub port>,target=<container port> \
    < IMAGE>
 
-5.更新集群
-~~~~~~~~~~
+2.8 更新集群
+~~~~~~~~~~~~
 
 ::
 
@@ -393,26 +430,17 @@ Swarm通过路由机制支持服务对外映射到指定端口，该端口可以
        囗   -snapshot-interval uint ： Raft 协议进行快照的间隔（ 单位为事务个数） ， 默认为10 000 个事物；
        囗   -task-history-limlt int ： 任务历史的保留个数,默认为5 。
 
-.. _离开集群-1:
+3.使用服务命令
+--------------
 
-6.离开集群
-~~~~~~~~~~
-
-::
-
-   节点可以在任何时候通过swarm leave 命令离开一个集群。命令格式为docker swarm leave [OPTIONS) ,支持 -f, --force 意味着强制离开集群。
-
-使用服务命令
-~~~~~~~~~~~~
-
-Docker Stack命令
-~~~~~~~~~~~~~~~~
+3.1 Docker Stack命令
+~~~~~~~~~~~~~~~~~~~~
 
 Docker栈的命令，它一共包含五个子命令，
 
 ::
 
-   [root@swarm1 docker_swarm]# docker stack --help
+   $ docker stack --help
 
    Usage:  docker stack [OPTIONS] COMMAND
 
@@ -436,17 +464,17 @@ Docker栈的命令，它一共包含五个子命令，
 
 ::
 
-       · -- bundle-file：指定一个分布式应用程序包的文件路径。
-       · -- compose-file：-c ：指定一个Compose文件路径。
-       · -- with-registry-auth: 将镜像仓库的认证信息发送给Swarm代理程序，用于指定部署时可以从私有仓库拉取镜像（默认为false）。
+   · -- bundle-file：指定一个分布式应用程序包的文件路径。
+   · -- compose-file：-c ：指定一个Compose文件路径。
+   · -- with-registry-auth: 将镜像仓库的认证信息发送给Swarm代理程序，用于指定部署时可以从私有仓库拉取镜像（默认为false）。
 
-在Swarm中部署服务(nginx为例)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3.2 在Swarm中部署服务
+~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
    ## 查看docker网络
-   [root@ftnode-172-16-72-19 compose]# docker network ls
+   $ docker network ls
    NETWORK ID          NAME                    DRIVER              SCOPE
    6bb766eb4b70        bridge                  bridge              local
    m5y53850puxn        deplpy_deamon_default   overlay             swarm
@@ -459,17 +487,17 @@ Docker栈的命令，它一共包含五个子命令，
 ::
 
    # 创建网络
-   [root@ftnode-172-16-72-19 compose]# docker network create -d overlay nginx_net
+   $ docker network create -d overlay nginx_net
    weqsqoenuhr1qt6o30odfp83n
 
    # 部署服务
-   [root@ftnode-172-16-72-19 compose]# docker network ls | grep nginx_net
+   $ docker network ls | grep nginx_net
    weqsqoenuhr1        nginx_net           overlay             swarm
 
    #在manager-node节点上使用上面这个覆盖网络创建nginx服务：
    #其中，--replicas 参数指定服务由几个实例组成。
    #注意：不需要提前在节点上下载nginx镜像，这个命令执行后会自动下载这个容器镜像（比如此处创建tomcat容器，就将下面命令中的镜像改为tomcat镜像）。
-   [root@172-16-72-19 compose]# docker service create --name hu_nginx --replicas 3 nginx
+   $ docker service create --name hu_nginx --replicas 3 nginx
    xmmwyaw2dkovyk1iy42n0zi68
    overall progress: 3 out of 3 tasks 
    1/3: running   [==================================================>] 
@@ -477,17 +505,18 @@ Docker栈的命令，它一共包含五个子命令，
    3/3: running   [==================================================>] 
 
    # 使用 docker service ls 查看正在运行服务的列表
-   [root@172-16-72-19 compose]# docker service ls
+   $ docker service ls
    ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
    xmmwyaw2dkov        hu_nginx            replicated          3/3                 nginx:latest   
 
-2) 查询Swarm中服务的信息
+3.3 查询Swarm中服务的信息
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
    -pretty 使命令输出格式化为可读的格式，不加 --pretty 可以输出更详细的信息
 
-   [root@172-16-72-19 compose]# docker service inspect --pretty hu_nginx
+   $ docker service inspect --pretty hu_nginx
 
    ID:     xmmwyaw2dkovyk1iy42n0zi68
    Name:       hu_nginx
@@ -515,60 +544,53 @@ Docker栈的命令，它一共包含五个子命令，
 
 
    # 查询到哪个节点正在运行该服务。如下该容器被调度到manager-node节点上启动了，然后访问http://192.168.31.43即可访问这个容器应用（如果调度到其他节点，访问也是如此）
-   [root@172-16-72-19 compose]# docker service ps hu_nginx
+   $ docker service ps hu_nginx
    ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE           ERROR               PORTS
    p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 2 minutes ago                       
    jcqgq8fjsi6m        hu_nginx.2          nginx:latest        172-16-72-19          Running             Running 2 minutes ago                       
    d4vsmgnk7n0e        hu_nginx.3          nginx:latest        ftnode-172-16-72-20   Running             Running 2 minutes ago       
-   温馨提示：如果上面命令执行后，上面的 STATE 字段中刚开始的服务状态为 Preparing，需要等一会才能变为 Running 状态，其中最费时间的应该是下载镜像的过程
 
-3) 在Swarm中动态扩展服务(scale)
+温馨提示：如果上面命令执行后，上面的 STATE 字段中刚开始的服务状态为
+Preparing，需要等一会才能变为 Running
+状态，其中最费时间的应该是下载镜像的过程。
+
+3.4 动态扩容缩容服务(scale)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
    当然，如果只是通过service启动容器，swarm也算不上什么新鲜东西了。Service还提供了复制（类似kubernetes里的副本）功能。可以通过 docker service scale 命令来设置服务中容器的副本数
    比如将上面的my_nginx容器动态扩展到4个
 
-   [root@172-16-72-19 compose]# docker service scale hu_nginx=4
-   hu_nginx scaled to 4
-   overall progress: 4 out of 4 tasks 
-   1/4: running   [==================================================>] 
-   2/4: running   [==================================================>] 
-   3/4: running   [==================================================>] 
-   4/4: running   [==================================================>] 
-   verify: Service converged 
-   [root@172-16-72-19 compose]# docker service ps hu_nginx
-   ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE            ERROR               PORTS
-   p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 4 minutes ago                        
-   jcqgq8fjsi6m        hu_nginx.2          nginx:latest        172-16-72-19          Running             Running 4 minutes ago                        
-   d4vsmgnk7n0e        hu_nginx.3          nginx:latest        ftnode-172-16-72-20   Running             Running 4 minutes ago                        
-   trc0i8rdim8g        hu_nginx.4          nginx:latest        172-16-72-19          Running             Running 14 seconds ago  
+   $ docker service scale hu_nginx=4
 
-   [root@172-16-72-19 compose]# docker ps
-   CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS               NAMES
-   b292c2181ef6        nginx:latest        "nginx -g 'daemon of…"   About a minute ago   Up About a minute   80/tcp              hu_nginx.4.trc0i8rdim8g3i841gnc3b3wy
-   60cad56c7845        nginx:latest        "nginx -g 'daemon of…"   5 minutes ago        Up 5 minutes        80/tcp              hu_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw
 
-   这4个副本的hu_nginx容器分别运行在这三个节点上，登陆这三个节点，就会发现已经存在运行着的hu_nginx容器
-
-   172-16-72-19 上运行着2个nginx服务。
-
-   # 将容器在集群中减少为2个。
-   [root@172-16-72-19 compose]# docker service scale hu_nginx=2
+   同理，swarm还可以缩容，同样是使用scale命令
+   如下，将hu_nginx容器变为2个
+   $ docker service scale hu_nginx=2
    hu_nginx scaled to 2
    overall progress: 2 out of 2 tasks 
    1/2: running   [==================================================>] 
    2/2: running   [==================================================>] 
    verify: Service converged 
 
-4) 模拟宕机node节点
 
-docker容器会自动迁移
+   # 通过docker service ps my_nginx 可以看到node节点上已经为Shutdown状态了
+
+   # 登录node节点，使用docker ps -a 查看，会发现容器被stop而非rm
+   [root@172-16-72-19 compose]# docker ps -a
+   CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS               NAMES
+   91376bb956b3        nginx:latest        "nginx -g 'daemon of…"   13 minutes ago      Exited (0) 7 minutes ago                       hu_nginx.3.mijhlis5ap3zzscieunqxk2h8
+
+3.5 容器自动迁移
+~~~~~~~~~~~~~~~~
+
+如果出现node节点宕机，docker容器会自动迁移
 
 ::
 
    # 先保证每个节点上启动一个docker
-   [root@172-16-72-19 compose]# docker service ps hu_nginx
+   $ docker service ps hu_nginx
    ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE            ERROR               PORTS
    p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 10 minutes ago                       
    jcqgq8fjsi6m        hu_nginx.2          nginx:latest        172-16-72-19          Running             Running 9 minutes ago                        
@@ -576,7 +598,7 @@ docker容器会自动迁移
 
 
    # 在node 20这台机器上，模拟宕机
-   [root@ftnode-172-16-72-20 centos]# systemctl stop docker
+   $ systemctl stop docker
 
 
    [root@172-16-72-19 compose]# docker node ls
@@ -587,25 +609,27 @@ docker容器会自动迁移
 
 
    # 过一会儿查看docker容器的列表，发现容器已经迁移到19上了。
-   [root@172-16-72-19 compose]# docker service ps hu_nginx
+   $ docker service ps hu_nginx
    ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE            ERROR               PORTS
    p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 11 minutes ago                       
    jcqgq8fjsi6m        hu_nginx.2          nginx:latest        172-16-72-19          Running             Running 11 minutes ago                       
    mijhlis5ap3z        hu_nginx.3          nginx:latest        172-16-72-19          Running             Running 28 seconds ago                       
    ruq4sr0s5xx0         \_ hu_nginx.3      nginx:latest        ftnode-172-16-72-20   Shutdown            Running 47 seconds ago 
 
-   [root@172-16-72-19 compose]# docker ps -a
+   $ docker ps -a
    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
    91376bb956b3        nginx:latest        "nginx -g 'daemon of…"   3 minutes ago       Up 3 minutes        80/tcp              hu_nginx.3.mijhlis5ap3zzscieunqxk2h8
    60cad56c7845        nginx:latest        "nginx -g 'daemon of…"   13 minutes ago      Up 13 minutes       80/tcp              hu_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw
 
 
    # 将转移过来的docker容器关闭，模拟容器故障。因为设置了--replicas 3 nginx,所以集群无论如何都要保证3个容器在运行
-   [root@172-16-72-19 compose]# docker ps
+   $ docker ps
    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
    91376bb956b3        nginx:latest        "nginx -g 'daemon of…"   5 minutes ago       Up 5 minutes        80/tcp              hu_nginx.3.mijhlis5ap3zzscieunqxk2h8
    60cad56c7845        nginx:latest        "nginx -g 'daemon of…"   16 minutes ago      Up 16 minutes       80/tcp              hu_nginx.2.jcqgq8fjsi6mmltj3ozc65rgw
-   [root@172-16-72-19 compose]# docker stop 91376bb956b3 
+
+
+   $ docker stop 91376bb956b3 
    91376bb956b3
 
 可以看到，当docker容器出现故障时，集群会自动再次拉起一个容器，保证有3个容器运行。图上是从自身node上拉起了一个docker容器。
@@ -613,58 +637,143 @@ docker容器会自动迁移
 结论：即在swarm cluster集群中启动的容器，在worker
 node节点上删除或停用后，该容器会自动转移到其他的worker node节点上
 
-5) Swarm 动态缩容服务(scale)
-
-::
-
-   同理，swarm还可以缩容，同样是使用scale命令
-   如下，将hu_nginx容器变为1个
-   [root@172-16-72-19 compose]# docker service scale hu_nginx=1
-   hu_nginx scaled to 1
-   overall progress: 1 out of 1 tasks 
-   1/1:   
-   verify: Service converged 
-   [root@172-16-72-19 compose]# docker service ls
-   ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
-   xmmwyaw2dkov        hu_nginx            replicated          1/1                 nginx:latest 
-
-
-   [root@172-16-72-19 compose]# docker service ps hu_nginx
-   ID                  NAME                IMAGE               NODE                  DESIRED STATE       CURRENT STATE            ERROR               PORTS
-   p08tcvzbhlt6        hu_nginx.1          nginx:latest        ftnode-172-16-72-8    Running             Running 23 minutes ago                       
-   mijhlis5ap3z        hu_nginx.3          nginx:latest        172-16-72-19          Shutdown            Complete 5 minutes ago                       
-   ruq4sr0s5xx0         \_ hu_nginx.3      nginx:latest        ftnode-172-16-72-20   Shutdown            Running 11 minutes ago  
-
-   # 通过docker service ps my_nginx 可以看到node节点上已经为Shutdown状态了
-
-
-   # 登录node节点，使用docker ps -a 查看，会发现容器被stop而非rm
-   [root@172-16-72-19 compose]# docker ps -a
-   CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS               NAMES
-   91376bb956b3        nginx:latest        "nginx -g 'daemon of…"   13 minutes ago      Exited (0) 7 minutes ago                       hu_nginx.3.mijhlis5ap3zzscieunqxk2h8
-
-Docker Swarm volume 数据持久化
-------------------------------
+4.Docker Swarm volume 数据持久化
+--------------------------------
 
 https://www.cnblogs.com/xiangsikai/p/9938670.html
 
-Docker Swarn参考文献
---------------------
+5.Docker Swarn参考文献
+----------------------
 
-https://bbs.huaweicloud.com/blogs/154082
+https://www.cnblogs.com/zhujingzhi/p/9792432.html
 
-Docker Compose 配置文件详解
+6.多集群compose.yml文件部署
 ---------------------------
 
-https://www.jianshu.com/p/748416621013
+示例1
 
-https://blog.csdn.net/qq_36148847/article/details/79427878
+1) 编写docker-compose.yml文件
+
+.. code:: yaml
+
+   [root@manager43 ~]# mkdir testswarm
+   [root@manager43 ~]# cd testswarm/
+   [root@manager43 testswarm]# cat docker-compose.yml
+   version: "3"
+   services:
+     nginx:
+       image: nginx
+       ports:
+         - 8888:80
+       deploy:
+         mode: replicated
+         replocas: 3
+    
+     visualizer:
+       image: dockersamples/visualizer
+       ports:
+         - "8080:8080"
+       volumes:
+         - "/var/run/docker.sock:/var/run/docker.sock"
+       deploy:
+         replicas: 1
+         placement:
+           constraints: [node.role == manager]
+    
+     portainer:
+       image: portainer/portainer
+       ports:
+         - "9000:9000"
+       volumes:
+         - "/var/run/docker.sock:/var/run/docker.sock"
+       deploy:
+         replicas: 1
+         placement:
+           constraints: [node.role == manager]
+
+2) 通过这个yml文件部署服务
+
+.. code:: shell
+
+   $ docker stack deploy -c docker-compose.yml deploy_deamon
+   Creating network deploy_deamon_default
+   Creating service deploy_deamon_portainer
+   Creating service deploy_deamon_nginx
+   Creating service deploy_deamon_visualizer
+    
+   通过上面的执行过程可以看出这样创建会默认创建一个网络并使用它，名字都是我们给的名字的前缀加上服务名
+    
+   # 查看创建服务
+   $ docker service ls
+   ID                  NAME                       MODE                REPLICAS            IMAGE                             PORTS
+   xj2f1t5ax3nm        deploy_deamon_nginx        replicated          3/3                 nginx:latest                      *:8888->80/tcp
+   ky9qpldr5abb        deploy_deamon_portainer    replicated          1/1                 portainer/portainer:latest        *:9000->9000/tcp
+   r47ff177x1ir        deploy_deamon_visualizer   replicated          1/1                 dockersamples/visualizer:latest   *:8080->8080/tcp
+    
+   $ docker service ps deploy_deamon_nginx    
+   $ docker service ps deploy_deamon_portainer                
+   $ docker service ps deploy_deamon_visualizer
+
+示例2
+
+.. code:: yaml
+
+   version: "3"        # 版本号，deploy功能是3版本及以上才有的
+   services:           # 服务，每个服务对应配置相同的一个或者多个docker容器
+     redis:            # 服务名，自取
+       image: redis:alpine     # 创建该服务所基于的镜像。使用stack部署，只能基于镜像
+       ports:          # 容器内外的端口映射情况
+         - "1883:1883"
+         - "9001:9001"
+       networks:       # 替代了命令行模式的--link选项
+         - fiware
+       volumes:        # 容器内外数据传输的对应地址
+         - "/srv/mqtt/config:/mqtt/config:ro"
+         - "/srv/mqtt/log:/mqtt/log"
+         - "/srv/mqtt/data/:/mqtt/data/"
+       command: -dbhost stack_mongo # 命令行模式中跟在最后的参数，此条没有固定的格式，建议参照所部署的docker镜像的说明文档来确定是否需要该项、需要写什么
+       deploy:
+         mode: replicated
+         replicas: 6           # replicas模式， 副本数目为1
+         endpoint_mode: vip
+         labels: 
+           description: "This redis service label"
+         resources:
+           limits:
+             cpus: '0.50'
+             memory: 50M
+           reservations:
+             cpus: '0.25'
+             memory: 20M
+         restart_policy:
+           condition: on-failure
+           delay: 5s
+           max_attempts: 3
+           window: 120s
+         placement:
+           constraints:
+             - "node.role==worker"     # 部署位置，只在工作节点部署
+             - "engine.labels.operatingsystem==ubuntu 18.04"
+           preferences:
+             - spread: node.labels.zone
+         update_config:
+           parallelism: 2
+           delay: 10s
+           order: stop-first
+
+   networks:        # 定义部署该项目所需要的网络
+     fiware:
 
 参考文献:
 
 https://www.cnblogs.com/vinsent/p/11691562.html
 
-https://www.cnblogs.com/zhujingzhi/p/9792432.html
+7.Docker Compose 配置文件详解
+-----------------------------
+
+https://www.jianshu.com/p/748416621013
+
+https://blog.csdn.net/qq_36148847/article/details/79427878
 
 本章小结
 --------
@@ -676,7 +785,3 @@ Swarm的安装、使用和主要功能。通过使用Swarm，用户可以将若�
 
 Swarm功能已经被无缝嵌入到了Docker
 1.12+版本中，用户今后可以直接使用Docker命令来完成相关功能的配置，对Swarm集群的管理更加简便。
-
-.. |image0| image:: ../_static/docker_swarm001.png
-.. |image1| image:: ../_static/docker_swarm002.png
-.. |image2| image:: ../_static/docker_swarm_server01.png
