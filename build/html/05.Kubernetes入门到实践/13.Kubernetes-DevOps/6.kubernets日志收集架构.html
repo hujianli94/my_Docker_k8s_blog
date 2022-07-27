@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kubernets日志收集架构 &mdash; 运维开发修炼之路</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="k9s集群管理工具" href="5.k9s%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> 小健_Docker_K8s_Blog
+            <img src="../../_static/docker-k8s.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../01.Docker%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E6%88%983%E7%89%88/index.html">01.Docker技术入门与实战3版</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../02.Kubernetes%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">02.Kubernetes实战指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">05.Kubernetes入门到实践</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1.%E5%AE%B9%E5%99%A8%E7%9A%84%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">1.容器的发展史</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2.Kubernetes%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">2.Kubernetes的核心概念</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3.Kubernetes%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2/index.html">3.Kubernetes的安装和部署</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../4.Pod/index.html">4.Pod的基本操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../5.%E6%8E%A7%E5%88%B6%E5%99%A8/index.html">5.控制器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../6.Service%E5%92%8CIngress/index.html">6.Service和Ingress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../7.%E5%AD%98%E5%82%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/index.html">7.存储与配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../8.Kubernetes%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E5%8F%8A%E8%B0%83%E5%BA%A6/index.html">8.Kubernetes资源的管理及调度</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../9.API-Server/index.html">9.API-Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../10.Kubernetes%E7%9A%84%E6%89%A9%E5%B1%95/index.html">10.Kubernetes的扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../11.%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E6%A1%88%E4%BE%8B/index.html">11.项目部署案例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../12.Helm%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/index.html">12.Helm学习指南</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">13.Kubernetes-DevOps</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="1.Jenkins.html">Jenkins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2.Gitlab.html">Gitlab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="3.Harbor.html">Harbor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4.Tekton.html">Tekton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="5.k9s%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html">k9s集群管理工具</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">kubernets日志收集架构</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#kubernetes">1.Kubernetes 中的基本日志</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">2.Kubernetes 日志收集</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#efk">3.搭建EFK日志系统</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kibana">4.创建Kibana 服务</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fluentd">5.部署Fluentd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">6.安装</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">小健_Docker_K8s_Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">05.Kubernetes入门到实践</a> &raquo;</li>
+          <li><a href="index.html">13.Kubernetes-DevOps</a> &raquo;</li>
+      <li>kubernets日志收集架构</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/05.Kubernetes入门到实践/13.Kubernetes-DevOps/6.kubernets日志收集架构.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#kubernets" id="id13">kubernets日志收集架构</a></p>
+<ul>
+<li><p><a class="reference internal" href="#kubernetes" id="id14">1.Kubernetes 中的基本日志</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id15">2.Kubernetes 日志收集</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id16">2.1 节点日志采集代理</a></p></li>
+<li><p><a class="reference internal" href="#sidecar" id="id17">2.2 以sidecar容器收集日志</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id18">2.3直接从应用程序收集日志</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#efk" id="id19">3.搭建EFK日志系统</a></p>
+<ul>
+<li><p><a class="reference internal" href="#elasticsearch" id="id20">3.1 创建Elasticsearch集群</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#kibana" id="id21">4.创建Kibana 服务</a></p></li>
+<li><p><a class="reference internal" href="#fluentd" id="id22">5.部署Fluentd</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id5" id="id23">5.1 工作原理</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id24">5.2 配置</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id10" id="id25">6.安装</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id11" id="id26">6.1 日志分析</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="kubernets">
+<h1><a class="toc-backref" href="#id13">kubernets日志收集架构</a><a class="headerlink" href="#kubernets" title="Permalink to this headline">¶</a></h1>
+<p>前面我们学习了 Kubernetes
+集群中监控系统的搭建，除了对集群的监控报警之外，还有一项运维工作是非常重要的，那就是日志的收集。</p>
+<p>应用程序和系统日志可以帮助我们了解集群内部的运行情况，日志对于我们调试问题和监视集群情况也是非常有用的。而且大部分的应用都会有日志记录，对于传统的应用大部分都会写入到本地的日志文件之中。对于容器化应用程序来说则更简单，只需要将日志信息写入到
+stdout 和 stderr 即可，容器默认情况下就会把这些日志输出到宿主机上的一个
+JSON 文件之中，同样我们也可以通过 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">logs</span></code> 或者 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">logs</span></code>
+来查看到对应的日志信息。</p>
+<p>但是，通常来说容器引擎或运行时提供的功能不足以记录完整的日志信息，比如，如果容器崩溃了、Pod
+被驱逐了或者节点挂掉了，我们仍然也希望访问应用程序的日志。</p>
+<p>所以，日志应该独立于节点、Pod 或容器的生命周期，这种设计方式被称为
+<code class="docutils literal notranslate"><span class="pre">cluster-level-logging</span></code>，即完全独立于 Kubernetes
+系统，需要自己提供单独的日志后端存储、分析和查询工具。</p>
+<section id="kubernetes">
+<h2><a class="toc-backref" href="#id14">1.Kubernetes 中的基本日志</a><a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h2>
+<p>下面这个示例是 Kubernetes
+中的一个基本日志记录的示例，直接将数据输出到标准输出流，如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">counter</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">count</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">/bin/sh</span><span class="p p-Indicator">,</span> <span class="nv">-c</span><span class="p p-Indicator">,</span>
+            <span class="s">&#39;i=0;</span><span class="nv"> </span><span class="s">while</span><span class="nv"> </span><span class="s">true;</span><span class="nv"> </span><span class="s">do</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;$i:</span><span class="nv"> </span><span class="s">$(date)&quot;;</span><span class="nv"> </span><span class="s">i=$((i+1));</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">1;</span><span class="nv"> </span><span class="s">done&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>将上面文件保存为 counter-pod.yaml，该 Pod 每秒输出一些文本信息，创建这个
+Pod：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f counter-pod.yaml
+pod <span class="s2">&quot;counter&quot;</span> created
+</pre></div>
+</div>
+<p>创建完成后，可以使用 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">logs</span></code> 命令查看日志信息：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl logs counter
+<span class="m">0</span>: Thu Dec <span class="m">27</span> <span class="m">15</span>:47:04 UTC <span class="m">2018</span>
+<span class="m">1</span>: Thu Dec <span class="m">27</span> <span class="m">15</span>:47:05 UTC <span class="m">2018</span>
+<span class="m">2</span>: Thu Dec <span class="m">27</span> <span class="m">15</span>:47:06 UTC <span class="m">2018</span>
+<span class="m">3</span>: Thu Dec <span class="m">27</span> <span class="m">15</span>:47:07 UTC <span class="m">2018</span>
+......
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h2><a class="toc-backref" href="#id15">2.Kubernetes 日志收集</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Kubernetes
+集群本身不提供日志收集的解决方案，一般来说有主要的3种方案来做日志收集：</p>
+<ul class="simple">
+<li><p>在节点上运行一个 agent 来收集日志</p></li>
+<li><p>在 Pod 中包含一个 sidecar 容器来收集应用日志</p></li>
+<li><p>直接在应用程序中将日志信息推送到采集后端</p></li>
+</ul>
+<section id="id2">
+<h3><a class="toc-backref" href="#id16">2.1 节点日志采集代理</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<img alt="../../_images/image-20220726175400508.png" src="../../_images/image-20220726175400508.png" />
+<p>通过在每个节点上运行一个日志收集的 agent 来采集日志数据，日志采集 agent
+是一种专用工具，用于将日志数据推送到统一的后端。</p>
+<p>一般来说，这种 agent
+用一个容器来运行，可以访问该节点上所有应用程序容器的日志文件所在目录。</p>
+<p>由于这种 agent 必须在每个节点上运行，所以直接使用 DaemonSet
+控制器运行该应用程序即可。</p>
+<p>在节点上运行一个日志收集的 agent
+这种方式是最常见的一直方法，因为它只需要在每个节点上运行一个代理程序，并不需要对节点上运行的应用程序进行更改，对应用程序没有任何侵入性，但是这种方法也仅仅适用于收集输出到
+stdout 和 stderr 的应用程序日志。</p>
+</section>
+<section id="sidecar">
+<h3><a class="toc-backref" href="#id17">2.2 以sidecar容器收集日志</a><a class="headerlink" href="#sidecar" title="Permalink to this headline">¶</a></h3>
+<p>我们看上面的图可以看到有一个明显的问题就是我们采集的日志都是通过输出到容器的
+stdout 和 stderr 里面的信息，这些信息会在本地的容器对应目录中保留成 JSON
+日志文件，所以直接在节点上运行一个 agent 就可以采集到日志。</p>
+<p>但是如果我们的应用程序的日志是输出到容器中的某个日志文件的话呢？这种日志数据显然只通过上面的方案是采集不到的了。</p>
+<section id="id3">
+<h4>用sidecar容器重新输出日志<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<img alt="../../_images/image-20220726175613655.png" src="../../_images/image-20220726175613655.png" />
+<p>对于上面这种情况我们可以直接在 Pod 中启动另外一个 sidecar
+容器，直接将应用程序的日志通过这个容器重新输出到
+stdout，这样是不是通过上面的节点日志收集方案又可以完成了。</p>
+<p>由于这个 sidecar
+容器的主要逻辑就是将应用程序中的日志进行重定向打印，所以背后的逻辑非常简单，开销很小，而且由于输出到了
+stdout 或者 stderr，所以我们也可以使用 kubectl logs 来查看日志了。</p>
+<p>下面的示例是在 Pod 中将日志记录在了容器的两个本地文件之中：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">counter</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">count</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">args</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/bin/sh</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">-c</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">&gt;</span>
+      <span class="no">i=0;</span>
+      <span class="no">while true;</span>
+      <span class="no">do</span>
+        <span class="no">echo &quot;$i: $(date)&quot; &gt;&gt; /var/log/1.log;</span>
+        <span class="no">echo &quot;$(date) INFO $i&quot; &gt;&gt; /var/log/2.log;</span>
+        <span class="no">i=$((i+1));</span>
+        <span class="no">sleep 1;</span>
+      <span class="no">done</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/var/log</span>
+  <span class="nt">volumes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+    <span class="nt">emptyDir</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+</pre></div>
+</div>
+<p>由于 Pod 中容器的特性，我们可以利用另外一个 sidecar
+容器去获取到另外容器中的日志文件，然后将日志重定向到自己的 stdout
+流中，可以将上面的 YAML
+文件做如下修改：（two-files-counter-pod-streaming-sidecar.yaml）</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">counter</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">count</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">args</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/bin/sh</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">-c</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">&gt;</span>
+      <span class="no">i=0;</span>
+      <span class="no">while true;</span>
+      <span class="no">do</span>
+        <span class="no">echo &quot;$i: $(date)&quot; &gt;&gt; /var/log/1.log;</span>
+        <span class="no">echo &quot;$(date) INFO $i&quot; &gt;&gt; /var/log/2.log;</span>
+        <span class="no">i=$((i+1));</span>
+        <span class="no">sleep 1;</span>
+      <span class="no">done</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/var/log</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">count-log-1</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">/bin/sh</span><span class="p p-Indicator">,</span> <span class="nv">-c</span><span class="p p-Indicator">,</span> <span class="s">&#39;tail</span><span class="nv"> </span><span class="s">-n+1</span><span class="nv"> </span><span class="s">-f</span><span class="nv"> </span><span class="s">/var/log/1.log&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/var/log</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">count-log-2</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">/bin/sh</span><span class="p p-Indicator">,</span> <span class="nv">-c</span><span class="p p-Indicator">,</span> <span class="s">&#39;tail</span><span class="nv"> </span><span class="s">-n+1</span><span class="nv"> </span><span class="s">-f</span><span class="nv"> </span><span class="s">/var/log/2.log&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/var/log</span>
+  <span class="nt">volumes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+    <span class="nt">emptyDir</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+</pre></div>
+</div>
+<p>直接创建上面的 Pod：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f two-files-counter-pod-streaming-sidecar.yaml
+pod <span class="s2">&quot;counter&quot;</span> created
+</pre></div>
+</div>
+<p>运行成功后，我们可以通过下面的命令来查看日志的信息：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl logs counter count-log-1
+<span class="m">0</span>: Mon Jan  <span class="m">1</span> <span class="m">00</span>:00:00 UTC <span class="m">2001</span>
+<span class="m">1</span>: Mon Jan  <span class="m">1</span> <span class="m">00</span>:00:01 UTC <span class="m">2001</span>
+<span class="m">2</span>: Mon Jan  <span class="m">1</span> <span class="m">00</span>:00:02 UTC <span class="m">2001</span>
+...
+$ kubectl logs counter count-log-2
+Mon Jan  <span class="m">1</span> <span class="m">00</span>:00:00 UTC <span class="m">2001</span> INFO <span class="m">0</span>
+Mon Jan  <span class="m">1</span> <span class="m">00</span>:00:01 UTC <span class="m">2001</span> INFO <span class="m">1</span>
+Mon Jan  <span class="m">1</span> <span class="m">00</span>:00:02 UTC <span class="m">2001</span> INFO <span class="m">2</span>
+...
+</pre></div>
+</div>
+<p>这样前面节点上的日志采集 agent
+就可以自动获取这些日志信息，而不需要其他配置。</p>
+<p>这种方法虽然可以解决上面的问题，但是也有一个明显的缺陷，就是日志不仅会在原容器文件中保留下来，还会通过
+stdout 输出后占用磁盘空间，这样无形中就增加了一倍磁盘空间。</p>
+</section>
+<section id="sidecaragent">
+<h4>使用sidecar运行日志采集agent<a class="headerlink" href="#sidecaragent" title="Permalink to this headline">¶</a></h4>
+<img alt="../../_images/image-20220726175812410.png" src="../../_images/image-20220726175812410.png" />
+<p>如果你觉得在节点上运行一个日志采集的代理不够灵活的话，那么你也可以创建一个单独的日志采集代理程序的
+sidecar 容器，不过需要单独配置和应用程序一起运行。</p>
+<p>不过这样虽然更加灵活，但是在 sidecar
+容器中运行日志采集代理程序会导致大量资源消耗，因为你有多少个要采集的
+Pod，就需要运行多少个采集代理程序，另外还无法使用 kubectl logs
+命令来访问这些日志，因为它们不受 kubelet 控制。</p>
+<p>举个例子，你可以使用的 Stackdriver，它使用 fluentd
+作为记录剂。以下是两个可用于实现此方法的配置文件。第一个文件包含配置流利的
+ConfigMap。</p>
+<p>下面是 Kubernetes 官方的一个 fluentd 的配置文件示例，使用 ConfigMap
+对象来保存：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-config</span>
+<span class="nt">data</span><span class="p">:</span>
+  <span class="nt">fluentd.conf</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+    <span class="no">&lt;source&gt;</span>
+      <span class="no">type tail</span>
+      <span class="no">format none</span>
+      <span class="no">path /var/log/1.log</span>
+      <span class="no">pos_file /var/log/1.log.pos</span>
+      <span class="no">tag count.format1</span>
+    <span class="no">&lt;/source&gt;</span>
+
+    <span class="no">&lt;source&gt;</span>
+      <span class="no">type tail</span>
+      <span class="no">format none</span>
+      <span class="no">path /var/log/2.log</span>
+      <span class="no">pos_file /var/log/2.log.pos</span>
+      <span class="no">tag count.format2</span>
+    <span class="no">&lt;/source&gt;</span>
+
+    <span class="no">&lt;match **&gt;</span>
+      <span class="no">type google_cloud</span>
+    <span class="no">&lt;/match&gt;</span>
+</pre></div>
+</div>
+<p>上面的配置文件是配置收集原文件 <code class="docutils literal notranslate"><span class="pre">/var/log/1.log</span></code> 和 <code class="docutils literal notranslate"><span class="pre">/var/log/2.log</span></code>
+的日志数据，然后通过 google_cloud 这个插件将数据推送到 Stackdriver
+后端去。</p>
+<p>下面是我们使用上面的配置文件在应用程序中运行一个 fluentd
+的容器来读取日志数据：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">counter</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">count</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">args</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/bin/sh</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">-c</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">&gt;</span>
+      <span class="no">i=0;</span>
+      <span class="no">while true;</span>
+      <span class="no">do</span>
+        <span class="no">echo &quot;$i: $(date)&quot; &gt;&gt; /var/log/1.log;</span>
+        <span class="no">echo &quot;$(date) INFO $i&quot; &gt;&gt; /var/log/2.log;</span>
+        <span class="no">i=$((i+1));</span>
+        <span class="no">sleep 1;</span>
+      <span class="no">done</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/var/log</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">count-agent</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">k8s.gcr.io/fluentd-gcp:1.30</span>
+    <span class="nt">env</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">FLUENTD_ARGS</span>
+      <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-c /etc/fluentd-config/fluentd.conf</span>
+    <span class="nt">volumeMounts</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/var/log</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">config-volume</span>
+      <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/fluentd-config</span>
+  <span class="nt">volumes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+    <span class="nt">emptyDir</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">config-volume</span>
+    <span class="nt">configMap</span><span class="p">:</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-config</span>
+</pre></div>
+</div>
+<p>上面的 Pod 创建完成后，容器 count-agent 就会将 count
+容器中的日志进行收集然后上传。当然，这只是一个简单的示例，我们也完全可以使用其他的任何日志采集工具来替换
+fluentd，比如 logstash、fluent-bit 等等。</p>
+</section>
+</section>
+<section id="id4">
+<h3><a class="toc-backref" href="#id18">2.3直接从应用程序收集日志</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<img alt="../../_images/image-20220726180222007.png" src="../../_images/image-20220726180222007.png" />
+<p>除了上面的几种方案之外，我们也完全可以通过直接在应用程序中去显示的将日志推送到日志后端，但是这种方式需要代码层面的实现，也超出了
+Kubernetes 本身的范围。</p>
+</section>
+</section>
+<section id="efk">
+<h2><a class="toc-backref" href="#id19">3.搭建EFK日志系统</a><a class="headerlink" href="#efk" title="Permalink to this headline">¶</a></h2>
+<p>前面大家介绍了 Kubernetes 集群中的几种日志收集方案，Kubernetes
+中比较流行的日志收集解决方案是 Elasticsearch、Fluentd 和
+Kibana（EFK）技术栈，也是官方现在比较推荐的一种方案。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Elasticsearch</span></code>
+是一个实时的、分布式的可扩展的搜索引擎，允许进行全文、结构化搜索，它通常用于索引和搜索大量日志数据，也可用于搜索许多不同类型的文档。</p>
+<p>Elasticsearch 通常与 <code class="docutils literal notranslate"><span class="pre">Kibana</span></code> 一起部署，Kibana 是 Elasticsearch
+的一个功能强大的数据可视化 Dashboard，Kibana 允许你通过 web 界面来浏览
+Elasticsearch 日志数据。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Fluentd</span></code>是一个流行的开源数据收集器，我们将在 Kubernetes
+集群节点上安装
+Fluentd，通过获取容器日志文件、过滤和转换日志数据，然后将数据传递到
+Elasticsearch 集群，在该集群中对其进行索引和存储。</p>
+<p>我们先来配置启动一个可扩展的 Elasticsearch 集群，然后在 Kubernetes
+集群中创建一个 Kibana 应用，最后通过 DaemonSet 来运行
+Fluentd，以便它在每个 Kubernetes 工作节点上都可以运行一个 Pod。</p>
+<blockquote>
+<div><p>提示:</p>
+<p>如果你了解 EFK 的基本原理，只是为了测试可以直接使用 Kubernetes
+官方提供的 addon
+插件的资源清单，地址：<a class="reference external" href="https://github.com/kubernetes/kubernetes/blob/master/cluster/addons/fluentd-elasticsearch/">https://github.com/kubernetes/kubernetes/blob/master/cluster/addons/fluentd-elasticsearch/</a>，直接安装即可。</p>
+</div></blockquote>
+<section id="elasticsearch">
+<h3><a class="toc-backref" href="#id20">3.1 创建Elasticsearch集群</a><a class="headerlink" href="#elasticsearch" title="Permalink to this headline">¶</a></h3>
+<p>在创建 Elasticsearch
+集群之前，我们先创建一个命名空间，我们将在其中安装所有日志相关的资源对象。</p>
+<p>新建一个 kube-logging.yaml 文件：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Namespace</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
+</pre></div>
+</div>
+<p>然后通过 kubectl 创建该资源清单，创建一个名为 logging 的 namespace：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f kube-logging.yaml
+namespace/logging created
+$ kubectl get ns
+NAME           STATUS    AGE
+default        Active    244d
+istio-system   Active    100d
+kube-ops       Active    179d
+kube-public    Active    244d
+kube-system    Active    244d
+logging        Active    4h
+monitoring     Active    35d
+</pre></div>
+</div>
+<p>现在创建了一个命名空间来存放我们的日志相关资源，接下来可以部署 EFK
+相关组件，首先开始部署一个3节点的 Elasticsearch 集群。</p>
+<p>这里我们使用3个 Elasticsearch Pod
+来避免高可用下多节点集群中出现的“脑裂”问题，当一个或多个节点无法与其他节点通信时会产生“脑裂”，可能会出现几个主节点。</p>
+<blockquote>
+<div><p>了解更多 Elasticsearch 集群脑裂问题，可以查看文档</p>
+<p><a class="reference external" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#split-brain">https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#split-brain</a></p>
+</div></blockquote>
+<p>一个关键点是您应该设置参数<code class="docutils literal notranslate"><span class="pre">discover.zen.minimum_master_nodes=N/2+1</span></code>，其中<code class="docutils literal notranslate"><span class="pre">N</span></code>是
+Elasticsearch
+集群中符合主节点的节点数，比如我们这里3个节点，意味着<code class="docutils literal notranslate"><span class="pre">N</span></code>应该设置为2。</p>
+<p>这样，如果一个节点暂时与集群断开连接，则另外两个节点可以选择一个新的主节点，并且集群可以在最后一个节点尝试重新加入时继续运行，在扩展
+Elasticsearch 集群时，一定要记住这个参数。</p>
+<p>首先创建一个名为 elasticsearch 的无头服务，新建文件
+elasticsearch-svc.yaml，文件内容如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+  <span class="nt">clusterIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">None</span>
+  <span class="nt">ports</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9200</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rest</span>
+    <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9300</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">inter-node</span>
+</pre></div>
+</div>
+<p>定义了一个名为 elasticsearch 的 Service，指定标签
+<code class="docutils literal notranslate"><span class="pre">app=elasticsearch</span></code>，当我们将 Elasticsearch StatefulSet
+与此服务关联时，服务将返回带有标签 <code class="docutils literal notranslate"><span class="pre">app=elasticsearch</span></code>的
+Elasticsearch Pods 的 DNS A 记录，然后设置
+<code class="docutils literal notranslate"><span class="pre">clusterIP=None</span></code>，将该服务设置成无头服务。最后，我们分别定义端口9200、9300，分别用于与
+REST API 交互，以及用于节点间通信。</p>
+<p>使用 kubectl 直接创建上面的服务资源对象：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f elasticsearch-svc.yaml
+service/elasticsearch created
+$ kubectl get services --namespace<span class="o">=</span>logging
+Output
+NAME            TYPE        CLUSTER-IP   EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>             AGE
+elasticsearch   ClusterIP   None         &lt;none&gt;        <span class="m">9200</span>/TCP,9300/TCP   26s
+</pre></div>
+</div>
+<p>现在我们已经为 Pod
+设置了无头服务和一个稳定的域名<code class="docutils literal notranslate"><span class="pre">.elasticsearch.logging.svc.cluster.local</span></code>，接下来我们通过
+StatefulSet 来创建具体的 Elasticsearch 的 Pod 应用。</p>
+<p>Kubernetes StatefulSet 允许我们为 Pod
+分配一个稳定的标识和持久化存储，Elasticsearch 需要稳定的存储来保证 Pod
+在重新调度或者重启后的数据依然不变，所以需要使用 StatefulSet 来管理
+Pod。</p>
+<blockquote>
+<div><p>要了解更多关于 StaefulSet 的信息，可以查看官网关于 StatefulSet
+的相关文档：</p>
+<p><a class="reference external" href="https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/">https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/</a>。</p>
+</div></blockquote>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">StatefulSet</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">es</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">serviceName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+</pre></div>
+</div>
+<p>该内容中，我们定义了一个名为 es 的 StatefulSet
+对象，然后定义<code class="docutils literal notranslate"><span class="pre">serviceName=elasticsearch</span></code>和前面创建的 Service
+相关联，这可以确保使用以下 DNS 地址访问 StatefulSet 中的每一个
+Pod：<code class="docutils literal notranslate"><span class="pre">es-[0,1,2].elasticsearch.logging.svc.cluster.local</span></code>，其中[0,1,2]对应于已分配的
+Pod 序号。</p>
+<p>然后指定3个副本，将 matchLabels 设置为<code class="docutils literal notranslate"><span class="pre">app=elasticsearch</span></code>，所以
+Pod
+的模板部分<code class="docutils literal notranslate"><span class="pre">.spec.template.metadata.lables</span></code>也必须包含<code class="docutils literal notranslate"><span class="pre">app=elasticsearch</span></code>标签。</p>
+<p>然后定义 Pod 模板部分内容：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+  <span class="n">spec</span><span class="p">:</span>
+    <span class="n">containers</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">elasticsearch</span>
+      <span class="n">image</span><span class="p">:</span> <span class="n">docker</span><span class="o">.</span><span class="n">elastic</span><span class="o">.</span><span class="n">co</span><span class="o">/</span><span class="n">elasticsearch</span><span class="o">/</span><span class="n">elasticsearch</span><span class="p">:</span><span class="mf">7.6</span><span class="o">.</span><span class="mi">2</span>
+      <span class="n">resources</span><span class="p">:</span>
+        <span class="n">limits</span><span class="p">:</span>
+          <span class="n">cpu</span><span class="p">:</span> <span class="mi">1000</span><span class="n">m</span>
+        <span class="n">requests</span><span class="p">:</span>
+          <span class="n">cpu</span><span class="p">:</span> <span class="mi">100</span><span class="n">m</span>
+      <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">containerPort</span><span class="p">:</span> <span class="mi">9200</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">rest</span>
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="o">-</span> <span class="n">containerPort</span><span class="p">:</span> <span class="mi">9300</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">inter</span><span class="o">-</span><span class="n">node</span>
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+      <span class="n">volumeMounts</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">data</span>
+        <span class="n">mountPath</span><span class="p">:</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">elasticsearch</span><span class="o">/</span><span class="n">data</span>
+      <span class="n">env</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">cluster</span><span class="o">.</span><span class="n">name</span>
+          <span class="n">value</span><span class="p">:</span> <span class="n">k8s</span><span class="o">-</span><span class="n">logs</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span>
+          <span class="n">valueFrom</span><span class="p">:</span>
+            <span class="n">fieldRef</span><span class="p">:</span>
+              <span class="n">fieldPath</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">name</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">cluster</span><span class="o">.</span><span class="n">initial_master_nodes</span>
+          <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;es-0,es-1,es-2&quot;</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">discovery</span><span class="o">.</span><span class="n">zen</span><span class="o">.</span><span class="n">minimum_master_nodes</span>
+          <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">discovery</span><span class="o">.</span><span class="n">seed_hosts</span>
+          <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;elasticsearch&quot;</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">ES_JAVA_OPTS</span>
+          <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;-Xms512m -Xmx512m&quot;</span>
+        <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">network</span><span class="o">.</span><span class="n">host</span>
+          <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0&quot;</span>
+</pre></div>
+</div>
+<p>该部分是定义 StatefulSet 中的
+Pod，暴露了9200和9300两个端口，注意名称要和上面定义的 Service 保持一致。</p>
+<p>然后通过 volumeMount 声明了数据持久化目录，下面我们再来定义
+VolumeClaims。最后就是我们在容器中设置的一些环境变量了：</p>
+<ul class="simple">
+<li><p>cluster.name：Elasticsearch 集群的名称，我们这里命名成 k8s-logs。</p></li>
+<li><p>node.name：节点的名称，通过 <code class="docutils literal notranslate"><span class="pre">metadata.name</span></code> 来获取。这将解析为
+es-[0,1,2]，取决于节点的指定顺序。</p></li>
+<li><p>discovery.seed_hosts：此字段用于设置在 Elasticsearch
+集群中节点相互连接的发现方法。由于我们之前配置的无头服务，我们的 Pod
+具有唯一的 DNS
+域<code class="docutils literal notranslate"><span class="pre">es-[0,1,2].elasticsearch.logging.svc.cluster.local</span></code>，因此我们相应地设置此变量。要了解有关
+Elasticsearch 发现的更多信息，请参阅 Elasticsearch
+官方文档：<a class="reference external" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-discovery.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-discovery.html</a>。</p></li>
+<li><p>discovery.zen.minimum_master_nodes：我们将其设置为<code class="docutils literal notranslate"><span class="pre">(N/2)</span> <span class="pre">+</span> <span class="pre">1</span></code>，<code class="docutils literal notranslate"><span class="pre">N</span></code>是我们的群集中符合主节点的节点的数量。我们有3个
+Elasticsearch
+节点，因此我们将此值设置为2（向下舍入到最接近的整数）。要了解有关此参数的更多信息，请参阅官方
+Elasticsearch
+文档：<a class="reference external" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#split-brain">https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#split-brain</a>。</p></li>
+<li><p>ES_JAVA_OPTS：这里我们设置为<code class="docutils literal notranslate"><span class="pre">-Xms512m</span> <span class="pre">-Xmx512m</span></code>，告诉<code class="docutils literal notranslate"><span class="pre">JVM</span></code>使用<code class="docutils literal notranslate"><span class="pre">512</span> <span class="pre">MB</span></code>的最小和最大堆。您应该根据群集的资源可用性和需求调整这些参数。要了解更多信息，请参阅设置堆大小的相关文档：<a class="reference external" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html</a>。</p></li>
+</ul>
+<p>接下来添加关于 initContainer 的内容：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+    <span class="n">initContainers</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">increase</span><span class="o">-</span><span class="n">vm</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="nb">map</span>
+      <span class="n">image</span><span class="p">:</span> <span class="n">busybox</span>
+      <span class="n">command</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sysctl&quot;</span><span class="p">,</span> <span class="s2">&quot;-w&quot;</span><span class="p">,</span> <span class="s2">&quot;vm.max_map_count=262144&quot;</span><span class="p">]</span>
+      <span class="n">securityContext</span><span class="p">:</span>
+        <span class="n">privileged</span><span class="p">:</span> <span class="n">true</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">increase</span><span class="o">-</span><span class="n">fd</span><span class="o">-</span><span class="n">ulimit</span>
+      <span class="n">image</span><span class="p">:</span> <span class="n">busybox</span>
+      <span class="n">command</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sh&quot;</span><span class="p">,</span> <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;ulimit -n 65536&quot;</span><span class="p">]</span>
+      <span class="n">securityContext</span><span class="p">:</span>
+        <span class="n">privileged</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>这里我们定义了几个在主应用程序之前运行的 Init
+容器，这些初始容器按照定义的顺序依次执行，执行完成后才会启动主应用容器。</p>
+<p>第一个名为 increase-vm-max-map
+的容器用来增加操作系统对<code class="docutils literal notranslate"><span class="pre">mmap</span></code>计数的限制，默认情况下该值可能太低，导致内存不足的错误，要了解更多关于该设置的信息，可以查看
+Elasticsearch
+官方文档说明：<a class="reference external" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html</a>。</p>
+<p>最后一个初始化容器是用来执行<code class="docutils literal notranslate"><span class="pre">ulimit</span></code>命令增加打开文件描述符的最大数量的。</p>
+<blockquote>
+<div><p>此外 <a class="reference external" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#_notes_for_production_use_and_defaults">Elastisearch Notes for Production
+Use</a>
+文档还提到了由于性能原因最好禁用 swap，当然对于 Kubernetes
+集群而言，最好也是禁用 swap 分区的。</p>
+</div></blockquote>
+<p>现在我们已经定义了主应用容器和它之前运行的 Init Containers
+来调整一些必要的系统参数，接下来我们可以添加数据目录的持久化相关的配置，在
+StatefulSet 中，使用 volumeClaimTemplates 来定义 volume 模板即可：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+  <span class="n">volumeClaimTemplates</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">metadata</span><span class="p">:</span>
+      <span class="n">name</span><span class="p">:</span> <span class="n">data</span>
+      <span class="n">labels</span><span class="p">:</span>
+        <span class="n">app</span><span class="p">:</span> <span class="n">elasticsearch</span>
+    <span class="n">spec</span><span class="p">:</span>
+      <span class="n">accessModes</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;ReadWriteOnce&quot;</span> <span class="p">]</span>
+      <span class="n">storageClassName</span><span class="p">:</span> <span class="n">rook</span><span class="o">-</span><span class="n">ceph</span><span class="o">-</span><span class="n">block</span>
+      <span class="n">resources</span><span class="p">:</span>
+        <span class="n">requests</span><span class="p">:</span>
+          <span class="n">storage</span><span class="p">:</span> <span class="mi">50</span><span class="n">Gi</span>
+</pre></div>
+</div>
+<p>我们这里使用 volumeClaimTemplates 来定义持久化模板，Kubernetes
+会使用它为 Pod 创建
+PersistentVolume，设置访问模式为<code class="docutils literal notranslate"><span class="pre">ReadWriteOnce</span></code>，这意味着它只能被
+mount 到单个节点上进行读写，然后最重要的是使用了一个 StorageClass
+对象，这里我们就直接使用前面创建的 Ceph RBD 类型的名为
+<code class="docutils literal notranslate"><span class="pre">rook-ceph-block</span></code> 的 StorageClass 对象即可。</p>
+<p>最后，我们指定了每个 PersistentVolume 的大小为
+50GB，我们可以根据自己的实际需要进行调整该值。</p>
+<p>完整的 Elasticsearch StatefulSet 资源清单文件内容如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">StatefulSet</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">es</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">serviceName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">nodeSelector</span><span class="p">:</span>
+        <span class="nt">es</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">log</span>
+      <span class="nt">initContainers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">increase-vm-max-map</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;sysctl&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;-w&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;vm.max_map_count=262144&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">securityContext</span><span class="p">:</span>
+          <span class="nt">privileged</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">increase-fd-ulimit</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;sh&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;ulimit</span><span class="nv"> </span><span class="s">-n</span><span class="nv"> </span><span class="s">65536&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">securityContext</span><span class="p">:</span>
+          <span class="nt">privileged</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fix-permissions</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+        <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;sh&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;chown</span><span class="nv"> </span><span class="s">-R</span><span class="nv"> </span><span class="s">1000:1000</span><span class="nv"> </span><span class="s">/usr/share/elasticsearch/data&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">securityContext</span><span class="p">:</span>
+          <span class="nt">privileged</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="nt">volumeMounts</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">data</span>
+          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/usr/share/elasticsearch/data</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.elastic.co/elasticsearch/elasticsearch:7.6.2</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rest</span>
+          <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9200</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">inter</span>
+          <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9300</span>
+        <span class="nt">resources</span><span class="p">:</span>
+          <span class="nt">limits</span><span class="p">:</span>
+            <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4096m</span>
+          <span class="nt">requests</span><span class="p">:</span>
+            <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000m</span>
+        <span class="nt">volumeMounts</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">data</span>
+          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/usr/share/elasticsearch/data</span>
+        <span class="nt">env</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cluster.name</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">k8s-logs</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">node.name</span>
+          <span class="nt">valueFrom</span><span class="p">:</span>
+            <span class="nt">fieldRef</span><span class="p">:</span>
+              <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata.name</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cluster.initial_master_nodes</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;es-0,es-1,es-2&quot;</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">discovery.zen.minimum_master_nodes</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;2&quot;</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">discovery.seed_hosts</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;elasticsearch&quot;</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ES_JAVA_OPTS</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;-Xms512m</span><span class="nv"> </span><span class="s">-Xmx512m&quot;</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">network.host</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;0.0.0.0&quot;</span>
+  <span class="nt">volumeClaimTemplates</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">data</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">accessModes</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="s">&quot;ReadWriteOnce&quot;</span> <span class="p p-Indicator">]</span>
+      <span class="nt">storageClassName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">efk-nfs</span>
+      <span class="nt">resources</span><span class="p">:</span>
+        <span class="nt">requests</span><span class="p">:</span>
+          <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50Gi</span>
+</pre></div>
+</div>
+<p>现在直接使用 kubectl 工具部署即可：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 为node打标签</span>
+$ kubectl label nodes <span class="m">10</span>.0.0.12 <span class="nv">es</span><span class="o">=</span>log
+$ kubectl label nodes <span class="m">10</span>.0.0.36 <span class="nv">es</span><span class="o">=</span>log
+$ kubectl label nodes <span class="m">10</span>.0.0.37 <span class="nv">es</span><span class="o">=</span>log
+
+<span class="c1"># 查看所有标签</span>
+$ kubectl get nodes --show-labels
+
+<span class="c1"># 现在直接使用 kubectl 工具部署即可</span>
+$ kubectl create -f elasticsearch-statefulset.yaml
+statefulset.apps/es created
+</pre></div>
+</div>
+<p>添加成功后，可以看到 logging 命名空间下面的所有的资源对象：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get sts -n logging
+NAME   READY   AGE
+es     <span class="m">3</span>/3     83m
+
+$ kubectl get pods -n logging
+NAME                      READY   STATUS    RESTARTS   AGE
+es-0                      <span class="m">1</span>/1     Running   <span class="m">0</span>          83m
+es-1                      <span class="m">1</span>/1     Running   <span class="m">0</span>          82m
+es-2                      <span class="m">1</span>/1     Running   <span class="m">0</span>          81m
+
+$ kubectl get svc -n logging
+NAME            TYPE        CLUSTER-IP       EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>             AGE
+elasticsearch   ClusterIP   None             &lt;none&gt;        <span class="m">9200</span>/TCP,9300/TCP   20h
+</pre></div>
+</div>
+<p>Pods 部署完成后，我们可以通过请求一个 REST API 来检查 Elasticsearch
+集群是否正常运行。使用下面的命令将本地端口9200 转发到 Elasticsearch
+节点（如es-0）对应的端口：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl port-forward es-0 <span class="m">9200</span>:9200 --namespace<span class="o">=</span>logging
+Forwarding from <span class="m">127</span>.0.0.1:9200 -&gt; <span class="m">9200</span>
+Forwarding from <span class="o">[</span>::1<span class="o">]</span>:9200 -&gt; <span class="m">9200</span>
+</pre></div>
+</div>
+<p>然后，在另外的终端窗口中，执行如下请求：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:9200/_cluster/state?pretty
+</pre></div>
+</div>
+<p>正常来说，应该会看到类似于如下的信息：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;cluster_name&quot;</span> <span class="p">:</span> <span class="s2">&quot;k8s-logs&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;compressed_size_in_bytes&quot;</span> <span class="p">:</span> <span class="mi">348</span><span class="p">,</span>
+  <span class="s2">&quot;cluster_uuid&quot;</span> <span class="p">:</span> <span class="s2">&quot;QD06dK7CQgids-GQZooNVw&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;version&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+  <span class="s2">&quot;state_uuid&quot;</span> <span class="p">:</span> <span class="s2">&quot;mjNIWXAzQVuxNNOQ7xR-qg&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;master_node&quot;</span> <span class="p">:</span> <span class="s2">&quot;IdM5B7cUQWqFgIHXBp0JDg&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;blocks&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="p">},</span>
+  <span class="s2">&quot;nodes&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;u7DoTpMmSCixOoictzHItA&quot;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span> <span class="p">:</span> <span class="s2">&quot;es-1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;ephemeral_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;ZlBflnXKRMC4RvEACHIVdg&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;transport_address&quot;</span> <span class="p">:</span> <span class="s2">&quot;10.244.4.191:9300&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;attributes&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;IdM5B7cUQWqFgIHXBp0JDg&quot;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span> <span class="p">:</span> <span class="s2">&quot;es-0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;ephemeral_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;JTk1FDdFQuWbSFAtBxdxAQ&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;transport_address&quot;</span> <span class="p">:</span> <span class="s2">&quot;10.244.2.215:9300&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;attributes&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;R8E7xcSUSbGbgrhAdyAKmQ&quot;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span> <span class="p">:</span> <span class="s2">&quot;es-2&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;ephemeral_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;9wv6ke71Qqy9vk2LgJTqaA&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;transport_address&quot;</span> <span class="p">:</span> <span class="s2">&quot;10.244.40.4:9300&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;attributes&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>看到上面的信息就表明我们名为 k8s-logs 的 Elasticsearch
+集群成功创建了3个节点：es-0，es-1，和es-2，当前主节点是 es-0。</p>
+</section>
+</section>
+<section id="kibana">
+<h2><a class="toc-backref" href="#id21">4.创建Kibana 服务</a><a class="headerlink" href="#kibana" title="Permalink to this headline">¶</a></h2>
+<p>Elasticsearch 集群启动成功了，接下来我们可以来部署 Kibana
+服务，新建一个名为 kibana.yaml 的文件，对应的文件内容如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kibana</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kibana</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">ports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+    <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5601</span>
+    <span class="nt">targetPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5601</span>
+    <span class="nt">nodePort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30601</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NodePort</span>
+
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kibana</span>
+
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kibana</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kibana</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kibana</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kibana</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">nodeSelector</span><span class="p">:</span>
+        <span class="nt">es</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">log</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kibana</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.elastic.co/kibana/kibana:7.6.2</span>
+        <span class="nt">resources</span><span class="p">:</span>
+          <span class="nt">limits</span><span class="p">:</span>
+            <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000m</span>
+          <span class="nt">requests</span><span class="p">:</span>
+            <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500m</span>
+        <span class="nt">env</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ELASTICSEARCH_HOSTS</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://elasticsearch:9200</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5601</span>
+</pre></div>
+</div>
+<p>上面我们定义了两个资源对象，一个 Service 和
+Deployment，为了测试方便，我们将 Service 设置为了 NodePort 类型，Kibana
+Pod 中配置都比较简单，唯一需要注意的是我们使用 <code class="docutils literal notranslate"><span class="pre">ELASTICSEARCH_HOSTS</span></code>
+这个环境变量来设置Elasticsearch 集群的端点和端口，直接使用 Kubernetes
+DNS 即可，</p>
+<p>此端点对应服务名称为 elasticsearch，由于是一个 headless
+service，所以该域将解析为3个 Elasticsearch Pod 的 IP 地址列表。</p>
+<p>配置完成后，直接使用 kubectl 工具创建：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f kibana.yaml
+service/kibana created
+deployment.apps/kibana created
+</pre></div>
+</div>
+<p>创建完成后，可以查看 Kibana Pod 的运行状态：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods --namespace<span class="o">=</span>logging
+NAME                      READY   STATUS    RESTARTS   AGE
+es-0                      <span class="m">1</span>/1     Running   <span class="m">0</span>          85m
+es-1                      <span class="m">1</span>/1     Running   <span class="m">0</span>          84m
+es-2                      <span class="m">1</span>/1     Running   <span class="m">0</span>          83m
+kibana-5c565c47dd-xj4bd   <span class="m">1</span>/1     Running   <span class="m">0</span>          80m
+
+$ kubectl get svc -n logging
+NAME            TYPE        CLUSTER-IP       EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>             AGE
+elasticsearch   ClusterIP   None             &lt;none&gt;        <span class="m">9200</span>/TCP,9300/TCP   3h32m
+kibana          NodePort    <span class="m">172</span>.16.232.190   &lt;none&gt;        <span class="m">5601</span>:30601/TCP      15s
+</pre></div>
+</div>
+<p>如果 Pod 已经是 Running 状态了，证明应用已经部署成功了，然后可以通过
+NodePort 来访问 Kibana
+这个服务，在浏览器中打开<code class="docutils literal notranslate"><span class="pre">http://&lt;任意节点IP&gt;:30601</span></code>即可，如果看到如下欢迎界面证明
+Kibana 已经成功部署到了 Kubernetes集群之中。</p>
+<img alt="../../_images/image-20220726214606980.png" src="../../_images/image-20220726214606980.png" />
+</section>
+<section id="fluentd">
+<h2><a class="toc-backref" href="#id22">5.部署Fluentd</a><a class="headerlink" href="#fluentd" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Fluentd</span></code> 是一个高效的日志聚合器，是用 Ruby
+编写的，并且可以很好地扩展。</p>
+<p>对于大部分企业来说，Fluentd
+足够高效并且消耗的资源相对较少，另外一个工具<code class="docutils literal notranslate"><span class="pre">Fluent-bit</span></code>更轻量级，占用资源更少，但是插件相对
+Fluentd 来说不够丰富，所以整体来说，Fluentd
+更加成熟，使用更加广泛，所以我们这里也同样使用 Fluentd
+来作为日志收集工具。</p>
+<section id="id5">
+<h3><a class="toc-backref" href="#id23">5.1 工作原理</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>Fluentd
+通过一组给定的数据源抓取日志数据，处理后（转换成结构化的数据格式）将它们转发给其他服务，比如
+Elasticsearch、对象存储等等。Fluentd
+支持超过300个日志存储和分析服务，所以在这方面是非常灵活的。主要运行步骤如下：</p>
+<ul class="simple">
+<li><p>首先 Fluentd 从多个日志源获取数据</p></li>
+<li><p>结构化并且标记这些数据</p></li>
+<li><p>然后根据匹配的标签将数据发送到多个目标服务去</p></li>
+</ul>
+<img alt="../../_images/image-20220726214920074.png" src="../../_images/image-20220726214920074.png" />
+</section>
+<section id="id6">
+<h3><a class="toc-backref" href="#id24">5.2 配置</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>一般来说我们是通过一个配置文件来告诉 Fluentd
+如何采集、处理数据的，下面简单和大家介绍下 Fluentd 的配置方法。</p>
+<section id="id7">
+<h4>1.日志源配置<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<p>比如我们这里为了收集 Kubernetes
+节点上的所有容器日志，就需要做如下的日志源配置：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;source&gt;
+  @id fluentd-containers.log
+  @type tail                             # Fluentd 内置的输入方式，其原理是不停地从源文件中获取新的日志。
+  path /var/log/containers/*.log         # 挂载的服务器Docker容器日志地址
+  pos_file /var/log/es-containers.log.pos
+  tag raw.kubernetes.*                   # 设置日志标签
+  read_from_head true
+  &lt;parse&gt;                                # 多行格式化成JSON
+    @type multi_format                   # 使用 multi-format-parser 解析器插件
+    &lt;pattern&gt;
+      format json                        # JSON 解析器
+      time_key time                      # 指定事件时间的时间字段
+      time_format %Y-%m-%dT%H:%M:%S.%NZ  # 时间格式
+    &lt;/pattern&gt;
+    &lt;pattern&gt;
+      format /^(?&lt;time&gt;.+) (?&lt;stream&gt;stdout|stderr) [^ ]* (?&lt;log&gt;.*)$/
+      time_format %Y-%m-%dT%H:%M:%S.%N%:z
+    &lt;/pattern&gt;
+  &lt;/parse&gt;
+&lt;/source&gt;
+</pre></div>
+</div>
+<p>上面配置部分参数说明如下：</p>
+<ul class="simple">
+<li><p>id：表示引用该日志源的唯一标识符，该标识可用于进一步过滤和路由结构化日志数据</p></li>
+<li><p>type：Fluentd 内置的指令，<code class="docutils literal notranslate"><span class="pre">tail</span></code> 表示 Fluentd
+从上次读取的位置通过 tail 不断获取数据，另外一个是 <code class="docutils literal notranslate"><span class="pre">http</span></code>
+表示通过一个 GET 请求来收集数据。</p></li>
+<li><p>path：<code class="docutils literal notranslate"><span class="pre">tail</span></code> 类型下的特定参数，告诉 Fluentd 采集
+<code class="docutils literal notranslate"><span class="pre">/var/log/containers</span></code> 目录下的所有日志，这是 docker 在 Kubernetes
+节点上用来存储运行容器 stdout 输出日志数据的目录。</p></li>
+<li><p>pos_file：检查点，如果 Fluentd
+程序重新启动了，它将使用此文件中的位置来恢复日志数据收集。</p></li>
+<li><p>tag：用来将日志源与目标或者过滤器匹配的自定义字符串，Fluentd
+匹配源/目标标签来路由日志数据。</p></li>
+</ul>
+</section>
+<section id="id8">
+<h4>2.路由配置<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<p>上面是日志源的配置，接下来看看如何将日志数据发送到 Elasticsearch：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">match</span> <span class="o">**&gt;</span>
+
+<span class="nd">@id</span> <span class="n">elasticsearch</span>
+
+<span class="nd">@type</span> <span class="n">elasticsearch</span>
+
+<span class="nd">@log_level</span> <span class="n">info</span>
+
+<span class="n">include_tag_key</span> <span class="n">true</span>
+
+<span class="n">type_name</span> <span class="n">fluentd</span>
+
+<span class="n">host</span> <span class="s2">&quot;#</span><span class="si">{ENV[&#39;OUTPUT_HOST&#39;]}</span><span class="s2">&quot;</span>
+
+<span class="n">port</span> <span class="s2">&quot;#</span><span class="si">{ENV[&#39;OUTPUT_PORT&#39;]}</span><span class="s2">&quot;</span>
+
+<span class="n">logstash_format</span> <span class="n">true</span>
+
+<span class="o">&lt;</span><span class="n">buffer</span><span class="o">&gt;</span>
+
+<span class="nd">@type</span> <span class="n">file</span>
+
+<span class="n">path</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">fluentd</span><span class="o">-</span><span class="n">buffers</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">buffer</span>
+
+<span class="n">flush_mode</span> <span class="n">interval</span>
+
+<span class="n">retry_type</span> <span class="n">exponential_backoff</span>
+
+<span class="n">flush_thread_count</span> <span class="mi">2</span>
+
+<span class="n">flush_interval</span> <span class="mi">5</span><span class="n">s</span>
+
+<span class="n">retry_forever</span>
+
+<span class="n">retry_max_interval</span> <span class="mi">30</span>
+
+<span class="n">chunk_limit_size</span> <span class="s2">&quot;#</span><span class="si">{ENV[&#39;OUTPUT_BUFFER_CHUNK_LIMIT&#39;]}</span><span class="s2">&quot;</span>
+
+<span class="n">queue_limit_length</span> <span class="s2">&quot;#</span><span class="si">{ENV[&#39;OUTPUT_BUFFER_QUEUE_LIMIT&#39;]}</span><span class="s2">&quot;</span>
+
+<span class="n">overflow_action</span> <span class="n">block</span>
+
+<span class="o">&lt;/</span><span class="n">buffer</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>match：标识一个目标标签，后面是一个匹配日志源的正则表达式，我们这里想要捕获所有的日志并将它们发送给
+Elasticsearch，所以需要配置成<code class="docutils literal notranslate"><span class="pre">**</span></code>。</p></li>
+<li><p>id：目标的一个唯一标识符。</p></li>
+<li><p>type：支持的输出插件标识符，我们这里要输出到
+Elasticsearch，所以配置成 elasticsearch，这是 Fluentd
+的一个内置插件。</p></li>
+<li><p>log_level：指定要捕获的日志级别，我们这里配置成
+<code class="docutils literal notranslate"><span class="pre">info</span></code>，表示任何该级别或者该级别以上（INFO、WARNING、ERROR）的日志都将被路由到
+Elsasticsearch。</p></li>
+<li><p>host/port：定义 Elasticsearch 的地址，也可以配置认证信息，我们的
+Elasticsearch 不需要认证，所以这里直接指定 host 和 port 即可。</p></li>
+<li><p>logstash_format：Elasticsearch 服务对日志数据构建反向索引进行搜索，将
+logstash_format 设置为 <code class="docutils literal notranslate"><span class="pre">true</span></code>，Fluentd 将会以 logstash
+格式来转发结构化的日志数据。</p></li>
+<li><p>Buffer： Fluentd
+允许在目标不可用时进行缓存，比如，如果网络出现故障或者 Elasticsearch
+不可用的时候。缓冲区配置也有助于降低磁盘的 IO。</p></li>
+</ul>
+</section>
+<section id="id9">
+<h4>3.过滤<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<p>由于 Kubernetes
+集群中应用太多，也还有很多历史数据，所以我们可以只将某些应用的日志进行收集，比如我们只采集具有
+<code class="docutils literal notranslate"><span class="pre">logging=true</span></code> 这个 Label 标签的 Pod 日志，这个时候就需要使用
+filter，如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 删除无用的属性
+&lt;filter kubernetes.**&gt;
+  @type record_transformer
+  remove_keys $.docker.container_id,$.kubernetes.container_image_id,$.kubernetes.pod_id,$.kubernetes.namespace_id,$.kubernetes.master_url,$.kubernetes.labels.pod-template-hash
+&lt;/filter&gt;
+# 只保留具有logging=true标签的Pod日志
+&lt;filter kubernetes.**&gt;
+  @id filter_log
+  @type grep
+  &lt;regexp&gt;
+    key $.kubernetes.labels.logging
+    pattern ^true$
+  &lt;/regexp&gt;
+&lt;/filter&gt;
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="id10">
+<h2><a class="toc-backref" href="#id25">6.安装</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<p>要收集 Kubernetes 集群的日志，直接用 DasemonSet 控制器来部署 Fluentd
+应用，这样，它就可以从 Kubernetes
+节点上采集日志，确保在集群中的每个节点上始终运行一个 Fluentd
+容器。当然可以直接使用 Helm
+来进行一键安装，为了能够了解更多实现细节，我们这里还是采用手动方法来进行安装。</p>
+<p>首先，我们通过 ConfigMap 对象来指定 Fluentd 配置文件，新建
+fluentd-configmap.yaml 文件，文件内容如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-config</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
+<span class="nt">data</span><span class="p">:</span>
+  <span class="nt">system.conf</span><span class="p">:</span> <span class="p p-Indicator">|-</span>
+    <span class="no">&lt;system&gt;</span>
+      <span class="no">root_dir /tmp/fluentd-buffers/</span>
+    <span class="no">&lt;/system&gt;</span>
+  <span class="nt">containers.input.conf</span><span class="p">:</span> <span class="p p-Indicator">|-</span>
+    <span class="no">&lt;source&gt;</span>
+      <span class="no">@id fluentd-containers.log</span>
+      <span class="no">@type tail                              # Fluentd 内置的输入方式，其原理是不停地从源文件中获取新的日志。</span>
+      <span class="no">path /var/log/containers/*.log          # 挂载的服务器Docker容器日志地址</span>
+      <span class="no">pos_file /var/log/es-containers.log.pos</span>
+      <span class="no">tag raw.kubernetes.*                    # 设置日志标签</span>
+      <span class="no">read_from_head true</span>
+      <span class="no">&lt;parse&gt;                                 # 多行格式化成JSON</span>
+        <span class="no">@type multi_format                    # 使用 multi-format-parser 解析器插件</span>
+        <span class="no">&lt;pattern&gt;</span>
+          <span class="no">format json                         # JSON解析器</span>
+          <span class="no">time_key time                       # 指定事件时间的时间字段</span>
+          <span class="no">time_format %Y-%m-%dT%H:%M:%S.%NZ   # 时间格式</span>
+        <span class="no">&lt;/pattern&gt;</span>
+        <span class="no">&lt;pattern&gt;</span>
+          <span class="no">format /^(?&lt;time&gt;.+) (?&lt;stream&gt;stdout|stderr) [^ ]* (?&lt;log&gt;.*)$/</span>
+          <span class="no">time_format %Y-%m-%dT%H:%M:%S.%N%:z</span>
+        <span class="no">&lt;/pattern&gt;</span>
+      <span class="no">&lt;/parse&gt;</span>
+    <span class="no">&lt;/source&gt;</span>
+    <span class="no"># 在日志输出中检测异常，并将其作为一条日志转发</span>
+    <span class="no"># https://github.com/GoogleCloudPlatform/fluent-plugin-detect-exceptions</span>
+    <span class="no">&lt;match raw.kubernetes.**&gt;           # 匹配tag为raw.kubernetes.**日志信息</span>
+      <span class="no">@id raw.kubernetes</span>
+      <span class="no">@type detect_exceptions           # 使用detect-exceptions插件处理异常栈信息</span>
+      <span class="no">remove_tag_prefix raw             # 移除 raw 前缀</span>
+      <span class="no">message log</span>
+      <span class="no">stream stream</span>
+      <span class="no">multiline_flush_interval 5</span>
+      <span class="no">max_bytes 500000</span>
+      <span class="no">max_lines 1000</span>
+    <span class="no">&lt;/match&gt;</span>
+
+    <span class="no">&lt;filter **&gt;                 # 拼接日志</span>
+      <span class="no">@id filter_concat</span>
+      <span class="no">@type concat                # Fluentd Filter 插件，用于连接多个事件中分隔的多行日志。</span>
+      <span class="no">key message</span>
+      <span class="no">multiline_end_regexp /\n$/  # 以换行符“\n”拼接</span>
+      <span class="no">separator &quot;&quot;</span>
+    <span class="no">&lt;/filter&gt;</span>
+
+    <span class="no"># 添加 Kubernetes metadata 数据</span>
+    <span class="no">&lt;filter kubernetes.**&gt;</span>
+      <span class="no">@id filter_kubernetes_metadata</span>
+      <span class="no">@type kubernetes_metadata</span>
+    <span class="no">&lt;/filter&gt;</span>
+
+    <span class="no"># 修复 ES 中的 JSON 字段</span>
+    <span class="no"># 插件地址：https://github.com/repeatedly/fluent-plugin-multi-format-parser</span>
+    <span class="no">&lt;filter kubernetes.**&gt;</span>
+      <span class="no">@id filter_parser</span>
+      <span class="no">@type parser                # multi-format-parser多格式解析器插件</span>
+      <span class="no">key_name log                # 在要解析的记录中指定字段名称。</span>
+      <span class="no">reserve_data true           # 在解析结果中保留原始键值对。</span>
+      <span class="no">remove_key_name_field true  # key_name 解析成功后删除字段。</span>
+      <span class="no">&lt;parse&gt;</span>
+        <span class="no">@type multi_format</span>
+        <span class="no">&lt;pattern&gt;</span>
+          <span class="no">format json</span>
+        <span class="no">&lt;/pattern&gt;</span>
+        <span class="no">&lt;pattern&gt;</span>
+          <span class="no">format none</span>
+        <span class="no">&lt;/pattern&gt;</span>
+      <span class="no">&lt;/parse&gt;</span>
+    <span class="no">&lt;/filter&gt;</span>
+
+    <span class="no"># 删除一些多余的属性</span>
+    <span class="no">&lt;filter kubernetes.**&gt;</span>
+      <span class="no">@type record_transformer</span>
+      <span class="no">remove_keys $.docker.container_id,$.kubernetes.container_image_id,$.kubernetes.pod_id,$.kubernetes.namespace_id,$.kubernetes.master_url,$.kubernetes.labels.pod-template-hash</span>
+    <span class="no">&lt;/filter&gt;</span>
+
+    <span class="no"># 只保留具有logging=true标签的Pod日志</span>
+    <span class="no">&lt;filter kubernetes.**&gt;</span>
+      <span class="no">@id filter_log</span>
+      <span class="no">@type grep</span>
+      <span class="no">&lt;regexp&gt;</span>
+        <span class="no">key $.kubernetes.labels.logging</span>
+        <span class="no">pattern ^true$</span>
+      <span class="no">&lt;/regexp&gt;</span>
+    <span class="no">&lt;/filter&gt;</span>
+
+  <span class="c1">###### 监听配置，一般用于日志聚合用 ######</span>
+  <span class="nt">forward.input.conf</span><span class="p">:</span> <span class="p p-Indicator">|-</span>
+    <span class="no"># 监听通过TCP发送的消息</span>
+    <span class="no">&lt;source&gt;</span>
+      <span class="no">@id forward</span>
+      <span class="no">@type forward</span>
+    <span class="no">&lt;/source&gt;</span>
+
+  <span class="nt">output.conf</span><span class="p">:</span> <span class="p p-Indicator">|-</span>
+    <span class="no">&lt;match **&gt;</span>
+      <span class="no">@id elasticsearch</span>
+      <span class="no">@type elasticsearch</span>
+      <span class="no">@log_level info</span>
+      <span class="no">include_tag_key true</span>
+      <span class="no">host elasticsearch</span>
+      <span class="no">port 9200</span>
+      <span class="no">logstash_format true</span>
+      <span class="no">logstash_prefix k8s                   # 设置 index 前缀为 k8s</span>
+      <span class="no">request_timeout    30s</span>
+      <span class="no">&lt;buffer&gt;</span>
+        <span class="no">@type file</span>
+        <span class="no">path /var/log/fluentd-buffers/kubernetes.system.buffer</span>
+        <span class="no">flush_mode interval</span>
+        <span class="no">retry_type exponential_backoff</span>
+        <span class="no">flush_thread_count 2</span>
+        <span class="no">flush_interval 5s</span>
+        <span class="no">retry_forever</span>
+        <span class="no">retry_max_interval 30</span>
+        <span class="no">chunk_limit_size 2M</span>
+        <span class="no">queue_limit_length 8</span>
+        <span class="no">overflow_action block</span>
+      <span class="no">&lt;/buffer&gt;</span>
+    <span class="no">&lt;/match&gt;</span>
+</pre></div>
+</div>
+<p>上面配置文件中我们只配置了 docker
+容器日志目录，收集到数据经过处理后发送到 <code class="docutils literal notranslate"><span class="pre">elasticsearch:9200</span></code> 服务。</p>
+<p>然后新建一个 fluentd-daemonset.yaml 的文件，文件内容如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">k8s-app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+    <span class="nt">kubernetes.io/cluster-service</span><span class="p">:</span> <span class="s">&quot;true&quot;</span>
+    <span class="nt">addonmanager.kubernetes.io/mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Reconcile</span>
+<span class="nn">---</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterRole</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">k8s-app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+    <span class="nt">kubernetes.io/cluster-service</span><span class="p">:</span> <span class="s">&quot;true&quot;</span>
+    <span class="nt">addonmanager.kubernetes.io/mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Reconcile</span>
+<span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">apiGroups</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;&quot;</span>
+  <span class="nt">resources</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;namespaces&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;pods&quot;</span>
+  <span class="nt">verbs</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;get&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;watch&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;list&quot;</span>
+<span class="nn">---</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterRoleBinding</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">k8s-app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+    <span class="nt">kubernetes.io/cluster-service</span><span class="p">:</span> <span class="s">&quot;true&quot;</span>
+    <span class="nt">addonmanager.kubernetes.io/mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Reconcile</span>
+<span class="nt">subjects</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
+  <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="nt">roleRef</span><span class="p">:</span>
+  <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ClusterRole</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+  <span class="nt">apiGroup</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DaemonSet</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">logging</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">k8s-app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+    <span class="nt">kubernetes.io/cluster-service</span><span class="p">:</span> <span class="s">&quot;true&quot;</span>
+    <span class="nt">addonmanager.kubernetes.io/mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Reconcile</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">k8s-app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">k8s-app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+        <span class="nt">kubernetes.io/cluster-service</span><span class="p">:</span> <span class="s">&quot;true&quot;</span>
+      <span class="c1"># 此注释确保如果节点被驱逐，fluentd不会被驱逐，支持关键的基于 pod 注释的优先级方案。</span>
+      <span class="nt">annotations</span><span class="p">:</span>
+        <span class="nt">scheduler.alpha.kubernetes.io/critical-pod</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">serviceAccountName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-es</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">quay.io/fluentd_elasticsearch/fluentd:v3.0.1</span>
+        <span class="nt">env</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">FLUENTD_ARGS</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">--no-supervisor -q</span>
+        <span class="nt">resources</span><span class="p">:</span>
+          <span class="nt">limits</span><span class="p">:</span>
+            <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500Mi</span>
+          <span class="nt">requests</span><span class="p">:</span>
+            <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">100m</span>
+            <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200Mi</span>
+        <span class="nt">volumeMounts</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/var/log</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlibdockercontainers</span>
+          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/home/cce/docker/containers/</span>
+          <span class="nt">readOnly</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">config-volume</span>
+          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/fluent/config.d</span>
+      <span class="nt">nodeSelector</span><span class="p">:</span>
+        <span class="nt">beta.kubernetes.io/fluentd-ds-ready</span><span class="p">:</span> <span class="s">&quot;true&quot;</span>
+      <span class="nt">tolerations</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">operator</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Exists</span>
+      <span class="nt">terminationGracePeriodSeconds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
+      <span class="nt">volumes</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlog</span>
+        <span class="nt">hostPath</span><span class="p">:</span>
+          <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/var/log</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">varlibdockercontainers</span>
+        <span class="nt">hostPath</span><span class="p">:</span>
+          <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/home/cce/docker/containers/</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">config-volume</span>
+        <span class="nt">configMap</span><span class="p">:</span>
+          <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fluentd-config</span>
+</pre></div>
+</div>
+<p>我们将上面创建的 fluentd-config 这个 ConfigMap 对象通过 volumes 挂载到了
+Fluentd
+容器中，另外为了能够灵活控制哪些节点的日志可以被收集，所以我们这里还添加了一个
+nodSelector 属性：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodeSelector</span><span class="p">:</span>
+  <span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">fluentd</span><span class="o">-</span><span class="n">ds</span><span class="o">-</span><span class="n">ready</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span>
+</pre></div>
+</div>
+<p>意思就是要想采集节点的日志，那么我们就需要给节点打上上面的标签，比如我们这里只给节点1、节点2、节点3打上了该标签：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 节点打标签</span>
+$ kubectl label nodes <span class="m">10</span>.0.0.12 beta.kubernetes.io/fluentd-ds-ready<span class="o">=</span><span class="nb">true</span>
+$ kubectl label nodes <span class="m">10</span>.0.0.36 beta.kubernetes.io/fluentd-ds-ready<span class="o">=</span><span class="nb">true</span>
+$ kubectl label nodes <span class="m">10</span>.0.0.37 beta.kubernetes.io/fluentd-ds-ready<span class="o">=</span><span class="nb">true</span>
+
+<span class="c1"># 查看节点标签信息</span>
+$ kubectl get nodes --show-labels
+</pre></div>
+</div>
+<blockquote>
+<div><p>提示</p>
+<p>如果你需要在其他节点上采集日志，则需要给对应节点打上标签，使用如下命令：<code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">label</span> <span class="pre">nodes</span> <span class="pre">node名</span> <span class="pre">beta.kubernetes.io/fluentd-ds-ready=true</span></code>。</p>
+</div></blockquote>
+<p>另外由于我们的集群使用的是 kubeadm 搭建的，默认情况下 master
+节点有污点，所以如果要想也收集 master 节点的日志，则需要添加上容忍：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tolerations</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">operator</span><span class="p">:</span> <span class="n">Exists</span>
+</pre></div>
+</div>
+<p>另外需要注意的地方是，我这里的测试环境更改了 docker 的根目录：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker info
+...
+Docker Root Dir: /data/docker
+...
+</pre></div>
+</div>
+<p>所以上面要获取 docker
+的容器目录需要更改成<code class="docutils literal notranslate"><span class="pre">/data/docker/containers</span></code>，这个地方非常重要，当然如果你没有更改
+docker 根目录则使用默认的<code class="docutils literal notranslate"><span class="pre">/var/lib/docker/containers</span></code>目录即可。</p>
+<p>分别创建上面的 ConfigMap 对象和 DaemonSet：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f fluentd-configmap.yaml
+configmap <span class="s2">&quot;fluentd-config&quot;</span> created
+
+$ kubectl create -f fluentd-daemonset.yaml
+serviceaccount <span class="s2">&quot;fluentd-es&quot;</span> created
+clusterrole.rbac.authorization.k8s.io <span class="s2">&quot;fluentd-es&quot;</span> created
+clusterrolebinding.rbac.authorization.k8s.io <span class="s2">&quot;fluentd-es&quot;</span> created
+daemonset.apps <span class="s2">&quot;fluentd-es&quot;</span> created
+</pre></div>
+</div>
+<p>创建完成后，查看对应的 Pods 列表，检查是否部署成功：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl get pods -n logging
+NAME                      READY   STATUS    RESTARTS   AGE
+es-0                      <span class="m">1</span>/1     Running   <span class="m">0</span>          3h2m
+es-1                      <span class="m">1</span>/1     Running   <span class="m">0</span>          3h1m
+es-2                      <span class="m">1</span>/1     Running   <span class="m">0</span>          3h
+fluentd-es-9krhc          <span class="m">1</span>/1     Running   <span class="m">0</span>          6m31s
+fluentd-es-hsk8q          <span class="m">1</span>/1     Running   <span class="m">0</span>          46s
+fluentd-es-l77hc          <span class="m">1</span>/1     Running   <span class="m">0</span>          6m31s
+fluentd-es-sqbtv          <span class="m">1</span>/1     Running   <span class="m">0</span>          6m31s
+kibana-7bdbd4b989-qgpt7   <span class="m">1</span>/1     Running   <span class="m">0</span>          35m
+</pre></div>
+</div>
+<p>Fluentd 启动成功后，这个时候就可以发送日志到 ES
+了，但是我们这里是过滤了只采集具有 <code class="docutils literal notranslate"><span class="pre">logging=true</span></code> 标签的 Pod
+日志，所以现在还没有任何数据会被采集。</p>
+<p>下面我们部署一个简单的测试应用， 新建 counter.yaml 文件，文件内容如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">counter</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">logging</span><span class="p">:</span> <span class="s">&quot;true&quot;</span>  <span class="c1"># 一定要具有该标签才会被采集</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">containers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">count</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">busybox</span>
+    <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">/bin/sh</span><span class="p p-Indicator">,</span> <span class="nv">-c</span><span class="p p-Indicator">,</span>
+            <span class="s">&#39;i=0;</span><span class="nv"> </span><span class="s">while</span><span class="nv"> </span><span class="s">true;</span><span class="nv"> </span><span class="s">do</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">&quot;$i:</span><span class="nv"> </span><span class="s">$(date)&quot;;</span><span class="nv"> </span><span class="s">i=$((i+1));</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">1;</span><span class="nv"> </span><span class="s">done&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>该 Pod 只是简单将日志信息打印到 <code class="docutils literal notranslate"><span class="pre">stdout</span></code>，所以正常来说 Fluentd
+会收集到这个日志数据，在 Kibana 中也就可以找到对应的日志数据了，使用
+kubectl 工具创建该 Pod：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl create -f counter.yaml
+$ kubectl get pods
+NAME                             READY   STATUS    RESTARTS   AGE
+counter                          <span class="m">1</span>/1     Running   <span class="m">0</span>          9h
+</pre></div>
+</div>
+<p>Pod 创建并运行后，回到 Kibana Dashboard 页面，点击左侧最下面的
+<code class="docutils literal notranslate"><span class="pre">management</span></code> 图标，然后点击 Kibana 下面的 <code class="docutils literal notranslate"><span class="pre">Index</span> <span class="pre">Patterns</span></code>
+开始导入索引数据：</p>
+<img alt="../../_images/image-20220726222058339.png" src="../../_images/image-20220726222058339.png" />
+<p>在这里可以配置我们需要的 Elasticsearch 索引，前面 Fluentd
+配置文件中我们采集的日志使用的是 logstash 格式，定义了一个 <code class="docutils literal notranslate"><span class="pre">k8s</span></code>
+的前缀，所以这里只需要在文本框中输入<code class="docutils literal notranslate"><span class="pre">k8s-*</span></code>即可匹配到
+Elasticsearch 集群中采集的 Kubernetes
+集群日志数据，然后点击下一步，进入以下页面：</p>
+<img alt="../../_images/image-20220726222219855.png" src="../../_images/image-20220726222219855.png" />
+<p>在该页面中配置使用哪个字段按时间过滤日志数据，在下拉列表中，选择<code class="docutils literal notranslate"><span class="pre">&#64;timestamp</span></code>字段，然后点击<code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">index</span> <span class="pre">pattern</span></code>，创建完成后，点击左侧导航菜单中的<code class="docutils literal notranslate"><span class="pre">Discover</span></code>，然后就可以看到一些直方图和最近采集到的日志数据了：</p>
+<img alt="../../_images/image-20220726224736937.png" src="../../_images/image-20220726224736937.png" />
+<p>现在的数据就是上面 Counter
+应用的日志，如果还有其他的应用，我们也可以筛选过滤：</p>
+<img alt="../../_images/image-20220726224810618.png" src="../../_images/image-20220726224810618.png" />
+<p>我们也可以通过其他元数据来过滤日志数据，比如您可以单击任何日志条目以查看其他元数据，如容器名称，Kubernetes
+节点，命名空间等。</p>
+<section id="id11">
+<h3><a class="toc-backref" href="#id26">6.1 日志分析</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>上面我们已经可以将应用日志收集起来了，下面我们来使用一个应用演示如何分析采集的日志。示例应用会输出如下所示的
+JSON 格式的日志信息：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;LOGLEVEL&quot;</span><span class="p">:</span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span><span class="s2">&quot;serviceName&quot;</span><span class="p">:</span><span class="s2">&quot;msg-processor&quot;</span><span class="p">,</span><span class="s2">&quot;serviceEnvironment&quot;</span><span class="p">:</span><span class="s2">&quot;staging&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;WARNING client connection terminated unexpectedly.&quot;</span><span class="p">}</span>
+<span class="p">{</span><span class="s2">&quot;LOGLEVEL&quot;</span><span class="p">:</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span><span class="s2">&quot;serviceName&quot;</span><span class="p">:</span><span class="s2">&quot;msg-processor&quot;</span><span class="p">,</span><span class="s2">&quot;serviceEnvironment&quot;</span><span class="p">:</span><span class="s2">&quot;staging&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;eventsNumber&quot;</span><span class="p">:</span><span class="mi">5</span><span class="p">}</span>
+<span class="p">{</span><span class="s2">&quot;LOGLEVEL&quot;</span><span class="p">:</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span><span class="s2">&quot;serviceName&quot;</span><span class="p">:</span><span class="s2">&quot;msg-receiver-api&quot;</span><span class="p">:</span><span class="s2">&quot;msg-receiver-api&quot;</span><span class="p">,</span><span class="s2">&quot;serviceEnvironment&quot;</span><span class="p">:</span><span class="s2">&quot;staging&quot;</span><span class="p">,</span><span class="s2">&quot;volume&quot;</span><span class="p">:</span><span class="mi">14</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;API received messages&quot;</span><span class="p">}</span>
+<span class="p">{</span><span class="s2">&quot;LOGLEVEL&quot;</span><span class="p">:</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span><span class="s2">&quot;serviceName&quot;</span><span class="p">:</span><span class="s2">&quot;msg-receiver-api&quot;</span><span class="p">,</span><span class="s2">&quot;serviceEnvironment&quot;</span><span class="p">:</span><span class="s2">&quot;staging&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;ERROR Unable to upload files for processing&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>因为 JSON 格式的日志解析非常容易，当我们将日志结构化传输到 ES
+过后，我们可以根据特定的字段值而不是文本搜索日志数据，当然纯文本格式的日志我们也可以进行结构化，但是这样每个应用的日志格式不统一，都需要单独进行结构化，非常麻烦，所以建议将日志格式统一成
+JSON 格式输出。</p>
+<p>我们这里的示例应用会定期输出不同类型的日志消息，包含不同日志级别（INFO/WARN/ERROR）的日志，一行
+JSON 日志就是我们收集的一条日志消息，该消息通过 fluentd 进行采集发送到
+Elasticsearch。</p>
+<p>这里我们会使用到 fluentd 里面的自动 JSON 解析插件，默认情况下，fluentd
+会将每个日志文件的一行作为名为 <code class="docutils literal notranslate"><span class="pre">log</span></code>
+的字段进行发送，并自动添加其他字段，比如 <code class="docutils literal notranslate"><span class="pre">tag</span></code> 标识容器，<code class="docutils literal notranslate"><span class="pre">stream</span></code>
+标识 stdout 或者 stderr。</p>
+<p>由于在 fluentd 配置中我们添加了如下所示的过滤器：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="nb">filter</span> <span class="n">kubernetes</span><span class="o">.**&gt;</span>
+  <span class="nd">@id</span> <span class="n">filter_parser</span>
+  <span class="nd">@type</span> <span class="n">parser</span>                <span class="c1"># multi-format-parser多格式解析器插件</span>
+  <span class="n">key_name</span> <span class="n">log</span>                <span class="c1"># 在要解析的记录中指定字段名称</span>
+  <span class="n">reserve_data</span> <span class="n">true</span>           <span class="c1"># 在解析结果中保留原始键值对</span>
+  <span class="n">remove_key_name_field</span> <span class="n">true</span>  <span class="c1"># key_name 解析成功后删除字段。</span>
+  <span class="o">&lt;</span><span class="n">parse</span><span class="o">&gt;</span>
+    <span class="nd">@type</span> <span class="n">multi_format</span>
+    <span class="o">&lt;</span><span class="n">pattern</span><span class="o">&gt;</span>
+      <span class="nb">format</span> <span class="n">json</span>
+    <span class="o">&lt;/</span><span class="n">pattern</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">pattern</span><span class="o">&gt;</span>
+      <span class="nb">format</span> <span class="n">none</span>
+    <span class="o">&lt;/</span><span class="n">pattern</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">parse</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="nb">filter</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>该过滤器使用 <code class="docutils literal notranslate"><span class="pre">json</span></code> 和 <code class="docutils literal notranslate"><span class="pre">none</span></code> 两个插件将 JSON
+数据进行结构化，这样就会把 JSON
+日志里面的属性解析成一个一个的字段，解析生效过后记得刷新 Kibana
+的索引字段，否则会识别不了这些字段，通过 <code class="docutils literal notranslate"><span class="pre">管理</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Index</span> <span class="pre">Pattern</span></code>
+点击刷新字段列表即可。</p>
+<p>下面我们将示例应用部署到 Kubernetes 集群中：(dummylogs.yaml)</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dummylogs</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dummylogs</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dummylogs</span>
+        <span class="nt">logging</span><span class="p">:</span> <span class="s">&quot;true&quot;</span>  <span class="c1"># 要采集日志需要加上该标签</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dummy</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cnych/dummylogs:latest</span>
+        <span class="nt">args</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">msg-processor</span>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dummylogs2</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dummylogs2</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dummylogs2</span>
+        <span class="nt">logging</span><span class="p">:</span> <span class="s">&quot;true&quot;</span>  <span class="c1"># 要采集日志需要加上该标签</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dummy</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cnych/dummylogs:latest</span>
+        <span class="nt">args</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">msg-receiver-api</span>
+</pre></div>
+</div>
+<p>直接部署上面的应用即可：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kubectl apply -f dummylogs.yaml
+$ kubectl get pods -l <span class="nv">logging</span><span class="o">=</span><span class="nb">true</span>
+NAME                         READY   STATUS    RESTARTS   AGE
+counter                      <span class="m">1</span>/1     Running   <span class="m">0</span>          22h
+dummylogs-6f7b56579d-7js8n   <span class="m">1</span>/1     Running   <span class="m">5</span>          15h
+dummylogs-6f7b56579d-wdnc6   <span class="m">1</span>/1     Running   <span class="m">5</span>          15h
+dummylogs-6f7b56579d-x4twn   <span class="m">1</span>/1     Running   <span class="m">5</span>          15h
+dummylogs2-d9b978d9b-bchks   <span class="m">1</span>/1     Running   <span class="m">5</span>          15h
+dummylogs2-d9b978d9b-wv7rj   <span class="m">1</span>/1     Running   <span class="m">5</span>          15h
+dummylogs2-d9b978d9b-z2r26   <span class="m">1</span>/1     Running   <span class="m">5</span>          15h
+</pre></div>
+</div>
+<p>部署完成后 dummylogs 和 dummylogs2
+两个应用就会开始输出不同级别的日志信息了，记得要给应用所在的节点打上
+<code class="docutils literal notranslate"><span class="pre">beta.kubernetes.io/fluentd-ds-ready=true</span></code> 的标签，否则 fluentd
+不会在对应的节点上运行也就不会收集日志了。</p>
+<p>正常情况下日志就已经可以被采集到 Elasticsearch 当中了，我们可以前往
+Kibana 的 Dashboard 页面查看:</p>
+<img alt="../../_images/image-20220727093825433.png" src="../../_images/image-20220727093825433.png" />
+<p>我们可以看到可用的字段中已经包含我们应用中的一些字段了。找到
+<code class="docutils literal notranslate"><span class="pre">serviceName</span></code> 字段点击我们可以查看已经采集了哪些服务的消息：</p>
+<img alt="../../_images/image-20220727093903492.png" src="../../_images/image-20220727093903492.png" />
+<p>可以看到我们收到了来自 <code class="docutils literal notranslate"><span class="pre">msg-processor</span></code> 和 <code class="docutils literal notranslate"><span class="pre">msg-receiver-api</span></code>
+的日志信息，在最近15分钟之内，<code class="docutils literal notranslate"><span class="pre">api</span></code>
+服务产生的日志更多，点击后面的加号就可以只过滤该服务的日志数据：</p>
+<figure class="align-default" id="id12">
+<img alt="image-20220727093947816" src="../../_images/image-20220727093947816.png" />
+<figcaption>
+<p><span class="caption-text">image-20220727093947816</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>我们可以看到展示的日志数据的属性比较多，有时候可能不利于我们查看日志，此时我们可以筛选想要展示的字段:</p>
+<img alt="../../_images/image-20220727094026617.png" src="../../_images/image-20220727094026617.png" />
+<p>我们可以根据自己的需求选择要显示的字段，现在查看消息的时候就根据清楚了：</p>
+<img alt="../../_images/image-20220727094057425.png" src="../../_images/image-20220727094057425.png" />
+<p>更多日志分析内容参考：</p>
+<p><a class="reference external" href="https://www.qikqiak.com/k8strain/logging/efk/">https://www.qikqiak.com/k8strain/logging/efk/</a></p>
+<p>除此之外我们也可以配置将报警信息发往
+<a class="reference external" href="https://github.com/anjia0532/elastalert-wechat-plugin">企业微信</a>
+或者
+<a class="reference external" href="https://github.com/xuyaoqiang/elastalert-dingtalk-plugin">钉钉</a>，还可以安装一个
+elastalert 的 <a class="reference external" href="https://github.com/bitsensor/elastalert-kibana-plugin">Kibana
+插件</a>，用于在
+Kibana 页面上进行可视化操作。</p>
+<p>关于 elastalert
+更多的操作和使用说明，大家可以查看官方文档了解更多：<a class="reference external" href="https://elastalert.readthedocs.io/en/latest/">https://elastalert.readthedocs.io/en/latest/</a>。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="5.k9s%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" class="btn btn-neutral float-left" title="k9s集群管理工具" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, huxiaojian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
