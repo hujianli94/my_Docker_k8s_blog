@@ -10,6 +10,7 @@
 - 03.Docker经典实例
 - 04.Prometheus监控运维实战
 - 05.Kubernetes入门到实战
+- 06.云原生Kubernetes全栈架构师实战
 
 
 

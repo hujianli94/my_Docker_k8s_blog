@@ -125,6 +125,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../03.Docker%E7%BB%8F%E5%85%B8%E5%AE%9E%E4%BE%8B/index.html">03.Docker经典实例</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../04.Prometheus%E7%9B%91%E6%8E%A7%E8%BF%90%E7%BB%B4%E5%AE%9E%E6%88%98/index.html">04.Prometheus监控运维实战</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../05.Kubernetes%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/index.html">05.Kubernetes入门到实践</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../06.%E4%BA%91%E5%8E%9F%E7%94%9FKubernetes%E5%85%A8%E6%A0%88%E6%9E%B6%E6%9E%84%E5%B8%88%E5%AE%9E%E6%88%98/index.html">06.云原生Kubernetes全栈架构师实战</a></li>
 </ul>
 
         </div>
@@ -292,7 +293,7 @@ $ kubectl describe node <span class="m">127</span>.0.0.1
 <section id="id2">
 <h2><a class="toc-backref" href="#id65">4. kubernetes的资源对象</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>kubernetes常用资源对象</p>
-<p><img alt="image0" src="../_images/kubernetes_pod_type001.png" /></p>
+<img alt="../_images/kubernetes_pod_type001.png" src="../_images/kubernetes_pod_type001.png" />
 <p><strong>无状态的应用程序使用的Pod控制器</strong></p>
 <ul class="simple">
 <li><p>[STRIKEOUT:ReplicationController]
@@ -868,14 +869,19 @@ kubectl delete deployment kafka-1 --grace-period<span class="o">=</span><span cl
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">exec</span> <span class="n">mypod</span> <span class="o">-</span><span class="n">c</span> <span class="n">ruby</span><span class="o">-</span><span class="n">container</span> <span class="o">-</span><span class="n">it</span> <span class="o">--</span> <span class="n">bash</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kubectl</span> <span class="n">run</span> <span class="o">-</span><span class="n">i</span> <span class="o">--</span><span class="n">tty</span> <span class="n">busybox</span> <span class="o">--</span><span class="n">image</span><span class="o">=</span><span class="n">busybox</span> <span class="o">--</span> <span class="n">sh</span>      <span class="c1"># 交互式 shell 的方式运行 pod</span>
-<span class="n">kubectl</span> <span class="n">attach</span> <span class="n">nginx</span><span class="o">-</span><span class="n">pod</span> <span class="o">-</span><span class="n">i</span>                                       <span class="c1"># 连接到运行中的容器</span>
-<span class="n">kubectl</span> <span class="n">port</span><span class="o">-</span><span class="n">forward</span> <span class="n">nginx</span><span class="o">-</span><span class="n">pod</span> <span class="mi">5000</span><span class="p">:</span><span class="mi">6000</span>                       <span class="c1"># 转发 pod 中的 6000 端口到本地的 5000 端口</span>
-<span class="n">kubectl</span> <span class="n">exec</span> <span class="n">nginx</span><span class="o">-</span><span class="n">pod</span> <span class="o">--</span> <span class="n">ls</span> <span class="o">/</span>                                  <span class="c1"># 在已存在的容器中执行命令（只有一个容器的情况下）</span>
-<span class="n">kubectl</span> <span class="n">exec</span> <span class="n">nginx</span><span class="o">-</span><span class="n">pod</span> <span class="o">-</span><span class="n">c</span> <span class="n">my</span><span class="o">-</span><span class="n">container</span> <span class="o">--</span> <span class="n">ls</span> <span class="o">/</span>                 <span class="c1"># 在已存在的容器中执行命令（pod 中有多个容器的情况下）</span>
-<span class="n">kubectl</span> <span class="n">top</span> <span class="n">pod</span> <span class="n">POD_NAME</span> <span class="o">--</span><span class="n">containers</span>                    <span class="c1"># 显示指定 pod和容器的指标度量</span>
-<span class="n">kubectl</span> <span class="n">exec</span> <span class="o">-</span><span class="n">ti</span> <span class="n">podName</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>                    <span class="c1"># 进入pod</span>
-<span class="n">kubectl</span> <span class="n">exec</span> <span class="o">-</span><span class="n">it</span> <span class="n">pod</span><span class="o">/</span><span class="n">grafana</span><span class="o">-</span><span class="mi">98</span><span class="n">bc68fc</span><span class="o">-</span><span class="mi">6</span><span class="n">dqv8</span> <span class="o">-</span><span class="n">c</span> <span class="n">grafana</span> <span class="o">-</span><span class="n">n</span> <span class="n">monitoring</span> <span class="o">--</span> <span class="n">grafana</span><span class="o">-</span><span class="n">cli</span> <span class="n">plugins</span> <span class="n">install</span> <span class="n">grafana</span><span class="o">-</span><span class="n">piechart</span><span class="o">-</span><span class="n">panel</span>  <span class="c1">#为grafana安装插件</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>kubectl run -i --tty busybox --image=busybox -- sh      # 交互式 shell 的方式运行 pod
+# 或
+kubectl run client --image=busybox --restart=Never -it -- /bin/sh
+
+kubectl run cirros-$RANDOM --rm -it --image=cirros -- sh
+
+kubectl attach nginx-pod -i                                       # 连接到运行中的容器
+kubectl port-forward nginx-pod 5000:6000                       # 转发 pod 中的 6000 端口到本地的 5000 端口
+kubectl exec nginx-pod -- ls /                                  # 在已存在的容器中执行命令（只有一个容器的情况下）
+kubectl exec nginx-pod -c my-container -- ls /                 # 在已存在的容器中执行命令（pod 中有多个容器的情况下）
+kubectl top pod POD_NAME --containers                    # 显示指定 pod和容器的指标度量
+kubectl exec -ti podName /bin/bash                    # 进入pod
+kubectl exec -it pod/grafana-98bc68fc-6dqv8 -c grafana -n monitoring -- grafana-cli plugins install grafana-piechart-panel  #为grafana安装插件
 </pre></div>
 </div>
 </section>
@@ -1044,7 +1050,7 @@ kubectl logs --tail <span class="m">100</span> -p user-klvchen-v1.0-6f67dcc46b-5
 <p>Kubernetes
 API是管理各种资源对象的唯一入口，它提供了一个RESTful风格的CRUD（Create、Read、Update和Delete）接口用于查询和修改集群状态，并将结果存储在集群状态存储系统etcd中。事实上，API
 Server也是用于更新etcd中资源对象状态的唯一途径，Kubernetes的其他所有组件和客户端都要通过它完成查询或修改操作。</p>
-<p><img alt="image1" src="../_images/kubectl_0001.png" /></p>
+<img alt="../_images/kubectl_0001.png" src="../_images/kubectl_0001.png" />
 <section id="id31">
 <h3><a class="toc-backref" href="#id83">7.1 资源管理的操作</a><a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes API资源管理的操作可简单归结为增、删、改、查这4种，</p>
@@ -1379,7 +1385,7 @@ krew子命令便能执行Krew插件管理器的相关功能，例如查找和安
 <h2><a class="toc-backref" href="#id86">kubectl部署应用 示例1</a><a class="headerlink" href="#kubectl-1" title="Permalink to this headline">¶</a></h2>
 <p>本章要演示的示例应用是一个名叫Guestbook的应用，Guestbook是一个典型的Web应用。Guestbook的部署运行结构如图所示。</p>
 <p>Guestbook结构</p>
-<p><img alt="image2" src="../_images/guestbook00001.png" /></p>
+<img alt="../_images/guestbook00001.png" src="../_images/guestbook00001.png" />
 <p>Guestbook包含两部分。</p>
 <ul class="simple">
 <li><p>Frontend</p></li>
@@ -1725,8 +1731,8 @@ frontend   NodePort   <span class="m">10</span>.96.36.2   &lt;none&gt;        <s
 </section>
 <section id="id43">
 <h3><a class="toc-backref" href="#id89">查看所有的service信息</a><a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
-<p><img alt="image3" src="../_images/k8s_guestbooks00001.png" /></p>
-<p><img alt="image4" src="../_images/k8s-guestbooks00002.png" /></p>
+<img alt="../_images/k8s_guestbooks00001.png" src="../_images/k8s_guestbooks00001.png" />
+<img alt="../_images/k8s-guestbooks00002.png" src="../_images/k8s-guestbooks00002.png" />
 </section>
 <section id="guestbook">
 <h3><a class="toc-backref" href="#id90">清理Guestbook</a><a class="headerlink" href="#guestbook" title="Permalink to this headline">¶</a></h3>

@@ -51,10 +51,11 @@
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">2.Kubernetes的核心概念</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="1.Kubernetes%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%9E%B6%E6%9E%84.html">Kubernetes的设计架构</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Kubernetes的核心对象</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#pod">1.Pod</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">2.服务与存储</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">3.存储卷和持久存储卷</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4">4.资源划分</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#namespace">1.Namespace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pod">2.Pod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">3.服务与存储</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">4.存储卷和持久存储卷</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">5.资源划分</a></li>
 </ul>
 </li>
 </ul>
@@ -72,6 +73,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../13.Kubernetes-DevOps/index.html">13.Kubernetes-DevOps</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../06.%E4%BA%91%E5%8E%9F%E7%94%9FKubernetes%E5%85%A8%E6%A0%88%E6%9E%B6%E6%9E%84%E5%B8%88%E5%AE%9E%E6%88%98/index.html">06.云原生Kubernetes全栈架构师实战</a></li>
 </ul>
 
         </div>
@@ -105,21 +107,26 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#kubernetes" id="id7">Kubernetes的核心对象</a></p>
 <ul>
-<li><p><a class="reference internal" href="#pod" id="id8">1.Pod</a></p>
+<li><p><a class="reference internal" href="#namespace" id="id8">1.Namespace</a></p></li>
+<li><p><a class="reference internal" href="#pod" id="id9">2.Pod</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id9">1.1控制器</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id10">2.1控制器</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id2" id="id10">2.服务与存储</a></p>
+<li><p><a class="reference internal" href="#id2" id="id11">3.服务与存储</a></p>
 <ul>
-<li><p><a class="reference internal" href="#serviceingress" id="id11">2.1Service组件和Ingress</a></p></li>
+<li><p><a class="reference internal" href="#serviceingress" id="id12">3.1Service组件和Ingress</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#id3" id="id12">3.存储卷和持久存储卷</a></p></li>
-<li><p><a class="reference internal" href="#id4" id="id13">4.资源划分</a></p>
+<li><p><a class="reference internal" href="#id3" id="id13">4.存储卷和持久存储卷</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id5" id="id14">4.1 命名空间</a></p></li>
-<li><p><a class="reference internal" href="#id6" id="id15">4.2 标签和注解</a></p></li>
+<li><p><a class="reference internal" href="#persistentvolume-persistentvolumeclaim" id="id14">4.1 PersistentVolume 和PersistentVolumeClaim</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id4" id="id15">5.资源划分</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id5" id="id16">5.1 命名空间</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id17">5.2 标签和注解</a></p></li>
 </ul>
 </li>
 </ul>
@@ -129,20 +136,30 @@
 <section id="kubernetes">
 <h1><a class="toc-backref" href="#id7">Kubernetes的核心对象</a><a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h1>
 <p>Kubernetes的基本对象模型</p>
-<p><img alt="image0" src="../../_images/image-20220403155842930.png" /></p>
+<img alt="../../_images/image-20220403155842930.png" src="../../_images/image-20220403155842930.png" />
+<p>核心对象间的关系图</p>
+<img alt="../../_images/image-20220830163028219.png" src="../../_images/image-20220830163028219.png" />
+<section id="namespace">
+<h2><a class="toc-backref" href="#id8">1.Namespace</a><a class="headerlink" href="#namespace" title="Permalink to this headline">¶</a></h2>
+<p>Namespace 是Kubernetes
+进行归类的对象，当一个集群有多个用户或一个用户有多个应用需要管理时，需要将所有被管理的对象进行隔离。</p>
+<p>Kubernetes 引入了Namespace
+对象，类似文件目录，不同对象被划分到不同的Namespace
+后，可以通过权限控制来限制用户以何种权限访问哪些Namespace
+的哪些对象，进而构建一个多租户、彼此隔离的通用集群。</p>
+</section>
 <section id="pod">
-<h2><a class="toc-backref" href="#id8">1.Pod</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">2.Pod</a><a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h2>
 <p>Pod是Kubernetes处理的最基本单元。容器本身并不会直接分配到主机上，而是会封装到名为Pod的对象中。</p>
 <p>Pod通常表示单个应用程序，由一个或多个关系紧密的容器构成，如图所示。这些容器拥有同样的生命周期，作为一个整体一起编排到Node上。</p>
 <p>这些容器共享环境、存储卷和IP空间。尽管Pod基于一个或多个容器，但应将Pod视作单一的整体、单独的应用程序。Kubernetes以Pod为最小单位进行调度、伸缩并共享资源、管理生命周期。</p>
 <p>Pod容器的构成</p>
-<p><img alt="image1" src="../../_images/image-20220403160028910.png" /></p>
+<img alt="../../_images/image-20220403160028910.png" src="../../_images/image-20220403160028910.png" />
 <p>一般来说，用户不应自行管理Pod，因为Pod并没有提供应用程序通常会用到的一些特性，如复杂的生命周期管理及动态伸缩。</p>
 <p>建议用户使用将Pod或Pod模板作为基本组件的更高级别对象，这些对象会拥有更多的特性。</p>
 <section id="id1">
-<h3><a class="toc-backref" href="#id9">1.1控制器</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>一般来说，用户不会直接创建Pod，而是创建控制器，让控制器来管理Pod。在控制器中定义Pod的部署方式（如有多少个副本、需要在
-哪种Node上运行等），根据不同的业务场景，Kubernetes提供了多种控制器。</p>
+<h3><a class="toc-backref" href="#id10">2.1控制器</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>一般来说，用户不会直接创建Pod，而是创建控制器，让控制器来管理Pod。在控制器中定义Pod的部署方式（如有多少个副本、需要在哪种Node上运行等），根据不同的业务场景，Kubernetes提供了多种控制器。</p>
 <section id="replicationcontrollerreplicaset">
 <h4>1.ReplicationController和ReplicaSet控制器<a class="headerlink" href="#replicationcontrollerreplicaset" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
@@ -154,8 +171,7 @@
 <li><p>ReplicaSet</p></li>
 </ul>
 <p>ReplicaSet控制器可以看作ReplicationController的另一种版本，其Pod识别功能使它在Pod管理上更具灵活性。</p>
-<p>由于ReplicaSet控制器具有副本筛选功能，因此ReplicaSet控制器才有逐渐取代ReplicationController的趋势，但ReplicaSet控制器无法实现滚动更
-新，无法像ReplicationController那样在后端轮流切换到最新版本。</p>
+<p>由于ReplicaSet控制器具有副本筛选功能，因此ReplicaSet控制器才有逐渐取代ReplicationController的趋势，但ReplicaSet控制器无法实现滚动更新，无法像ReplicationController那样在后端轮流切换到最新版本。</p>
 <p>缺点：</p>
 <p>缺少一些在其他复杂对象中具有的更细粒度的生命周期管理功能。</p>
 </section>
@@ -163,15 +179,14 @@
 <h4>2.Deployment控制器<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h4>
 <p>Deployment控制器可能是最常用的工作负载对象之一。
 Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增加了更灵活的生命周期管理功能。</p>
-<p>Deployment控制器解决了之前在
-滚动更新上存在的诸多难点。如果用ReplicationController来更新应用程序，用户需要提交一个新的ReplicationController计划，以替换当前的控制器。</p>
+<p>Deployment控制器解决了之前在滚动更新上存在的诸多难点。如果用ReplicationController来更新应用程序，用户需要提交一个新的ReplicationController计划，以替换当前的控制器。</p>
 <p>因此，对于历史记录跟踪、更新出现网络故障时的恢复以及回滚错误修改等任务，ReplicationController要么做起来非常
 艰难，要么需要用户自理。</p>
 <p>Deployment控制器是一种高级对象，旨在简化Pod的生命周期管理。</p>
 <p>只要简单更改Deployment控制器的配置文件，Kubernetes就会自动调节ReplicaSet控制器，管理应用程序不同版本之间的切换，还可
 以实现自动维护事件历史记录及自动撤销功能，如图2-7所示。正是由于这些强大的功能，Deployment控制器可能是使用频率最高的对象。</p>
 <p>Deployment控制器</p>
-<p><img alt="image2" src="../../_images/image-20220403174443747.png" /></p>
+<img alt="../../_images/image-20220403174443747.png" src="../../_images/image-20220403174443747.png" />
 </section>
 <section id="statefulset">
 <h4>3.StatefulSet控制器<a class="headerlink" href="#statefulset" title="Permalink to this headline">¶</a></h4>
@@ -200,50 +215,58 @@ Deployment控制器以ReplicaSet控制器为基础，是更高级的概念，增
 </section>
 </section>
 <section id="id2">
-<h2><a class="toc-backref" href="#id10">2.服务与存储</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">3.服务与存储</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <section id="serviceingress">
-<h3><a class="toc-backref" href="#id11">2.1Service组件和Ingress</a><a class="headerlink" href="#serviceingress" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">3.1Service组件和Ingress</a><a class="headerlink" href="#serviceingress" title="Permalink to this headline">¶</a></h3>
 <p>通过Service组件可以发布服务，可以跟踪并路由到所有指定类型的后端容器。</p>
 <p>内部使用者只需要知道Service组件提供的稳定端点即可进行访问。另外，Service组件抽象可以根据需要来伸缩或替换后端的
 工作单元，无论Service组件具体路由到哪个Pod，其IP地址都保持稳定。通过Service组件，可以轻松获得服务发现的能力。</p>
 <p>通过Service组件访问Pod</p>
-<p><img alt="image3" src="../../_images/image-20220403180459469.png" /></p>
+<img alt="../../_images/image-20220403180459469.png" src="../../_images/image-20220403180459469.png" />
 <p>还可以通过Ingress来整合Service组件。Ingress并不是某种服务类型，可以充当多个Service组件的统一入口。</p>
 <p>Ingress支持将路由规则合并到单个资源中，可以通过同一域名或IP地址下不同的路径来访问不同的Service组件。</p>
 <p>通过Ingress整合Service组件</p>
-<p><img alt="image4" src="../../_images/image-20220403180729188.png" /></p>
+<img alt="../../_images/image-20220403180729188.png" src="../../_images/image-20220403180729188.png" />
 </section>
 </section>
 <section id="id3">
-<h2><a class="toc-backref" href="#id12">3.存储卷和持久存储卷</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>Kubernetes定义了自己的存储卷（volume）
-抽象，允许Pod中的所有容器共享数据，并在Pod终止之前一直保持可用，如图2-10所示。</p>
+<h2><a class="toc-backref" href="#id13">4.存储卷和持久存储卷</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>Kubernetes定义了自己的存储卷（volume）抽象，允许Pod中的所有容器共享数据，并在Pod终止之前一直保持可用，如图2-10所示。</p>
 <p>这意味着紧密耦合的Pod可以轻松共享文件而不需要复杂的外部机制，Pod中的容器故障不会影响对共享文件的访问。
 Pod终止后，共享的存储卷会被销毁，因此对于真正需要持久化的数据来说，这并非一个好的解决方案</p>
-<p><img alt="image5" src="../../_images/image-20220403180841162.png" /></p>
+<img alt="../../_images/image-20220403180841162.png" src="../../_images/image-20220403180841162.png" />
 <p>持久存储卷（persistent
-volume）是一种更健壮的抽象机制，不依赖于Pod的生命周期。持久存储卷允许管理员为集群配置存储资源，
-用户可以为正在运行的Pod请求和声明存储资源。</p>
+volume）是一种更健壮的抽象机制，不依赖于Pod的生命周期。持久存储卷允许管理员为集群配置存储资源，用户可以为正在运行的Pod请求和声明存储资源。</p>
 <p>带有持久存储卷的Pod一旦使用完毕，存储卷的回收策略将决定是保留存储卷（直到手动删除），还是立即删除数据。</p>
 <p>持久性数据可预防节点级的故障，并分配比本地更多的可用存储空间。</p>
+<section id="persistentvolume-persistentvolumeclaim">
+<h3><a class="toc-backref" href="#id14">4.1 PersistentVolume 和PersistentVolumeClaim</a><a class="headerlink" href="#persistentvolume-persistentvolumeclaim" title="Permalink to this headline">¶</a></h3>
+<p>PersistentVolume（PV）是集群中的一块存储卷，可以由管理员手动 设 置 ， 或
+当 用 户 创 建 PersistentVolumeClaim （ PVC ） 时 根 据StorageClass
+动态设置。PV 和PVC 与Pod 生命周期无关。也就是说，当Pod
+中的容器重新启动、Pod 重新调度或者删除时，PV 和PVC不会受到影响，Pod
+存储于PV
+里的数据得以保留。对于不同的使用场景，用户通常需要不同属性（例如性能、访问模式等）的PV。</p>
+<p>因此，集群一般需要提供各种类型的PV，由StorageClass 来区分。</p>
+<p>一般集群环境都设置了默认的 StorageClass 。 如果在PersistentVolumeClaim
+中未指定StorageClass，则使用集群的默认StorageClass。</p>
+</section>
 </section>
 <section id="id4">
-<h2><a class="toc-backref" href="#id13">4.资源划分</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">5.资源划分</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <section id="id5">
-<h3><a class="toc-backref" href="#id14">4.1 命名空间</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">5.1 命名空间</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>命名空间（namespace）的主要作用是对Kubernetes集群资源进行划分。</p>
-<p>这种划分并非物理划分而是逻辑划分，用于实现多租户的资源隔离.</p>
-<p>使用命名空间隔离资源</p>
-<p><img alt="image6" src="../../_images/image-20220403181143488.png" /></p>
+<p>这种划分并非物理划分而是逻辑划分，用于实现多租户的资源隔离.使用命名空间隔离资源。</p>
+<img alt="../../_images/image-20220403181143488.png" src="../../_images/image-20220403181143488.png" />
 </section>
 <section id="id6">
-<h3><a class="toc-backref" href="#id15">4.2 标签和注解</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">5.2 标签和注解</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>Kubernetes中的标签（label）是一种语义化标记，可以附加到Kubernetes对象上，对它们进行标记或划分。</p>
 <p>如果要针对不同的实例进行管理或路由，可以用标签来进行选择。</p>
 <p>例如，每种基于控制器的对象都可以使用标签来识别需要操作的Pod。</p>
 <p>Service组件也可以使用标签来确定应该将请求路由到哪些后端Pod。</p>
-<p>标签的形式是键值对，每个单元可以拥有多个标签，但每个单元对于每个键只能拥有一个值。通常来说，相对于当作标识符的name属
-性，标签的使用更像是对资源进行划分细类，可以用开发阶段、可访问性级别、应用程序版本等标准对各个对象进行分类。</p>
+<p>标签的形式是键值对，每个单元可以拥有多个标签，但每个单元对于每个键只能拥有一个值。通常来说，相对于当作标识符的name属性，标签的使用更像是对资源进行划分细类，可以用开发阶段、可访问性级别、应用程序版本等标准对各个对象进行分类。</p>
 <p>注解（annotation）也是一种类似的机制，用于将任意键值信息附加到某一对象中。</p>
 <p>相对于标签，注解更灵活，可以包含少量结构化数据。</p>
 <p>一般来说，注解只是向对象添加更多元数据的一种方式，但并不用于筛选。</p>
